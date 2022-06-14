@@ -766,6 +766,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
+        // TODO level
         return User::find()
             ->where([
                 'referrer_id' => $this->id,
@@ -784,6 +785,16 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
+    }
+
+    public function getNewContact(): Contact
+    {
+        $contact = new Contact();
+        $contact->user_id = Yii::$app->user->id;
+        $contact->userIdOrName = $this->id;
+        $contact->link_user_id = $this->id;
+
+        return $contact;
     }
 
     public function getContacts(): ContactQuery

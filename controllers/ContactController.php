@@ -2,19 +2,19 @@
 
 namespace app\controllers;
 
-use app\models\ContactGroup;
-use Yii;
-use app\models\User;
-use app\models\Contact;
 use app\components\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use yii\data\ActiveDataProvider;
-use yii\web\NotFoundHttpException;
-use app\models\scenarios\Contact\UpdateGroupsByIdsScenario;
-use yii\web\Response;
+use app\models\Contact;
+use app\models\ContactGroup;
 use app\models\DebtRedistribution;
+use app\models\scenarios\Contact\UpdateGroupsByIdsScenario;
 use app\models\search\DebtRedistributionSearch;
+use app\models\User;
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\widgets\ActiveForm;
 
 class ContactController extends Controller
@@ -128,18 +128,7 @@ class ContactController extends Controller
             $user = User::findByUsername($id) ?: User::findById($id);
 
             if ($user) {
-                $contact = Contact::find()
-                    ->andWhere([
-                        'link_user_id' => $user->id,
-                        ])
-                    ->userOwner()
-                    ->one();
-
-                if (!$contact) {
-                    $contact = new Contact();
-                    $contact->user_id = $this->user->id;
-                    $contact->link_user_id = $user->id;
-                }
+                $contact = $user->contact ?: $user->newContact;
 
                 $searchModel  = new DebtRedistributionSearch();
                 $dataProvider = $searchModel->search($contact, Yii::$app->request->queryParams);
@@ -428,6 +417,7 @@ class ContactController extends Controller
     {
         $model = new Contact();
         $model->user_id = $this->user->id;
+        $model->scenario = 'form';
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
             if ($model->save()) {
@@ -478,7 +468,7 @@ class ContactController extends Controller
             }
         }
 
-        $model->userIdOrName = $model->getUserIdOrName();
+        $model->scenario = 'form';
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
             if ($model->save()) {

@@ -22,25 +22,25 @@ class MyGenderController extends Controller
      */
     public function actionIndex($genderId = null)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
         if (isset($genderId)) {
             $gender = Gender::findOne($genderId);
 
             if (isset($gender)) {
-                $user->gender_id = $gender->id;
-                $user->save();
+                $globalUser->gender_id = $gender->id;
+                $globalUser->save();
             }
         }
 
-        if (!$user->gender_id) {
-            return $this->actionUpdate();
+        if (!$globalUser->gender_id) {
+            return $this->actionSelect();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'gender' => $user->gender->name,
+                    'gender' => $globalUser->gender->name,
                 ]),
                 [
                     [
@@ -53,7 +53,7 @@ class MyGenderController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('select'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -62,13 +62,14 @@ class MyGenderController extends Controller
             ->build();
     }
 
-    public function actionUpdate($page = 1)
+    public function actionSelect($page = 1)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $genderQuery = Gender::find();
+        $query = Gender::find();
+
         $pagination = new Pagination([
-            'totalCount' => $genderQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -76,37 +77,46 @@ class MyGenderController extends Controller
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
+
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('update', [
                 'page' => $page,
             ]);
         });
-        $genders = $genderQuery
+
+        $buttons = [];
+
+        $genders = $query
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $genderRows = array_map(function ($gender) {
-            return [
-                [
-                    'text' => Yii::t('bot', $gender->name),
+
+        if ($genders) {
+            foreach ($genders as $gender) {
+                $buttons[][] = [
                     'callback_data' => self::createRoute('index', [
                         'genderId' => $gender->id,
                     ]),
-                ],
-            ];
-        }, $genders);
+                    'text' => Yii::t('bot', $gender->name),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => ($globalUser->gender_id ? self::createRoute() : MyProfileController::createRoute()),
+                'text' => Emoji::BACK,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
-                array_merge($genderRows, [$paginationButtons], [
-                    [
-                        [
-                            'callback_data' => ($user->gender_id ? self::createRoute() : MyProfileController::createRoute()),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ])
+                $this->render('select'),
+                $buttons
             )
             ->build();
     }

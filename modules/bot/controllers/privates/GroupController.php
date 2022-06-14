@@ -42,10 +42,6 @@ class GroupController extends Controller
         $pagination->pageSizeParam = false;
         $pagination->validatePage = true;
 
-        $chats = $chatQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [
                 'page' => $page,
@@ -54,10 +50,14 @@ class GroupController extends Controller
 
         $buttons = [];
 
+        $chats = $chatQuery->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
         if ($chats) {
             foreach ($chats as $chat) {
                 $buttons[][] = [
-                    'callback_data' => GroupController::createRoute('view', [
+                    'callback_data' => self::createRoute('view', [
                         'chatId' => $chat->id,
                     ]),
                     'text' => $chat->title,
