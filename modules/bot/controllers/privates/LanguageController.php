@@ -33,13 +33,11 @@ class LanguageController extends Controller
     {
         $this->getState()->setName(self::createRoute('input'));
 
-        $languageQuery = Language::find()
-            ->orderBy([
-                'code' => SORT_ASC,
-            ]);
+        $query = Language::find()
+            ->orderBy(['code' => SORT_ASC]);
 
         $pagination = new Pagination([
-            'totalCount' => $languageQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -48,34 +46,39 @@ class LanguageController extends Controller
             'validatePage' => true,
         ]);
 
-        $buttons = [];
-
-        $languages = $languageQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        foreach ($languages as $language) {
-            $buttons[][] = [
-                'callback_data' => self::createRoute('select', [
-                    'languageCode' => $language->code,
-                ]),
-                'text' => strtoupper($language->code) . ' - ' . $language->name,
-            ];
-        }
-
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('list', [
                 'page' => $page,
             ]);
         });
 
-        if ($paginationButtons) {
-            $buttons[] = $paginationButtons;
+        $buttons = [];
+
+        $languages = $query
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($languages) {
+            foreach ($languages as $language) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('select', [
+                        'languageCode' => $language->code,
+                    ]),
+                    'text' => strtoupper($language->code) . ' - ' . $language->name,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
         }
 
-        $buttons[][] = [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::BACK,
+        $buttons[] = [
+                [
+                    'callback_data' => MenuController::createRoute(),
+                    'text' => Emoji::BACK,
+                ]
             ];
 
         return $this->getResponseBuilder()
@@ -110,21 +113,25 @@ class LanguageController extends Controller
 
     public function actionInput()
     {
-        $text = $this->getUpdate()->getMessage()->getText();
+        if ($text = $this->getUpdate()->getMessage()->getText()) {
+            if (strlen($text) <= 3) {
+                $language = Language::find()
+                    ->orFilterWhere(['like', 'code', $text, false])
+                    ->one();
+            } else {
+                $language = Language::find()
+                    ->orFilterWhere(['like', 'name', $text . '%', false])
+                    ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
+                    ->one();
+            }
 
-        if (strlen($text) <= 3) {
-            $language = Language::find()
-                ->orFilterWhere(['like', 'code', $text, false])
-                ->one();
-        } else {
-            $language = Language::find()
-                ->orFilterWhere(['like', 'name', $text . '%', false])
-                ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
-                ->one();
+            if (isset($language)) {
+                return $this->actionSelect($language->code);
+            }
         }
 
-        if (isset($language)) {
-            return $this->actionSelect($language->code);
-        }
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }

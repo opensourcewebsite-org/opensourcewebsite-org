@@ -239,10 +239,6 @@ class GroupMembershipController extends Controller
             'chatId' => $chatId,
             'memberId' => $member->id,
          ]);
-
-        // return $this->getResponseBuilder()
-        //     ->answerCallbackQuery()
-        //     ->build();
     }
 
     public function actionMember($memberId = null, $chatId = null): array

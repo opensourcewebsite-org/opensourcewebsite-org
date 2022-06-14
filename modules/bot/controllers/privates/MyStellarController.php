@@ -7,9 +7,9 @@ use app\models\UserStellar;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
-use Yii;
-use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatSetting;
+use Yii;
 
 /**
  * Class MyStellarController
@@ -24,6 +24,7 @@ class MyStellarController extends Controller
     public function actionIndex(): array
     {
         $this->getState()->setName(null);
+
         $user = $this->getUser();
 
         if (!isset($user->stellar)) {
@@ -104,6 +105,7 @@ class MyStellarController extends Controller
     public function actionSetPublicKey(): array
     {
         $this->getState()->setName(self::createRoute('set-public-key'));
+
         $user = $this->getUser();
 
         if ($this->getUpdate()->getMessage()) {

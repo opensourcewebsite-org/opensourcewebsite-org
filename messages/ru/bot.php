@@ -538,4 +538,6 @@ return [
     'built-in basic commands for the group' => 'встроенные базовые команды для группы',
     'Send a name' => 'Отправьте имя',
     'Choose a value' => 'Выберите значение',
+    'Your Username' => 'Ваш Username',
+    'Send your username' => 'Отправьте ваш username',
 ];

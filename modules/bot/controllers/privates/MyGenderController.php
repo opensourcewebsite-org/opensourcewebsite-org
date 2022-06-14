@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\models\Gender;
+use app\models\User;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\models\User;
+use Yii;
 use yii\data\Pagination;
 
 /**
@@ -20,21 +20,14 @@ class MyGenderController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($genderId = null)
+    public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         $globalUser = $this->getUser();
 
-        if (isset($genderId)) {
-            $gender = Gender::findOne($genderId);
-
-            if (isset($gender)) {
-                $globalUser->gender_id = $gender->id;
-                $globalUser->save();
-            }
-        }
-
         if (!$globalUser->gender_id) {
-            return $this->actionSelect();
+            return $this->actionList();
         }
 
         return $this->getResponseBuilder()
@@ -53,7 +46,7 @@ class MyGenderController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('select'),
+                            'callback_data' => self::createRoute('list'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -62,7 +55,7 @@ class MyGenderController extends Controller
             ->build();
     }
 
-    public function actionSelect($page = 1)
+    public function actionList($page = 1)
     {
         $globalUser = $this->getUser();
 
@@ -94,8 +87,8 @@ class MyGenderController extends Controller
         if ($genders) {
             foreach ($genders as $gender) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('index', [
-                        'genderId' => $gender->id,
+                    'callback_data' => self::createRoute('select', [
+                        'id' => $gender->id,
                     ]),
                     'text' => Yii::t('bot', $gender->name),
                 ];
@@ -115,9 +108,27 @@ class MyGenderController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('select'),
+                $this->render('list'),
                 $buttons
             )
             ->build();
+    }
+
+    public function actionSelect($id = null)
+    {
+        $globalUser = $this->getUser();
+
+        if (!$id) {
+            return $this->actionList();
+        }
+
+        $gender = Gender::findOne($id);
+
+        if ($gender) {
+            $globalUser->gender_id = $gender->id;
+            $globalUser->save();
+        }
+
+        return $this->actionIndex();
     }
 }

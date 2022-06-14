@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\Contact;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\User;
-use app\models\Contact;
 use Yii;
 
 /**

@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
+use app\models\User;
+use app\models\UserEmail;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageText;
-use app\models\User;
-use app\models\UserEmail;
+use Yii;
 
 /**
  * Class MyEmailController
@@ -21,6 +21,8 @@ class MyEmailController extends Controller
      */
     public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         $user = $this->getUser();
 
         if ($userEmail = $user->email) {
@@ -67,18 +69,17 @@ class MyEmailController extends Controller
         }
 
         if ($this->getUpdate()->getMessage()) {
-            $email = $this->getUpdate()->getMessage()->getText();
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if ($userEmail->isNewRecord || ($userEmail->email != $text)) {
+                    $userEmail->email = $text;
+                }
 
-            if ($userEmail->isNewRecord || ($userEmail->email != $email)) {
-                $userEmail->email = $email;
-            }
+                if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
+                    unset($this->user->email);
+                    $this->user->sendConfirmationEmail();
 
-            if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
-                unset($this->user->email);
-                $this->user->sendConfirmationEmail();
-                $this->getState()->setName(null);
-
-                return $this->actionIndex();
+                    return $this->actionIndex();
+                }
             }
         }
 
