@@ -48,10 +48,9 @@ class PublicGroupController extends Controller
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
 
         $chats = $chatQuery->offset($pagination->offset)
             ->limit($pagination->limit)

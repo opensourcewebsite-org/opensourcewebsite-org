@@ -2,31 +2,31 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\components\Controller;
+use app\components\Converter;
 use app\components\helpers\ReferrerHelper;
-use app\models\Country;
 use app\models\Contact;
+use app\models\Country;
+use app\models\Currency;
 use app\models\EditProfileForm;
 use app\models\Gender;
-use app\models\Currency;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\Sexuality;
-use app\models\UserCitizenship;
-use app\models\UserLanguage;
-use app\models\UserStatistic;
+use app\models\StellarServer;
 use app\models\User;
+use app\models\UserCitizenship;
 use app\models\UserEmail;
+use app\models\UserLanguage;
 use app\models\UserLocation;
-use app\models\UserStellar;
 use app\models\UserMoqupFollow;
+use app\models\UserStatistic;
+use app\models\UserStellar;
+use Yii;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
-use app\components\Converter;
-use app\models\StellarServer;
 
 class UserController extends Controller
 {
@@ -194,25 +194,18 @@ class UserController extends Controller
 
     public function actionChangeEmail()
     {
-        if (!$userEmail = $this->user->email) {
-            $userEmail = new UserEmail();
-            $userEmail->user_id = $this->user->id;
-        }
+        $userEmail = $this->user->userEmail ?: $this->user->newUserEmail;
 
         $renderParams = [
             'userEmail' => $userEmail,
         ];
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserEmail'))) {
-            $email = $postData['email'];
+            $userEmail->email = $postData['email'];
 
-            if ($userEmail->isNewRecord || ($userEmail->email != $email)) {
-                $userEmail->email = $email;
-                $userEmail->confirmed_at = null;
-            }
-
-            if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
-                unset($this->user->email);
+            if ($userEmail->validate()) {
+                $userEmail->save(false);
+                unset($this->user->userEmail);
 
                 if ($this->user->sendConfirmationEmail()) {
                     Yii::$app->session->setFlash('success', 'Check your email with confirmation link.');
@@ -258,9 +251,9 @@ class UserController extends Controller
     public function actionDeleteEmail()
     {
         if (Yii::$app->request->isPost) {
-            if ($userEmail = $this->user->email) {
+            if ($userEmail = $this->user->userEmail) {
                 $userEmail->delete();
-                unset($this->user->email);
+                unset($this->user->userEmail);
             }
         }
 
@@ -269,23 +262,19 @@ class UserController extends Controller
 
     public function actionChangeLocation()
     {
-        if (!$userLocation = $this->user->userLocation) {
-            $userLocation = new UserLocation();
-            $userLocation->user_id = $this->user->id;
-        }
+        $userLocation = $this->user->userLocation ?: $this->user->newUserLocation;
 
         $renderParams = [
             'userLocation' => $userLocation,
         ];
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserLocation'))) {
-            $location = $postData['location'];
+            $userLocation->location = $postData['location'];
 
-            if ($userLocation->isNewRecord || ($userLocation->location != $location)) {
-                $userLocation->location = $location;
-            }
+            if ($userLocation->validate()) {
+                $userLocation->save(false);
+                unset($this->user->userLocation);
 
-            if ($userLocation->getDirtyAttributes() && $userLocation->save()) {
                 return $this->redirect('/account');
             }
         }
@@ -298,6 +287,7 @@ class UserController extends Controller
         if (Yii::$app->request->isPost) {
             if ($userLocation = $this->user->userLocation) {
                 $userLocation->delete();
+                unset($this->user->userLocation);
             }
         }
 
@@ -325,8 +315,7 @@ class UserController extends Controller
     {
         if (Yii::$app->request->isPost) {
             $this->user->username = null;
-
-            $this->user->save();
+            $this->user->save(false);
         }
 
         $this->redirect('/account');

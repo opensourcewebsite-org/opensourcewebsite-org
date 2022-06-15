@@ -46,10 +46,10 @@ class GroupTimezoneController extends Controller
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
 
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
         $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {

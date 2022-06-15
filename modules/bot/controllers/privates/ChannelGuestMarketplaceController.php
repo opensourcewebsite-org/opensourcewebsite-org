@@ -50,10 +50,9 @@ class ChannelGuestMarketplaceController extends Controller
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
 
         $posts = $query->offset($pagination->offset)
             ->limit($pagination->limit)

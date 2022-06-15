@@ -2,14 +2,14 @@
 
 namespace app\modules\bot\components;
 
-use Yii;
 use app\models\User as GlobalUser;
+use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\UserState;
-use app\modules\bot\components\api\Types\Update;
-use app\modules\bot\components\response\ResponseBuilder;
 use TelegramBot\Api\HttpException;
+use Yii;
 
 /**
  * Class Controller
@@ -67,6 +67,14 @@ class Controller extends \yii\web\Controller
      * @return GlobalUser
      */
     public function getUser()
+    {
+        return $this->module->globalUser;
+    }
+
+    /**
+     * @return GlobalUser
+     */
+    public function getGlobalUser()
     {
         return $this->module->globalUser;
     }

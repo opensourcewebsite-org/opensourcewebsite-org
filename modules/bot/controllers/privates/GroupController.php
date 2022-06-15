@@ -37,10 +37,9 @@ class GroupController extends Controller
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [

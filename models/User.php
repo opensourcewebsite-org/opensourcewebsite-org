@@ -223,6 +223,14 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
     }
 
+    public function getNewUserEmail(): UserEmail
+    {
+        $model = new UserEmail();
+        $model->user_id = Yii::$app->user->id;
+
+        return $model;
+    }
+
     public function isEmailConfirmed()
     {
         return $this->email && $this->email->isConfirmed();
@@ -333,7 +341,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function sendConfirmationEmail()
     {
         $time = time();
-        $userEmail = $this->email;
+        $userEmail = $this->userEmail;
+
+        if ($this->isEmailConfirmed()) {
+            return false;
+        }
+
         $link = Yii::$app->urlManager->createAbsoluteUrl([
             'user/confirm-email',
             'id' => $this->id,
@@ -789,12 +802,12 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getNewContact(): Contact
     {
-        $contact = new Contact();
-        $contact->user_id = Yii::$app->user->id;
-        $contact->userIdOrName = $this->id;
-        $contact->link_user_id = $this->id;
+        $model = new Contact();
+        $model->user_id = Yii::$app->user->id;
+        $model->userIdOrName = $this->id;
+        $model->link_user_id = $this->id;
 
-        return $contact;
+        return $model;
     }
 
     public function getContacts(): ContactQuery
@@ -1177,6 +1190,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function getUserLocation()
     {
         return $this->hasOne(UserLocation::class, ['user_id' => 'id']);
+    }
+
+    public function getNewUserLocation(): UserLocation
+    {
+        $model = new UserLocation();
+        $model->user_id = Yii::$app->user->id;
+
+        return $model;
     }
 
     public function getLocation(): ?string

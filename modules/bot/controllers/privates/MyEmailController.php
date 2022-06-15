@@ -21,67 +21,47 @@ class MyEmailController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
-
-        $user = $this->getUser();
-
-        if ($userEmail = $user->email) {
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('index', [
-                        'userEmail' => $userEmail,
-                        'user' => $user,
-                    ]),
-                    [
-                        [
-                            [
-                                'callback_data' => MyProfileController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'text' => Emoji::MENU,
-                                'callback_data' => MenuController::createRoute(),
-                            ],
-                            [
-                                'callback_data' => self::createRoute('update'),
-                                'text' => Emoji::EDIT,
-                            ],
-                            [
-                                'callback_data' => self::createRoute('delete'),
-                                'text' => Emoji::DELETE,
-                            ],
-                        ],
-                    ]
-                )
-                ->build();
+        if (!$userEmail = $this->globalUser->userEmail) {
+            return $this->actionUpdate();
         }
 
-        return $this->actionUpdate();
+        $this->getState()->setName(null);
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('index', [
+                    'userEmail' => $userEmail,
+                    'user' => $this->getGlobalUser(),
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'text' => Emoji::MENU,
+                            'callback_data' => MenuController::createRoute(),
+                        ],
+                        [
+                            'callback_data' => self::createRoute('update'),
+                            'text' => Emoji::EDIT,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete'),
+                            'text' => Emoji::DELETE,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     public function actionUpdate()
     {
-        $this->getState()->setName(self::createRoute('update'));
+        $this->getState()->setName(self::createRoute('input'));
 
-        if (!$userEmail = $this->user->email) {
-            $userEmail = new UserEmail();
-            $userEmail->user_id = $this->user->id;
-        }
-
-        if ($this->getUpdate()->getMessage()) {
-            if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if ($userEmail->isNewRecord || ($userEmail->email != $text)) {
-                    $userEmail->email = $text;
-                }
-
-                if ($userEmail->getDirtyAttributes() && $userEmail->save()) {
-                    unset($this->user->email);
-                    $this->user->sendConfirmationEmail();
-
-                    return $this->actionIndex();
-                }
-            }
-        }
+        $userEmail = $this->globalUser->userEmail ?: $this->globalUser->newUserEmail;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -98,11 +78,31 @@ class MyEmailController extends Controller
             ->build();
     }
 
+    public function actionInput()
+    {
+        $userEmail = $this->globalUser->userEmail ?: $this->globalUser->newUserEmail;
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $userEmail->email = $text;
+
+                Yii::warning($userEmail->getDirtyAttributes());
+                if ($userEmail->validate()) {
+                    $userEmail->save(false);
+                    unset($this->globalUser->userEmail);
+                    $this->globalUser->sendConfirmationEmail();
+
+                    return $this->actionIndex();
+                }
+            }
+        }
+    }
+
     public function actionDelete(): array
     {
-        if ($userEmail = $this->user->email) {
+        if ($userEmail = $this->globalUser->userEmail) {
             $userEmail->delete();
-            unset($this->user->email);
+            unset($this->globalUser->userEmail);
         }
 
         return $this->run('my-profile/index');
