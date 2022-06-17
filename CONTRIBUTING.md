@@ -41,7 +41,7 @@ When contributing to this repository, please first discuss the change you wish t
 
 ### Key branches
 
-- `master` is the latest, deployed version
+- `master` is the latest, deployed version.
 
 ## Contribute to the core code or bug fixes
 
@@ -64,15 +64,12 @@ Please read how [Internationalization (I18N)](https://www.yiiframework.com/doc/g
 
 ### Git Commit Messages
 
-- Include an issue number to the beginning of the first line (if applicable)
-
-Example `#234 YOUR_COMMIT_NAME`
-
-- Use the present tense ("Add feature" not "Added feature")
-- Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
-- In case changing only texts or documentations include `[ci skip]` to the end of the first line
-- Limit the first line to 72 characters or less
-- Reference issues and pull requests liberally after the first line
+- Include an issue number to the beginning of the first line (if applicable). Example `#234 YOUR_COMMIT_NAME`.
+- Use the present tense ("Add feature" not "Added feature").
+- Use the imperative mood ("Move cursor to..." not "Moves cursor to...").
+- In case changing only texts or documentations include `[ci skip]` to the end of the first line.
+- Limit the first line to 72 characters or less.
+- Reference issues and pull requests liberally after the first line.
 
 ### Documentation Style Guide
 

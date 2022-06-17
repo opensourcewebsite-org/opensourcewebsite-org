@@ -41,7 +41,7 @@
 
 ### Ключевые ветки
 
-- `master` - последняя, развёртываемая версия
+- `master` - последняя, развёртываемая версия.
 
 ## Вклад в основной код или исправление ошибок
 
@@ -64,15 +64,12 @@
 
 ### Commit-сообщения Git
 
-- Включает номер issue в начале первой строки (если возможно)
-
-Например, `#234 YOUR_COMMIT_NAME`
-
-- Используйте настоящее время ("Add feature", не "Added feature")
-- Используйте повелительное наклонение ("Move cursor to...", не "Moves cursor to...")
+- Включает номер issue в начале первой строки (если возможно). Например, `#234 YOUR_COMMIT_NAME`.
+- Используйте настоящее время ("Add feature", не "Added feature").
+- Используйте повелительное наклонение ("Move cursor to...", не "Moves cursor to...").
 - В случае изменения только текста или документации, добавьте `[ci skip]` в конец первой строки
-- Ограничьте первую строку в 72 символа или меньше
-- Подробно опишите issues и pull requests после первой строки
+- Ограничьте первую строку в 72 символа или меньше.
+- Подробно опишите issues и pull requests после первой строки.
 
 ### Руководство стиля документации
 
@@ -175,3 +172,12 @@ https://getcomposer.org/doc/04-schema.md
 Во всех случаях, когда файл `composer.json` обновлен, добавьте файлы `composer.json` и `composer.lock` в один и тот же коммит.
 
 Каждый подключаемый пакет должен содержать определенную версию. Не используйте версии `*` и `@dev`.
+
+### Принципы и рекомендации по программированию
+
+- [KISS principle (keep it simple, stupid)](https://en.wikipedia.org/wiki/KISS_principle)
+- [Don't repeat yourself (DRY)](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
+- [You aren't gonna need it (YAGNI)](https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it)
+- [Worse is better](https://en.wikipedia.org/wiki/Worse_is_better)
+- [SOLID](https://en.wikipedia.org/wiki/SOLID)
+- [GRASP](https://en.wikipedia.org/wiki/GRASP_(object-oriented_design))
