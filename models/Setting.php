@@ -77,7 +77,7 @@ class Setting extends ActiveRecord
         'active_bot_group_join_hider_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_join_captcha_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -87,7 +87,7 @@ class Setting extends ActiveRecord
         'active_bot_group_join_captcha_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_greeting_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -97,7 +97,7 @@ class Setting extends ActiveRecord
         'active_bot_group_greeting_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_membership_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -107,7 +107,7 @@ class Setting extends ActiveRecord
         'active_bot_group_membership_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_slow_mode_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -117,7 +117,7 @@ class Setting extends ActiveRecord
         'active_bot_group_slow_mode_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_filter_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -127,7 +127,7 @@ class Setting extends ActiveRecord
         'active_bot_group_filter_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_limiter_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -137,7 +137,7 @@ class Setting extends ActiveRecord
         'active_bot_group_limiter_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_faq_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -147,7 +147,7 @@ class Setting extends ActiveRecord
         'active_bot_group_faq_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'active_bot_group_stellar_quantity_value_per_one_rating' => [
             'type' => 'float',
@@ -157,7 +157,7 @@ class Setting extends ActiveRecord
         'active_bot_group_stellar_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
-            'more' => 0,
+            'min' => 0,
         ],
         'company_quantity_value_per_one_rating' => [
             'type' => 'float',
