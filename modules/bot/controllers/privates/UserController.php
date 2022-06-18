@@ -151,7 +151,11 @@ class UserController extends Controller
             'is_bot' => 0,
         ]);
 
-        if (!isset($viewUser)) {
+        if (isset($viewUser)) {
+            return $this->runAction('id', [
+                'id' => $viewUser->provider_user_id,
+            ]);
+        } else {
             $chat = Chat::findOne([
                 'username' => $username,
             ]);
@@ -167,15 +171,11 @@ class UserController extends Controller
                     ]);
                 }
             }
-
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
         }
 
-        return $this->runAction('id', [
-            'id' => $viewUser->provider_user_id,
-        ]);
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**

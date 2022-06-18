@@ -6,6 +6,7 @@ use app\models\Language;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\User;
 use Yii;
 
 /**
@@ -16,24 +17,66 @@ use Yii;
 class StartController extends Controller
 {
     /**
+     * @param string|null $start - "A-Z, a-z, 0-9, _ and - are allowed".
      * @return array
+     *
+     * @link https://core.telegram.org/bots#deep-linking
      */
     public function actionIndex($start = null)
     {
-        if (!empty($start) && ($start < 0)) {
-            $chat = Chat::findOne([
-                'chat_id' => $start,
-            ]);
+        if (!empty($start)) {
+            if ($start < 0) {
+                $chat = Chat::findOne([
+                    'chat_id' => $start,
+                ]);
 
-            if (isset($chat)) {
-                if ($chat->isGroup()) {
-                    return $this->run('group-guest/view', [
-                        'chatId' => $chat->id,
+                if (isset($chat)) {
+                    if ($chat->isGroup()) {
+                        return $this->run('group-guest/view', [
+                            'chatId' => $chat->id,
+                        ]);
+                    } elseif ($chat->isChannel()) {
+                        return $this->run('channel-guest/view', [
+                            'chatId' => $chat->id,
+                        ]);
+                    }
+                }
+            } elseif (preg_match('/(?:^(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $start, $matches)) {
+                $username = $matches[0];
+
+                if ($username) {
+                    $viewUser = User::findOne([
+                        'provider_user_name' => $username,
+                        'is_bot' => 0,
                     ]);
-                } elseif ($chat->isChannel()) {
-                    return $this->run('channel-guest/view', [
-                        'chatId' => $chat->id,
-                    ]);
+
+                    if (isset($viewUser)) {
+                        $user = $this->getTelegramUser();
+
+                        if ($user->provider_user_name == $username) {
+                            return $this->run('my-profile/index');
+                        }
+
+                        return $this->run('user/id', [
+                            'id' => $viewUser->provider_user_id,
+                        ]);
+                    } else {
+                        $chat = Chat::findOne([
+                            'username' => $username,
+                        ]);
+
+                        if (isset($chat)) {
+                            if ($chat->isGroup()) {
+                                return $this->run('group-guest/view', [
+                                    'chatId' => $chat->id,
+                                ]);
+                            } elseif ($chat->isChannel()) {
+                                return $this->run('channel-guest/view', [
+                                    'chatId' => $chat->id,
+                                ]);
+                            }
+                        }
+                    }
                 }
             }
         }
