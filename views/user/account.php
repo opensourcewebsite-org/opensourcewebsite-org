@@ -13,11 +13,16 @@ use app\components\helpers\ExternalLink;
 use app\models\User;
 use app\models\StellarOperator;
 use app\widgets\buttons\SelectButton;
+use yii\widgets\ActiveForm;
+use app\widgets\LocationPickerWidget\LocationPickerViewWidget;
 
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Account');
 ?>
+<link href="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.min.css" rel="stylesheet">
+<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet-src.min.js"></script>
+
 <div class="account-index">
     <div class="row">
         <div class="col-12">
@@ -180,11 +185,13 @@ $this->title = Yii::t('app', 'Account');
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Location'); ?></th>
                                     <td class="align-middle" id="currency">
-                                        <?= $model->location ? Html::a(
-                                            $model->location,
-                                            Url::to(['/user/view-location']),
-                                            ['class' => 'modal-btn-ajax']
-                                        ) : '' ?>
+                                        <?php
+                                        $form = ActiveForm::begin();
+                                            echo $form->field($model, 'location')
+                                                ->widget(LocationPickerViewWidget::class)
+                                                ->label(false);
+                                            ActiveForm::end();
+                                        ?>
                                     </td>
                                     <td>
                                         <?= EditButton::widget([
