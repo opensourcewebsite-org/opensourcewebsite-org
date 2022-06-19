@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use yii\base\Model;
@@ -52,9 +53,7 @@ $(document).ready(function() {
     L.tileLayer(
         'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
-            "attribution": "Tiles Courtesy of <a href=\"//ты www.mapquest.com/\" target=\"_blank\">MapQuest</a> " +
-             "<img src=\"//developer.mapquest.com/content/osm/mq_logo.png\">, Map data &copy; <a href=\"//openstreetmap.org\">OpenStreetMap</a> contributors, " +
-              "<a href=\"//creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>",
+            "attribution": '© <a href="//www.openstreetmap.org/copyright" rel="nofollow noreferrer noopener" target="_blank">OpenStreetMap</a> contributors',
             "subdomains": [1,2,3,4]
         }).addTo(map);
 

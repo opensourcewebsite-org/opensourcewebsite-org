@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace app\widgets\LocationPickerWidget;
+namespace app\widgets\inputs\LocationWithMapInput;
 
 use app\assets\LeafletAsset;
 use app\assets\LeafletLocateControlAsset;
@@ -12,7 +12,7 @@ use yii\base\Widget;
 use yii\helpers\Html;
 use yii\widgets\ActiveField;
 
-class LocationPickerWidget extends Widget
+class LocationWithMapInput extends Widget
 {
     public ?ActiveField $field;
 

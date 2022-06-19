@@ -1,6 +1,6 @@
 <?php
 
-namespace app\widgets\LanguagesWithLevelSelect;
+namespace app\widgets\selects\LanguagesWithLevelSelect;
 
 use yii\base\Model;
 use yii\bootstrap4\Widget;
@@ -21,13 +21,16 @@ class LanguagesWithLevelSelect extends Widget
     public function init()
     {
         $this->id = $this->getId();
+
         if ($this->model) {
             $this->formName = $this->model->formName();
         }
+
         if ($this->formName) {
             $this->languageFieldName = "{$this->formName}[{$this->languageFieldName}]";
             $this->languageLevelFieldName = "{$this->formName}[{$this->languageLevelFieldName}]";
         }
+
         $this->languageFieldName .= "[]";
         $this->languageLevelFieldName .= "[]";
     }

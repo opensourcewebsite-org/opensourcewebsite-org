@@ -7,7 +7,7 @@ use app\models\Currency;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SubmitButton;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;
+use app\widgets\inputs\LocationWithMapInput\LocationWithMapInput;
 use app\widgets\selects\AdKeywordsSelect;
 use app\widgets\selects\CurrencySelect;
 use yii\helpers\Url;
@@ -68,7 +68,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <div class="row location-row">
                         <div class="col">
                             <?= $form->field($model, 'location')
-                                ->widget(LocationPickerWidget::class)
+                                ->widget(LocationWithMapInput::class)
                                 ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location'))
                             ?>
                         </div>

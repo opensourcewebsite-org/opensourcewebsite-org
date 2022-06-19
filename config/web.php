@@ -76,6 +76,15 @@ $config = [
                         '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
                     ],
                 ],
+                'dosamigos\leaflet\LeafLetAsset' => [
+                    'sourcePath' => null,
+                    'css' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.css',
+                    ],
+                    'js' => [
+                        '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet-src.js',
+                    ],
+                ],
             ],
         ],
         'cache' => [

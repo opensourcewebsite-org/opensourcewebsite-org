@@ -11,7 +11,6 @@ use yii\web\View;
  * @var string|int $selectedLanguage
  * @var string|int $selectedLanguageLevel
  */
-
 ?>
 
 <div class="row language-row mb-2">

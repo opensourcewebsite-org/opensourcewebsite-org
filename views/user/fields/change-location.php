@@ -1,11 +1,11 @@
 <?php
 
 use app\widgets\buttons\CancelButton;
+use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
+use app\widgets\inputs\LocationWithMapInput\LocationWithMapInput;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use app\widgets\buttons\DeleteButton;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;
 
 $form = ActiveForm::begin();
 ?>
@@ -22,7 +22,7 @@ $form = ActiveForm::begin();
                     <div class="row">
                         <div class="col">
                             <?= $form->field($userLocation, 'location')
-                                ->widget(LocationPickerWidget::class)
+                                ->widget(LocationWithMapInput::class)
                                 ->label(false);
                             ?>
                         </div>

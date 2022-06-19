@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use app\models\AdSearch;
-use yii\web\View;
-use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
 use dosamigos\leaflet\LeafLet;
-use yii\web\JsExpression;
+use dosamigos\leaflet\types\LatLng;
 use dosamigos\leaflet\widgets\Map;
+use yii\web\JsExpression;
+use yii\web\View;
 
 /**
  * @var View $this
@@ -45,9 +45,7 @@ $this->title = Yii::t('app', 'Location');
     $tileLayer = new TileLayer([
         'urlTemplate' => 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
         'clientOptions' => [
-            'attribution' => 'Tiles Courtesy of <a href="//www.mapquest.com/" target="_blank">MapQuest</a> ' .
-                '<img src="//developer.mapquest.com/content/osm/mq_logo.png">, ' .
-                'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            'attribution' => '© <a href="//www.openstreetmap.org/copyright" rel="nofollow noreferrer noopener" target="_blank">OpenStreetMap</a> contributors',
             'subdomains' => ['1', '2', '3', '4'],
         ],
     ]);

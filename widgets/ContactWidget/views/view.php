@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+use app\models\User;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
-use app\models\User;
 
 /**
  * @var View $this
  * @var User $user
  * @var array $options
  */
-
 ?>
 <div class="index" id="contact">
     <div class="row">

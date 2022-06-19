@@ -13,7 +13,7 @@ use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SubmitButton;
 use app\widgets\CompanySelectCreatable\CompanySelectCreatable;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;
+use app\widgets\inputs\LocationWithMapInput\LocationWithMapInput;
 use app\widgets\selects\CurrencySelect;
 use app\widgets\selects\JobKeywordsSelect;
 use yii\helpers\Url;
@@ -97,7 +97,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                     <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>">
                         <div class="col">
                             <?= $form->field($model, 'location')
-                                ->widget(LocationPickerWidget::class)
+                                ->widget(LocationWithMapInput::class)
                                 ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location'))
                             ?>
                         </div>

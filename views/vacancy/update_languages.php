@@ -1,14 +1,14 @@
 <?php
 
 use app\components\helpers\ArrayHelper;
+use app\models\forms\LanguageWithLevelsForm;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
-use app\widgets\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
+use app\widgets\selects\LanguagesWithLevelSelect\LanguagesWithLevelSelect;
 use yii\bootstrap4\ActiveForm;
 use yii\web\View;
-use app\models\forms\LanguageWithLevelsForm;
 
 /**
  * @var View $this
@@ -28,7 +28,7 @@ use app\models\forms\LanguageWithLevelsForm;
             <?= LanguagesWithLevelSelect::widget([
                 'model' => $model,
                 'form' => $form,
-                'languages' => ArrayHelper::map(Language::find()->asArray()->all(),'id','name_ascii'),
+                'languages' => ArrayHelper::map(Language::find()->asArray()->all(), 'id', 'name_ascii'),
                 'languageLevels' => ArrayHelper::map(LanguageLevel::find()->asArray()->all(), 'id', 'description')
             ]) ?>
         </div>
