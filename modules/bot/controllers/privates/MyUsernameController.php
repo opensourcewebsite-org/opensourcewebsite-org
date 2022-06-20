@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\models\User;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class MyUsernameController
@@ -19,6 +19,8 @@ class MyUsernameController extends Controller
      */
     public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         $user = $this->getUser();
 
         if (!$user->username) {
@@ -58,8 +60,10 @@ class MyUsernameController extends Controller
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if (($user->username = $text) && $user->save()) {
-                    $this->getState()->setName(null);
+                $user->username = $text;
+
+                if ($user->validate('username')) {
+                    $user->save(false);
 
                     return $this->actionIndex();
                 } else {

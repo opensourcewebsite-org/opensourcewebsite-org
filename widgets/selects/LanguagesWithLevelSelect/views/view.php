@@ -1,8 +1,8 @@
 <?php
 
+use app\models\forms\LanguageWithLevelsForm;
 use yii\bootstrap4\ActiveForm;
 use yii\web\View;
-use app\models\forms\LanguageWithLevelsForm;
 
 /**
  * @var View $this
@@ -38,7 +38,7 @@ $templateId = "{$id}-row-template";
     </div>
     <div class="card-body">
         <?php if ($model && $model->language_id): ?>
-            <?php foreach($model->language_id as $key => $langId): ?>
+            <?php foreach ($model->language_id as $key => $langId): ?>
                 <?= $this->render('_row', array_merge($_params_, [
                     'selectedLanguage' => $langId,
                     'selectedLanguageLevel' => $model->language_level_id[$key],

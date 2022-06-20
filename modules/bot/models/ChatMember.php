@@ -17,6 +17,7 @@ use yii\db\ActiveRecord;
  * @property int $slow_mode_messages
  * @property int|null $last_message_at
  * @property string|null $limiter_date
+ * @property string|null membership_date
  *
  * @package app\modules\bot\models
  */
@@ -47,6 +48,10 @@ class ChatMember extends ActiveRecord
         'greeting_status' => [
             'active_bot_group_greeting_quantity_value_per_one_rating',
             'active_bot_group_greeting_min_quantity_value_per_one_user',
+        ],
+        'membership_status' => [
+            'active_bot_group_membership_quantity_value_per_one_rating',
+            'active_bot_group_membership_min_quantity_value_per_one_user',
         ],
         'slow_mode_status' => [
             'active_bot_group_slow_mode_quantity_value_per_one_rating',
@@ -83,7 +88,7 @@ class ChatMember extends ActiveRecord
             ['role', 'default', 'value' => 1],
             ['slow_mode_messages', 'default', 'value' => 0],
             ['status', 'string'],
-            ['limiter_date', 'date'],
+            [['limiter_date', 'membership_date'], 'date'],
         ];
     }
 
@@ -193,6 +198,24 @@ class ChatMember extends ActiveRecord
         return true;
     }
 
+    /**
+    * @return bool
+    */
+    public function checkMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->membership_date) {
+                $date = new DateTime($this->membership_date);
+
+                if (($date->getTimestamp() + $chat->timezone) <= time()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public function updateSlowMode($timestamp = null)
     {
         if (!$timestamp) {
@@ -251,9 +274,36 @@ class ChatMember extends ActiveRecord
 
             $maxActiveModelsCount = (int)max(floor($this->user->globalUser->getRating() * Yii::$app->settings->{$this->settings[$setting][0]}), Yii::$app->settings->{$this->settings[$setting][1]});
 
-            return (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$setting][0]});
+            return (int)ceil(($activeModelsCount + 1) / Yii::$app->settings->{$this->settings[$setting][0]});
         }
 
         return 1;
+    }
+
+    public function getActiveReviewsCount()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                '>', 'status', 0,
+            ])
+            ->count();
+    }
+
+    public function getPositiveReviewsCount()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                'status' => ChatMemberReview::STATUS_LIKE,
+            ])
+            ->count();
+    }
+
+    public function getNegativeReviewsCount()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                'status' => ChatMemberReview::STATUS_DISLIKE,
+            ])
+            ->count();
     }
 }

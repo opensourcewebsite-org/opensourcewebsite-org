@@ -4,8 +4,8 @@ use app\models\Contact;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
-use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model Contact */
@@ -23,10 +23,6 @@ $form = ActiveForm::begin();
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'userIdOrName')
-                                ->textInput([
-                                    'data-old-value' => $model->getLinkUserId(),
-                                    'value' => $model->getLinkUserId(),
-                                ])
                                 ->label($model->getAttributeLabel('userIdOrName') . $labelOptional); ?>
                         </div>
                     </div>

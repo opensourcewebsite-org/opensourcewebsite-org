@@ -89,4 +89,13 @@ class UserEmail extends \yii\db\ActiveRecord
 
         return false;
     }
+
+    public function beforeSave($insert)
+    {
+        if (!$insert && $this->confirmed_at && $this->isAttributeChanged('email')) {
+            $this->confirmed_at = null;
+        }
+
+        return parent::beforeSave($insert);
+    }
 }

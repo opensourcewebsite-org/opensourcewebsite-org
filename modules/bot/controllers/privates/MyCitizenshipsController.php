@@ -2,9 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\Controller;
 use app\models\Country;
 use app\models\UserCitizenship;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
@@ -23,9 +23,12 @@ class MyCitizenshipsController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $citizenshipsQuery = $this->getUser()->getCitizenships();
+        $this->getState()->setName(null);
+
+        $query = $this->getUser()->getCitizenships();
+
         $pagination = new Pagination([
-            'totalCount' => $citizenshipsQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -40,50 +43,59 @@ class MyCitizenshipsController extends Controller
             ]);
         });
 
-        $citizenships = $citizenshipsQuery
+        $buttons = [];
+
+        $citizenships = $query
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $citizenshipRows = array_map(function ($citizenship) use ($page) {
-            return [
-                [
-                    'text' => $citizenship->country->name,
-                    'callback_data' => self::createRoute('show', [
-                        'countryId' => $citizenship->country->id,
+
+        if ($citizenships) {
+            foreach ($citizenships as $citizenship) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('view', [
+                        'id' => $citizenship->country->id,
                     ]),
-                ],
-            ];
-        }, $citizenships);
+                    'text' => $citizenship->country->name,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => MyProfileController::createRoute(),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'text' => Emoji::MENU,
+                'callback_data' => MenuController::createRoute(),
+            ],
+            [
+                'callback_data' => self::createRoute('list'),
+                'text' => Emoji::ADD,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
-                array_merge($citizenshipRows, [$paginationButtons], [
-                    [
-                        [
-                            'callback_data' => MyProfileController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'text' => Emoji::MENU,
-                            'callback_data' => MenuController::createRoute(),
-                        ],
-                        [
-                            'callback_data' => self::createRoute('create-country'),
-                            'text' => Emoji::ADD,
-                        ],
-                    ],
-                ])
+                $buttons
             )
             ->build();
     }
 
-    public function actionCreateCountry($page = 1)
+    public function actionList($page = 1)
     {
-        $this->getState()->setName(self::createRoute('search'));
-        $countriesQuery = Country::find();
+        $this->getState()->setName(self::createRoute('input'));
+
+        $query = Country::find();
+
         $pagination = new Pagination([
-            'totalCount' => $countriesQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -93,73 +105,92 @@ class MyCitizenshipsController extends Controller
         ]);
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('create-country', [
+            return self::createRoute('list', [
                 'page' => $page,
             ]);
         });
 
-        $countries = $countriesQuery
+        $countries = $query
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $countryRows = array_map(function ($country) use ($page) {
-            return [
-                [
-                    'text' => $country->name,
-                    'callback_data' => self::createRoute('create', [
-                        'countryId' => $country->id,
+
+        if ($countries) {
+            foreach ($countries as $country) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('select', [
+                        'id' => $country->id,
                     ]),
-                ],
-            ];
-        }, $countries);
+                    'text' => $country->name,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute(),
+                'text' => Emoji::BACK,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('create-country'),
-                array_merge($countryRows, [$paginationButtons], [
-                    [
-                        [
-                            'text' => Emoji::BACK,
-                            'callback_data' => self::createRoute()
-                        ]
-                    ]
-                ])
+                $this->render('list'),
+                $buttons
             )
             ->build();
     }
 
-    public function actionCreate($countryId)
+    public function actionSelect($id = null)
     {
-        $country = Country::findOne($countryId);
-        if (!isset($country)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
+        if (!$id) {
+            return $this->actionList();
         }
 
-        $citizenship = $this->getUser()->getCitizenships()->where(['country_id' => $countryId])->one()
-            ?? new UserCitizenship();
-        $citizenship->setAttributes([
-            'user_id' => $this->getUser()->id,
-            'country_id' => $countryId,
-        ]);
-        $citizenship->save();
+        $country = Country::findOne($id);
+
+        if ($country) {
+            $citizenship = $this
+                ->getUser()
+                ->getCitizenships()
+                ->where([
+                    'country_id' => $id,
+                ])
+                ->one() ?? new UserCitizenship();
+
+            $citizenship->setAttributes([
+                'user_id' => $this->getUser()->id,
+                'country_id' => $country->id,
+            ]);
+            $citizenship->save();
+        }
 
         return $this->actionIndex();
     }
 
-    public function actionShow($countryId)
+    public function actionView($id = null)
     {
-        $country = Country::findOne($countryId);
+        if (!$id) {
+            return $this->actionIndex();
+        }
+
+        $country = Country::findOne($id);
+
         if (!isset($country)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('show', [
+                $this->render('view', [
                     'countryName' => $country->name,
                 ]),
                 [
@@ -175,7 +206,7 @@ class MyCitizenshipsController extends Controller
                         [
                             'text' => Emoji::DELETE,
                             'callback_data' => self::createRoute('delete', [
-                                'countryId' => $countryId,
+                                'id' => $id,
                             ]),
                         ],
                     ],
@@ -184,9 +215,22 @@ class MyCitizenshipsController extends Controller
             ->build();
     }
 
-    public function actionDelete($countryId)
+    public function actionDelete($id = null)
     {
-        $citizenship = $this->getUser()->getCitizenships()->where(['country_id' => $countryId])->one();
+        if (!$id) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $citizenship = $this
+            ->getUser()
+            ->getCitizenships()
+            ->where([
+                'country_id' => $id,
+            ])
+            ->one();
+
         if (!isset($citizenship)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
@@ -202,23 +246,27 @@ class MyCitizenshipsController extends Controller
         return $this->actionIndex();
     }
 
-    public function actionSearch()
+    public function actionInput()
     {
-        $text = $this->getUpdate()->getMessage()->getText();
+        if ($text = $this->getUpdate()->getMessage()->getText()) {
+            if (strlen($text) <= 3) {
+                $country = Country::find()
+                    ->orFilterWhere(['like', 'code', $text, false])
+                    ->one();
+            } else {
+                $country = Country::find()
+                    ->orFilterWhere(['like', 'name', $text . '%', false])
+                    ->orFilterWhere(['like', 'slug', $text, false])
+                    ->one();
+            }
 
-        if (strlen($text) <= 3) {
-            $country = Country::find()
-                ->orFilterWhere(['like', 'code', $text, false])
-                ->one();
-        } else {
-            $country = Country::find()
-                ->orFilterWhere(['like', 'name', $text . '%', false])
-                ->orFilterWhere(['like', 'slug', $text, false])
-                ->one();
+            if (isset($country)) {
+                return $this->actionSelect($country->id);
+            }
         }
 
-        if (isset($country)) {
-            return $this->actionCreate($country->id);
-        }
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }

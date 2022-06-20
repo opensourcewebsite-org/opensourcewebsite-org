@@ -2,17 +2,17 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use yii\data\Pagination;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
+use Yii;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
-use app\modules\bot\components\helpers\ExternalLink;
 
 /**
  * Class PublicGroupController
@@ -31,29 +31,22 @@ class PublicGroupController extends Controller
         // TODO order by user rating
         // '{{%user}}.rating' => SORT_DESC,
         // '{{%user}}.created_at' => SORT_ASC,
-        $chatQuery = Chat::find()
-            ->where([
-                'or',
-                ['type' => Chat::TYPE_GROUP],
-                ['type' => Chat::TYPE_SUPERGROUP],
-            ])
-            ->andWhere([
-                'not', ['username' => null],
-            ])
+        $query = Chat::find()
+            ->group()
+            ->username()
             ->orderBy(['id' => SORT_ASC]);
 
         $pagination = new Pagination([
-            'totalCount' => $chatQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
 
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
-
-        $chats = $chatQuery->offset($pagination->offset)
+        $chats = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 

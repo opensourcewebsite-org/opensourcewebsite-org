@@ -1,9 +1,3 @@
-<?php
-
-/* @var $this yii\web\View */
-/* @var $messageMarkdown string */
-
-?>
 <b><?= Yii::t('bot', 'Send a message for the greeting') ?>:</b><br/>
 <?php if (isset($messageMarkdown) && $messageMarkdown) : ?>
 <br/>

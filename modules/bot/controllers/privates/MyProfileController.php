@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\models\Currency;
 use app\models\Language;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class MyProfileController
@@ -20,22 +20,22 @@ class MyProfileController extends Controller
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
-        $user = $this->getUser();
+        $this->getState()->setName(null);
 
-        $params = [
-            'telegramUser' => $telegramUser,
-            'user' => $user,
-        ];
+        $user = $this->getTelegramUser();
+        $globalUser = $this->getUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', $params),
+                $this->render('index', [
+                    'telegramUser' => $user,
+                    'user' => $globalUser,
+                ]),
                 [
                     [
                         [
                             'callback_data' => MyLocationController::createRoute(),
-                            'text' => (!$user->userLocation ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Location'),
+                            'text' => (!$globalUser->userLocation ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Location'),
                         ],
                     ],
                     [
@@ -47,49 +47,49 @@ class MyProfileController extends Controller
                     [
                         [
                             'callback_data' => MyCurrencyController::createRoute(),
-                            'text' => (!$user->currency ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Currency'),
+                            'text' => (!$globalUser->currency ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Currency'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyLanguagesController::createRoute(),
-                            'text' => (!$user->languages ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Languages'),
+                            'text' => (!$globalUser->languages ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Languages'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyCitizenshipsController::createRoute(),
-                            'text' => (!$user->citizenships ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Citizenships'),
+                            'text' => (!$globalUser->citizenships ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Citizenships'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyBirthdayController::createRoute(),
-                            'text' => (!$user->birthday ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Birthday'),
+                            'text' => (!$globalUser->birthday ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Birthday'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyGenderController::createRoute(),
-                            'text' => (!$user->gender ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Gender'),
+                            'text' => (!$globalUser->gender ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Gender'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MySexualityController::createRoute(),
-                            'text' => (!$user->sexuality ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Sexuality'),
+                            'text' => (!$globalUser->sexuality ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Sexuality'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyUsernameController::createRoute(),
-                            'text' => (!$user->username ? Emoji::WARNING . ' ' : '') . 'Username',
+                            'text' => (!$globalUser->username ? Emoji::WARNING . ' ' : '') . 'Username',
                         ],
                     ],
                     [
                         [
                             'callback_data' => MyEmailController::createRoute(),
-                            'text' => (!$user->userEmail || !$user->userEmail->isConfirmed() ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Email'),
+                            'text' => (!$globalUser->userEmail || !$globalUser->userEmail->isConfirmed() ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Email'),
                         ],
                     ],
                     [

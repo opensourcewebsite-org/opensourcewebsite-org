@@ -3,6 +3,7 @@
 namespace app\modules\bot\models;
 
 use app\models\User as GlobalUser;
+use app\modules\bot\models\queries\ChatQuery;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -42,6 +43,11 @@ class Chat extends ActiveRecord
         return [
             TimestampBehavior::class,
         ];
+    }
+
+    public static function find(): ChatQuery
+    {
+        return new ChatQuery(get_called_class());
     }
 
     /**

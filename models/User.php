@@ -2,17 +2,17 @@
 
 namespace app\models;
 
-use Yii;
 use app\components\Converter;
 use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\queries\UserQuery;
+use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
 use yii\db\Query;
+use yii\web\IdentityInterface;
 
 /**
  * User model
@@ -40,7 +40,7 @@ use yii\db\Query;
  * @property integer $basic_income_processed_at
  *
  * @property Company[] $companies
- * @property null|\app\modules\bot\models\User $botUser
+ * @property app\modules\bot\models\User $botUser
  * @property Contact $contact
  * @property Contact[] $contacts
  * @property Contact[] $counterContacts
@@ -54,8 +54,6 @@ class User extends ActiveRecord implements IdentityInterface
     public const STATUS_DELETED = 0;
     public const STATUS_PENDING = 5;
     public const STATUS_ACTIVE = 10;
-
-    public const DATE_FORMAT = 'Y-m-d';
 
     /**
      * {@inheritdoc}
@@ -89,11 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
-            [
-                'status',
-                'default',
-                'value' => self::STATUS_ACTIVE
-            ],
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
             [
                 'status',
                 'in',
@@ -225,6 +219,14 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
     }
 
+    public function getNewUserEmail(): UserEmail
+    {
+        $model = new UserEmail();
+        $model->user_id = Yii::$app->user->id;
+
+        return $model;
+    }
+
     public function isEmailConfirmed()
     {
         return $this->email && $this->email->isConfirmed();
@@ -335,7 +337,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function sendConfirmationEmail()
     {
         $time = time();
-        $userEmail = $this->email;
+        $userEmail = $this->userEmail;
+
+        if ($this->isEmailConfirmed()) {
+            return false;
+        }
+
         $link = Yii::$app->urlManager->createAbsoluteUrl([
             'user/confirm-email',
             'id' => $this->id,
@@ -768,6 +775,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getReferrals(int $level = 1)
     {
+        // TODO level
         return User::find()
             ->where([
                 'referrer_id' => $this->id,
@@ -786,6 +794,20 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Contact::class, ['link_user_id' => 'id'])
             ->onCondition(['user_id' => Yii::$app->user->id]);
+    }
+
+    public function getNewContact(): Contact
+    {
+        if (Yii::$app->user->id == $this->id) {
+            return false;
+        }
+
+        $model = new Contact();
+        $model->user_id = Yii::$app->user->id;
+        $model->userIdOrName = $this->id;
+        $model->link_user_id = $this->id;
+
+        return $model;
     }
 
     public function getContacts(): ContactQuery
@@ -1168,6 +1190,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function getUserLocation()
     {
         return $this->hasOne(UserLocation::class, ['user_id' => 'id']);
+    }
+
+    public function getNewUserLocation(): UserLocation
+    {
+        $model = new UserLocation();
+        $model->user_id = Yii::$app->user->id;
+
+        return $model;
     }
 
     public function getLocation(): ?string

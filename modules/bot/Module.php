@@ -2,21 +2,21 @@
 
 namespace app\modules\bot;
 
-use Yii;
-use app\modules\bot\components\CommandRouteResolver;
+use app\models\Rating;
+use app\models\User as GlobalUser;
 use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
+use app\modules\bot\components\CommandRouteResolver;
+use app\modules\bot\components\Controller;
+use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
-use app\modules\bot\models\UserState;
-use app\modules\bot\models\User;
-use yii\base\InvalidRouteException;
-use app\models\User as GlobalUser;
-use app\models\Rating;
-use app\modules\bot\components\Controller;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\User;
+use app\modules\bot\models\UserState;
+use Yii;
+use yii\base\InvalidRouteException;
 
 /**
  * OSW Bot module definition class
@@ -120,11 +120,25 @@ class Module extends \yii\base\Module
 
                     return false;
                 }
+
+                if (!$globalForwardUser = $forwardUser->globalUser) {
+                    $globalForwardUser = GlobalUser::createWithRandomPassword();
+                    $globalForwardUser->name = $forwardUser->getFullName();
+
+                    if (!$globalForwardUser->save()) {
+                        Yii::warning($globalForwardUser->getErrors());
+
+                        return false;
+                    }
+
+                    $forwardUser->user_id = $globalForwardUser->id;
+                    $forwardUser->save();
+                }
             }
 
             $chat = Chat::findOne([
                 'chat_id' => $this->getUpdate()->getChat()->getId(),
-                'bot_id' => $this->getBot()->id,
+                'bot_id' => $this->getBot()->getId(),
             ]);
 
             $isNewChat = false;
@@ -211,11 +225,17 @@ class Module extends \yii\base\Module
                         }
                     }
 
-                    $globalUser->save();
+                    if (!$globalUser->save()) {
+                        Yii::warning($globalUser->getErrors());
+
+                        return false;
+                    }
 
                     $user->user_id = $globalUser->id;
                     $user->save();
                 }
+
+                Yii::$app->user->setIdentity($globalUser);
 
                 $this->setGlobalUser($globalUser);
                 $this->setUser($user);
@@ -313,7 +333,7 @@ class Module extends \yii\base\Module
     {
         $chat = Chat::findOne([
             'chat_id' => $chatId,
-            'bot_id' => $this->getBot()->id,
+            'bot_id' => $this->getBot()->getId(),
         ]);
 
         if ($chat) {

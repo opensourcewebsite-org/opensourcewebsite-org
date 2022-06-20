@@ -2,17 +2,17 @@
 
 namespace app\models;
 
-use Yii;
+use app\components\helpers\Html;
 use app\interfaces\UserRelation\ByOwnerInterface;
 use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\traits\SelectForUpdateTrait;
+use Yii;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
-use app\components\helpers\Html;
 use yii\helpers\VarDumper;
 
 /**
@@ -66,9 +66,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             [['user_id'], 'required'],
             [['user_id', 'link_user_id', 'relation', 'is_basic_income_candidate'], 'integer'],
             [['relation'], 'integer', 'min' => 0, 'max' => 2],
-            ['userIdOrName', 'string'],
-            ['userIdOrName', 'trim'],
-            [['userIdOrName'], 'required',
+            ['userIdOrName', 'string', 'on' => 'form'],
+            ['userIdOrName', 'trim', 'on' => 'form'],
+            ['userIdOrName', 'required',
                 'when' => static function (self $model) {
                     return empty($model->name);
                 },
@@ -76,10 +76,11 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     return $('#contact-name').val() == '';
                 }",
                 'message' => $this->getAttributeLabel('userIdOrName') . ' cannot be blank if ' . $this->getAttributeLabel('name') . ' is empty.',
+                'on' => 'form',
             ],
-            ['userIdOrName', 'validateUserExists'],
+            ['userIdOrName', 'validateUserExists', 'on' => 'form'],
             ['link_user_id', 'validateLinkUserAndOwnerNotSame'],
-            ['link_user_id', 'validateLinkUsedIdUnique'],
+            ['link_user_id', 'validateLinkUserIdUnique'],
             ['name', 'required',
                 'when' => static function (self $model) {
                     return empty($model->userIdOrName);
@@ -88,9 +89,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     return $('#contact-useridorname').val() == '';
                 }",
                 'message' => $this->getAttributeLabel('name') . ' cannot be blank if ' . $this->getAttributeLabel('userIdOrName') . ' is empty.',
+                'on' => 'form',
             ],
-            [['name'], 'string', 'max' => 255],
-            [['name'], 'default'],
+            ['name', 'string', 'max' => 255],
             [
                 [
                     'vote_delegation_priority',
@@ -106,18 +107,19 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                     'debt_redistribution_priority',
                 ],
                 'filter',
-                'filter' => static function ($v) {
-                    return ((int)$v) ?: 0;
+                'filter' => static function ($value) {
+                    return ((int)$value) ?: 0;
                 },
             ],
             ['is_real', 'boolean'],
             [['is_real', 'relation', 'is_basic_income_candidate'], 'default', 'value' => 0],
             [
-                'groupIds', 'filter', 'filter' => function ($val) {
-                    if ($val === '') {
+                'groupIds', 'filter', 'filter' => function ($value) {
+                    if ($value === '') {
                         return [];
                     }
-                    return $val;
+
+                    return $value;
                 }
             ],
             [
@@ -169,10 +171,19 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         ];
     }
 
+    public function afterFind()
+    {
+        $this->userIdOrName = $this->link_user_id;
+
+        parent::afterFind();
+    }
+
     public function beforeValidate()
     {
-        if (!$this->userIdOrName) {
-            $this->link_user_id = null;
+        if ($this->getScenario() == 'form') {
+            if (!$this->userIdOrName) {
+                $this->link_user_id = null;
+            }
         }
 
         return parent::beforeValidate();
@@ -212,7 +223,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         }
     }
 
-    public function validateLinkUsedIdUnique($attribute)
+    public function validateLinkUserIdUnique($attribute)
     {
         $contactExists = Contact::find()
             ->andWhere([
@@ -316,25 +327,10 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
     public function transactions()
     {
-        return [self::SCENARIO_DEFAULT => self::OP_DELETE | self::OP_UPDATE];
-    }
-
-    //some magic here, moved out from beforeSave
-    public function setUserIdOrName($idOrName)
-    {
-        $user = User::find()
-            ->andWhere([
-                'or',
-                ['id' => $idOrName],
-                ['username' => $this->idOrName]
-            ])
-            ->one();
-
-        if ((!empty($user->contact)) && (((int) $user->contact->id !== (int) $this->id))) {
-            $contact = $user->contact;
-            $contact->link_user_id = null;
-            $contact->save(false);
-        }
+        return [
+            self::SCENARIO_DEFAULT => self::OP_DELETE | self::OP_UPDATE,
+            'form' => self::OP_DELETE | self::OP_UPDATE,
+        ];
     }
 
     public function beforeDelete()
@@ -375,11 +371,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         }
 
         parent::afterSave($insert, $changedAttributes);
-    }
-
-    public function getUserIdOrName()
-    {
-        return empty($this->linkedUser->username) ? $this->link_user_id : $this->linkedUser->username;
     }
 
     /**

@@ -55,7 +55,7 @@ class GroupGuestFaqController extends Controller
         }
 
         return $this->run('group-guest/view', [
-            'chatId' => $chat->id,
+            'id' => $chat->id,
         ]);
     }
 }

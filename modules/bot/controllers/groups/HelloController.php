@@ -20,28 +20,32 @@ class HelloController extends Controller
      */
     public function actionIndex()
     {
-        $commands = [
-            '/basic_income',
-            '/deposit_income',
-            '/my_id',
-            '/my_rank',
-            '/my_stellar',
-            '/my_fake_face',
-            '/my_fake_cat',
-            '/my_fake_art',
-        ];
-
         $chat = $this->getTelegramChat();
 
-        if ($chat->faq_status == ChatSetting::STATUS_ON) {
-            $commands[] = '/faq';
-        }
+        if ($chat->basic_commands_status == ChatSetting::STATUS_ON) {
+            $commands = [
+                '/basic_income',
+                '/deposit_income',
+                '/my_id',
+                '/my_rank',
+                '/my_stellar',
+                '/my_fake_face',
+                '/my_fake_cat',
+                '/my_fake_art',
+            ];
 
-        if ($chat->stellar_status == ChatSetting::STATUS_ON) {
-            $commands[] = '/stellar';
-        }
+            if ($chat->faq_status == ChatSetting::STATUS_ON) {
+                $commands[] = '/faq';
+            }
 
-        sort($commands);
+            if ($chat->stellar_status == ChatSetting::STATUS_ON) {
+                $commands[] = '/stellar';
+            }
+
+            sort($commands);
+        } else {
+            $commands = [];
+        }
 
         return $this->getResponseBuilder()
             ->sendMessage(

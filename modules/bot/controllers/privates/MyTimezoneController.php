@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
-use app\modules\bot\components\helpers\PaginationButtons;
-use yii\data\Pagination;
 use app\components\helpers\TimeHelper;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use Yii;
+use yii\data\Pagination;
 
 /**
  * Class MyTimezoneController
@@ -23,14 +23,14 @@ class MyTimezoneController extends Controller
     {
         $this->getState()->setName(null);
 
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
         $timezones = TimeHelper::timezonesList();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => TimeHelper::getNameByOffset($user->timezone),
+                    'timezone' => TimeHelper::getNameByOffset($globalUser->timezone),
                 ]),
                 [
                     [
@@ -64,11 +64,9 @@ class MyTimezoneController extends Controller
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
-        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('list', [
@@ -78,12 +76,14 @@ class MyTimezoneController extends Controller
 
         $buttons = [];
 
+        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
+
         foreach ($timezones as $timezone => $name) {
             $buttons[][] = [
-                'text' => $name,
                 'callback_data' => self::createRoute('select', [
                     'timezone' => $timezone,
                 ]),
+                'text' => $name,
             ];
         }
 
@@ -91,9 +91,11 @@ class MyTimezoneController extends Controller
             $buttons[] = $paginationButtons;
         }
 
-        $buttons[][] = [
-            'callback_data' => self::createRoute(),
-            'text' => Emoji::BACK,
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute(),
+                'text' => Emoji::BACK,
+            ],
         ];
 
         return $this->getResponseBuilder()
@@ -110,11 +112,12 @@ class MyTimezoneController extends Controller
             return $this->actionList();
         }
 
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
+        $globalUser->timezone = $timezone;
 
-        $user->timezone = $timezone;
+        if ($globalUser->validate('timezone')) {
+            $globalUser->save(false);
 
-        if ($user->validate('timezone') && $user->save()) {
             return $this->actionIndex();
         }
 

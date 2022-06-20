@@ -37,10 +37,9 @@ class ListAction extends BaseAction
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
-
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
 
         $phrases = $phraseQuery->offset($pagination->offset)
             ->limit($pagination->limit)

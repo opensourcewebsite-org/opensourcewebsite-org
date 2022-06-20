@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\Controller;
 use app\models\Currency;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
@@ -20,27 +20,18 @@ class MyCurrencyController extends Controller
      *
      * @return array
      */
-    public function actionIndex($currencyCode = null)
+    public function actionIndex()
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        if ($currencyCode) {
-            $currency = Currency::findOne(['code' => $currencyCode]);
-
-            if ($currency) {
-                $user->currency_id = $currency->id;
-                $user->save();
-            }
-        }
-
-        if (!$user->currency_id) {
-            return $this->actionUpdate();
+        if (!$globalUser->currency_id) {
+            return $this->actionList();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'currency' => $user->currency,
+                    'currency' => $globalUser->currency,
                 ]),
                 [
                     [
@@ -53,7 +44,7 @@ class MyCurrencyController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => MyCurrencyController::createRoute('update'),
+                            'callback_data' => MyCurrencyController::createRoute('list'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -67,25 +58,27 @@ class MyCurrencyController extends Controller
      *
      * @return array
      */
-    public function actionUpdate($page = 1)
+    public function actionList($page = 1)
     {
-        $user = $this->getUser();
+        $this->getState()->setName(self::createRoute('input'));
 
-        $this->getState()->setName(self::createRoute('search'));
+        $globalUser = $this->getUser();
 
-        $currencyQuery = Currency::find()->orderBy('code ASC');
+        $query = Currency::find()
+            ->orderBy(['code' => SORT_ASC]);
+
         $pagination = new Pagination([
-            'totalCount' => $currencyQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
             ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
         ]);
 
-        $pagination->pageSizeParam = false;
-        $pagination->validatePage = true;
-
-        $currencies = $currencyQuery->offset($pagination->offset)
+        $currencies = $query
+            ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -100,8 +93,8 @@ class MyCurrencyController extends Controller
         if ($currencies) {
             foreach ($currencies as $currency) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('index', [
-                        'currencyCode' => $currency->code,
+                    'callback_data' => self::createRoute('select', [
+                        'code' => $currency->code,
                     ]),
                     'text' => $currency->code . ' - ' . $currency->name,
                 ];
@@ -110,37 +103,63 @@ class MyCurrencyController extends Controller
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
             }
-
-            $buttons[][] = [
-                'callback_data' => ($user->currency_id ? self::createRoute() : MyProfileController::createRoute()),
-                'text' => Emoji::BACK,
-            ];
         }
+
+        $buttons[] = [
+            [
+                'callback_data' => ($globalUser->currency_id ? self::createRoute() : MyProfileController::createRoute()),
+                'text' => Emoji::BACK,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
+                $this->render('list'),
                 $buttons
             )
             ->build();
     }
 
-    public function actionSearch()
+    public function actionSelect($code = null)
     {
-        $text = $this->getUpdate()->getMessage()->getText();
+        $globalUser = $this->getUser();
 
-        if (strlen($text) <= 3) {
-            $currency = Currency::find()
-                ->orFilterWhere(['like', 'code', $text, false])
-                ->one();
-        } else {
-            $currency = Currency::find()
-                ->orFilterWhere(['like', 'name', $text . '%', false])
-                ->one();
+        if (!$code) {
+            return $this->actionList();
         }
 
-        if (isset($currency)) {
-            return $this->actionIndex($currency->code);
+        $currency = Currency::findOne([
+            'code' => $code,
+        ]);
+
+        if ($currency) {
+            $globalUser->currency_id = $currency->id;
+            $globalUser->save();
         }
+
+        return $this->actionIndex();
+    }
+
+    public function actionInput()
+    {
+        if ($text = $this->getUpdate()->getMessage()->getText()) {
+            if (strlen($text) <= 3) {
+                $currency = Currency::find()
+                    ->orFilterWhere(['like', 'code', $text, false])
+                    ->one();
+            } else {
+                $currency = Currency::find()
+                    ->orFilterWhere(['like', 'name', $text . '%', false])
+                    ->one();
+            }
+
+            if (isset($currency)) {
+                return $this->actionSelect($currency->code);
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }

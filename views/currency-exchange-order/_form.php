@@ -8,13 +8,12 @@ use app\models\PaymentMethod;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\DeleteButton;
 use app\widgets\buttons\SaveButton;
-use app\widgets\LocationPickerWidget\LocationPickerWidget;
+use app\widgets\inputs\LocationWithMapInput\LocationWithMapInput;
 use app\widgets\selects\CurrencySelect;
 use dosamigos\leaflet\layers\Marker;
 use dosamigos\leaflet\layers\TileLayer;
 use dosamigos\leaflet\LeafLet;
 use dosamigos\leaflet\types\LatLng;
-use dosamigos\leaflet\widgets\Map;
 use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
@@ -148,7 +147,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'selling_location')
-                                    ->widget(LocationPickerWidget::class)
+                                    ->widget(LocationWithMapInput::class)
                                     ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_location'))
                                 ?>
                             </div>
@@ -183,7 +182,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="row">
                             <div class="col">
                                 <?= $form->field($model, 'buying_location')
-                                    ->widget(LocationPickerWidget::class)
+                                    ->widget(LocationWithMapInput::class)
                                     ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_location'))
                                 ?>
                             </div>

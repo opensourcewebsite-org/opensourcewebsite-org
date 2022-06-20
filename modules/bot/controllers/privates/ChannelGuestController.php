@@ -21,9 +21,9 @@ class ChannelGuestController extends Controller
     /**
      * @return array
      */
-    public function actionView($chatId = null)
+    public function actionView($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isChannel()) {
             return [];

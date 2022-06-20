@@ -2,11 +2,11 @@
 
 namespace app\models;
 
-use Yii;
-use yii\behaviors\TimestampBehavior;
+use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
-use app\modules\bot\components\helpers\LocationParser;
+use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "user_location".

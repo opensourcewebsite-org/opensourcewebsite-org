@@ -6,7 +6,7 @@ use app\components\helpers\TimeHelper;
 <b><?= $chat->title ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Administrators who can manage the group') ?>:<br/>
-<?php foreach ($admins as $user) : ?>
+<?php foreach ($administrators as $user) : ?>
   • <?= $user->getFullLink(); ?><br/>
 <?php endforeach; ?>
 <br/>

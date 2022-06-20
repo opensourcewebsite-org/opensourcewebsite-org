@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\models\Gender;
+use app\models\User;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\models\User;
+use Yii;
 use yii\data\Pagination;
 
 /**
@@ -20,27 +20,20 @@ class MyGenderController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($genderId = null)
+    public function actionIndex()
     {
-        $user = $this->getUser();
+        $this->getState()->setName(null);
 
-        if (isset($genderId)) {
-            $gender = Gender::findOne($genderId);
+        $globalUser = $this->getUser();
 
-            if (isset($gender)) {
-                $user->gender_id = $gender->id;
-                $user->save();
-            }
-        }
-
-        if (!$user->gender_id) {
-            return $this->actionUpdate();
+        if (!$globalUser->gender_id) {
+            return $this->actionList();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'gender' => $user->gender->name,
+                    'gender' => $globalUser->gender->name,
                 ]),
                 [
                     [
@@ -53,7 +46,7 @@ class MyGenderController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('list'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -62,13 +55,14 @@ class MyGenderController extends Controller
             ->build();
     }
 
-    public function actionUpdate($page = 1)
+    public function actionList($page = 1)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $genderQuery = Gender::find();
+        $query = Gender::find();
+
         $pagination = new Pagination([
-            'totalCount' => $genderQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -76,38 +70,65 @@ class MyGenderController extends Controller
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
+
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('update', [
                 'page' => $page,
             ]);
         });
-        $genders = $genderQuery
+
+        $buttons = [];
+
+        $genders = $query
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $genderRows = array_map(function ($gender) {
-            return [
-                [
-                    'text' => Yii::t('bot', $gender->name),
-                    'callback_data' => self::createRoute('index', [
-                        'genderId' => $gender->id,
+
+        if ($genders) {
+            foreach ($genders as $gender) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('select', [
+                        'id' => $gender->id,
                     ]),
-                ],
-            ];
-        }, $genders);
+                    'text' => Yii::t('bot', $gender->name),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => ($globalUser->gender_id ? self::createRoute() : MyProfileController::createRoute()),
+                'text' => Emoji::BACK,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
-                array_merge($genderRows, [$paginationButtons], [
-                    [
-                        [
-                            'callback_data' => ($user->gender_id ? self::createRoute() : MyProfileController::createRoute()),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ])
+                $this->render('list'),
+                $buttons
             )
             ->build();
+    }
+
+    public function actionSelect($id = null)
+    {
+        $globalUser = $this->getUser();
+
+        if (!$id) {
+            return $this->actionList();
+        }
+
+        $gender = Gender::findOne($id);
+
+        if ($gender) {
+            $globalUser->gender_id = $gender->id;
+            $globalUser->save();
+        }
+
+        return $this->actionIndex();
     }
 }

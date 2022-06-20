@@ -29,13 +29,16 @@ class GroupGreetingController extends Controller
                 ->build();
         }
 
-        $telegramUser = $this->getTelegramUser();
-
         $this->getState()->setName(null);
+
+        $telegramUser = $this->getTelegramUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat', 'telegramUser')),
+                $this->render('index', [
+                    'chat' => $chat,
+                    'telegramUser' => $telegramUser,
+                ]),
                 [
                     [
                         [

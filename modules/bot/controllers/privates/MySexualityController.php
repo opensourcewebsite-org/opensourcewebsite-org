@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\models\Sexuality;
+use app\models\User;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\models\User;
+use Yii;
 use yii\data\Pagination;
 
 /**
@@ -20,26 +20,20 @@ class MySexualityController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($sexualityId = null)
+    public function actionIndex()
     {
-        $user = $this->getUser();
+        $this->getState()->setName(null);
 
-        if (isset($sexualityId)) {
-            $sexuality = Sexuality::findOne($sexualityId);
-            if (isset($sexuality)) {
-                $user->sexuality_id = $sexuality->id;
-                $user->save();
-            }
-        }
+        $globalUser = $this->getUser();
 
-        if (!$user->sexuality_id) {
-            return $this->actionUpdate();
+        if (!$globalUser->sexuality_id) {
+            return $this->actionSelect();
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'sexuality' => $user->sexuality->name,
+                    'sexuality' => $globalUser->sexuality->name,
                 ]),
                 [
                     [
@@ -52,7 +46,7 @@ class MySexualityController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('list'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -61,13 +55,14 @@ class MySexualityController extends Controller
             ->build();
     }
 
-    public function actionUpdate($page = 1)
+    public function actionList($page = 1)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $sexualityQuery = Sexuality::find();
+        $query = Sexuality::find();
+
         $pagination = new Pagination([
-            'totalCount' => $sexualityQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -75,38 +70,63 @@ class MySexualityController extends Controller
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
+
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('update', [
                 'page' => $page,
             ]);
         });
-        $sexualities = $sexualityQuery
+
+        $sexualities = $query
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-        $sexualityRows = array_map(function ($sexuality) {
-            return [
-                [
-                    'text' => Yii::t('bot', $sexuality->name),
-                    'callback_data' => self::createRoute('index', [
-                        'sexualityId' => $sexuality->id,
+
+        if ($sexualities) {
+            foreach ($sexualities as $sexuality) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('select', [
+                        'id' => $sexuality->id,
                     ]),
-                ],
-            ];
-        }, $sexualities);
+                    'text' => Yii::t('bot', $sexuality->name),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => ($globalUser->sexuality_id ? self::createRoute() : MyProfileController::createRoute()),
+                'text' => Emoji::BACK,
+            ],
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
-                array_merge($sexualityRows, [$paginationButtons], [
-                    [
-                        [
-                            'callback_data' => ($user->sexuality_id ? self::createRoute() : MyProfileController::createRoute()),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ])
+                $this->render('list'),
+                $buttons
             )
             ->build();
+    }
+
+    public function actionSelect($id = null)
+    {
+        $globalUser = $this->getUser();
+
+        if (!$id) {
+            return $this->actionList();
+        }
+
+        $sexuality = Sexuality::findOne($id);
+
+        if ($sexuality) {
+            $globalUser->sexuality_id = $sexuality->id;
+            $globalUser->save();
+        }
+
+        return $this->actionIndex();
     }
 }
