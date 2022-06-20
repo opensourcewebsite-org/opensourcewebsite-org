@@ -40,4 +40,5 @@ class Emoji
     public const MANAGE = '⚙️';
     public const MANAGE2 = '🛠';
     public const SPEAKER = '🔈';
+    public const PAUSE = '⏸';
 }

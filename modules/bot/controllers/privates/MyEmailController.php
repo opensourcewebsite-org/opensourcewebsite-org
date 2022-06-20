@@ -86,7 +86,6 @@ class MyEmailController extends Controller
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $userEmail->email = $text;
 
-                Yii::warning($userEmail->getDirtyAttributes());
                 if ($userEmail->validate()) {
                     $userEmail->save(false);
                     unset($this->globalUser->userEmail);
@@ -98,7 +97,7 @@ class MyEmailController extends Controller
         }
     }
 
-    public function actionDelete(): array
+    public function actionDelete()
     {
         if ($userEmail = $this->globalUser->userEmail) {
             $userEmail->delete();

@@ -21,9 +21,9 @@ class GroupGuestController extends Controller
     /**
      * @return array
      */
-    public function actionView($chatId = null)
+    public function actionView($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -33,13 +33,25 @@ class GroupGuestController extends Controller
 
         $this->getState()->setName(null);
 
+        $chatMember = $chat->getChatMemberByUserId();
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'chat' => $chat,
-                    'chatMember' => $chat->getChatMemberByUserId(),
+                    'user' => $this->getTelegramUser(),
+                    'chatMember' => $chatMember,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => MemberReviewController::createRoute('index', [
+                                'id' => $chatMember->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Reviews'),
+                            'visible' => (bool)$chatMember->getActiveReviewsCount(),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => GroupGuestFaqController::createRoute('word-list', [

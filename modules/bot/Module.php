@@ -120,11 +120,25 @@ class Module extends \yii\base\Module
 
                     return false;
                 }
+
+                if (!$globalForwardUser = $forwardUser->globalUser) {
+                    $globalForwardUser = GlobalUser::createWithRandomPassword();
+                    $globalForwardUser->name = $forwardUser->getFullName();
+
+                    if (!$globalForwardUser->save()) {
+                        Yii::warning($globalForwardUser->getErrors());
+
+                        return false;
+                    }
+
+                    $forwardUser->user_id = $globalForwardUser->id;
+                    $forwardUser->save();
+                }
             }
 
             $chat = Chat::findOne([
                 'chat_id' => $this->getUpdate()->getChat()->getId(),
-                'bot_id' => $this->getBot()->id,
+                'bot_id' => $this->getBot()->getId(),
             ]);
 
             $isNewChat = false;
@@ -211,7 +225,11 @@ class Module extends \yii\base\Module
                         }
                     }
 
-                    $globalUser->save();
+                    if (!$globalUser->save()) {
+                        Yii::warning($globalUser->getErrors());
+
+                        return false;
+                    }
 
                     $user->user_id = $globalUser->id;
                     $user->save();
@@ -315,7 +333,7 @@ class Module extends \yii\base\Module
     {
         $chat = Chat::findOne([
             'chat_id' => $chatId,
-            'bot_id' => $this->getBot()->id,
+            'bot_id' => $this->getBot()->getId(),
         ]);
 
         if ($chat) {

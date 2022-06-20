@@ -279,4 +279,31 @@ class ChatMember extends ActiveRecord
 
         return 1;
     }
+
+    public function getActiveReviewsCount()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                '>', 'status', 0,
+            ])
+            ->count();
+    }
+
+    public function getPositiveReviewsCount()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                'status' => ChatMemberReview::STATUS_LIKE,
+            ])
+            ->count();
+    }
+
+    public function getNegativeReviewsCount()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                'status' => ChatMemberReview::STATUS_DISLIKE,
+            ])
+            ->count();
+    }
 }

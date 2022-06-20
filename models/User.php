@@ -40,7 +40,7 @@ use yii\web\IdentityInterface;
  * @property integer $basic_income_processed_at
  *
  * @property Company[] $companies
- * @property null|\app\modules\bot\models\User $botUser
+ * @property app\modules\bot\models\User $botUser
  * @property Contact $contact
  * @property Contact[] $contacts
  * @property Contact[] $counterContacts
@@ -87,11 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
-            [
-                'status',
-                'default',
-                'value' => self::STATUS_ACTIVE
-            ],
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
             [
                 'status',
                 'in',
@@ -802,6 +798,10 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getNewContact(): Contact
     {
+        if (Yii::$app->user->id == $this->id) {
+            return false;
+        }
+
         $model = new Contact();
         $model->user_id = Yii::$app->user->id;
         $model->userIdOrName = $this->id;

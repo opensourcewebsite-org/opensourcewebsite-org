@@ -37,6 +37,14 @@ class ExternalLink
     /**
      * {@inheritdoc}
      */
+    public static function getBotStartLink($text)
+    {
+        return self::getBotLink() . '?start=' . $text;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function getBotGroupGuestLink($chatId)
     {
         return self::getBotLink() . '?start=' . $chatId;

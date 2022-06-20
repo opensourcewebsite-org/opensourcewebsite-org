@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\models\Contact;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
@@ -163,11 +162,11 @@ class UserController extends Controller
             if (isset($chat)) {
                 if ($chat->isGroup()) {
                     return $this->run('group-guest/view', [
-                        'chatId' => $chat->id,
+                        'id' => $chat->id,
                     ]);
                 } elseif ($chat->isChannel()) {
                     return $this->run('channel-guest/view', [
-                        'chatId' => $chat->id,
+                        'id' => $chat->id,
                     ]);
                 }
             }
