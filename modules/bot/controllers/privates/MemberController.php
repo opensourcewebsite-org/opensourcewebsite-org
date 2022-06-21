@@ -281,6 +281,16 @@ class MemberController extends Controller
 
         if ($chatMemberReview->validate($v)) {
             $chatMemberReview->save(false);
+            // if the review has received an active status, then notify the counter user
+            if ($chatMemberReview->isActive()) {
+                $chatMemberReview->counterUser->sendMessage(
+                    $this->render('notify-review', [
+                        'authorUser' => $chatMemberReview->user,
+                        'chat' => $chatMember->chat,
+                        'review' => $chatMemberReview,
+                    ])
+                );
+            }
 
             return $this->runAction('my-review', [
                  'id' => $chatMember->id,

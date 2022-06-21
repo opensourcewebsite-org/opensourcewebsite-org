@@ -112,6 +112,12 @@ class ChatMemberReview extends ActiveRecord
             ->viaTable(User::tableName(), ['id' => 'user_id']);
     }
 
+    public function getCounterUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id'])
+            ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
+    }
+
     public function getStatusLabel(): string
     {
         return static::getStatusLabels()[(int)$this->status];
@@ -135,5 +141,10 @@ class ChatMemberReview extends ActiveRecord
         ];
 
         return $array[(int)$this->status];
+    }
+
+    public function isActive(): bool
+    {
+        return in_array($this->status, [self::STATUS_LIKE, self::STATUS_DISLIKE]);
     }
 }
