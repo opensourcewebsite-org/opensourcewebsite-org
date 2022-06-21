@@ -28,13 +28,16 @@ class PublicGroupController extends Controller
     public function actionIndex($page = 1)
     {
         $this->getState()->setName(null);
-        // TODO order by user rating
-        // '{{%user}}.rating' => SORT_DESC,
-        // '{{%user}}.created_at' => SORT_ASC,
+
         $query = Chat::find()
             ->group()
             ->username()
-            ->orderBy(['id' => SORT_ASC]);
+            ->joinWith('globalUserForCreator')
+            ->orderBy([
+                '{{%user}}.rating' => SORT_DESC,
+                '{{%user}}.created_at' => SORT_ASC,
+                Chat::tableName() . '.chat_id' => SORT_ASC,
+            ]);
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),

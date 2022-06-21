@@ -214,7 +214,7 @@ class Chat extends ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
-            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id']);
     }
 
     public function getHumanUsers()
@@ -223,7 +223,7 @@ class Chat extends ActiveRecord
             ->where([
                 'is_bot' => 0,
             ])
-            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id']);
+            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id']);
     }
 
     public function getChatMembers()
@@ -243,11 +243,11 @@ class Chat extends ActiveRecord
     public function getAdministrators()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
-            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
-                    ['status' => ChatMember::STATUS_CREATOR],
-                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_ADMINISTRATOR],
                 ]);
             });
     }
@@ -258,11 +258,11 @@ class Chat extends ActiveRecord
             ->where([
                 'is_bot' => 0,
             ])
-            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
-                    ['status' => ChatMember::STATUS_CREATOR],
-                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_ADMINISTRATOR],
                 ]);
             });
     }
@@ -273,14 +273,14 @@ class Chat extends ActiveRecord
             ->where([
                 'is_bot' => 0,
             ])
-            ->viaTable('{{%bot_chat_member}}', ['chat_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
-                    ['status' => ChatMember::STATUS_CREATOR],
-                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_ADMINISTRATOR],
                 ])
                 ->andWhere([
-                    'role' => ChatMember::ROLE_ADMINISTRATOR,
+                    ChatMember::tableName() . '.role' => ChatMember::ROLE_ADMINISTRATOR,
                 ]);
             });
     }
@@ -334,5 +334,21 @@ class Chat extends ActiveRecord
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * Gets query for [[GlobalUser]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGlobalUserForCreator()
+    {
+        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+            ->viaTable(User::tableName(), ['id' => 'user_id'])
+            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
+                $query->andWhere([
+                    ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR,
+                ]);
+            });
     }
 }

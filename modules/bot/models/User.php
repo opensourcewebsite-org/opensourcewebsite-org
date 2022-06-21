@@ -125,7 +125,7 @@ class User extends ActiveRecord
     public function getChats()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
     public function getGroups()
@@ -136,7 +136,7 @@ class User extends ActiveRecord
                 ['type' => Chat::TYPE_GROUP],
                 ['type' => Chat::TYPE_SUPERGROUP]
             ])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
     // Get private chat
@@ -146,7 +146,7 @@ class User extends ActiveRecord
             ->where([
                 'type' => Chat::TYPE_PRIVATE,
             ])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id']);
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
     public function getChatMembers()
@@ -162,7 +162,7 @@ class User extends ActiveRecord
                 ['type' => Chat::TYPE_GROUP],
                 ['type' => Chat::TYPE_SUPERGROUP],
             ])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
                     ['status' => ChatMember::STATUS_CREATOR],
@@ -180,14 +180,14 @@ class User extends ActiveRecord
                 ['type' => Chat::TYPE_GROUP],
                 ['type' => Chat::TYPE_SUPERGROUP],
             ])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
-                    ['status' => ChatMember::STATUS_CREATOR],
-                    ['status' => ChatMember::STATUS_ADMINISTRATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_ADMINISTRATOR],
                 ])
                 ->andWhere([
-                    'role' => ChatMember::ROLE_ADMINISTRATOR,
+                    ChatMember::tableName() . '.role' => ChatMember::ROLE_ADMINISTRATOR,
                 ]);
             })
             ->orderBy(['title' => SORT_ASC]);
@@ -199,11 +199,11 @@ class User extends ActiveRecord
             ->where([
                 'type' => Chat::TYPE_CHANNEL,
             ])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
-                    ['status' => ChatMember::STATUS_CREATOR],
-                    ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_ADMINISTRATOR]
                 ]);
             })
             ->orderBy(['title' => SORT_ASC]);
@@ -215,14 +215,14 @@ class User extends ActiveRecord
             ->where([
                 'type' => Chat::TYPE_CHANNEL,
             ])
-            ->viaTable('{{%bot_chat_member}}', ['user_id' => 'id'], function ($query) {
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
-                    ['status' => ChatMember::STATUS_CREATOR],
-                    ['status' => ChatMember::STATUS_ADMINISTRATOR]
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR],
+                    [ChatMember::tableName() . '.status' => ChatMember::STATUS_ADMINISTRATOR]
                 ])
                 ->andWhere([
-                    'role' => ChatMember::ROLE_ADMINISTRATOR,
+                    ChatMember::tableName() . '.role' => ChatMember::ROLE_ADMINISTRATOR,
                 ]);
             })
             ->orderBy(['title' => SORT_ASC]);

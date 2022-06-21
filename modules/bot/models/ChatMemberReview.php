@@ -77,7 +77,7 @@ class ChatMemberReview extends ActiveRecord
     }
 
     /**
-     * Gets query for [[Member]].
+     * Gets query for [[ChatMember]].
      *
      * @return \yii\db\ActiveQuery
      */
@@ -112,6 +112,11 @@ class ChatMemberReview extends ActiveRecord
             ->viaTable(User::tableName(), ['id' => 'user_id']);
     }
 
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getCounterUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id'])
