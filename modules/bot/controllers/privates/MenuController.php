@@ -36,21 +36,21 @@ class MenuController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => SCeController::createRoute(),
+                            'callback_data' => CeController::createRoute(),
                             'text' => Yii::t('bot', 'Currency Exchange'),
                             'visible' => $globalUser->getCurrencyExchangeOrders()->exists(),
                         ],
                     ],
                     [
                         [
-                            'callback_data' => SAdController::createRoute(),
+                            'callback_data' => AdController::createRoute(),
                             'text' => Yii::t('bot', 'Ads'),
                             'visible' => YII_ENV_DEV,
                         ],
                     ],
                     [
                         [
-                            'callback_data' => SJobController::createRoute(),
+                            'callback_data' => JoController::createRoute(),
                             'text' => Yii::t('bot', 'Jobs'),
                             'visible' => YII_ENV_DEV,
                         ],

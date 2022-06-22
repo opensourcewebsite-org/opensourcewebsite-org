@@ -1,12 +1,10 @@
 <b><?= Yii::t('bot', 'Commands') ?></b><br/>
-<?php if (YII_ENV_DEV) : ?>
 <br/>
-/s_ad - <?= Yii::t('bot', 'Ads') ?>. <?= Yii::t('bot', 'Buying, selling, renting, services') ?>.<br/>
-/s_job - <?= Yii::t('bot', 'Jobs') ?>. <?= Yii::t('bot', 'Vacancies and resumes') ?>.<br/>
-<?php endif; ?>
+/telegram - <?= Yii::t('bot', 'Telegram catalog of public groups and channels') ?>. <?= Yii::t('bot', 'Telegram admin management of groups and channels') ?>.<br/>
 <br/>
-/telegram - <?= Yii::t('bot', 'Telegram catalog of public groups and channels') ?><br/>
-/telegram_admin - <?= Yii::t('bot', 'Telegram admin management of groups and channels') ?><br/>
+/ce - <?= Yii::t('bot', 'Currency exchange') ?>.<br/>
+/ad - <?= Yii::t('bot', 'Ads') ?>. <?= Yii::t('bot', 'Buying, selling, renting, services') ?>.<br/>
+/jo - <?= Yii::t('bot', 'Jobs') ?>. <?= Yii::t('bot', 'Vacancies and resumes') ?>.<br/>
 <br/>
 /my_account - <?= Yii::t('bot', 'Account') ?><br/>
   • /my_rating - <?= Yii::t('bot', 'Rating') ?><br/>

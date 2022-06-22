@@ -2,37 +2,38 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Company;
 use app\models\Currency;
+use app\models\JobKeyword;
+use app\models\JobVacancyKeyword;
+use app\models\JobVacancyMatch;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\User;
-use app\models\VacancyLanguage;
-use app\models\JobKeyword;
-use app\models\JobVacancyKeyword;
 use app\models\Vacancy;
-use app\models\JobVacancyMatch;
+use app\models\VacancyLanguage;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\services\IntermediateFieldService;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\User as TelegramUser;
-use app\modules\bot\components\helpers\Emoji;
+use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
 /**
- * Class SJobVacanciesController
+ * Class JoVacancyController
  *
+ * @link https://opensourcewebsite.org/vacancy
  * @package app\modules\bot\controllers\privates
  */
-class SJobVacancyController extends CrudController
+class JoVacancyController extends CrudController
 {
     protected $updateAttributes = [
         'name',
@@ -281,14 +282,14 @@ class SJobVacancyController extends CrudController
 
         if ($company) {
             $rowButtons[] = [
-                'callback_data' => SJobCompanyController::createRoute('view', [
+                'callback_data' => JoCompanyController::createRoute('view', [
                     'id' => $companyId,
                 ]),
                 'text' => Emoji::BACK,
             ];
         } else {
             $rowButtons[] = [
-                'callback_data' => SJobController::createRoute(),
+                'callback_data' => JoController::createRoute(),
                 'text' => Emoji::BACK,
             ];
         }

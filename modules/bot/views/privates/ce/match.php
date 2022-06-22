@@ -1,31 +1,31 @@
 <?php
 
-use app\models\Vacancy;
+use app\models\CurrencyExchangeOrder;
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $model->name ?></b><br/>
+<b><?= Emoji::CE_ORDER . ' ' . Yii::t('bot', 'Swap') ?>: <?= $name ?></b><br/>
 <br/>
 <?php if ($keywords != '') : ?>
 # <i><?= $keywords ?></i><br/>
 <br/>
 <?php endif; ?>
-<?php if ($model->responsibilities) : ?>
+<?php if ($responsibilities) : ?>
 <b><?= Yii::t('bot', 'Responsibilities') ?>:</b><br/>
 <br/>
-<?= nl2br($model->responsibilities) ?><br/>
+<?= nl2br($responsibilities) ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($model->requirements) : ?>
+<?php if ($requirements) : ?>
 <b><?= Yii::t('bot', 'Requirements') ?>:</b><br/>
 <br/>
-<?= nl2br($model->requirements) ?><br/>
+<?= nl2br($requirements) ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($model->conditions) : ?>
+<?php if ($conditions) : ?>
 <b><?= Yii::t('bot', 'Conditions') ?>:</b><br/>
 <br/>
-<?= nl2br($model->conditions) ?><br/>
+<?= nl2br($conditions) ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($languages) : ?>
@@ -36,11 +36,11 @@ use app\modules\bot\components\helpers\Emoji;
 <?php endforeach; ?>
 <br/>
 <?php endif; ?>
-<?php if ($model->max_hourly_rate) : ?>
-<b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $model->max_hourly_rate ?> <?= $model->currency->code ?><br/>
+<?php if ($hourlyRate) : ?>
+<b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
 <br/>
 <?php endif; ?>
-<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $model->remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
+<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
 <br/>
 <?php if ($model->location_lat && $model->location_lon) : ?>
 <b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>
@@ -49,7 +49,7 @@ use app\modules\bot\components\helpers\Emoji;
 <?php if ($company) : ?>
 ————<br/>
 <br/>
-<b><?= Emoji::JOB_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $company->name; ?></b><br/>
+<b><?= Emoji::JO_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $company->name; ?></b><br/>
 <br/>
 <?php if ($company->description) : ?>
 <?= nl2br($company->description); ?><br/>
@@ -64,8 +64,8 @@ use app\modules\bot\components\helpers\Emoji;
 <br/>
 <?php endif; ?>
 <?php endif; ?>
-<?php if ($model->isActive()) : ?>
+<?php if ($user) : ?>
 ————<br/>
 <br/>
-<i><?= Yii::t('bot', 'You will receive a notification in case of matches with offers of other users') ?>.</i>
+<b><?= Yii::t('bot', 'Contact') ?>:</b> <?= $user->getFullLink(); ?>
 <?php endif; ?>

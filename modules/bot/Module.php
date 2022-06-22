@@ -6,8 +6,6 @@ use app\models\Rating;
 use app\models\User as GlobalUser;
 use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
-use app\modules\bot\components\CommandRouteResolver;
-use app\modules\bot\components\Controller;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
@@ -21,19 +19,18 @@ use yii\base\InvalidRouteException;
 /**
  * OSW Bot module definition class
  * @link https://t.me/opensourcewebsite_bot
- * @property CommandRouteResolver $commandRouteResolver
  */
 class Module extends \yii\base\Module
 {
-    /**
-     * {@inheritdoc}
-     */
     public $controllerNamespace = 'app\modules\bot\controllers';
 
     public $defaultControllerNamespace = null;
 
     public $defaultViewPath = null;
 
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $this->defaultControllerNamespace = $this->controllerNamespace;

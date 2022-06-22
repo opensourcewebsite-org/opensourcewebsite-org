@@ -5,7 +5,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 use app\components\helpers\Html;
 
 ?>
-<?= Emoji::CURRENCY_EXCHANGE_ORDER ?> <b><?= Yii::t('bot', 'Order') ?>: #<?= $model->id ?> <?= $model->getTitle() ?></b><br/>
+<?= Emoji::CE_ORDER ?> <b><?= Yii::t('bot', 'Order') ?>: #<?= $model->id ?> <?= $model->getTitle() ?></b><br/>
 <br/>
 <b><?= Yii::t('bot', 'Sell') ?></b>: <?= $model->sellingCurrency->code ?><br/>
 <?php if ($model->selling_currency_label) : ?>

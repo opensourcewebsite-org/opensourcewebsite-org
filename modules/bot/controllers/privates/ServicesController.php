@@ -2,9 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class ServicesController
@@ -24,14 +24,14 @@ class ServicesController extends Controller
                 [
                     [
                         [
-                            'callback_data' => SDaController::createRoute(),
+                            'callback_data' => DaController::createRoute(),
                             'text' => Yii::t('bot', 'Dating'),
                             'visible' => YII_ENV_DEV,
                         ],
                     ],
                     [
                         [
-                            'callback_data' => SReController::createRoute(),
+                            'callback_data' => ReController::createRoute(),
                             'text' => Yii::t('bot', 'Real Estates'),
                             'visible' => YII_ENV_DEV,
                         ],

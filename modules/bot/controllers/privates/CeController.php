@@ -24,12 +24,12 @@ use yii\data\Pagination;
 use yii\db\ActiveRecord;
 
 /**
- * Class SCeController
+ * Class CeController
  *
  * @link https://opensourcewebsite.org/currency-exchange-order
  * @package app\modules\bot\controllers\privates
  */
-class SCeController extends CrudController
+class CeController extends CrudController
 {
     protected $updateAttributes = [
         'sellingCurrency',

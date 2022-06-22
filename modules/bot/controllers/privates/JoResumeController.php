@@ -2,34 +2,35 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\models\scenarios\Resume\SetActiveScenario;
-use Yii;
-use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
-use app\models\Resume;
-use app\models\User;
-use app\models\JobResumeMatch;
 use app\models\JobKeyword;
 use app\models\JobResumeKeyword;
+use app\models\JobResumeMatch;
+use app\models\Resume;
+use app\models\scenarios\Resume\SetActiveScenario;
+use app\models\User;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
-use app\modules\bot\components\helpers\ExternalLink;
-use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\helpers\ListButtons;
-use app\modules\bot\models\User as TelegramUser;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\components\helpers\ListButtons;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\User as TelegramUser;
+use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 use yii\db\StaleObjectException;
 
 /**
- * Class SJobResumeController
+ * Class JoResumeController
  *
+ * @link https://opensourcewebsite.org/resume
  * @package app\modules\bot\controllers\privates
  */
-class SJobResumeController extends CrudController
+class JoResumeController extends CrudController
 {
     protected $updateAttributes = [
         'name',
@@ -243,7 +244,7 @@ class SJobResumeController extends CrudController
         });
 
         $rowButtons[] = [
-            'callback_data' => SJobController::createRoute(),
+            'callback_data' => JoController::createRoute(),
             'text' => Emoji::BACK,
         ];
 

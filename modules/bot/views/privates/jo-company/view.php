@@ -3,7 +3,7 @@
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::JOB_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $model->name ?></b><br/>
+<b><?= Emoji::JO_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $model->name ?></b><br/>
 <br/>
 <?php if ($model->description) : ?>
 <?= nl2br($model->description) ?><br/>

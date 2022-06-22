@@ -22,10 +22,10 @@ class Emoji
     public const INFO = 'ℹ️';
     public const AD_SEARCH = '🔍';
     public const AD_OFFER = '💰';
-    public const JOB_RESUME = '💪';
-    public const JOB_VACANCY = '🧰';
-    public const JOB_COMPANY = '🏢';
-    public const CURRENCY_EXCHANGE_ORDER = '💱';
+    public const JO_RESUME = '💪';
+    public const JO_VACANCY = '🧰';
+    public const JO_COMPANY = '🏢';
+    public const CE_ORDER = '💱';
     public const STAR = '⭐️';
     public const POO = '💩';
     public const LIKE = '👍';

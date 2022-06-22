@@ -4,7 +4,7 @@ use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $model->name ?></b><br/>
+<b><?= Emoji::JO_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $model->name ?></b><br/>
 <br/>
 <?php if ($keywords != '') : ?>
 # <i><?= $keywords ?></i><br/>
@@ -49,7 +49,7 @@ use app\modules\bot\components\helpers\Emoji;
 <?php if ($company) : ?>
 ————<br/>
 <br/>
-<b><?= Emoji::JOB_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $company->name; ?></b><br/>
+<b><?= Emoji::JO_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $company->name; ?></b><br/>
 <br/>
 <?php if ($company->description) : ?>
 <?= nl2br($company->description); ?><br/>

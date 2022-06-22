@@ -2,25 +2,26 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
-use app\modules\bot\components\helpers\MessageText;
-use Yii;
-use app\modules\bot\components\crud\CrudController;
 use app\models\Company;
 use app\models\CompanyUser;
-use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\helpers\PaginationButtons;
+use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\CurrentUserFieldComponent;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\MessageText;
+use app\modules\bot\components\helpers\PaginationButtons;
+use Yii;
 use yii\base\DynamicModel;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 
 /**
- * Class SJobCompanyController
+ * Class JoCompanyController
  *
+ * @link https://opensourcewebsite.org/company-user
  * @package app\modules\bot\controllers\privates
  */
-class SJobCompanyController extends CrudController
+class JoCompanyController extends CrudController
 {
     public const DEFAULT_PAGE_SIZE = 9;
     protected $updateAttributes = [
@@ -114,7 +115,7 @@ class SJobCompanyController extends CrudController
         $buttons[] = [
             [
                 'text' => Emoji::BACK,
-                'callback_data' => SJobController::createRoute(),
+                'callback_data' => JoController::createRoute(),
             ],
             [
                 'text' => Emoji::MENU,
@@ -164,8 +165,8 @@ class SJobCompanyController extends CrudController
                 [
                     [
                         [
-                            'text' => Emoji::JOB_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
-                            'callback_data' => SJobVacancyController::createRoute('index', [
+                            'text' => Emoji::JO_VACANCY . ' ' . Yii::t('bot', 'Vacancies'),
+                            'callback_data' => JoVacancyController::createRoute('index', [
                                 'companyId' => $company->id,
                             ]),
                         ],

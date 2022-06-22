@@ -2,39 +2,40 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\crud\CrudController;
-use app\behaviors\SetDefaultCurrencyBehavior;
 use app\behaviors\SetAttributeValueBehavior;
+use app\behaviors\SetDefaultCurrencyBehavior;
+use app\models\AdKeyword;
+use app\models\AdOffer;
+use app\models\AdOfferKeyword;
+use app\models\AdOfferMatch;
+use app\models\AdPhoto;
+use app\models\AdSearch;
+use app\models\AdSection;
+use app\models\Currency;
+use app\models\User;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
-use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\crud\rules\PhotoFieldComponent;
-use app\modules\bot\validators\RadiusValidator;
+use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
-use app\models\AdKeyword;
-use app\models\AdOfferKeyword;
-use app\models\AdSection;
-use app\models\AdOffer;
-use app\models\AdOfferMatch;
-use app\models\AdSearch;
-use app\models\AdPhoto;
+use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\User as TelegramUser;
-use app\models\User;
+use app\modules\bot\validators\RadiusValidator;
+use Yii;
 use yii\base\DynamicModel;
 use yii\base\ModelEvent;
 use yii\data\Pagination;
-use app\modules\bot\components\helpers\PaginationButtons;
-use app\models\Currency;
 use yii\db\ActiveRecord;
 
 /**
- * Class SAdOfferController
+ * Class AdOfferController
  *
+ * @link https://opensourcewebsite.org/ad-offer
  * @package app\modules\bot\controllers\privates
  */
-class SAdOfferController extends CrudController
+class AdOfferController extends CrudController
 {
     protected $updateAttributes = [
         'title',
@@ -253,7 +254,7 @@ class SAdOfferController extends CrudController
         });
 
         $rowButtons[] = [
-            'callback_data' => SAdController::createRoute(),
+            'callback_data' => AdController::createRoute(),
             'text' => Emoji::BACK,
         ];
 

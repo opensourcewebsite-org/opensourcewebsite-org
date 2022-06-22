@@ -2,16 +2,16 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
- * Class SDaController
+ * Class ReController
  *
  * @package app\modules\bot\controllers\privates
  */
-class SDaController extends Controller
+class ReController extends Controller
 {
     /**
      * @return array
