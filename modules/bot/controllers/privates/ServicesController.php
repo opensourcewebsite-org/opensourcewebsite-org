@@ -24,13 +24,6 @@ class ServicesController extends Controller
                 [
                     [
                         [
-                            'callback_data' => SCeController::createRoute(),
-                            'text' => Yii::t('bot', 'Currency Exchange'),
-                            'visible' => YII_ENV_DEV,
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => SDaController::createRoute(),
                             'text' => Yii::t('bot', 'Dating'),
                             'visible' => YII_ENV_DEV,

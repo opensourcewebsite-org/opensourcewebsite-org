@@ -2,30 +2,31 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\crud\CrudController;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
+use app\models\Currency;
+use app\models\CurrencyExchangeOrder;
+use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
+use app\models\CurrencyExchangeOrderMatch;
+use app\models\CurrencyExchangeOrderSellingPaymentMethod;
+use app\models\PaymentMethod;
+use app\models\User;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\services\IntermediateFieldService;
-use app\modules\bot\validators\RadiusValidator;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
-use app\models\User;
-use app\models\Currency;
-use app\models\CurrencyExchangeOrder;
-use app\models\CurrencyExchangeOrderMatch;
-use app\models\CurrencyExchangeOrderSellingPaymentMethod;
-use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
-use app\models\PaymentMethod;
-use yii\data\Pagination;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\validators\RadiusValidator;
+use Yii;
+use yii\data\Pagination;
 use yii\db\ActiveRecord;
 
 /**
  * Class SCeController
  *
+ * @link https://opensourcewebsite.org/currency-exchange-order
  * @package app\modules\bot\controllers\privates
  */
 class SCeController extends CrudController
@@ -95,10 +96,10 @@ class SCeController extends CrudController
                     ],
                 ],
                 'location' => [
-                    'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                    //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                 ],
                 'delivery_radius' => [
-                    'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                    //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                 ],
             ],
             'attributes' => [
@@ -219,11 +220,11 @@ class SCeController extends CrudController
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                             'text' => Yii::t('bot', 'MY LOCATION'),
                             'callback' => function (CurrencyExchangeOrder $model) {
-                                $latitude = $this->getTelegramUser()->location_lat;
-                                $longitude = $this->getTelegramUser()->location_lon;
+                                $latitude = 0;//$this->getTelegramUser()->location_lat;
+                                $longitude = 0;//$this->getTelegramUser()->location_lon;
                                 if ($latitude && $longitude) {
                                     $model->location_lat = $latitude;
                                     $model->location_lon = $longitude;
@@ -278,22 +279,19 @@ class SCeController extends CrudController
     public function actionIndex($page = 1)
     {
         $this->getState()->setName(null);
-        $user = $this->getUser();
 
-        $orderQuery = CurrencyExchangeOrder::find()
-            ->where([
-                'user_id' => $user->id,
-            ])
+        $globalUser = $this->getUser();
+
+        $query = CurrencyExchangeOrder::find()
+            ->userOwner()
             ->orderBy([
                 'status' => SORT_DESC,
                 'selling_currency_id' => SORT_ASC,
                 'buying_currency_id' => SORT_ASC,
             ]);
 
-        $aordersCount = $orderQuery->count();
-
         $pagination = new Pagination([
-            'totalCount' => $aordersCount,
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -302,46 +300,42 @@ class SCeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $orders = $orderQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $buttons = array_map(function ($order) {
-            return [
-                [
-                    'text' => ($order->isActive() ? '' : Emoji::INACTIVE . ' ') . $order->getTitle(),
-                    'callback_data' => self::createRoute('view', [
-                        'id' => $order->id,
-                    ]),
-                ],
-            ];
-        }, $orders);
-
-        $buttons[] = PaginationButtons::build($pagination, function ($page) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [
                 'page' => $page,
             ]);
         });
 
-        $rowButtons[] = [
-            'callback_data' => ServicesController::createRoute(),
-            'text' => Emoji::BACK,
-        ];
+        $buttons = [];
+
+        $orders = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($orders) {
+            foreach ($orders as $order) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('view', [
+                        'id' => $order->id,
+                    ]),
+                    'text' => ($order->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $order->id . ' ' . $order->getTitle(),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
 
         $rowButtons[] = [
             'callback_data' => MenuController::createRoute(),
             'text' => Emoji::MENU,
         ];
 
-        $rowButtons[] = [
-            'callback_data' => self::createRoute('dev-index'),
-            'text' => Emoji::DEVELOPMENT,
-        ];
-
         $matchesCount = CurrencyExchangeOrderMatch::find()
             ->joinWith('order')
             ->andWhere([
-                CurrencyExchangeOrder::tableName() . '.user_id' => $user->id,
+                CurrencyExchangeOrder::tableName() . '.user_id' => $globalUser->id,
             ])
             ->count();
 
@@ -349,12 +343,14 @@ class SCeController extends CrudController
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+                'visible' => YII_ENV_DEV,
             ];
         }
 
         $rowButtons[] = [
             'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
+            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -368,32 +364,33 @@ class SCeController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id CurrencyExchangeOrder->id
      *
      * @return array
      */
     public function actionView($id = null)
     {
-        $this->getState()->setName(null);
-        $user = $this->getUser();
-
-        $order = $user->getCurrencyExchangeOrders()
+        $order = CurrencyExchangeOrder::find()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($order)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
+
+        $this->getState()->setName(null);
 
         $buttons[] = [
             [
-                'text' => $order->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                 'callback_data' => self::createRoute('set-status', [
                     'id' => $order->id,
                 ]),
+                'text' => $order->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
             ],
         ];
 
@@ -401,47 +398,49 @@ class SCeController extends CrudController
 
         if ($matchesCount) {
             $buttons[][] = [
-                'text' => Emoji::OFFERS . ' ' . $matchesCount,
                 'callback_data' => self::createRoute('matches', [
-                    'orderId' => $order->id,
+                    'id' => $order->id,
                 ]),
+                'text' => Emoji::OFFERS . ' ' . $matchesCount,
+                'visible' => YII_ENV_DEV,
             ];
         }
 
-        $buttons[] = [
-            [
-                'text' => $order->getTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->selling_rate),
-                'callback_data' => self::createRoute('e-a', [
-                    'id' => $order->id,
-                    'a' => 'selling_rate',
-                ]),
-            ],
-        ];
+        // $buttons[] = [
+        //     [
+        //         'text' => $order->getTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->selling_rate),
+        //         'callback_data' => self::createRoute('e-a', [
+        //             'id' => $order->id,
+        //             'a' => 'selling_rate',
+        //         ]),
+        //     ],
+        // ];
+        //
+        // $buttons[] = [
+        //     [
+        //         'text' => $order->getInverseTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->buying_rate),
+        //         'callback_data' => self::createRoute('e-a', [
+        //             'id' => $order->id,
+        //             'a' => 'buying_rate',
+        //         ]),
+        //     ],
+        // ];
 
         $buttons[] = [
             [
-                'text' => $order->getInverseTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->buying_rate),
-                'callback_data' => self::createRoute('e-a', [
-                    'id' => $order->id,
-                    'a' => 'buying_rate',
-                ]),
-            ],
-        ];
-
-        $buttons[] = [
-            [
-                'text' => Emoji::BACK,
                 'callback_data' => self::createRoute('index'),
+                'text' => Emoji::BACK,
             ],
             [
-                'text' => Emoji::MENU,
                 'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
             ],
             [
-                'text' => Emoji::EDIT,
                 'callback_data' => self::createRoute('update', [
                     'id' => $order->id,
                 ]),
+                'text' => Emoji::EDIT,
+                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -449,85 +448,10 @@ class SCeController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'model' => $order,
-                    'locationLink' => ExternalLink::getOSMLink($order->location_lat, $order->location_lon),
-                    'sellingPaymentMethods' => array_map(function ($paymentMethod) {
-                        return $paymentMethod->getLabel();
-                    }, $order->sellingPaymentMethods),
-                    'buyingPaymentMethods' => array_map(function ($paymentMethod) {
-                        return $paymentMethod->getLabel();
-                    }, $order->buyingPaymentMethods),
                 ]),
                 $buttons,
                 [
                     'disablePreview' => true,
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return array
-     */
-    public function actionDevIndex()
-    {
-        $telegramUser = $this->getTelegramUser();
-
-        //TODO PaginationButtons for orders
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('dev-index'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('order'),
-                            'text' => 'USD/THB',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order'),
-                            'text' => 'USD/RUB',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order'),
-                            'text' => Emoji::INACTIVE . ' ' . 'THB/RUB',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => '<',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => '1/3',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => '>',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => Emoji::OFFERS . ' ' . '3',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('order-create'),
-                            'text' => Emoji::ADD,
-                        ],
-                    ],
                 ]
             )
             ->build();
@@ -573,62 +497,6 @@ class SCeController extends CrudController
                         [
                             'callback_data' => self::createRoute(),
                             'text' => Emoji::BACK,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return array
-     */
-    public function actionOrder()
-    {
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('order'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-status'),
-                            'text' => 'Status: ON',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => Emoji::OFFERS . ' ' . '3',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-selling-rate'),
-                            'text' => 'USD/THB: 30.0000',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-buying-rate'),
-                            'text' => 'THB/USD: 0.3000',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('order-edit'),
-                            'text' => Emoji::EDIT,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('order-remove'),
-                            'text' => Emoji::DELETE,
                         ],
                     ],
                 ]
@@ -819,50 +687,6 @@ class SCeController extends CrudController
     /**
      * @return array
      */
-    public function actionOffer()
-    {
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('offer'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('offer-like'),
-                            'text' => '👍 100',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('offer-like'),
-                            'text' => '👎 10',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => '<',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => '1/3',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('offer'),
-                            'text' => '>',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return array
-     */
     public function actionOrderSellingCurrencyPaymentMethods()
     {
         return $this->getResponseBuilder()
@@ -965,31 +789,31 @@ class SCeController extends CrudController
     /**
      * @return array
      */
-    public function actionOrderLocation()
-    {
-        //TODO save any location that will be sent
-        $telegramUser = $this->getTelegramUser();
-
-        if ($telegramUser->location_lat && $telegramUser->location_lon) {
-            return $this->getResponseBuilder()
-                ->sendLocation(
-                    $telegramUser->location_lat,
-                    $telegramUser->location_lon
-                )
-                ->editMessageTextOrSendMessage(
-                    $this->render('order-location'),
-                    [
-                        [
-                            [
-                                'callback_data' => self::createRoute('order-edit'),
-                                'text' => Emoji::BACK,
-                            ],
-                        ],
-                    ]
-                )
-                ->build();
-        }
-    }
+    // public function actionOrderLocation()
+    // {
+    //     //TODO save any location that will be sent
+    //     $telegramUser = $this->getTelegramUser();
+    //
+    //     if ($telegramUser->location_lat && $telegramUser->location_lon) {
+    //         return $this->getResponseBuilder()
+    //             ->sendLocation(
+    //                 $telegramUser->location_lat,
+    //                 $telegramUser->location_lon
+    //             )
+    //             ->editMessageTextOrSendMessage(
+    //                 $this->render('order-location'),
+    //                 [
+    //                     [
+    //                         [
+    //                             'callback_data' => self::createRoute('order-edit'),
+    //                             'text' => Emoji::BACK,
+    //                         ],
+    //                     ],
+    //                 ]
+    //             )
+    //             ->build();
+    //     }
+    // }
 
     /**
      * @return array
@@ -1016,9 +840,12 @@ class SCeController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     * @param int $id CurrencyExchangeOrder->id
+     *
+     * @return array
      */
-    public function actionMatches($orderId, $page = 1)
+    public function actionMatches($page = 1, $id = null)
     {
         $user = $this->getUser();
 
@@ -1098,26 +925,30 @@ class SCeController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     *
+     * @return array
      */
     public function actionAllMatches($page = 1)
     {
         $user = $this->getUser();
 
-        $matchesQuery = CurrencyExchangeOrderMatch::find()
+        $query = CurrencyExchangeOrderMatch::find()
             ->joinWith('order')
             ->andWhere([
                 CurrencyExchangeOrder::tableName() . '.user_id' => $user->id,
             ]);
 
-        $matchesCount = $matchesQuery->count();
+        $matchesCount = $query->count();
 
         if (!$matchesCount) {
-            return $this->actionIndex();
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $pagination = new Pagination([
-            'totalCount' => $matchesQuery->count(),
+            'totalCount' => $matchesCount,
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -1126,9 +957,10 @@ class SCeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $currencyExchangeOrderMatch = $matchesQuery->offset($pagination->offset)
+        $mathes = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+
         $order = $currencyExchangeOrderMatch->order;
         $matchOrder = $currencyExchangeOrderMatch->matchOrder;
 
@@ -1142,7 +974,7 @@ class SCeController extends CrudController
         ];
 
         $buttons[] = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('all-matches', [
+            return self::createRoute('matches', [
                 'page' => $page,
             ]);
         });
@@ -1196,19 +1028,17 @@ class SCeController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id CurrencyExchangeOrder->id
      *
      * @return array
      */
-    public function actionSetStatus($id)
+    public function actionSetStatus($id = null)
     {
-        $user = $this->getUser();
-
-        $order = $user->getCurrencyExchangeOrders()
+        $order = CurrencyExchangeOrder::find()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($order)) {
@@ -1216,6 +1046,12 @@ class SCeController extends CrudController
                 ->answerCallbackQuery()
                 ->build();
         }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
+
+        $user = $this->getUser();
 
         $this->backRoute->make('view', compact('id'));
         $this->endRoute->make('view', compact('id'));

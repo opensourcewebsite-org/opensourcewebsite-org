@@ -2,11 +2,10 @@
 
 namespace app\modules\bot\components;
 
-use Yii;
-use TelegramBot\Api\Types\Update;
-use yii\base\Component;
+use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\controllers\groups\SystemMessageController;
-use app\modules\bot\components\helpers\Emoji;
+use Yii;
+use yii\base\Component;
 
 /**
  * Class GroupRouteResolver
@@ -56,9 +55,11 @@ class GroupRouteResolver extends Component
 
         if (!isset($route) && !empty($state)) {
             list($route, $params) = $this->resolveCommandRoute($state);
+
             if (isset($route) && isset($commandText)) {
                 $params['text'] = $commandText;
             }
+
             $isStateRoute = true;
         }
 
@@ -120,6 +121,7 @@ class GroupRouteResolver extends Component
         }
 
         $pattern = "#^$pattern$#u";
+
         foreach ($placeholders as $name => $expression) {
             $pattern = str_replace("<<" . $name . ">>", $expression, $pattern);
         }
@@ -137,26 +139,32 @@ class GroupRouteResolver extends Component
     private function prepareRoute(string $route, array $matches)
     {
         $namedGroups = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+
         foreach ($namedGroups as $key => $value) {
             $token = "<$key>";
+
             if (stripos($route, $token) !== false) {
                 if ($key == 'controller' || $key == 'action') {
                     $value = str_replace('_', '-', $value);
                 }
+
                 if ($key == 'action' && empty($value)) {
                     $value = 'index';
                 }
+
                 $route = str_replace($token, $value, $route);
                 unset($namedGroups[$key]);
             }
         }
 
         $queryParams = [];
+
         if (array_key_exists('query', $namedGroups)) {
             $query = $namedGroups['query'];
             unset($namedGroups['query']);
             $queryParams = $this->parseQuery($query);
         }
+
         $params = array_merge($queryParams, $namedGroups);
 
         return [$route, $params];
@@ -174,6 +182,7 @@ class GroupRouteResolver extends Component
 
         if ($query) {
             $paramsKeyValues = explode('&', $query);
+
             foreach ($paramsKeyValues as $keyValue) {
                 list($key, $value) = explode('=', $keyValue);
                 $params[$key] = urldecode($value);

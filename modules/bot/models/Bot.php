@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\models;
 
+use app\modules\bot\components\api\BotApi;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -65,7 +66,8 @@ class Bot extends ActiveRecord
      */
     public function validateToken($attribute, $params, $validator)
     {
-        $botApi = new \TelegramBot\Api\BotApi($this->$attribute);
+        $botApi = new BotApi($this->$attribute);
+
         if (isset(Yii::$app->params['telegramProxy'])) {
             $botApi->setProxy(Yii::$app->params['telegramProxy']);
         }
@@ -87,7 +89,8 @@ class Bot extends ActiveRecord
      */
     public function setWebhook()
     {
-        $botApi = new \TelegramBot\Api\BotApi($this->token);
+        $botApi = new BotApi($this->token);
+
         if (isset(Yii::$app->params['telegramProxy'])) {
             $botApi->setProxy(Yii::$app->params['telegramProxy']);
         }
@@ -95,6 +98,7 @@ class Bot extends ActiveRecord
         $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram-bot/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);
         $response = $botApi->setWebhook($url);
+
         if ($response) {
             $this->status = self::BOT_STATUS_ENABLED;
             $this->update(false, ['status']);
@@ -113,11 +117,14 @@ class Bot extends ActiveRecord
      */
     public function deleteWebhook()
     {
-        $botApi = new \TelegramBot\Api\BotApi($this->token);
+        $botApi = new BotApi($this->token);
+
         if (isset(Yii::$app->params['telegramProxy'])) {
             $botApi->setProxy(Yii::$app->params['telegramProxy']);
         }
+
         $response = $botApi->call('deleteWebhook');
+
         if ($response) {
             $this->status = self::BOT_STATUS_DISABLED;
             $this->update(false, ['status']);

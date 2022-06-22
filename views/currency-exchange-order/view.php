@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     'format' => 'html',
                                 ],
                                 [
-                                    'label' => Yii::t('app', 'Limits'),
+                                    'label' => Yii::t('ce_order', 'Limits'),
                                     'value' => $model->getFormatLimits(),
                                 ],
                                 [
@@ -124,7 +124,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Selling payment methods') ?></h3>
+                    <h3 class="card-title"><?= Yii::t('ce_order', 'Selling payment methods') ?></h3>
                     <div class="card-tools">
                         <?= ModalAjax::widget([
                             'id' => 'update-selling-payment-methods',
@@ -183,7 +183,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('app', 'Buying payment methods') ?></h3>
+                    <h3 class="card-title"><?= Yii::t('ce_order', 'Buying payment methods') ?></h3>
                     <div class="card-tools">
                             <?= ModalAjax::widget([
                                 'id' => 'update-buying-payment-methods',

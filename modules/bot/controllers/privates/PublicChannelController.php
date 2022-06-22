@@ -36,7 +36,7 @@ class PublicChannelController extends Controller
             ->orderBy([
                 '{{%user}}.rating' => SORT_DESC,
                 '{{%user}}.created_at' => SORT_ASC,
-                Chat::tableName() . '.chat_id' => SORT_ASC,
+                Chat::tableName() . '.chat_id' => SORT_DESC,
             ]);
 
         $pagination = new Pagination([
@@ -49,9 +49,9 @@ class PublicChannelController extends Controller
             'validatePage' => true,
         ]);
 
-        $chats = $query->offset($pagination->offset)
+        $chat = $query->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all();
+            ->one();
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [
@@ -61,7 +61,7 @@ class PublicChannelController extends Controller
 
         $buttons = [];
 
-        if ($chats) {
+        if ($chat) {
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
             }
@@ -70,8 +70,6 @@ class PublicChannelController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
-        $chat = $chats[0];
 
         $buttons[] = [
             [

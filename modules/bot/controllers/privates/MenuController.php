@@ -20,12 +20,27 @@ class MenuController extends Controller
     {
         $this->getState()->setName(null);
 
+        $globalUser = $this->getUser();
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'user' => $this->user,
+                    'user' => $globalUser,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => TelegramController::createRoute(),
+                            'text' => Yii::t('bot', 'Telegram'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => SCeController::createRoute(),
+                            'text' => Yii::t('bot', 'Currency Exchange'),
+                            'visible' => $globalUser->getCurrencyExchangeOrders()->exists(),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => SAdController::createRoute(),
@@ -42,42 +57,18 @@ class MenuController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => TelegramController::createRoute(),
-                            'text' => Yii::t('bot', 'Telegram Catalog'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => TelegramAdminController::createRoute(),
-                            'text' => Yii::t('bot', 'Telegram Admin'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => ServicesController::createRoute(),
-                            'text' => Emoji::DEVELOPMENT . ' ' . Yii::t('bot', 'Development'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MyAccountController::createRoute(),
-                            'text' => Yii::t('bot', 'Account'),
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
-                            'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
-                        ],
-                        [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
-                            'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
+                            'text' => Yii::t('bot', 'Development'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => StartController::createRoute(),
                             'text' => Emoji::GREETING,
+                        ],
+                        [
+                            'callback_data' => MyAccountController::createRoute(),
+                            'text' => Yii::t('bot', 'Account'),
                         ],
                         [
                             'callback_data' => LanguageController::createRoute(),

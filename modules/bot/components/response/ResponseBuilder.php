@@ -3,6 +3,7 @@
 namespace app\modules\bot\components\response;
 
 use app\modules\bot\components\api\BotApi;
+use app\modules\bot\components\api\Types\Update;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\helpers\Photo;
 use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
@@ -14,7 +15,6 @@ use app\modules\bot\components\response\commands\SendLocationCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
 use app\modules\bot\components\response\commands\SendPhotoCommand;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use TelegramBot\Api\Types\Update;
 use Yii;
 use yii\helpers\ArrayHelper;
 

@@ -17,6 +17,14 @@ class ExternalLink
     /**
      * {@inheritdoc}
      */
+    public static function getOSMFullLink($latitude, $longitude, $name = null)
+    {
+        return '<a href="' . self::getOSMLink($latitude, $longitude) . '">' . ($name ?: $latitude . ' ' . $longitude) . '</a>';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function getBotLink()
     {
         if (($module = Yii::$app->getModule('bot')) && ($bot = $module->getBot())) {

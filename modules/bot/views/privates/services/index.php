@@ -1,4 +1,4 @@
-🏗 <b><?= Yii::t('bot', 'Services') ?> (<?= Yii::t('bot', 'in development') ?>)</b><br/>
+<b><?= Yii::t('bot', 'Services') ?> (<?= Yii::t('bot', 'in development') ?>)</b><br/>
 <br/>
   • <?= Yii::t('bot', 'Ads'); ?>. <?= Yii::t('bot', 'Buying, selling, renting, services'); ?>.<br/>
   • <?= Yii::t('bot', 'Jobs'); ?>. <?= Yii::t('bot', 'Vacancies and resumes'); ?>.<br/>

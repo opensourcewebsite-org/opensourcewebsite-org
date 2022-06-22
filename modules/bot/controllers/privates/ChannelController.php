@@ -27,10 +27,10 @@ class ChannelController extends Controller
     {
         $this->getState()->setName(null);
 
-        $chatQuery = $this->getTelegramUser()->getActiveAdministratedChannels();
+        $query = $this->getTelegramUser()->getActiveAdministratedChannels();
 
         $pagination = new Pagination([
-            'totalCount' => $chatQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -47,7 +47,7 @@ class ChannelController extends Controller
 
         $buttons = [];
 
-        $chats = $chatQuery->offset($pagination->offset)
+        $chats = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -68,7 +68,7 @@ class ChannelController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => TelegramAdminController::createRoute(),
+                'callback_data' => TelegramController::createRoute(),
                 'text' => Emoji::BACK,
             ],
             [

@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\components;
 
+use app\modules\bot\components\api\Types\Update;
 use Yii;
-use TelegramBot\Api\Types\Update;
 use yii\base\Component;
 
 /**
@@ -184,6 +184,7 @@ class PrivateRouteResolver extends Component
 
         if ($query) {
             $paramsKeyValues = explode('&', $query);
+
             foreach ($paramsKeyValues as $keyValue) {
                 list($key, $value) = explode('=', $keyValue);
                 $params[$key] = urldecode($value);

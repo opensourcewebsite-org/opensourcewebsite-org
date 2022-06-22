@@ -29,10 +29,10 @@ class GroupController extends Controller
     {
         $this->getState()->setName(null);
 
-        $chatQuery = $this->getTelegramUser()->getActiveAdministratedGroups();
+        $query = $this->getTelegramUser()->getActiveAdministratedGroups();
 
         $pagination = new Pagination([
-            'totalCount' => $chatQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -49,7 +49,7 @@ class GroupController extends Controller
 
         $buttons = [];
 
-        $chats = $chatQuery->offset($pagination->offset)
+        $chats = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -70,7 +70,7 @@ class GroupController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => TelegramAdminController::createRoute(),
+                'callback_data' => TelegramController::createRoute(),
                 'text' => Emoji::BACK,
             ],
             [

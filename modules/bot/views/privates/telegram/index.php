@@ -1,8 +1,3 @@
-<?php
-
-use app\modules\bot\components\helpers\Emoji;
-
-?>
-<?= Emoji::SPEAKER ?> <b><?= Yii::t('bot', 'Telegram Catalog') ?></b><br/>
+<b><?= Yii::t('bot', 'Telegram') ?></b><br/>
 <br/>
-<?= Yii::t('bot', 'To add your public group or public channel to the catalog, add the bot to your group or channel') ?>.
+<?= Yii::t('bot', 'To add a public group or public channel to the catalog, add this bot to the group or channel') ?>.
