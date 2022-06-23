@@ -231,8 +231,10 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $member->membership_date = Yii::$app->formatter->asDate('tomorrow');
-        $member->save(false);
+        if (!$member->membership_date) {
+            $member->membership_date = Yii::$app->formatter->asDate('tomorrow');
+            $member->save(false);
+        }
 
         return $this->runAction('member', [
             'chatId' => $chatId,

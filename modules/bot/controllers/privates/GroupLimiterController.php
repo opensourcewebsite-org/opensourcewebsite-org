@@ -231,8 +231,10 @@ class GroupLimiterController extends Controller
                 ->build();
         }
 
-        $member->limiter_date = Yii::$app->formatter->asDate('tomorrow');
-        $member->save(false);
+        if (!$member->limiter_date) {
+            $member->limiter_date = Yii::$app->formatter->asDate('tomorrow');
+            $member->save(false);
+        }
 
         return $this->runAction('member', [
             'chatId' => $chatId,
