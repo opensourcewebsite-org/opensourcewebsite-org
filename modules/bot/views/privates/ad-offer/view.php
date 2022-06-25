@@ -21,7 +21,7 @@ use app\components\helpers\Html;
 <br/>
 <?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Location') ?>: <?= ExternalLink::getOSMFullLink($model->location_lat, $model->location_lon) ?></i><br/>
 <?php if ($model->delivery_radius > 0) : ?>
-<?= Emoji::HIDDEN ?> <i><b><?= Yii::t('bot', 'Delivery radius') ?>: <?= $model->delivery_radius ?> <?= Yii::t('bot', 'km') ?></i><br/>
+<?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Delivery radius') ?>: <?= $model->delivery_radius ?> <?= Yii::t('bot', 'km') ?></i><br/>
 <?php endif; ?>
 ————<br/>
 <?= Emoji::HIDDEN ?> - <i><?= Yii::t('bot', 'Only you see this information') ?></i>.<br/>

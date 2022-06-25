@@ -41,9 +41,9 @@ use app\modules\bot\components\helpers\ExternalLink;
   <?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Location') ?>: <?= ExternalLink::getOSMFullLink($model->location_lat, $model->location_lon) ?></i><br/>
 <?php if ($model->search_radius > 0) : ?>
   <?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Search radius') ?>: <?= $model->search_radius ?> <?= Yii::t('bot', 'km') ?></i><br/>
+<?php endif; ?>
 <?php else : ?>
 <b><?= Yii::t('jo', 'Offline work') ?></b>: <?= Yii::t('bot', 'No') ?><br/>
-<?php endif; ?>
 <?php endif; ?>
 ————<br/>
 <?= Emoji::HIDDEN ?> - <i><?= Yii::t('bot', 'Only you see this information') ?></i>.<br/>
