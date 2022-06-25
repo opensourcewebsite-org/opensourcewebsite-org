@@ -44,16 +44,6 @@ class JoResumeController extends CrudController
         'search_radius',
     ];
 
-    public function beforeAction($action)
-    {
-        // TODO only for DEV
-        if (!YII_ENV_DEV) {
-            exit();
-        }
-
-        return parent::beforeAction($action);
-    }
-
     /**
      * {@inheritdoc}
      */

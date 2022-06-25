@@ -18,6 +18,8 @@ class JoController extends Controller
      */
     public function actionIndex()
     {
+        $this->getState()->setName(null);
+
         $buttons = [
             [
                 [
