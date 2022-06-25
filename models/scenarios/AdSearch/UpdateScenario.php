@@ -10,6 +10,7 @@ use app\models\matchers\ModelLinker;
 class UpdateScenario
 {
     private AdSearch $model;
+
     private ModelLinker $linker;
 
     public function __construct(AdSearch $model)

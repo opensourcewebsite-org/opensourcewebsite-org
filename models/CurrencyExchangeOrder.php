@@ -446,7 +446,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getMatchesOrderedByUserRating(): ActiveQuery
+    public function getMatchesOrderByRank(): ActiveQuery
     {
         return $this
             ->getMatches()

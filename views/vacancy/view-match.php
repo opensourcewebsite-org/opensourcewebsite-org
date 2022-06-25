@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 'remote_on:boolean',
                                 [
-                                    'label' => Yii::t('app', 'Offline work'),
+                                    'label' => Yii::t('jo', 'Offline work'),
                                     'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
                                 ],
                                 [

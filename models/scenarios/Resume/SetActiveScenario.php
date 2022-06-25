@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\Resume;
 
-use Yii;
 use app\models\Resume;
 use app\models\scenarios\traits\ValidateRatingTrait;
+use Yii;
 
 final class SetActiveScenario
 {
     use ValidateRatingTrait;
 
     private Resume $model;
+
     private $modelClass = 'Resume';
+
     private array $errors = [];
 
     public function __construct(Resume $model)
@@ -35,6 +37,11 @@ final class SetActiveScenario
     public function getErrors(): array
     {
         return $this->errors;
+    }
+
+    public function getFirstError(): string
+    {
+        return $this->errors ? array_shift($this->errors) : '';
     }
 
     private function validateLanguages(): bool

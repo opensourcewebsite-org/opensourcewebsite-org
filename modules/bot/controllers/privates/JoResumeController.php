@@ -152,11 +152,11 @@ class JoResumeController extends CrudController
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                             'text' => Yii::t('bot', 'MY LOCATION'),
                             'callback' => function (Resume $model) {
-                                $latitude = $this->getTelegramUser()->location_lat;
-                                $longitude = $this->getTelegramUser()->location_lon;
+                                $latitude = 0;//$this->getTelegramUser()->location_lat;
+                                $longitude = 0;//$this->getTelegramUser()->location_lon;
                                 if ($latitude && $longitude) {
                                     $model->location_lat = $latitude;
                                     $model->location_lon = $longitude;
@@ -207,12 +207,17 @@ class JoResumeController extends CrudController
     public function actionIndex($page = 1)
     {
         $this->getState()->setName(null);
-        $user = $this->getUser();
 
-        $resumesCount = $user->getResumes()->count();
+        $globalUser = $this->getUser();
+
+        $query = $globalUser->getResumes()
+            ->orderBy([
+                'status' => SORT_DESC,
+                'name' => SORT_ASC,
+            ]);
 
         $pagination = new Pagination([
-            'totalCount' => $resumesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -221,27 +226,32 @@ class JoResumeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $resumes = $user->getResumes()
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $buttons = array_map(function ($resume) {
-            return [
-                [
-                    'text' => ($resume->isActive() ? '' : Emoji::INACTIVE . ' ') . $resume->name,
-                    'callback_data' => self::createRoute('view', [
-                        'id' => $resume->id,
-                    ]),
-                ],
-            ];
-        }, $resumes);
-
-        $buttons[] = PaginationButtons::build($pagination, function ($page) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [
                 'page' => $page,
             ]);
         });
+
+        $buttons = [];
+
+        $resumes = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($resumes) {
+            foreach ($resumes as $resume) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('view', [
+                        'id' => $resume->id,
+                    ]),
+                    'text' => ($resume->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $resume->id . ' ' . $resume->name,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
 
         $rowButtons[] = [
             'callback_data' => JoController::createRoute(),
@@ -256,7 +266,7 @@ class JoResumeController extends CrudController
         $matchesCount = JobResumeMatch::find()
             ->joinWith('resume')
             ->andWhere([
-                Resume::tableName() . '.user_id' => $user->id,
+                Resume::tableName() . '.user_id' => $globalUser->id,
             ])
             ->count();
 
@@ -264,12 +274,14 @@ class JoResumeController extends CrudController
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+                'visible' => YII_ENV_DEV,
             ];
         }
 
         $rowButtons[] = [
             'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
+            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -299,18 +311,16 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id Resume->id
      *
      * @return array
      */
-    public function actionView($id)
+    public function actionView($id = null)
     {
-        $this->getState()->setName(null);
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $resume = $user->getResumes()
+        $resume = $globalUser->getResumes()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
             ->one();
@@ -321,12 +331,14 @@ class JoResumeController extends CrudController
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         $buttons[] = [
             [
-                'text' => $resume->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                 'callback_data' => self::createRoute('set-status', [
                     'id' => $resume->id,
                 ]),
+                'text' => $resume->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
             ],
         ];
 
@@ -343,18 +355,19 @@ class JoResumeController extends CrudController
 
         $buttons[] = [
             [
-                'text' => Emoji::BACK,
                 'callback_data' => self::createRoute('index'),
+                'text' => Emoji::BACK,
             ],
             [
-                'text' => Emoji::MENU,
                 'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
             ],
             [
-                'text' => Emoji::EDIT,
                 'callback_data' => self::createRoute('update', [
                     'id' => $resume->id,
                 ]),
+                'text' => Emoji::EDIT,
+                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -363,7 +376,6 @@ class JoResumeController extends CrudController
                 $this->render('view', [
                     'model' => $resume,
                     'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($resume->location_lat, $resume->location_lon),
                 ]),
                 $buttons,
                 [
@@ -374,15 +386,17 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     * @param int $id Resume->id
+     *
+     * @return array
      */
-    public function actionMatches($id, $page = 1)
+    public function actionMatches($page = 1, $id = null)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $resume = $user->getResumes()
+        $resume = $globalUser->getResumes()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
             ->one();
@@ -393,15 +407,15 @@ class JoResumeController extends CrudController
                 ->build();
         }
 
-        $matchesQuery = $resume->getMatches();
-        $matchesCount = $matchesQuery->count();
+        $query = $resume->getMatchesOrderByRank();
+        $matchesCount = $query->count();
 
         if (!$matchesCount) {
             return $this->actionView($resume->id);
         }
 
         $pagination = new Pagination([
-            'totalCount' => $matchesQuery->count(),
+            'totalCount' => $matchesCount,
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -410,22 +424,26 @@ class JoResumeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $vacancy = $matchesQuery->offset($pagination->offset)
+        $vacancy = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
+        if (!$vacancy) {
+            return $this->actionView($resume->id);
+        }
+
         $buttons[] = [
             [
-                'text' => $resume->name,
                 'callback_data' => self::createRoute('view', [
                     'id' => $resume->id,
                 ]),
+                'text' => '#' . $resume->id . ' ' . $resume->name,
             ]
         ];
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($id) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($resume) {
             return self::createRoute('matches', [
-                'id' => $id,
+                'id' => $resume->id,
                 'page' => $page,
             ]);
         });
@@ -448,12 +466,7 @@ class JoResumeController extends CrudController
                 $this->render('match', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
-                    'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
-                    'languages' => array_map(function ($vacancyLanguage) {
-                        return $vacancyLanguage->getLabel();
-                    }, $vacancy->vacancyLanguagesRelation),
-                    'user' => TelegramUser::findOne(['user_id' => $vacancy->user_id]),
+                    'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -529,7 +542,7 @@ class JoResumeController extends CrudController
                 $this->render('match', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
-                    'keywords' => self::getKeywordsAsString($vacancy->getKeywordsRelation()->all()),
+                    'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
                     'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
                         return $vacancyLanguage->getLabel();
@@ -569,49 +582,49 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id Resume->id
      *
      * @return array
      */
-    public function actionSetStatus($id)
+    public function actionSetStatus($id = null)
     {
-        $user = $this->getUser();
-
-        /** @var Resume $resume */
-        $resume = $user->getResumes()
+        $model = Resume::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
-        if (!isset($resume)) {
+        if (!isset($model)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $this->backRoute->make('view', compact('id'));
-        $this->endRoute->make('view', compact('id'));
+        switch ($model->status) {
+            case Resume::STATUS_ON:
+                $model->setInactive();
+                $model->save(false);
 
-        $scenario = new SetActiveScenario($resume);
+                break;
+            case Resume::STATUS_OFF:
+                $scenario = new SetActiveScenario($model);
 
-        if (!$resume->isActive()) {
-            if (!$scenario->run()) {
-                $notFilledFields = array_values($scenario->getErrors());
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery(
-                        $this->render('status-error', compact('notFilledFields')),
-                        true
-                    )
-                    ->build();
-            }
-        } else {
-            $resume->setInactive();
+                if ($scenario->run()) {
+                    $model->save(false);
+                } else {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('../alert', [
+                                'alert' => $scenario->getFirstError(),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
         }
 
-        $resume->save();
-
-        return $this->actionView($resume->id);
+        return $this->actionView($model->id);
     }
 
     /**

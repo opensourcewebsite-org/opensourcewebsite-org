@@ -144,7 +144,7 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
         return [
             'id' => Yii::t('app', 'ID'),
             'user_id' => Yii::t('app', 'User'),
-            'remote_on' => Yii::t('bot', 'Remote work'),
+            'remote_on' => Yii::t('jo', 'Remote work'),
             'name' => Yii::t('app', 'Name'),
             'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'search_radius' => Yii::t('bot', 'Search radius'),
@@ -299,7 +299,7 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
      * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getMatchesOrderedByUserRating(): ActiveQuery
+    public function getMatchesOrderByRank(): ActiveQuery
     {
         return $this
             ->getMatches()

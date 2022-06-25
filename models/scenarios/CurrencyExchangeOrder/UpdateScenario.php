@@ -11,6 +11,7 @@ use Yii;
 class UpdateScenario
 {
     private CurrencyExchangeOrder $model;
+
     private ModelLinker $linker;
 
     public function __construct(CurrencyExchangeOrder $model)

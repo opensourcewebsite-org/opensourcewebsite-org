@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\Vacancy;
 
-use Yii;
-use app\models\Vacancy;
 use app\models\scenarios\traits\ValidateRatingTrait;
+use app\models\Vacancy;
+use Yii;
 
 final class SetActiveScenario
 {
     use ValidateRatingTrait;
 
     private Vacancy $model;
+
     private $modelClass = 'Vacancy';
+
     private array $errors = [];
 
     public function __construct(Vacancy $model)
@@ -35,6 +37,11 @@ final class SetActiveScenario
     public function getErrors(): array
     {
         return $this->errors;
+    }
+
+    public function getFirstError(): string
+    {
+        return $this->errors ? array_shift($this->errors) : '';
     }
 
     private function validateLanguages(): bool

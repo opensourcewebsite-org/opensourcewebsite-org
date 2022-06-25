@@ -11,6 +11,7 @@ use app\models\JobVacancyKeyword;
 use app\models\JobVacancyMatch;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\models\scenarios\Vacancy\SetActiveScenario;
 use app\models\User;
 use app\models\Vacancy;
 use app\models\VacancyLanguage;
@@ -167,11 +168,11 @@ class JoVacancyController extends CrudController
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                             'text' => Yii::t('bot', 'MY LOCATION'),
                             'callback' => function (Vacancy $model) {
-                                $latitude = $this->getTelegramUser()->location_lat;
-                                $longitude = $this->getTelegramUser()->location_lon;
+                                $latitude = 0;//$this->getTelegramUser()->location_lat;
+                                $longitude = 0;//$this->getTelegramUser()->location_lon;
                                 if ($latitude && $longitude) {
                                     $model->location_lat = $latitude;
                                     $model->location_lon = $longitude;
@@ -218,38 +219,46 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * @param int|null $companyId
      * @param int $page
+     * @param int|null $companyId
      *
      * @return array
      */
-    public function actionIndex($companyId = null, $page = 1)
+    public function actionIndex($page = 1, $companyId = null)
     {
         $this->getState()->setName(null);
-        $this->getState()->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
-        $user = $this->getUser();
 
-        $company = Company::findOne($companyId);
+        $globalUser = $this->getUser();
 
-        if ($companyId && !isset($company)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        if ($companyId) {
+            $company = Company::findOne($companyId);
 
-        if ($company) {
-            $query = $company->getVacancies();
+            if (!isset($company)) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
+            }
+
+            $query = $company->getVacancies()
+                ->orderBy([
+                    'status' => SORT_DESC,
+                    'name' => SORT_ASC,
+                ]);
         } else {
-            $query = $user->getVacancies()
+            $company = null;
+
+            $query = $globalUser->getVacancies()
                 ->andWhere([
                     'IS', 'company_id', null,
+                ])
+                ->orderBy([
+                    'status' => SORT_DESC,
+                    'name' => SORT_ASC,
                 ]);
         }
 
-        $vacanciesCount = $query->count();
-
         $pagination = new Pagination([
-            'totalCount' => $vacanciesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -258,27 +267,33 @@ class JoVacancyController extends CrudController
             'validatePage' => true,
         ]);
 
-        $vacancies = $query->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $buttons = array_map(function ($vacancy) {
-            return [
-                [
-                    'text' => ($vacancy->isActive() ? '' : Emoji::INACTIVE . ' ') . $vacancy->name,
-                    'callback_data' => self::createRoute('view', [
-                        'id' => $vacancy->id,
-                    ]),
-                ],
-            ];
-        }, $vacancies);
-
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($companyId) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
             return self::createRoute('index', [
                 'companyId' => $companyId,
                 'page' => $page,
             ]);
         });
+
+        $buttons = [];
+
+        $vacancies = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($vacancies) {
+            foreach ($vacancies as $vacancy) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('view', [
+                        'id' => $vacancy->id,
+                    ]),
+                    'text' => ($vacancy->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $vacancy->id . ' ' . $vacancy->name,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
 
         if ($company) {
             $rowButtons[] = [
@@ -302,7 +317,7 @@ class JoVacancyController extends CrudController
         $matchesCount = JobVacancyMatch::find()
             ->joinWith('vacancy')
             ->andWhere([
-                Vacancy::tableName() . '.user_id' => $user->id,
+                Vacancy::tableName() . '.user_id' => $globalUser->id,
             ])
             ->count();
 
@@ -310,12 +325,14 @@ class JoVacancyController extends CrudController
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+                'visible' => YII_ENV_DEV,
             ];
         }
 
         $rowButtons[] = [
             'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
+            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -331,18 +348,16 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id Vacancy->id
      *
      * @return array
      */
-    public function actionView($id)
+    public function actionView($id = null)
     {
-        $this->getState()->setName(null);
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $vacancy = $user->getVacancies()
+        $vacancy = $globalUser->getVacancies()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
             ->one();
@@ -353,26 +368,28 @@ class JoVacancyController extends CrudController
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         if ($company = $vacancy->company) {
             $backButton = [
-                'text' => Emoji::BACK,
                 'callback_data' => self::createRoute('index', [
                     'companyId' => $company->id,
                 ]),
+                'text' => Emoji::BACK,
             ];
         } else {
             $backButton = [
-                'text' => Emoji::BACK,
                 'callback_data' => self::createRoute(),
+                'text' => Emoji::BACK,
             ];
         }
 
         $buttons[] = [
             [
-                'text' => $vacancy->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                 'callback_data' => self::createRoute('set-status', [
                     'id' => $vacancy->id,
                 ]),
+                'text' => $vacancy->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
             ],
         ];
 
@@ -390,14 +407,15 @@ class JoVacancyController extends CrudController
         $buttons[] = [
             $backButton,
             [
-                'text' => Emoji::MENU,
                 'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
             ],
             [
-                'text' => Emoji::EDIT,
                 'callback_data' => self::createRoute('update', [
                     'id' => $vacancy->id,
                 ]),
+                'text' => Emoji::EDIT,
+                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -407,10 +425,6 @@ class JoVacancyController extends CrudController
                     'model' => $vacancy,
                     'company' => $vacancy->company,
                     'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
-                    'languages' => array_map(function ($vacancyLanguage) {
-                        return $vacancyLanguage->getLabel();
-                    }, $vacancy->vacancyLanguagesRelation),
                 ]),
                 $buttons,
                 [
@@ -437,15 +451,17 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     * @param int $id Vacancy->id
+     *
+     * @return array
      */
-    public function actionMatches($id, $page = 1)
+    public function actionMatches($page = 1, $id = null)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $vacancy = $user->getVacancies()
+        $vacancy = $globalUser->getVacancies()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
             ->one();
@@ -456,15 +472,15 @@ class JoVacancyController extends CrudController
                 ->build();
         }
 
-        $matchesQuery = $vacancy->getMatches();
-        $matchesCount = $matchesQuery->count();
+        $query = $vacancy->getMatchesOrderByRank();
+        $matchesCount = $query->count();
 
         if (!$matchesCount) {
             return $this->actionView($vacancy->id);
         }
 
         $pagination = new Pagination([
-            'totalCount' => $matchesQuery->count(),
+            'totalCount' => $matchesCount,
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -473,22 +489,26 @@ class JoVacancyController extends CrudController
             'validatePage' => true,
         ]);
 
-        $resume = $matchesQuery->offset($pagination->offset)
+        $resume = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
+        if (!$resume) {
+            return $this->actionView($vacancy->id);
+        }
+
         $buttons[] = [
             [
-                'text' => $vacancy->name,
                 'callback_data' => self::createRoute('view', [
                     'id' => $vacancy->id,
                 ]),
+                'text' => '#' . $vacancy->id . ' ' . $vacancy->name,
             ]
         ];
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($id) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($vacancy) {
             return self::createRoute('matches', [
-                'id' => $id,
+                'id' => $vacancy->id,
                 'page' => $page,
             ]);
         });
@@ -510,8 +530,7 @@ class JoVacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $resume,
-                    'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
-                    'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
+                    'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -586,7 +605,7 @@ class JoVacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $resume,
-                    'keywords' => self::getKeywordsAsString($resume->getKeywordsRelation()->all()),
+                    'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
                     'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                 ]),
                 $buttons,
@@ -626,45 +645,49 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id Vacancy->id
      *
      * @return array
      */
-    public function actionSetStatus($id)
+    public function actionSetStatus($id = null)
     {
-        $user = $this->getUser();
-
-        $vacancy = $user->getVacancies()
+        $model = Vacancy::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
-        if (!isset($vacancy)) {
+        if (!isset($model)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $this->backRoute->make('view', compact('id'));
-        $this->endRoute->make('view', compact('id'));
+        switch ($model->status) {
+            case Vacancy::STATUS_ON:
+                $model->setInactive();
+                $model->save(false);
 
-        if (!$vacancy->isActive() && ($notFilledFields = $vacancy->notPossibleToChangeStatus())) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('status-error', compact('notFilledFields')),
-                    true
-                )
-                ->build();
+                break;
+            case Vacancy::STATUS_OFF:
+                $scenario = new SetActiveScenario($model);
+
+                if ($scenario->run()) {
+                    $model->save(false);
+                } else {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('../alert', [
+                                'alert' => $scenario->getFirstError(),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
         }
 
-        $vacancy->setAttributes([
-            'status' => ($vacancy->isActive() ? Vacancy::STATUS_OFF : Vacancy::STATUS_ON),
-        ]);
-
-        $vacancy->save();
-
-        return $this->actionView($vacancy->id);
+        return $this->actionView($model->id);
     }
 
     protected function getModel($id)

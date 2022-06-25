@@ -34,23 +34,19 @@ trait ValidateRatingTrait
         $user = Yii::$app->user->identity;
 
         if (isset($this->settings[$this->modelClass])) {
-            if (Yii::$app->settings->{$this->settings[$this->modelClass][0]}) {
-                $activeModelsCount = $this->model::find()
-                    ->live()
-                    ->userOwner()
-                    ->count();
+            $activeModelsCount = $this->model::find()
+                ->live()
+                ->userOwner()
+                ->count();
 
-                $maxActiveModelsCount = (int)max(floor($user->getRating() * Yii::$app->settings->{$this->settings[$this->modelClass][0]}), Yii::$app->settings->{$this->settings[$this->modelClass][1]});
+            $maxActiveModelsCount = (int)max(floor($user->getRating() * Yii::$app->settings->{$this->settings[$this->modelClass][0]}), Yii::$app->settings->{$this->settings[$this->modelClass][1]});
 
-                if ($maxActiveModelsCount <= $activeModelsCount) {
-                    $requiredRating = (int)ceil(($activeModelsCount + 1) * Yii::$app->settings->{$this->settings[$this->modelClass][0]});
+            if ($maxActiveModelsCount <= $activeModelsCount) {
+                $requiredRating = (int)ceil(($activeModelsCount + 1) / Yii::$app->settings->{$this->settings[$this->modelClass][0]});
 
-                    $this->errors['rating'] = Yii::t('app', 'With your Rating of {0}, you have reached the maximum number of active objects', $user->getRating())
-                        . '. ' . Yii::t('app', 'To activate this object please increase your Rating to at least {0}', $requiredRating)
-                        . '. ' . Yii::t('bot', 'Your donations and contributions increase your Rating') . '.';
+                $this->errors['rating'] = Yii::t('app', 'To activate this object please increase your Rating to at least {0}', $requiredRating) . '.';
 
-                    return false;
-                }
+                return false;
             }
         }
 

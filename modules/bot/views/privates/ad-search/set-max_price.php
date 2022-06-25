@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Send a max price') ?> (<?= $model->currency->code ?>).</b><br/>
+<b><?= Yii::t('bot', 'Send a maximum price') ?> (<?= $model->currency->code ?>).</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>

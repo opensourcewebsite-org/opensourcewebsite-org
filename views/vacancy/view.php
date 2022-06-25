@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 'remote_on:boolean',
                                 [
-                                    'label' => Yii::t('app', 'Offline work'),
+                                    'label' => Yii::t('jo', 'Offline work'),
                                     'value' => (bool)$model->location ? Yii::t('app', 'Yes') : Yii::t('app', 'No'),
                                 ],
                                 [
@@ -143,7 +143,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?= Yii::t('user', 'Languages'); ?></h3>
+                    <h3 class="card-title"><?= Yii::t('jo', 'Required languages'); ?></h3>
                     <div class="card-tools">
                         <?= ModalAjax::widget([
                             'id' => 'add-language',

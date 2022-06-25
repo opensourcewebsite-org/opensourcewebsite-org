@@ -10,6 +10,7 @@ use app\models\matchers\ModelLinker;
 class UpdateScenario
 {
     private AdOffer $model;
+
     private ModelLinker $linker;
 
     public function __construct(AdOffer $model)

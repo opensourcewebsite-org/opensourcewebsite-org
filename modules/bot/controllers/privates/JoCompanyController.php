@@ -23,7 +23,6 @@ use yii\db\ActiveRecord;
  */
 class JoCompanyController extends CrudController
 {
-    public const DEFAULT_PAGE_SIZE = 9;
     protected $updateAttributes = [
         'name',
         'description',
@@ -76,13 +75,14 @@ class JoCompanyController extends CrudController
     public function actionIndex($page = 1)
     {
         $this->getState()->setName(null);
-        $user = $this->getUser();
 
-        $companiesCount = $user->getCompanies()->count();
+        $globalUser = $this->getUser();
+
+        $query = $globalUser->getCompanies();
 
         $pagination = new Pagination([
-            'totalCount' => $companiesCount,
-            'pageSize' => static::DEFAULT_PAGE_SIZE,
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
             'params' => [
                 'page' => $page,
             ],
@@ -90,40 +90,46 @@ class JoCompanyController extends CrudController
             'validatePage' => true,
         ]);
 
-        $companies = $user->getCompanies()
-            ->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $buttons = array_map(function ($company) {
-            return [
-                [
-                    'text' => $company->name,
-                    'callback_data' => self::createRoute('view', [
-                        'id' => $company->id,
-                    ]),
-                ],
-            ];
-        }, $companies);
-
-        $buttons[] = PaginationButtons::build($pagination, function ($page) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
             return self::createRoute('index', [
                 'page' => $page,
             ]);
         });
 
+        $buttons = [];
+
+        $companies = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($companies) {
+            foreach ($companies as $company) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('view', [
+                        'id' => $company->id,
+                    ]),
+                    'text' => $company->name,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
         $buttons[] = [
             [
-                'text' => Emoji::BACK,
                 'callback_data' => JoController::createRoute(),
+                'text' => Emoji::BACK,
             ],
             [
-                'text' => Emoji::MENU,
                 'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
             ],
             [
-                'text' => Emoji::ADD,
                 'callback_data' => self::createRoute('create'),
+                'text' => Emoji::ADD,
+                'visible' => YII_ENV_DEV,
             ],
         ];
 

@@ -140,7 +140,7 @@ class ChatMemberReview extends ActiveRecord
     public function getStatusInfo()
     {
         $array = [
-            0 => Yii::t('bot', 'Only you see this information'),
+            0 => Yii::t('bot', 'Only you see this review'),
             1 => Yii::t('bot', 'Positive review'),
             2 => Yii::t('bot', 'Negative review'),
         ];

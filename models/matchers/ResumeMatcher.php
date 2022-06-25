@@ -16,7 +16,9 @@ use yii\db\Expression;
 final class ResumeMatcher
 {
     private Resume $model;
+
     private ModelLinker $linker;
+
     private string $comparingTable;
 
     public function __construct(Resume $model)

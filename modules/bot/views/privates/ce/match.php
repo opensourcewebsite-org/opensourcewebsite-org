@@ -1,71 +1,37 @@
 <?php
 
-use app\models\CurrencyExchangeOrder;
 use app\modules\bot\components\helpers\Emoji;
+use app\components\helpers\Html;
 
 ?>
-<b><?= Emoji::CE_ORDER . ' ' . Yii::t('bot', 'Swap') ?>: <?= $name ?></b><br/>
+<?= Emoji::CE_ORDER ?> <b><?= Yii::t('bot', 'Order') ?>: #<?= $model->id ?> <?= $model->getTitle() ?></b><br/>
 <br/>
-<?php if ($keywords != '') : ?>
-# <i><?= $keywords ?></i><br/>
+<b><?= Yii::t('bot', 'Sell') ?></b>: <?= $model->sellingCurrency->code ?><br/>
 <br/>
+<b><?= Yii::t('bot', 'Buy') ?></b>: <?= $model->buyingCurrency->code ?><br/>
+<br/>
+<b><?= Yii::t('bot', 'Exchange rate') ?></b>: <?= $model->selling_rate ?: '∞' ?><br/>
+<br/>
+<b><?= Yii::t('bot', 'Inverse rate') ?></b>: <?= $model->buying_rate ?: '∞' ?><br/>
+<br/>
+<b><?= Yii::t('ce_order', 'Limits') ?></b>: <?= $model->getFormatLimits() ?><br/>
+————<br/>
+<b><?= Yii::t('ce_order', 'Selling payment methods') ?></b>:<br/>
+<?php if ($model->selling_cash_on) : ?>
+  • <?= Yii::t('bot', 'Cash') ?><br/>
 <?php endif; ?>
-<?php if ($responsibilities) : ?>
-<b><?= Yii::t('bot', 'Responsibilities') ?>:</b><br/>
-<br/>
-<?= nl2br($responsibilities) ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($requirements) : ?>
-<b><?= Yii::t('bot', 'Requirements') ?>:</b><br/>
-<br/>
-<?= nl2br($requirements) ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($conditions) : ?>
-<b><?= Yii::t('bot', 'Conditions') ?>:</b><br/>
-<br/>
-<?= nl2br($conditions) ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($languages) : ?>
-<b><?= Yii::t('bot', 'Required languages') ?>:</b><br/>
-<br/>
-<?php foreach ($languages as $language) : ?>
-<?= $language ?><br/>
+<?php foreach ($model->sellingPaymentMethods as $method) : ?>
+  • <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?><br/>
 <?php endforeach; ?>
-<br/>
-<?php endif; ?>
-<?php if ($hourlyRate) : ?>
-<b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $hourlyRate ?> <?= $currencyCode ?><br/>
-<br/>
-<?php endif; ?>
-<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
-<br/>
-<?php if ($model->location_lat && $model->location_lon) : ?>
-<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>
-<br/>
-<?php endif; ?>
-<?php if ($company) : ?>
 ————<br/>
-<br/>
-<b><?= Emoji::JO_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $company->name; ?></b><br/>
-<br/>
-<?php if ($company->description) : ?>
-<?= nl2br($company->description); ?><br/>
-<br/>
+<b><?= Yii::t('ce_order', 'Buying payment methods') ?></b>:<br/>
+<?php if ($model->buying_cash_on) : ?>
+  • <?= Yii::t('bot', 'Cash') ?><br/>
 <?php endif; ?>
-<?php if ($company->address) : ?>
-<b><?= Yii::t('bot', 'Address') ?>:</b> <?= $company->address ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($company->url) : ?>
-<b><?= Yii::t('bot', 'Website') ?>:</b> <?= $company->url ?><br/>
-<br/>
-<?php endif; ?>
-<?php endif; ?>
-<?php if ($user) : ?>
+<?php foreach ($model->buyingPaymentMethods as $method) : ?>
+  • <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?><br/>
+<?php endforeach; ?>
+<?php if ($user = $model->user->botUser) : ?>
 ————<br/>
-<br/>
-<b><?= Yii::t('bot', 'Contact') ?>:</b> <?= $user->getFullLink(); ?>
+<b><?= Yii::t('bot', 'Contact') ?></b>: <?= $user->getFullLink(); ?>
 <?php endif; ?>

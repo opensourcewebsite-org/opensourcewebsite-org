@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace app\models\matchers;
 
 use app\models\CurrencyExchangeOrder;
+use app\models\queries\CurrencyExchangeOrderQuery;
 use yii\db\conditions\AndCondition;
 use yii\db\conditions\OrCondition;
 use yii\db\Expression;
-use app\models\queries\CurrencyExchangeOrderQuery;
 use yii\helpers\ArrayHelper;
 
 final class CurrencyExchangeOrderMatcher
 {
     private CurrencyExchangeOrder $model;
+
     private ModelLinker $linker;
+
     private string $comparingTable;
 
     public function __construct(CurrencyExchangeOrder $model)

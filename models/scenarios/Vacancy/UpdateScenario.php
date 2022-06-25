@@ -10,6 +10,7 @@ use app\models\Vacancy;
 class UpdateScenario
 {
     private Vacancy $model;
+
     private ModelLinker $linker;
 
     public function __construct(Vacancy $model)

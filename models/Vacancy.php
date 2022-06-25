@@ -158,7 +158,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         return [
             'id' => Yii::t('app', 'ID'),
             'max_hourly_rate' => Yii::t('bot', 'Max. hourly rate'),
-            'remote_on' => Yii::t('bot', 'Remote work'),
+            'remote_on' => Yii::t('jo', 'Remote work'),
             'company_id' => Yii::t('app', 'Company'),
             'status' => Yii::t('app', 'Status'),
             'name' => Yii::t('app', 'Name'),
@@ -304,7 +304,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
      * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getMatchesOrderedByUserRating(): ActiveQuery
+    public function getMatchesOrderByRank(): ActiveQuery
     {
         return $this
             ->getMatches()

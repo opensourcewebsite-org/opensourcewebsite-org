@@ -138,9 +138,9 @@ class AdOfferController extends Controller
     {
         $model = $this->findAdSearchByIdAndCurrentUser($adSearchId);
 
-        if ($model->getMatchesOrderedByUserRating()->exists()) {
+        if ($model->getMatchesOrderByRank()->exists()) {
             $dataProvider = new ActiveDataProvider([
-                'query' => $model->getMatchesOrderedByUserRating(),
+                'query' => $model->getMatchesOrderByRank(),
             ]);
 
             return $this->render('matches', [

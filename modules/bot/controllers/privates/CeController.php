@@ -10,6 +10,7 @@ use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\CurrencyExchangeOrderSellingPaymentMethod;
 use app\models\PaymentMethod;
+use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
 use app\models\User;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
@@ -402,7 +403,6 @@ class CeController extends CrudController
                     'id' => $order->id,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
@@ -502,14 +502,6 @@ class CeController extends CrudController
                 ]
             )
             ->build();
-    }
-
-    /**
-     * @return array
-     */
-    public function actionOrderStatus()
-    {
-        return $this->actionOrder();
     }
 
     /**
@@ -765,30 +757,6 @@ class CeController extends CrudController
     /**
      * @return array
      */
-    public function actionNoRequirements()
-    {
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('no-requirements'),
-                [
-                    [
-                        [
-                            'callback_data' => ServicesController::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return array
-     */
     // public function actionOrderLocation()
     // {
     //     //TODO save any location that will be sent
@@ -847,28 +815,29 @@ class CeController extends CrudController
      */
     public function actionMatches($page = 1, $id = null)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $order = $user->getCurrencyExchangeOrders()
+        $order = $globalUser->getCurrencyExchangeOrders()
             ->where([
-                'user_id' => $user->id,
-                'id' => $orderId,
+                'id' => $id,
             ])
             ->one();
 
         if (!isset($order)) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        $matchesQuery = $order->getMatches();
-        $matchesCount = $matchesQuery->count();
+        $query = $order->getMatchesOrderByRank();
+        $matchesCount = $query->count();
 
         if (!$matchesCount) {
             return $this->actionView($order->id);
         }
 
         $pagination = new Pagination([
-            'totalCount' => $matchesQuery->count(),
+            'totalCount' => $matchesCount,
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -877,22 +846,26 @@ class CeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $matchOrder = $matchesQuery->offset($pagination->offset)
+        $matchOrder = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
+        if (!$matchOrder) {
+            return $this->actionView($order->id);
+        }
+
         $buttons[] = [
             [
-                'text' => $order->getTitle(),
+                'text' => '#' . $order->id . ' ' . $order->getTitle(),
                 'callback_data' => self::createRoute('view', [
                     'id' => $order->id,
                 ]),
             ]
         ];
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($orderId) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($order) {
             return self::createRoute('matches', [
-                'orderId' => $orderId,
+                'id' => $order->id,
                 'page' => $page,
             ]);
         });
@@ -914,7 +887,6 @@ class CeController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $matchOrder,
-                    'user' => TelegramUser::findOne(['user_id' => $matchOrder->user_id]),
                 ]),
                 $buttons,
                 [
@@ -1034,43 +1006,42 @@ class CeController extends CrudController
      */
     public function actionSetStatus($id = null)
     {
-        $order = CurrencyExchangeOrder::find()
+        $model = CurrencyExchangeOrder::find()
             ->where([
                 'id' => $id,
             ])
             ->userOwner()
             ->one();
 
-        if (!isset($order)) {
+        if (!isset($model)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
-            ->build();
+        switch ($model->status) {
+            case CurrencyExchangeOrder::STATUS_ON:
+                $model->setInactive();
+                $model->save(false);
 
-        $user = $this->getUser();
+                break;
+            case CurrencyExchangeOrder::STATUS_OFF:
+                $scenario = new SetActiveScenario($model);
 
-        $this->backRoute->make('view', compact('id'));
-        $this->endRoute->make('view', compact('id'));
-
-        if (!$order->isActive() && ($notFilledFields = $order->notPossibleToChangeStatus())) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('status-error', compact('notFilledFields')),
-                    true
-                )
-                ->build();
+                if ($scenario->run()) {
+                    $model->save(false);
+                } else {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('../alert', [
+                                'alert' => $scenario->getFirstError(),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
         }
 
-        $order->setAttributes([
-            'status' => ($order->isActive() ? CurrencyExchangeOrder::STATUS_OFF : CurrencyExchangeOrder::STATUS_ON),
-        ]);
-
-        $order->save();
-
-        return $this->actionView($order->id);
+        return $this->actionView($model->id);
     }
 }

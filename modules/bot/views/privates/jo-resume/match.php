@@ -1,71 +1,73 @@
 <?php
 
+use app\components\helpers\Html;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
-<b><?= Emoji::JO_VACANCY . ' ' . Yii::t('bot', 'Vacancy') ?>: <?= $model->name ?></b><br/>
-<br/>
-<?php if ($keywords != '') : ?>
-# <i><?= $keywords ?></i><br/>
-<br/>
-<?php endif; ?>
-<?php if ($model->responsibilities) : ?>
-<b><?= Yii::t('bot', 'Responsibilities') ?>:</b><br/>
-<br/>
-<?= nl2br($model->responsibilities) ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($model->requirements) : ?>
-<b><?= Yii::t('bot', 'Requirements') ?>:</b><br/>
-<br/>
-<?= nl2br($model->requirements) ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($model->conditions) : ?>
-<b><?= Yii::t('bot', 'Conditions') ?>:</b><br/>
-<br/>
-<?= nl2br($model->conditions) ?><br/>
-<br/>
-<?php endif; ?>
-<?php if ($languages) : ?>
-<b><?= Yii::t('bot', 'Required languages') ?>:</b><br/>
-<br/>
-<?php foreach ($languages as $language) : ?>
-<?= $language ?><br/>
-<?php endforeach; ?>
-<br/>
-<?php endif; ?>
-<?php if ($model->max_hourly_rate) : ?>
-<b><?= Yii::t('bot', 'Max. hourly rate') ?>:</b> <?= $model->max_hourly_rate ?> <?= $model->currency->code ?><br/>
-<br/>
-<?php endif; ?>
-<b><?= Yii::t('bot', 'Remote work') ?>:</b> <?= $model->remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
-<br/>
-<?php if ($model->location_lat && $model->location_lon) : ?>
-<b><?= Yii::t('bot', 'Location') ?>:</b> <a href = "<?= $locationLink ?>"><?= $model->location_lat ?> <?= $model->location_lon ?></a><br/>
-<br/>
-<?php endif; ?>
+<?= Emoji::JO_VACANCY ?> <b><?= Yii::t('bot', 'Vacancy') ?>: #<?= $model->id ?> <?= $model->name ?></b><br/>
 <?php if ($company) : ?>
 ————<br/>
-<br/>
-<b><?= Emoji::JO_COMPANY . ' ' . Yii::t('bot', 'Company') ?>: <?= $company->name; ?></b><br/>
-<br/>
+<?= Emoji::JO_COMPANY ?> <b><?= $company->name; ?></b><br/>
 <?php if ($company->description) : ?>
-<?= nl2br($company->description); ?><br/>
 <br/>
+<?= nl2br($company->description); ?><br/>
 <?php endif; ?>
 <?php if ($company->address) : ?>
-<b><?= Yii::t('bot', 'Address') ?>:</b> <?= $company->address ?><br/>
 <br/>
+<b><?= Yii::t('bot', 'Address') ?></b>: <?= $company->address ?><br/>
 <?php endif; ?>
 <?php if ($company->url) : ?>
-<b><?= Yii::t('bot', 'Website') ?>:</b> <?= $company->url ?><br/>
 <br/>
+<b><?= Yii::t('bot', 'Website') ?></b>: <?= $company->url ?><br/>
 <?php endif; ?>
+————
 <?php endif; ?>
-<?php if ($user) : ?>
+<?php if ($keywords != '') : ?>
+<br/>
+# <i><?= $keywords ?></i><br/>
+<?php endif; ?>
+<?php if ($model->responsibilities) : ?>
+<br/>
+<b><?= Yii::t('bot', 'Responsibilities') ?></b>:<br/>
+<br/>
+<?= nl2br($model->responsibilities) ?><br/>
+<?php endif; ?>
+<?php if ($model->requirements) : ?>
+<br/>
+<b><?= Yii::t('bot', 'Requirements') ?></b>:<br/>
+<br/>
+<?= nl2br($model->requirements) ?><br/>
+<?php endif; ?>
+<?php if ($model->conditions) : ?>
+<br/>
+<b><?= Yii::t('bot', 'Conditions') ?></b>:<br/>
+<br/>
+<?= nl2br($model->conditions) ?><br/>
+<?php endif; ?>
+<?php if ($model->languagesWithLevels) : ?>
+<br/>
+<b><?= Yii::t('jo', 'Required languages') ?></b>:<br/>
+<br/>
+<?php foreach ($model->languagesWithLevels as $language) : ?>
+  • <?= $language->getLabel() ?><br/>
+<?php endforeach; ?>
+<?php endif; ?>
+<?php if ($model->max_hourly_rate) : ?>
+<br/>
+<b><?= Yii::t('bot', 'Max. hourly rate') ?></b>: <?= $model->max_hourly_rate ?> <?= $model->currency->code ?><br/>
+<?php endif; ?>
+<br/>
+<b><?= Yii::t('jo', 'Remote work') ?></b>: <?= $model->remote_on == Vacancy::REMOTE_ON ? Yii::t('bot', 'Yes') : Yii::t('bot', 'No') ; ?><br/>
+<br/>
+<?php if ($model->location_lat && $model->location_lon) : ?>
+<b><?= Yii::t('jo', 'Offline work') ?></b>: <?= Yii::t('bot', 'Yes') ?><br/>
+  • <b><?= Yii::t('bot', 'Location') ?></b>: <?= ExternalLink::getOSMFullLink($model->location_lat, $model->location_lon) ?><br/>
+<?php else : ?>
+<b><?= Yii::t('jo', 'Offline work') ?></b>: <?= Yii::t('bot', 'No') ?><br/>
+<?php endif; ?>
+<?php if ($user = $model->user->botUser) : ?>
 ————<br/>
-<br/>
-<b><?= Yii::t('bot', 'Contact') ?>:</b> <?= $user->getFullLink(); ?>
+<b><?= Yii::t('bot', 'Contact') ?></b>: <?= $user->getFullLink(); ?>
 <?php endif; ?>

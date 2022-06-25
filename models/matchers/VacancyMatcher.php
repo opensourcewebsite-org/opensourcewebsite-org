@@ -10,6 +10,7 @@ use app\models\queries\builders\RadiusExpressionBuilder;
 use app\models\queries\builders\UserLanguagesMatchExpressionBuilder;
 use app\models\queries\ResumeQuery;
 use app\models\Resume;
+use app\models\User;
 use app\models\UserLanguage;
 use app\models\Vacancy;
 use yii\db\conditions\AndCondition;
@@ -19,7 +20,9 @@ use yii\db\Expression;
 final class VacancyMatcher
 {
     private Vacancy $model;
+
     private ModelLinker $linker;
+
     private string $comparingTable;
 
     public function __construct(Vacancy $model)
@@ -122,7 +125,8 @@ final class VacancyMatcher
         $newQuery = clone $query;
 
         if ($this->model->gender_id) {
-            $newQuery->andWhere(['user.gender_id' => $this->model->gender_id]);
+            $newQuery->joinWith('user')
+                ->andWhere([User::tableName() . '.gender_id' => $this->model->gender_id]);
         }
 
         return $newQuery;

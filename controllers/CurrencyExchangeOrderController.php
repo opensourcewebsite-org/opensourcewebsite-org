@@ -181,11 +181,12 @@ class CurrencyExchangeOrderController extends Controller
         $this->response->format = Response::FORMAT_JSON;
 
         $scenario = new SetActiveScenario($model);
+
         if ($scenario->run()) {
             $model->save();
             return true;
         }
-        Yii::warning($scenario->getErrors());
+
         return $scenario->getErrors();
     }
 
@@ -221,9 +222,9 @@ class CurrencyExchangeOrderController extends Controller
     {
         $model = $this->findModelByIdAndCurrentUser($id);
 
-        if ($model->getMatchesOrderedByUserRating()->exists()) {
+        if ($model->getMatchesOrderByRank()->exists()) {
             $dataProvider = new ActiveDataProvider([
-                'query' => $model->getMatchesOrderedByUserRating(),
+                'query' => $model->getMatchesOrderByRank(),
             ]);
 
             return $this->render('matches', [

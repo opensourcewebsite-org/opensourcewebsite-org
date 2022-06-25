@@ -3,22 +3,20 @@
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::AD_OFFER . ' ' . Yii::t('bot', $model->getSectionName()) ?>: <?= $model->title ?></b><br/>
+<?= Emoji::AD_OFFER ?> <b><?= Yii::t('bot', $model->getSectionName()) ?>: #<?= $model->id ?> <?= $model->title ?></b><br/>
+<?php if ($model->description) : ?>
 <br/>
-<?php if ($model->description !== null) : ?>
 <?= nl2br($model->description); ?><br/>
-<br/>
 <?php endif; ?>
 <?php if ($keywords != '') : ?>
-# <i><?= $keywords ?></i><br/>
 <br/>
+# <i><?= $keywords ?></i><br/>
 <?php endif; ?>
 <?php if ($model->price) : ?>
-<b><?= Yii::t('bot', 'Price') ?>:</b> <?= $model->price ?> <?= $model->currency->code ?><br/>
 <br/>
+<b><?= Yii::t('bot', 'Price') ?></b>: <?= $model->price ?> <?= $model->currency->code ?><br/>
 <?php endif; ?>
-<?php if ($user) : ?>
+<?php if ($user = $model->user->botUser) : ?>
 ————<br/>
-<br/>
-<b><?= Yii::t('bot', 'Contact') ?>:</b> <?= $user->getFullLink(); ?>
+<b><?= Yii::t('bot', 'Contact') ?></b>: <?= $user->getFullLink(); ?>
 <?php endif; ?>

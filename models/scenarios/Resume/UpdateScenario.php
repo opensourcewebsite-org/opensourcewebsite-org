@@ -10,6 +10,7 @@ use app\models\Resume;
 class UpdateScenario
 {
     private Resume $model;
+
     private ModelLinker $linker;
 
     public function __construct(Resume $model)

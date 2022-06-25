@@ -3,4 +3,4 @@
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<b><?= Emoji::AD_OFFER . ' ' . Yii::t('bot', $sectionName) ?></b>
+<?= Emoji::AD_OFFER ?> <b><?= Yii::t('bot', $sectionName) ?>. <?= Yii::t('bot', 'Your ads') ?>.</b>

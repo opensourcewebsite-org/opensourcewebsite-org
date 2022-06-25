@@ -82,7 +82,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="form-group">
                                 <label for="offline-work-checkbox">
                                     <input id="offline-work-checkbox" type="checkbox" <?= $showLocation ? 'checked' : '' ?> autocomplete="off" />
-                                    <?= Yii::t('app', 'Offline work') ?>
+                                    <?= Yii::t('jo', 'Offline work') ?>
                                 </label>
                             </div>
                         </div>

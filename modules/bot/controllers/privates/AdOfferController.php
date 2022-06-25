@@ -12,6 +12,7 @@ use app\models\AdPhoto;
 use app\models\AdSearch;
 use app\models\AdSection;
 use app\models\Currency;
+use app\models\scenarios\AdOffer\SetActiveScenario;
 use app\models\User;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
@@ -150,11 +151,11 @@ class AdOfferController extends CrudController
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
+                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
                             'text' => Yii::t('bot', 'MY LOCATION'),
                             'callback' => function (AdOffer $model) {
-                                $latitude = $this->getTelegramUser()->location_lat;
-                                $longitude = $this->getTelegramUser()->location_lon;
+                                $latitude = 0;//$this->getTelegramUser()->location_lat;
+                                $longitude = 0;//$this->getTelegramUser()->location_lon;
                                 if ($latitude && $longitude) {
                                     $model->location_lat = $latitude;
                                     $model->location_lon = $longitude;
@@ -198,31 +199,29 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * @param int $adSection
      * @param int $page
+     * @param int $adSection
      *
      * @return array
      */
-    public function actionIndex($adSection, $page = 1)
+    public function actionIndex($page = 1, $adSection = null)
     {
         $this->getState()->setName(null);
-        $this->getState()->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
-        $user = $this->getUser();
 
-        $adOfferQuery = AdOffer::find()
+        $globalUser = $this->getUser();
+
+        $query = AdOffer::find()
             ->where([
-                'user_id' => $user->id,
                 'section' => $adSection,
             ])
+            ->userOwner()
             ->orderBy([
                 'status' => SORT_DESC,
                 'title' => SORT_ASC,
             ]);
 
-        $adOffersCount = $adOfferQuery->count();
-
         $pagination = new Pagination([
-            'totalCount' => $adOffersCount,
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -231,27 +230,33 @@ class AdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        $adOffers = $adOfferQuery->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
-
-        $buttons = array_map(function ($adOffer) {
-            return [
-                [
-                    'text' => ($adOffer->isActive() ? '' : Emoji::INACTIVE . ' ') . $adOffer->title,
-                    'callback_data' => self::createRoute('view', [
-                        'id' => $adOffer->id,
-                    ]),
-                ],
-            ];
-        }, $adOffers);
-
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($adSection) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adSection) {
             return self::createRoute('index', [
                 'adSection' => $adSection,
                 'page' => $page,
             ]);
         });
+
+        $buttons = [];
+
+        $offers = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($offers) {
+            foreach ($offers as $offer) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('view', [
+                        'id' => $offer->id,
+                    ]),
+                    'text' => ($offer->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $offer->id . ' ' . $offer->title,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
 
         $rowButtons[] = [
             'callback_data' => AdController::createRoute(),
@@ -266,7 +271,7 @@ class AdOfferController extends CrudController
         $matchesCount = AdOfferMatch::find()
             ->joinWith('adOffer')
             ->andWhere([
-                AdOffer::tableName() . '.user_id' => $user->id,
+                AdOffer::tableName() . '.user_id' => $globalUser->id,
                 AdOffer::tableName() . '.section' => $adSection,
             ])
             ->count();
@@ -277,6 +282,7 @@ class AdOfferController extends CrudController
                     'adSection' => $adSection,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+                'visible' => YII_ENV_DEV,
             ];
         }
 
@@ -285,6 +291,7 @@ class AdOfferController extends CrudController
                 'adSection' => $adSection,
             ]),
             'text' => Emoji::ADD,
+            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -300,43 +307,43 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id AdOffer->id
      *
      * @return array
      */
-    public function actionView($id)
+    public function actionView($id = null)
     {
-        $this->getState()->setName(null);
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $adOffer = $user->getAdOffers()
+        $offer = $globalUser->getAdOffers()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
             ->one();
 
-        if (!isset($adOffer)) {
+        if (!isset($offer)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         $buttons[] = [
             [
-                'text' => $adOffer->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                 'callback_data' => self::createRoute('set-status', [
-                    'id' => $adOffer->id,
+                    'id' => $offer->id,
                 ]),
+                'text' => $offer->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
             ]
         ];
 
-        $matchesCount = $adOffer->getMatches()->count();
+        $matchesCount = $offer->getMatches()->count();
 
         if ($matchesCount) {
             $buttons[][] = [
                 'callback_data' => self::createRoute('matches', [
-                    'id' => $adOffer->id,
+                    'id' => $offer->id,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
@@ -345,7 +352,7 @@ class AdOfferController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('index', [
-                    'adSection' => $adOffer->section,
+                    'adSection' => $offer->section,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -355,19 +362,19 @@ class AdOfferController extends CrudController
             ],
             [
                 'callback_data' => self::createRoute('update', [
-                    'id' => $adOffer->id,
+                    'id' => $offer->id,
                 ]),
                 'text' => Emoji::EDIT,
+                'visible' => YII_ENV_DEV,
             ],
         ];
 
         return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
-                $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
+                $offer->getPhotos()->count() ? $offer->getPhotos()->one()->file_id : null,
                 $this->render('view', [
-                    'model' => $adOffer,
-                    'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($adOffer->location_lat, $adOffer->location_lon),
+                    'model' => $offer,
+                    'keywords' => self::getKeywordsAsString($offer->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -378,30 +385,32 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     * @param int $id AdOffer->id
+     *
+     * @return array
      */
-    public function actionMatches($id, $page = 1)
+    public function actionMatches($page = 1, $id = null)
     {
-        $user = $this->getUser();
+        $globalUser = $this->getUser();
 
-        $adOffer = $user->getAdOffers()
+        $offer = $globalUser->getAdOffers()
             ->where([
-                'user_id' => $user->id,
                 'id' => $id,
             ])
             ->one();
 
-        if (!isset($adOffer)) {
+        if (!isset($offer)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $matchesQuery = $adOffer->getMatches();
-        $matchesCount = $matchesQuery->count();
+        $query = $offer->getMatchesOrderByRank();
+        $matchesCount = $query->count();
 
         if (!$matchesCount) {
-            return $this->actionView($adOfferId);
+            return $this->actionView($offer->id);
         }
 
         $pagination = new Pagination([
@@ -414,22 +423,26 @@ class AdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        $adSearch = $matchesQuery->offset($pagination->offset)
+        $search = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
+        if (!$search) {
+            return $this->actionView($offer->id);
+        }
+
         $buttons[] = [
             [
-                'text' => $adOffer->title,
                 'callback_data' => self::createRoute('view', [
-                    'id' => $adOffer->id,
+                    'id' => $offer->id,
                 ]),
+                'text' => '#' . $offer->id . ' ' . $offer->title,
             ]
         ];
 
-        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($id) {
+        $buttons[] = PaginationButtons::build($pagination, function ($page) use ($offer) {
             return self::createRoute('matches', [
-                'id' => $id,
+                'id' => $offer->id,
                 'page' => $page,
             ]);
         });
@@ -437,7 +450,7 @@ class AdOfferController extends CrudController
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('view', [
-                    'id' => $adOffer->id,
+                    'id' => $offer->id,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -450,9 +463,8 @@ class AdOfferController extends CrudController
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
-                    'model' => $adSearch,
-                    'user' => TelegramUser::findOne(['user_id' => $adSearch->user_id]),
-                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'model' => $search,
+                    'keywords' => self::getKeywordsAsString($search->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -543,36 +555,49 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id AdOffer->id
      *
      * @return array
      */
-    public function actionSetStatus($id)
+    public function actionSetStatus($id = null)
     {
-        $user = $this->getUser();
-
-        $adOffer = $user->getAdOffers()
+        $model = AdOffer::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
-        if (!isset($adOffer)) {
+        if (!isset($model)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $this->backRoute->make('view', compact('id'));
-        $this->endRoute->make('view', compact('id'));
+        switch ($model->status) {
+            case AdOffer::STATUS_ON:
+                $model->setInactive();
+                $model->save(false);
 
-        $adOffer->setAttributes([
-            'status' => ($adOffer->isActive() ? AdOffer::STATUS_OFF : AdOffer::STATUS_ON),
-        ]);
+                break;
+            case AdOffer::STATUS_OFF:
+                $scenario = new SetActiveScenario($model);
 
-        $adOffer->save();
+                if ($scenario->run()) {
+                    $model->save(false);
+                } else {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('../alert', [
+                                'alert' => $scenario->getFirstError(),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
+        }
 
-        return $this->actionView($adOffer->id);
+        return $this->actionView($model->id);
     }
 
     private static function getKeywordsAsString($adKeywords)

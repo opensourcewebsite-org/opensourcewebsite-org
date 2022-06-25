@@ -12,7 +12,9 @@ use yii\db\ActiveQuery;
 class AdSearchMatcher
 {
     private AdSearch $model;
+
     private ModelLinker $linker;
+
     private string $comparingTable;
 
     public function __construct(AdSearch $model)
