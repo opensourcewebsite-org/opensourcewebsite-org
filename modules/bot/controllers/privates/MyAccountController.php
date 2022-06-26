@@ -2,13 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
-use app\models\Currency;
-use app\models\Language;
-use app\components\helpers\TimeHelper;
-use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class MyAccountController
@@ -24,16 +20,16 @@ class MyAccountController extends Controller
     {
         $this->getState()->setName(null);
 
+        $user = $this->getTelegramUser();
+        $globalUser = $this->getUser();
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index'),
+                $this->render('/my-profile/index', [
+                    'telegramUser' => $user,
+                    'user' => $globalUser,
+                ]),
                 [
-                    [
-                        [
-                            'callback_data' => MyProfileController::createRoute(),
-                            'text' => Yii::t('bot', 'Profile'),
-                        ],
-                    ],
                     [
                         [
                             'callback_data' => MyRatingController::createRoute(),
@@ -62,6 +58,10 @@ class MyAccountController extends Controller
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => MyProfileController::createRoute(),
+                            'text' => Emoji::EDIT,
                         ],
                     ],
                 ],

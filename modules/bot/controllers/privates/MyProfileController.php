@@ -2,8 +2,6 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\models\Currency;
-use app\models\Language;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use Yii;
