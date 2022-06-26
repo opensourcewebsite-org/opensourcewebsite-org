@@ -21,6 +21,7 @@ class MenuController extends Controller
         $this->getState()->setName(null);
 
         $globalUser = $this->getUser();
+        $user = $this->getTelegramUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -32,6 +33,13 @@ class MenuController extends Controller
                         [
                             'callback_data' => TelegramController::createRoute(),
                             'text' => Yii::t('bot', 'Telegram'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ContactController::createRoute(),
+                            'text' => Yii::t('bot', 'Contacts'),
+                            'visible' => $user->getContacts()->exists(),
                         ],
                     ],
                     [

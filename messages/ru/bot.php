@@ -554,4 +554,5 @@ return [
     'Choose a value' => 'Выберите значение',
     'Your Username' => 'Ваш Username',
     'Send your username' => 'Отправьте ваш username',
+    'Your contacts' => 'Ваши контакты',
 ];

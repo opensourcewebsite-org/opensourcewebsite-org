@@ -8,6 +8,7 @@ use app\interfaces\UserRelation\ByOwnerTrait;
 use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\traits\SelectForUpdateTrait;
+use app\modules\bot\models\User as BotUser;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
@@ -482,5 +483,13 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             1 => Yii::t('app', 'Yes'),
             2 => Yii::t('app', 'No'),
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCounterBotUser()
+    {
+        return $this->hasOne(BotUser::className(), ['user_id' => 'link_user_id']);
     }
 }

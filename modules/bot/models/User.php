@@ -2,7 +2,9 @@
 
 namespace app\modules\bot\models;
 
+use app\models\Contact;
 use app\models\Language;
+use app\models\queries\ContactQuery;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
 use app\modules\bot\components\helpers\MessageText;
@@ -343,5 +345,11 @@ class User extends ActiveRecord
         }
 
         return false;
+    }
+
+    public function getContacts(): ContactQuery
+    {
+        return $this->hasMany(Contact::class, ['user_id' => 'user_id'])
+            ->joinWith('counterBotUser', $eagerLoading = true, $joinType = 'INNER JOIN');
     }
 }

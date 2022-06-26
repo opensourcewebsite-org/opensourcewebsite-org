@@ -55,6 +55,8 @@ class UserController extends Controller
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         $user = $this->getTelegramUser();
 
         if ($user->provider_user_id == $providerUserId) {
@@ -104,6 +106,10 @@ class UserController extends Controller
                         ],
                     ],
                     [
+                        [
+                            'callback_data' => ContactController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,

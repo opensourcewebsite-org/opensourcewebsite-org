@@ -15,32 +15,33 @@ use yii\db\ActiveQuery;
  *
  * @see Contact
  *
- * @method Contact[]          all()
+ * @method Contact[] all()
  * @method null|array|Contact one()
  */
 class ContactQuery extends ActiveQuery
 {
     use RandomTrait;
+
     use SelfSearchTrait;
 
     public function user(string $method = 'andWhere'): self
     {
-        return $this->$method(['not', ['contact.link_user_id' => null]]);
+        return $this->$method(['not', [Contact::tableName() . '.link_user_id' => null]]);
     }
 
     public function nonUser(string $method = 'andWhere'): self
     {
-        return $this->$method(['contact.link_user_id' => null]);
+        return $this->$method([Contact::tableName() . '.link_user_id' => null]);
     }
 
     public function userOwner($id = null, $method = 'andWhere'): self
     {
-        return $this->$method(['contact.user_id' => ($id ?? Yii::$app->user->id)]);
+        return $this->$method([Contact::tableName() . '.user_id' => ($id ?? Yii::$app->user->id)]);
     }
 
     public function userLinked($id, $operand = 'IN', $method = 'andWhere'): self
     {
-        return $this->$method([$operand, 'contact.link_user_id', $id]);
+        return $this->$method([$operand, Contact::tableName() . '.link_user_id', $id]);
     }
 
     public function forDebtRedistribution($contactId): self
