@@ -285,25 +285,46 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return $this->hasOne(self::className(), $link);
     }
 
-    public function getContactName()
+    public function getDisplayName()
     {
-        $contactName = $this->id;
+        if ($this->link_user_id) {
+            if ($this->linkedUser->username) {
+                $name = '@' . $this->linkedUser->username;
+            } else {
+                $name = '#' . $this->link_user_id;
+            }
 
-        if (!empty($this->name)) {
-            $contactName = $this->name;
-            if (!empty($this->linkedUser)) {
-                $contactName = $this->name . ' (#' . $this->linkedUser->id . ')';
-                if (!empty($this->linkedUser->username)) {
-                    $contactName = $this->name . ' (@' . $this->linkedUser->username . ')';
-                }
-            }
+            $name .= ($this->name ? ' - ' . $this->name : '');
         } else {
-            if (!empty($this->linkedUser)) {
-                $contactName = !empty($this->linkedUser->username) ? '@' . $this->linkedUser->username : '#' . $this->linkedUser->id;
-            }
+            $name = $this->name ?: $this->id;
         }
 
-        return $contactName;
+        return $name;
+    }
+
+    public function getTelegramDisplayName()
+    {
+        if ($this->link_user_id) {
+            if ($this->counterBotUser) {
+                if ($this->counterBotUser->provider_user_name) {
+                    $name =  '@' . $this->counterBotUser->provider_user_name;
+                } else {
+                    $name =  '#' . $this->link_user_id;
+                }
+            } else {
+                if ($this->linkedUser->username) {
+                    $name =  '@' . $this->linkedUser->username;
+                } else {
+                    $name =  '#' . $this->link_user_id;
+                }
+            }
+
+            $name .= ($this->name ? ' - ' . $this->name : '');
+        } else {
+            $name = $this->name ?: $this->id;
+        }
+
+        return $name;
     }
 
     public function isUser(): bool

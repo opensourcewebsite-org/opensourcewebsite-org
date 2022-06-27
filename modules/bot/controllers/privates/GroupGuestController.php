@@ -35,6 +35,42 @@ class GroupGuestController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
+        $buttons = [];
+
+        if ($chatMember) {
+            $buttons[] = [
+                [
+                    'callback_data' => MemberReviewController::createRoute('index', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
+                    'visible' => $chatMember->getActiveReviews()->exists(),
+                ],
+            ];
+        }
+
+        $butttons[] = [
+            [
+                'callback_data' => GroupGuestFaqController::createRoute('word-list', [
+                    'chatId' => $chat->id,
+                ]),
+                'text' => Yii::t('bot', 'FAQ'),
+                'visible' => ($chat->faq_status == ChatSetting::STATUS_ON),
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+            [
+                'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                'text' => Yii::t('bot', 'Group'),
+                'visible' => (bool)$chat->getUsername(),
+            ],
+        ];
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
@@ -42,37 +78,7 @@ class GroupGuestController extends Controller
                     'user' => $this->getTelegramUser(),
                     'chatMember' => $chatMember,
                 ]),
-                [
-                    [
-                        [
-                            'callback_data' => MemberReviewController::createRoute('index', [
-                                'id' => $chatMember->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Reviews'),
-                            'visible' => (bool)$chatMember->getActiveReviewsCount(),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => GroupGuestFaqController::createRoute('word-list', [
-                                'chatId' => $chat->id,
-                            ]),
-                            'text' => Yii::t('bot', 'FAQ'),
-                            'visible' => ($chat->faq_status == ChatSetting::STATUS_ON),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
-                            'text' => Yii::t('bot', 'Group'),
-                            'visible' => (bool)$chat->getUsername(),
-                        ],
-                    ]
-                ],
+                $buttons,
                 [
                     'disablePreview' => true,
                 ]

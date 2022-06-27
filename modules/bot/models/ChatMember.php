@@ -280,12 +280,17 @@ class ChatMember extends ActiveRecord
         return 1;
     }
 
-    public function getActiveReviewsCount()
+    public function getActiveReviews()
     {
         return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
             ->andWhere([
                 '>', 'status', 0,
-            ])
+            ]);
+    }
+
+    public function getActiveReviewsCount()
+    {
+        return $this->getActiveReviews()
             ->count();
     }
 

@@ -40,7 +40,7 @@ $this->title = Yii::t('app', 'Contacts');
                             [
                                 'label' => Yii::t('app', 'Name'),
                                 'value' => function (Contact $model) {
-                                    return Html::a($model->getContactName(), ['contact/view', 'id' => $model->id]);
+                                    return Html::a($model->getDisplayName(), ['contact/view', 'id' => $model->id]);
                                 },
                                 'enableSorting' => false,
                                 'format' => 'html',

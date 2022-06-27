@@ -1,26 +1,26 @@
 <?php
 
+use app\components\helpers\Html;
+use app\models\Contact;
 use app\models\ContactGroup;
+use app\models\User;
+use app\widgets\buttons\AddButton;
 use app\widgets\buttons\EditButton;
 use app\widgets\Modal;
 use app\widgets\ModalAjax;
 use kartik\select2\Select2;
+use yii\grid\ActionColumn;
+use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
-use app\components\helpers\Html;
-use app\models\Contact;
 use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
-use app\models\User;
-use yii\grid\ActionColumn;
-use app\widgets\buttons\AddButton;
-use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Contact */
 
-$this->title = !$contact->isNewRecord ? $contact->getContactName() : $user->id;
+$this->title = !$contact->isNewRecord ? $contact->getDisplayName() : $user->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' => ['index']];
 ?>
 <?php if ($user) : ?>

@@ -55,7 +55,7 @@ class ContactController extends Controller
                     'callback_data' => UserController::createRoute('id', [
                         'id' => $contact->counterBotUser->provider_user_id,
                     ]),
-                    'text' => $contact->getContactName(),
+                    'text' => $contact->getTelegramDisplayName(),
                 ];
             }
 

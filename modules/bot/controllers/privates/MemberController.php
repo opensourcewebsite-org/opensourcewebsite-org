@@ -129,7 +129,7 @@ class MemberController extends Controller
                                 'id' => $chatMember->id,
                             ]),
                             'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
-                            'visible' => (bool)$chatMember->getActiveReviewsCount(),
+                            'visible' => $chatMember->getActiveReviews()->exists(),
                         ],
                     ],
                     [

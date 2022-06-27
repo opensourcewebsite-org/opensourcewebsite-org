@@ -555,4 +555,5 @@ return [
     'Your Username' => 'Ваш Username',
     'Send your username' => 'Отправьте ваш username',
     'Your contacts' => 'Ваши контакты',
+    'Send any @username to add a contact' => 'Отправьте любой @username чтобы добавить контакт',
 ];

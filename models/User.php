@@ -845,7 +845,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function getDisplayName()
     {
         if ($this->contact) {
-            return $this->contact->getContactName();
+            return $this->contact->getDisplayName();
         } else {
             return !empty($this->username) ? '@' . $this->username : '#' . $this->id;
         }
