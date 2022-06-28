@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 
 use app\models\User as GlobalUser;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\queries\ChatMemberReviewQuery;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -74,6 +75,11 @@ class ChatMemberReview extends ActiveRecord
                 'createdAtAttribute' => false,
             ],
         ];
+    }
+
+    public static function find(): ChatMemberReviewQuery
+    {
+        return new ChatMemberReviewQuery(get_called_class());
     }
 
     /**

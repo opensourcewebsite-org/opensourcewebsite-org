@@ -31,13 +31,8 @@ class PublicChannelController extends Controller
 
         $query = Chat::find()
             ->channel()
-            ->username()
-            ->joinWith('globalUserForCreator')
-            ->orderBy([
-                '{{%user}}.rating' => SORT_DESC,
-                '{{%user}}.created_at' => SORT_ASC,
-                Chat::tableName() . '.chat_id' => SORT_DESC,
-            ]);
+            ->hasUsername()
+            ->orderByCreatorRank();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),

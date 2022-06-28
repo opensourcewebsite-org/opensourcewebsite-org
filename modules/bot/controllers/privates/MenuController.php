@@ -39,7 +39,6 @@ class MenuController extends Controller
                         [
                             'callback_data' => ContactController::createRoute(),
                             'text' => Yii::t('bot', 'Contacts'),
-                            'visible' => $user->getContacts()->exists(),
                         ],
                     ],
                     [

@@ -43,15 +43,8 @@ class MemberReviewController extends Controller
             ->where([
                 'member_id' => $chatMember->id,
             ])
-            ->andWhere([
-                '>', ChatMemberReview::tableName() . '.status', 0,
-            ])
-            ->joinWith('globalUser')
-            ->orderBy([
-                '{{%user}}.rating' => SORT_DESC,
-                '{{%user}}.created_at' => SORT_ASC,
-                ChatMemberReview::tableName() . '.updated_at' => SORT_DESC,
-            ]);
+            ->active()
+            ->orderByRank();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),

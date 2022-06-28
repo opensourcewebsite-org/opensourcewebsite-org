@@ -26,6 +26,28 @@ class CoreController extends Controller
         $this->actionCheckDebtUniqueGroups();
     }
 
+    /**
+     * @param int|null $id User->id
+     */
+    public function actionCheckUserRating($id = null)
+    {
+        if ($id) {
+            echo 'START: ' . __METHOD__ . "\n";
+
+            $user = User::findOne($id);
+
+            if ($user) {
+                $oldRating = $user->rating;
+
+                $user->updateRating();
+
+                echo 'UPDATED: `user.rating` for User ID: ' . $user->id . '. Rating: ' . $oldRating . ' >>> ' . $user->rating . "\n";
+            }
+
+            echo 'FINISH: ' . __METHOD__ .  "\n";
+        }
+    }
+
     public function actionCheckUserRatings()
     {
         echo 'START: ' . __METHOD__ . "\n";

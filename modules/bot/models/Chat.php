@@ -336,19 +336,11 @@ class Chat extends ActiveRecord
         return $this->username;
     }
 
-    /**
-     * Gets query for [[GlobalUser]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getGlobalUserForCreator()
+    public function getChatMemberCreator()
     {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
-            ->viaTable(User::tableName(), ['id' => 'user_id'])
-            ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
-                $query->andWhere([
-                    ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR,
-                ]);
-            });
+        return $this->hasOne(ChatMember::className(), ['chat_id' => 'id'])
+            ->andWhere([
+                ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR,
+            ]);
     }
 }

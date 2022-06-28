@@ -31,34 +31,28 @@ class StartController extends Controller
                 $chat = Chat::findOne([
                     'chat_id' => $start,
                 ]);
-
-                if (isset($chat)) {
-                    if ($chat->isGroup()) {
-                        return $this->run('group-guest/view', [
-                            'id' => $chat->id,
-                        ]);
-                    } elseif ($chat->isChannel()) {
-                        return $this->run('channel-guest/view', [
-                            'id' => $chat->id,
-                        ]);
-                    }
-                }
-                // provider username/usernames is used
+            // provider user username/id or chat username is used
             } elseif (preg_match_all('/(?:(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $start, $matches)) {
                 $matches = array_shift($matches);
 
                 if (isset($matches[0])) {
                     $username = $matches[0];
 
-                    $viewUser = User::findOne([
-                        'provider_user_name' => $username,
-                        'is_bot' => 0,
-                    ]);
+                    $viewUser = User::find()
+                        ->andWhere([
+                            'or',
+                            ['provider_user_name' => $username],
+                            ['provider_user_id' => $username],
+                        ])
+                        ->andWhere([
+                            'is_bot' => 0,
+                        ])
+                        ->one();
 
                     if (isset($viewUser)) {
                         $user = $this->getTelegramUser();
 
-                        if ($user->provider_user_name == $username) {
+                        if (($user->provider_user_name == $username) || ($user->provider_user_id == $username)) {
                             return $this->run('my-profile/index');
                         }
 
@@ -90,19 +84,19 @@ class StartController extends Controller
                         $chat = Chat::findOne([
                             'username' => $username,
                         ]);
-
-                        if (isset($chat)) {
-                            if ($chat->isGroup()) {
-                                return $this->run('group-guest/view', [
-                                    'id' => $chat->id,
-                                ]);
-                            } elseif ($chat->isChannel()) {
-                                return $this->run('channel-guest/view', [
-                                    'id' => $chat->id,
-                                ]);
-                            }
-                        }
                     }
+                }
+            }
+
+            if (isset($chat)) {
+                if ($chat->isGroup()) {
+                    return $this->run('group-guest/view', [
+                        'id' => $chat->id,
+                    ]);
+                } elseif ($chat->isChannel()) {
+                    return $this->run('channel-guest/view', [
+                        'id' => $chat->id,
+                    ]);
                 }
             }
         }

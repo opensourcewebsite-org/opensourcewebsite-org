@@ -45,7 +45,7 @@ class MemberController extends Controller
                 'chat_id' => $chatId,
             ])
             ->group()
-            ->username()
+            ->hasUsername()
             ->one();
 
         if (!isset($chat)) {
