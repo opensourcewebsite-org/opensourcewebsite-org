@@ -324,7 +324,7 @@ return [
     'Limit' => 'Лимит',
     'Send minimal number of voters to kick a user' => 'Отправьте минимальное количество голосов для бана участника',
     'allows members to leave likes and dislikes for any member of the group' => 'позволяет участникам оставлять лайки и дизлайки для любого участника группы',
-    'sends a captcha message to newly joined members, which waits for the member action for {0,number} mins and after this period expires, excludes the member from the group' => 'отправляет сообщение с капчей новым участникам, которая ожидает действие пользователя {0,number} минут и по истечении этого срока исключает участника из группы',
+    'sends a captcha message in response to the first message of the joined members, which waits for the member action for {0,number} mins and after this period expires, excludes the member from the group' => 'отправляет сообщение с капчей в ответ на первое сообщение присоединившихся участников, которая ожидает действие участника {0,number} минут и по истечении этого срока исключает участника из группы',
     'Ignores bots' => 'Игнорирует ботов',
     'Sexuality' => 'Сексуальная ориентация',
     'Your Sexuality' => 'Ваша сексуальная ориентация',
@@ -556,4 +556,5 @@ return [
     'Send your username' => 'Отправьте ваш username',
     'Your contacts' => 'Ваши контакты',
     'Send any @username to add a contact' => 'Отправьте любой @username чтобы добавить контакт',
+    'Cash Exchange' => 'Обмен наличных',
 ];
