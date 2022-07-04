@@ -29,7 +29,7 @@ use app\components\helpers\Html;
 <?= $chat->title ?><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
 <?php if ($review && $review->text) : ?>
 ————<br/>
-<b><?= Yii::t('bot', 'Review') ?></b>:<br/>
+<b><?= Yii::t('bot', 'Your review') ?></b>:<br/>
 <br/>
 <?= nl2br($review->text) ?><br/>
 <br/>

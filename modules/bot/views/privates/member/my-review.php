@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Review') ?></b>.<br/>
+<b><?= Yii::t('bot', 'Your review') ?></b>.<br/>
 <br/>
 ————<br/>
 <br/>

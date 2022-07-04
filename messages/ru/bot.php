@@ -38,6 +38,7 @@ return [
     'Currency and cryptocurrency exchange' => 'Обмен валют и криптовалют',
     'Currency exchange' => 'Обмен валют',
     'Currency Exchange' => 'Обмен валют',
+    'Banks, E-money, cash, stablecoins' => 'Банки, электронные деньги, наличные, стейблкоины',
     'Cryptocurrency exchange' => 'Обмен криптовалют',
     'Paid surveys from companies for users' => 'Платные опросы от компаний для пользователей',
     'Personalized news' => 'Персонализированные новости',
@@ -539,6 +540,7 @@ return [
     'Your link for reviews' => 'Ваша ссылка для отзывов',
     'Reviews' => 'Отзывы',
     'Review' => 'Отзыв',
+    'Your review' => 'Ваш отзыв',
     'Author' => 'Автор',
     'Send a message for the review' => 'Отправьте сообщение для отзыва',
     'Only you see this review' => 'Только вы видите этот отзыв',
@@ -557,4 +559,5 @@ return [
     'Your contacts' => 'Ваши контакты',
     'Send any @username to add a contact' => 'Отправьте любой @username чтобы добавить контакт',
     'Cash Exchange' => 'Обмен наличных',
+    'No matches' => 'Нет совпадений',
 ];
