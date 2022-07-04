@@ -79,7 +79,7 @@ $form = ActiveForm::begin();
                     ]); ?>
                     <?= DeleteButton::widget([
                         'url' => [
-                            '/contact/delete-contact',
+                            '/contact/delete',
                             'id' => $model->id,
                         ],
                         'visible' => !$model->isNewRecord && ((string)$model->user_id === (string)Yii::$app->user->id),
