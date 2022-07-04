@@ -125,6 +125,14 @@ class MemberController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('my-review', [
+                                'id' => $chatMember->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Your review'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MemberReviewController::createRoute('index', [
                                 'id' => $chatMember->id,
                             ]),
@@ -142,12 +150,6 @@ class MemberController extends Controller
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
-                        ],
-                        [
-                            'callback_data' => self::createRoute('my-review', [
-                                'id' => $chatMember->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Review'),
                         ],
                     ],
                 ],
