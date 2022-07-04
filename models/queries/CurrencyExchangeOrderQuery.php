@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace app\models\queries;
 
 use app\models\CurrencyExchangeOrder;
-use yii\db\ActiveQuery;
+use app\models\User;
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * Class CurrencyExchangeOrderQuery
@@ -19,14 +20,14 @@ class CurrencyExchangeOrderQuery extends ActiveQuery
     {
         return $this->andWhere([CurrencyExchangeOrder::tableName() . '.status' => CurrencyExchangeOrder::STATUS_ON])
             ->joinWith('user')
-            ->andWhere(['>=', 'user.last_activity_at', time() - CurrencyExchangeOrder::LIVE_DAYS * 24 * 60 * 60]);
+            ->andWhere(['>=', User::tableName() . '.last_activity_at', time() - CurrencyExchangeOrder::LIVE_DAYS * 24 * 60 * 60]);
     }
 
     public function orderByRank(): self
     {
         return $this->orderBy([
-            'user.rating' => SORT_DESC,
-            'user.created_at' => SORT_ASC,
+            User::tableName() . '.rating' => SORT_DESC,
+            User::tableName() . '.created_at' => SORT_ASC,
         ]);
     }
 

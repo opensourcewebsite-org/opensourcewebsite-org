@@ -856,10 +856,10 @@ class CeController extends CrudController
 
         $buttons[] = [
             [
-                'text' => '#' . $order->id . ' ' . $order->getTitle(),
                 'callback_data' => self::createRoute('view', [
                     'id' => $order->id,
                 ]),
+                'text' => '#' . $order->id . ' ' . $order->getTitle(),
             ]
         ];
 

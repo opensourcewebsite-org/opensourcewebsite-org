@@ -85,7 +85,6 @@ final class CurrencyExchangeOrderMatcher
                     ['>=', "{$this->comparingTable}.buying_rate", $this->model->selling_rate],
                 ]);
         } else {
-            $matchesQuery->andWhere(["{$this->comparingTable}.selling_rate" => null]);
             $counterMatchesQuery->andWhere(["{$this->comparingTable}.selling_rate" => null]);
         }
 

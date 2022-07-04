@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace app\models\queries;
 
 use app\models\queries\builders\ConditionExpressionBuilderInterface;
+use app\models\User;
 use app\models\Vacancy;
-use yii\db\ActiveQuery;
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * Class VacancyQuery
@@ -20,14 +21,14 @@ class VacancyQuery extends ActiveQuery
     {
         return $this->andWhere([Vacancy::tableName() . '.status' => Vacancy::STATUS_ON])
             ->joinWith('user')
-            ->andWhere(['>=', 'user.last_activity_at', time() - Vacancy::LIVE_DAYS * 24 * 60 * 60]);
+            ->andWhere(['>=', User::tableName() . '.last_activity_at', time() - Vacancy::LIVE_DAYS * 24 * 60 * 60]);
     }
 
     public function orderByRank(): self
     {
         return $this->orderBy([
-            'user.rating' => SORT_DESC,
-            'user.created_at' => SORT_ASC,
+            User::tableName() . '.rating' => SORT_DESC,
+            User::tableName() . '.created_at' => SORT_ASC,
         ]);
     }
 
