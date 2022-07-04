@@ -1,9 +1,10 @@
 <b><?= Yii::t('bot', 'Services') ?> (<?= Yii::t('bot', 'in development') ?>)</b><br/>
 <br/>
+  • <?= Yii::t('bot', 'Cash exchange'); ?>.<br/>
+  • <?= Yii::t('bot', 'Currency exchange'); ?>. <?= Yii::t('bot', 'Banks, E-money, cash, stablecoins'); ?>.<br/>
+  • <?= Yii::t('bot', 'Cryptocurrency exchange'); ?>.<br/>
   • <?= Yii::t('bot', 'Ads'); ?>. <?= Yii::t('bot', 'Buying, selling, renting, services'); ?>.<br/>
   • <?= Yii::t('bot', 'Jobs'); ?>. <?= Yii::t('bot', 'Vacancies and resumes'); ?>.<br/>
-  • <?= Yii::t('bot', 'Currency exchange'); ?>.<br/>
-  • <?= Yii::t('bot', 'Cryptocurrency exchange'); ?>.<br/>
   • <?= Yii::t('bot', 'Dating'); ?>. <?= Yii::t('bot', 'New contacts'); ?>.<br/>
   • <?= Yii::t('bot', 'Real estates'); ?>. <?= Yii::t('bot', 'Buying, selling, renting'); ?>.<br/>
   • <?= Yii::t('bot', 'Personalized news'); ?>.<br/>

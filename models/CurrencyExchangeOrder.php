@@ -453,8 +453,36 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->joinWith('user')
             ->orderBy([
                 'buying_rate' => SORT_DESC,
-                '{{%user}}.rating' => SORT_DESC,
-                '{{%user}}.created_at' => SORT_ASC,
+                User::tableName() . '.rating' => SORT_DESC,
+                User::tableName() . '.created_at' => SORT_ASC,
+            ]);
+    }
+
+    /**
+     * @return ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getCashMatchesOrderByRank(): ActiveQuery
+    {
+        return self::find()
+            //->live()
+            //->andWhere(['buying_currency_id' => $this->selling_currency_id])
+            //->andWhere(['selling_currency_id' => $this->buying_currency_id])
+            ->andWhere(['buying_cash_on' => self::CASH_ON])
+            ->andWhere("ST_Distance_Sphere(
+                        POINT({$this->selling_location_lon}, {$this->selling_location_lat}),
+                        POINT(buying_location_lon, buying_location_lat)
+                        ) <= 1000 * {$this->selling_delivery_radius}")
+            ->andWhere(['selling_cash_on' => self::CASH_ON])
+            ->andWhere("ST_Distance_Sphere(
+                        POINT({$this->buying_location_lon}, {$this->buying_location_lat}),
+                        POINT(selling_location_lon, selling_location_lat)
+                        ) <= 1000 * {$this->buying_delivery_radius}")
+            ->joinWith('user')
+            ->orderBy([
+                'buying_rate' => SORT_DESC,
+                User::tableName() . '.rating' => SORT_DESC,
+                User::tableName() . '.created_at' => SORT_ASC,
             ]);
     }
 

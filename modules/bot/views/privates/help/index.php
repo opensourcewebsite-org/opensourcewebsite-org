@@ -2,7 +2,8 @@
 <br/>
 /telegram - <?= Yii::t('bot', 'Telegram catalog of public groups and channels') ?>. <?= Yii::t('bot', 'Telegram admin management of groups and channels') ?>.<br/>
 <br/>
-/ce - <?= Yii::t('bot', 'Currency exchange') ?>.<br/>
+/ca - <?= Yii::t('bot', 'Cash exchange') ?>.<br/>
+/ce - <?= Yii::t('bot', 'Currency exchange') ?>. <?= Yii::t('bot', 'Banks, E-money, cash, stablecoins') ?>.<br/>
 /ad - <?= Yii::t('bot', 'Ads') ?>. <?= Yii::t('bot', 'Buying, selling, renting, services') ?>.<br/>
 /jo - <?= Yii::t('bot', 'Jobs') ?>. <?= Yii::t('bot', 'Vacancies and resumes') ?>.<br/>
 <br/>
