@@ -101,8 +101,6 @@ class StartController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('input-language'));
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index'),
@@ -139,32 +137,5 @@ class StartController extends Controller
                 ]
             )
             ->build();
-    }
-
-    public function actionInputLanguage()
-    {
-        $text = $this->getUpdate()->getMessage()->getText();
-
-        if (strlen($text) <= 3) {
-            $language = Language::find()
-                ->orFilterWhere(['like', 'code', $text, false])
-                ->one();
-        } else {
-            $language = Language::find()
-                ->orFilterWhere(['like', 'name', $text . '%', false])
-                ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
-                ->one();
-        }
-
-        if (isset($language)) {
-            $user = $this->getTelegramUser();
-            $user->language_id = $language->id;
-
-            if ($user->save()) {
-                Yii::$app->language = $language->code;
-            }
-        }
-
-        return $this->actionIndex();
     }
 }
