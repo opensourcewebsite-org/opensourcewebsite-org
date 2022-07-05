@@ -39,13 +39,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                         <h6 class="dropdown-header"><?= $model->getAttributeLabel('Status') ?></h6>
-
                                         <a class="dropdown-item status-update <?= $model->isActive() ? 'active' : '' ?>"
                                            href="#"
                                            data-value="<?= Vacancy::STATUS_ON ?>">
                                             <?= Yii::t('app', 'Active') ?>
                                         </a>
-
                                         <a class="dropdown-item status-update <?= $model->isActive() ? '' : 'active' ?>"
                                            href="#"
                                            data-value="<?= Vacancy::STATUS_OFF ?>">
@@ -72,9 +70,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             'attributes' => [
                                 'id',
                                 'name',
+                                'responsibilities:ntext',
                                 'requirements:ntext',
                                 'conditions:ntext',
-                                'responsibilities:ntext',
                                 [
                                     'label' => Yii::t('app', 'Keywords'),
                                     'visible' => (bool)$model->keywords,
@@ -210,14 +208,28 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <?= DetailView::widget([
-                                'model' => $model->company,
+                                'model' => $company = $model->company,
                                 'attributes' => [
                                     'id',
-                                    'name',
-                                    'url:url',
-                                    'address',
-                                    'description:ntext',
-                                ]
+                                    [
+                                        'attribute' => 'name',
+                                        'visible' => (bool)$company->name,
+                                    ],
+                                    [
+                                        'attribute' => 'url',
+                                        'visible' => (bool)$company->url,
+                                        'format' => 'url',
+                                    ],
+                                    [
+                                        'attribute' => 'address',
+                                        'visible' => (bool)$company->address,
+                                    ],
+                                    [
+                                        'attribute' => 'description',
+                                        'visible' => (bool)$company->description,
+                                        'format' => 'ntext',
+                                    ],
+                                ],
                             ]) ?>
                         </div>
                     </div>

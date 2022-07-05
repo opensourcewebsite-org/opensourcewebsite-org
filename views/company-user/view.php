@@ -36,10 +36,24 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             'model' => $model,
                             'attributes' => [
                                 'id',
-                                'name',
-                                'url:url',
-                                'address',
-                                'description:ntext',
+                                [
+                                    'attribute' => 'name',
+                                    'visible' => (bool)$model->name,
+                                ],
+                                [
+                                    'attribute' => 'url',
+                                    'visible' => (bool)$model->url,
+                                    'format' => 'url',
+                                ],
+                                [
+                                    'attribute' => 'address',
+                                    'visible' => (bool)$model->address,
+                                ],
+                                [
+                                    'attribute' => 'description',
+                                    'visible' => (bool)$model->description,
+                                    'format' => 'ntext',
+                                ],
                             ]
                         ]) ?>
                     </div>

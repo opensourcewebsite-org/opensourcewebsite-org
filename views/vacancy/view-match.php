@@ -33,9 +33,9 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                             'attributes' => [
                                 'id',
                                 'name',
+                                'responsibilities:ntext',
                                 'requirements:ntext',
                                 'conditions:ntext',
-                                'responsibilities:ntext',
                                 [
                                     'label' => Yii::t('app', 'Keywords'),
                                     'visible' => (bool)$model->keywords,
@@ -130,13 +130,27 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <?= DetailView::widget([
-                                'model' => $model->company,
+                                'model' => $company = $model->company,
                                 'attributes' => [
                                     'id',
-                                    'name',
-                                    'url:url',
-                                    'address',
-                                    'description:ntext',
+                                    [
+                                        'attribute' => 'name',
+                                        'visible' => (bool)$company->name,
+                                    ],
+                                    [
+                                        'attribute' => 'url',
+                                        'visible' => (bool)$company->url,
+                                        'format' => 'url',
+                                    ],
+                                    [
+                                        'attribute' => 'address',
+                                        'visible' => (bool)$company->address,
+                                    ],
+                                    [
+                                        'attribute' => 'description',
+                                        'visible' => (bool)$company->description,
+                                        'format' => 'ntext',
+                                    ],
                                 ]
                             ]) ?>
                         </div>

@@ -45,17 +45,17 @@ $form = ActiveForm::begin(['id' => 'form']);
                     </div>
                     <div class="row">
                         <div class="col">
+                            <?= $form->field($model, 'responsibilities')->textarea() ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
                             <?= $form->field($model, 'requirements')->textarea() ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'conditions')->textarea() ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <?= $form->field($model, 'responsibilities')->textarea() ?>
                         </div>
                     </div>
                     <div class="row">

@@ -38,13 +38,11 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                         <h6 class="dropdown-header"><?= $model->getAttributeLabel('Status') ?></h6>
-
                                         <a class="dropdown-item status-update <?= $model->isActive() ? 'active' : '' ?>"
                                            href="#"
                                            data-value="<?= Resume::STATUS_ON ?>">
                                             <?= Yii::t('app', 'Active') ?>
                                         </a>
-
                                         <a class="dropdown-item status-update <?= $model->isActive() ? '' : 'active' ?>"
                                            href="#"
                                            data-value="<?= Resume::STATUS_OFF ?>">
