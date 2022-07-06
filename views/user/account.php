@@ -1,18 +1,18 @@
 <?php
 
+use app\components\helpers\ExternalLink;
+use app\components\helpers\Html;
 use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\models\StellarOperator;
+use app\models\User;
+use app\widgets\buttons\EditButton;
+use app\widgets\buttons\SelectButton;
 use app\widgets\buttons\TrashButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Url;
-use app\widgets\buttons\EditButton;
-use app\components\helpers\Html;
-use app\components\helpers\ExternalLink;
-use app\models\User;
-use app\models\StellarOperator;
-use app\widgets\buttons\SelectButton;
 
 /* @var $this yii\web\View */
 
@@ -233,26 +233,26 @@ $this->title = Yii::t('app', 'Account');
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                <?php
-                                array_map(function ($language) {
-                                    echo '<tr><td>' . $language->getLabel() . '</td><td>';
-                                    echo ModalAjax::widget([
-                                        'id' => 'change-language' . $language->language_id,
-                                        'header' => Yii::t('user', 'Edit language'),
-                                        'toggleButton' => [
-                                            'label' => Html::icon('edit'),
-                                            'title' => Yii::t('app', 'Edit'),
-                                            'class' => 'btn btn-light edit-btn',
-                                            'style' =>  [
-                                                'float' => 'right',
+                                <?php foreach ($model->languages as $userLanguage) : ?>
+                                    <tr>
+                                        <td><?= $userLanguage->getLabel() ?></td>
+                                        <td><?= ModalAjax::widget([
+                                            'id' => 'change-language' . $userLanguage->language_id,
+                                            'header' => Yii::t('user', 'Edit language'),
+                                            'toggleButton' => [
+                                                'label' => Html::icon('edit'),
+                                                'title' => Yii::t('app', 'Edit'),
+                                                'class' => 'btn btn-light edit-btn',
+                                                'style' =>  [
+                                                    'float' => 'right',
+                                                ],
                                             ],
-                                        ],
-                                        'url' => Url::to([
-                                            'user/change-language',
-                                            'id' => $language->id]),
-                                    ]);
-                                    echo '</td></tr>';
-                                }, $model->languages); ?>
+                                            'url' => Url::to([
+                                                'user/change-language',
+                                                'id' => $userLanguage->id]),
+                                        ]); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -291,22 +291,22 @@ $this->title = Yii::t('app', 'Account');
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                <?php
-                                array_map(function ($citizenship) {
-                                    echo '<tr><td>' . Yii::t('user', $citizenship->country->name) . '</td><td>';
-                                    echo TrashButton::widget([
-                                        'url' => [
-                                            '/user/delete-citizenship',
-                                        ],
-                                        'options' => [
-                                            'style' => 'float: right',
-                                            'data-params' => [
-                                                'id' => $citizenship->country_id,
+                                <?php foreach ($model->citizenships as $userCitizenship) : ?>
+                                    <tr>
+                                        <td><?= Yii::t('user', $userCitizenship->country->name) ?></td>
+                                            <td><?= TrashButton::widget([
+                                            'url' => [
+                                                '/user/delete-citizenship',
                                             ],
-                                        ],
-                                    ]);
-                                    echo '</td></tr>';
-                                }, $model->citizenships); ?>
+                                            'options' => [
+                                                'style' => 'float: right',
+                                                'data-params' => [
+                                                    'id' => $userCitizenship->country_id,
+                                                ],
+                                            ],
+                                        ]) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -354,7 +354,7 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle">Stelar</th>
+                                    <th class="align-middle">Stellar</th>
                                     <td class="align-middle">
                                         <?php if (($userStellar = $model->stellar) && !$userStellar->isExpired()) : ?>
                                             <?= (!$userStellar->isConfirmed() ? Html::badge('warning', Yii::t('app', 'not confirmed')) . ' ' : '') . Html::a($userStellar->getPublicKey(), ExternalLink::getStellarExpertAccountLink($userStellar->getPublicKey())) ?>

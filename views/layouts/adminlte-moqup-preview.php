@@ -5,8 +5,8 @@
 /* @var $content string */
 
 use app\assets\AdminLteAsset;
-use app\assets\FontAwesomeAsset;
 use app\assets\AdminLteUserAsset;
+use app\assets\FontAwesomeAsset;
 
 AdminLteAsset::register($this);
 FontAwesomeAsset::register($this);
