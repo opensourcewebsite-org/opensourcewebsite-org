@@ -16,4 +16,5 @@ return [
     'Remote work' => 'Удаленная занятость',
     'Offline work' => 'Оффлайн занятость',
     'Required languages' => 'Требуемые языки',
+    'Available languages' => 'Доступные языки',
 ];

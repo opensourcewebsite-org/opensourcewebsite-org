@@ -46,7 +46,7 @@ final class SetActiveScenario
 
     private function validateLanguages(): bool
     {
-        if (!$this->model->getLanguagesWithLevels()->count()) {
+        if (!$this->model->getLanguages()->count()) {
             $this->errors['languages'] = Yii::t('app', 'At least one language should be set') . '.';
 
             return false;

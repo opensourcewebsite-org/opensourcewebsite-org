@@ -37,6 +37,12 @@ class Html extends \yii\helpers\Html
         'off' => [
             'class' => 'fas fa-toggle-off',
         ],
+        'users' => [
+            'class' => 'fas fa-users',
+        ],
+        'user' => [
+            'class' => 'fas fa-user',
+        ],
     ];
 
     // https://getbootstrap.com/docs/4.6/components/badge/#contextual-variations

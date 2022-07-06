@@ -23,7 +23,7 @@ class UpdateLanguagesScenario
 
     public function run()
     {
-        $currentLanguages = $this->model->getLanguagesWithLevels()->asArray()->all();
+        $currentLanguages = $this->model->getLanguages()->asArray()->all();
         $currentLanguagesMapped = ArrayHelper::map($currentLanguages, 'language_id', 'language_level_id');
         $newLanguagesMapped = $this->prepareLangAndLevel();
         $toDelete = array_diff_key($currentLanguagesMapped, $newLanguagesMapped);

@@ -58,7 +58,7 @@ final class VacancyMatcher
         return Resume::find()
             ->excludeUserId($this->model->user_id)
             ->live()
-            ->andWhere($this->buildUserLanguagesMatchExpression($this->model->languagesWithLevels))
+            ->andWhere($this->buildUserLanguagesMatchExpression($this->model->languages))
             ->groupBy("{$this->comparingTable}.id");
     }
 

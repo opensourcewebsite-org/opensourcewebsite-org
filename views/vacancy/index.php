@@ -81,7 +81,11 @@ $displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
                             ],
                             [
                                 'attribute' => 'name',
+                                'value' => function ($model) {
+                                    return $model->name . ($model->company_id ? '<br/><i>' . Html::a($model->company->name, Url::to(['/company-user/view', 'id' => $model->company->id])) . '</i>' : '');
+                                },
                                 'enableSorting' => false,
+                                'format' => 'html',
                             ],
                             [
                                 'attribute' => 'max_hourly_rate',

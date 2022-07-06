@@ -46,12 +46,12 @@ use app\modules\bot\components\helpers\ExternalLink;
 <br/>
 <?= nl2br($model->conditions) ?><br/>
 <?php endif; ?>
-<?php if ($model->languagesWithLevels) : ?>
+<?php if ($model->languages) : ?>
 <br/>
 <b><?= Yii::t('jo', 'Required languages') ?></b>:<br/>
 <br/>
-<?php foreach ($model->languagesWithLevels as $language) : ?>
-  • <?= $language->getLabel() ?><br/>
+<?php foreach ($model->languages as $vacancyLanguage) : ?>
+  • <?= $vacancyLanguage->getLabel() ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
 <?php if ($model->max_hourly_rate) : ?>

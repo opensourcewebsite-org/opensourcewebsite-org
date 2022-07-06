@@ -132,6 +132,33 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
         </div>
     </div>
 </div>
+
+<div class="languages-index">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><?= Yii::t('jo', 'Available languages'); ?></h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <div id="w0" class="grid-view">
+                            <table class="table table-condensed table-hover" style="margin-bottom: 0;">
+                                <tbody>
+                                <?php foreach ($model->user->languages as $userLanguage) : ?>
+                                    <tr>
+                                        <td><?= $userLanguage->getLabel() ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <?php
 $statusActiveUrl = Yii::$app->urlManager->createUrl(['resume/set-active?id=' . $model->id]);
 $statusInactiveUrl = Yii::$app->urlManager->createUrl(['resume/set-inactive?id=' . $model->id]);

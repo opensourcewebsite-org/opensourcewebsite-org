@@ -51,7 +51,7 @@ use yii\web\JsExpression;
  * @property Resume[] $matches
  * @property Resume[] $matchedResumes
  * @property Resume[] $counterMatches
- * @property VacancyLanguage[] $languagesWithLevels
+ * @property VacancyLanguage[] $languages
  * @property User $user
  * @property JobKeyword[] $keywords
  *
@@ -161,7 +161,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             'remote_on' => Yii::t('jo', 'Remote work'),
             'company_id' => Yii::t('app', 'Company'),
             'status' => Yii::t('app', 'Status'),
-            'name' => Yii::t('app', 'Name'),
+            'name' => Yii::t('app', 'Title'),
             'requirements' => Yii::t('app', 'Requirements'),
             'currency_id' => Yii::t('app', 'Currency'),
             'conditions' => Yii::t('app', 'Conditions'),
@@ -321,7 +321,7 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             ->viaTable('{{%job_resume_match}}', ['vacancy_id' => 'id']);
     }
 
-    public function getLanguagesWithLevels(): ActiveQuery
+    public function getLanguages(): ActiveQuery
     {
         return $this->hasMany(VacancyLanguage::class, ['vacancy_id' => 'id']);
     }

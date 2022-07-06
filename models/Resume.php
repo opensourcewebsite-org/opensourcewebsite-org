@@ -145,7 +145,7 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
             'id' => Yii::t('app', 'ID'),
             'user_id' => Yii::t('app', 'User'),
             'remote_on' => Yii::t('jo', 'Remote work'),
-            'name' => Yii::t('app', 'Name'),
+            'name' => Yii::t('app', 'Title'),
             'min_hourly_rate' => Yii::t('bot', 'Min. hourly rate'),
             'search_radius' => Yii::t('bot', 'Search radius'),
             'currency_id' => Yii::t('app', 'Currency'),
@@ -229,11 +229,6 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
     public function getLanguages(): ActiveQuery
     {
         return $this->hasMany(UserLanguage::class, ['user_id' => 'user_id']);
-    }
-
-    public function getLanguagesWithLevels(): ActiveQuery
-    {
-        return $this->user->getLanguages();
     }
 
     public function getUser(): ActiveQuery

@@ -42,7 +42,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             [
                                 'attribute' => 'name',
+                                'value' => function ($model) {
+                                    return $model->name . ($model->company_id ? '<br/><i>' . $model->company->name . '</i>' : '');
+                                },
                                 'enableSorting' => false,
+                                'format' => 'html',
                             ],
                             [
                                 'attribute' => 'min_hourly_rate',
