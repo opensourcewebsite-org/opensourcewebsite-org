@@ -6,8 +6,8 @@
 /* @var $model PasswordResetRequestForm */
 
 use yii\bootstrap4\ActiveForm;
-use yii\helpers\Html;
 use yii\captcha\Captcha;
+use yii\helpers\Html;
 
 $this->title = 'Request to reset password';
 $this->params['breadcrumbs'][] = $this->title;
@@ -30,14 +30,14 @@ $this->params['breadcrumbs'][] = $this->title;
               </div>
               <div class="form-group">
                 <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
-                    'template' => '{image}'.Html::button('<span class="fas fa-refresh"></span>', ['id' => 'refresh-captcha', 'class' => 'btn btn-primary']).'{input}'
+                    'template' => '{image}' . Html::button('<span class="fas fa-refresh"></span>', ['id' => 'refresh-captcha', 'class' => 'btn btn-primary']) . '{input}'
                 ]) ?>
                 <?= $this->registerJs("
                         $('#refresh-captcha').on('click', function(e){
                             e.preventDefault();
                             $('#requestresetpasswordform-captcha-image').yiiCaptcha('refresh');
                         })
-                    "); 
+                    ");
                 ?>
               </div>
 

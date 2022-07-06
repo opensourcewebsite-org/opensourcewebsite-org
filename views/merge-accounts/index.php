@@ -7,7 +7,7 @@ use yii\captcha\Captcha;
 
 $this->title = 'Merge accounts';
 
-$form = ActiveForm::begin(['id' => 'form']);
+$form = ActiveForm::begin(['id' => 'merge-accounts-form']);
 ?>
 <div class="form">
     <div class="row">
@@ -34,7 +34,16 @@ $form = ActiveForm::begin(['id' => 'form']);
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'captcha')->widget(Captcha::className()) ?>
+                            <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                                'template' => '{image}' . Html::button('<span class="fas fa-refresh"></span>', ['id' => 'refresh-captcha', 'class' => 'btn btn-primary']) . '{input}'
+                            ]) ?>
+                            <?= $this->registerJs("
+                                    $('#refresh-captcha').on('click', function(e){
+                                        e.preventDefault();
+                                        $('#mergeaccountsform-captcha-image').yiiCaptcha('refresh');
+                                    })
+                                ");
+                            ?>
                         </div>
                     </div>
                 </div>
