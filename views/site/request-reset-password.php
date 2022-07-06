@@ -29,7 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
                   <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
               </div>
               <div class="form-group">
-                  <?= $form->field($model, 'captcha')->widget(Captcha::className()) ?>
+                <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                    'template' => '{image}'.Html::button('<span class="fas fa-refresh"></span>', ['id' => 'refresh-captcha', 'class' => 'btn btn-primary']).'{input}'
+                ]) ?>
+                <?= $this->registerJs("
+                        $('#refresh-captcha').on('click', function(e){
+                            e.preventDefault();
+                            $('#requestresetpasswordform-captcha-image').yiiCaptcha('refresh');
+                        })
+                    "); 
+                ?>
               </div>
 
               <div>
