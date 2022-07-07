@@ -6,6 +6,7 @@ use Dotenv\Dotenv;
 if (!in_array(@$_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     die('You are not allowed to access this file.');
 }
+
 require __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = new Dotenv(__DIR__, '../.env.test');

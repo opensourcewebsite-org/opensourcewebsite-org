@@ -49,7 +49,7 @@ class GroupGuestController extends Controller
             ];
         }
 
-        $butttons[] = [
+        $buttons[] = [
             [
                 'callback_data' => GroupGuestFaqController::createRoute('word-list', [
                     'chatId' => $chat->id,
