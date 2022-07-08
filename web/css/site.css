@@ -250,3 +250,30 @@ a.desc:after {
 .table-overflow .card-header .btn-outline-success{
     margin-top: 0.5rem;
 }
+
+
+/* === Fix tags block === */
+.field-currencyexchangeorder-sellingpaymentmethodids{
+    margin: 0;
+}
+.select2-selection.select2-selection--multiple{
+    padding: 0.5rem;
+}
+.select2-selection__rendered{
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items:center;
+    row-gap: 0.5rem;
+    column-gap: 0.3rem;
+}
+
+.select2-selection__clear{
+    display: none;
+}
+.select2-selection__choice{
+    margin: 0 !important;
+}
+.select2-search.select2-search--inline{
+    width:100%;
+}
+/* === END Fix tags block === */
