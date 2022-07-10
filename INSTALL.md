@@ -138,8 +138,8 @@ We recommend use [ngrok - secure introspectable tunnels to localhost](https://ng
 Also, you can use [Localtunnel](https://localtunnel.me) and [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/) to receive Telegram webhooks by your local server.
 
 - Use [Telegram BotFather](https://t.me/BotFather) to create new bot and get a bot token.
-- Set `baseUrl` in `params.php` for your public URL with HTTPS.
-- In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `telegramProxy` in `params.php`.
+- Set `baseUrl` in `config/params.php` for your public URL with HTTPS.
+- In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `telegramProxy` in `config/params.php`.
 - Create a new record in `bot` table in MySQL database, with `status` = 0, or use console command:
 ```
 php yii telegram-bot/add [BOT TOKEN]
@@ -153,4 +153,9 @@ php yii telegram-bot/enable-all
 Disable Telegram webhooks for all bots with `status` = 1:
 ```
 php yii telegram-bot/disable-all
+```
+
+Restart Telegram webhooks for all bots:
+```
+php yii telegram-bot/restart-all
 ```
