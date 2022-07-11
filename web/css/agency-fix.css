@@ -232,3 +232,12 @@ header.masthead {
         padding: 100px 0 0 0;
     }
 }
+
+.sponsors__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 20px;
+    column-gap: 10px;
+    justify-content: space-evenly;
+}
