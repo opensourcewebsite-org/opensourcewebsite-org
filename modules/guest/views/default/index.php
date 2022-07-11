@@ -207,14 +207,14 @@ use app\components\helpers\ExternalLink;
     </div>
       <div class="row">
         <div class="col-md-12">
-            <p>
-              <a href="https://m.do.co/c/4d16b1d56809" title="DigitalOcean.com" rel="nofollow noreferrer noopener" target="_blank">
-                <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
+            <div class="sponsors__list">
+              <a href="https://www.digitalocean.com/" title="DigitalOcean.com" rel="nofollow noreferrer noopener" target="_blank">
+                <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px" alt="DigitalOcean logo">
               </a>
               <a href="https://moqups.com" title="Moqups.com" rel="nofollow noreferrer noopener" target="_blank">
-                <img src="https://landing.moqups.com/img/logo@2x.png">
+                <img src="https://landing.moqups.com/img/logo@2x.png" style="background:#1089f2; padding: 10px; height: 53px;" alt="Moqups Logo">
               </a>
-            </p>
+            </div>
         </div>
       </div>
   </div>
