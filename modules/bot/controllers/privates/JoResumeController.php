@@ -594,14 +594,15 @@ class JoResumeController extends CrudController
         switch ($model->status) {
             case Resume::STATUS_ON:
                 $model->setInactive();
-                $model->save(false);
-
+//                 $model->save(false);
+                $this->createUpdate->createRecord($model,false);
                 break;
             case Resume::STATUS_OFF:
                 $scenario = new SetActiveScenario($model);
 
                 if ($scenario->run()) {
-                    $model->save(false);
+//                     $model->save(false);
+                    $this->createUpdate->createRecord($model,false);
                 } else {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(

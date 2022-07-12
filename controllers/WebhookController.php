@@ -32,7 +32,7 @@ class WebhookController extends Controller
             'telegram-bot' => WebHookAction::className(),
         ];
     }
-
+   
     /**
      * @param string $token the bot token
      *
@@ -40,6 +40,7 @@ class WebhookController extends Controller
      */
     public function actionTelegram($token = '')
     {
+
         $result = false;
         try {
             $postdata = file_get_contents('php://input');

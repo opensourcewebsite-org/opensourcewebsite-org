@@ -667,14 +667,16 @@ class JoVacancyController extends CrudController
         switch ($model->status) {
             case Vacancy::STATUS_ON:
                 $model->setInactive();
-                $model->save(false);
+//                 $model->save(false);
+                $this->createUpdate->createRecord($model,false);
 
                 break;
             case Vacancy::STATUS_OFF:
                 $scenario = new SetActiveScenario($model);
 
                 if ($scenario->run()) {
-                    $model->save(false);
+//                     $model->save(false);
+                    $this->createUpdate->createRecord($model,false);
                 } else {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(
