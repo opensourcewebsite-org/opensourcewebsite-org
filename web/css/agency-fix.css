@@ -232,3 +232,22 @@ header.masthead {
         padding: 100px 0 0 0;
     }
 }
+
+.sponsors__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 20px;
+    column-gap: 10px;
+    justify-content: space-evenly;
+}
+
+.sponsors__list [title="Moqups.com"] img {
+    background: #1089f2;
+    padding: 10px;
+    height: 53px;
+}
+
+.sponsors__list [title="DigitalOcean.com"] img {
+    width: 201px;
+}
