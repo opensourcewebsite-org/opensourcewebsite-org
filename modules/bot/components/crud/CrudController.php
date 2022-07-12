@@ -14,6 +14,7 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\crud\rules\FieldInterface;
 use app\modules\bot\components\crud\services\AttributeButtonsService;
 use app\modules\bot\components\crud\services\BackRouteService;
+use app\modules\bot\components\crud\services\CreateRecordService;
 use app\modules\bot\components\crud\services\EndRouteService;
 use app\modules\bot\components\crud\services\ViewFileService;
 use yii\base\DynamicModel;
@@ -48,6 +49,8 @@ abstract class CrudController extends Controller
     public $modelRelation;
     /** @var IntermediateFieldService */
     public $field;
+     /** @var IntermediateFieldService */
+     public $createUpdate;
     /** @var array */
     public $rule;
     /** @var array */
@@ -90,6 +93,12 @@ abstract class CrudController extends Controller
         ]);
         $this->field = Yii::createObject([
             'class' => IntermediateFieldService::class,
+            'state' => $module->getUserState(),
+            'controller' => $this,
+        ]);
+
+        $this->createUpdate = Yii::createObject([
+            'class' => CreateRecordService::class,
             'state' => $module->getUserState(),
             'controller' => $this,
         ]);
@@ -439,8 +448,8 @@ abstract class CrudController extends Controller
             $prevAttribute = $this->getPrevKey($editingAttributes, $attributeName);
             if ($prevAttribute) {
                 $model = $this->getFilledModel($rule);
-                $model->save();
-
+//                 $model->save();
+                $this->createUpdate->createRecord($model);
                 return $this->generateResponse($this->modelName, $prevAttribute, compact('rule'));
             }
 
@@ -1138,7 +1147,7 @@ abstract class CrudController extends Controller
         $relationModel = call_user_func([$class, 'findOne'], $conditions);
         if (!$relationModel) {
             $relationModel = new $class($conditions);
-            if (!$relationModel->save()) {
+            if ($this->createUpdate->createRecord($relationModel)) { //!$relationModel->save()
                 return null;
             }
         }
@@ -1285,11 +1294,12 @@ abstract class CrudController extends Controller
         if ($model->validate()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save()) {
+                if ($this->createUpdate->createRecord($model)) { //$model->save()
                     isset($model->cross_rate_on) ? Yii::warning('cross_rate_on: ' . $model->cross_rate_on) : null;
                     //Yii::warning('delivery_radius: ' . $model->delivery_radius);
                     $relationModel = $this->createRelationModel($model, $this->rule);
-                    if ($relationModel && !$relationModel->save()) {
+//                     if ($relationModel && !$relationModel->save()) {
+                    if ($relationModel && !$this->createUpdate->createRecord($relationModel)) 
                         throw new \Exception('not possible to save ' . $relationModel->formName() . ' because ' . serialize($relationModel->getErrors()));
                     }
                     foreach ($this->manyToManyRelationAttributes as $attributeName) {
@@ -1361,7 +1371,8 @@ abstract class CrudController extends Controller
                                 $relationModel->setAttribute($name, $value);
                             }
                             try {
-                                if (!$relationModel->save()) {
+//                                 if (!$relationModel->save()) {
+                                if (!$this->createUpdate->createRecord($relationModel)) {
                                     throw new \Exception('not possible to save ' . $relationModel->formName() . ' because ' . serialize($relationModel->getErrors()));
                                 }
                             } catch (\yii\db\Exception $exception) {

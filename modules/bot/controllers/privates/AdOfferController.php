@@ -577,14 +577,16 @@ class AdOfferController extends CrudController
         switch ($model->status) {
             case AdOffer::STATUS_ON:
                 $model->setInactive();
-                $model->save(false);
+//                 $model->save(false);
+                $this->createUpdate->createRecord($model,false);
 
                 break;
             case AdOffer::STATUS_OFF:
                 $scenario = new SetActiveScenario($model);
 
                 if ($scenario->run()) {
-                    $model->save(false);
+//                     $model->save(false);
+                    $this->createUpdate->createRecord($model,false);
                 } else {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(
