@@ -12,9 +12,9 @@ class VisitorsReportAsset extends AssetBundle
     ];
 
     public $js = [
-        'https://cdn.jsdelivr.net/npm/raphael@2.3.0/raphael.min.js',
-        'https://cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/jquery.mapael.min.js',
-        'https://cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/maps/usa_states.min.js',
+        '//cdn.jsdelivr.net/npm/raphael@2.3.0/raphael.min.js',
+        '//cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/jquery.mapael.min.js',
+        '//cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/maps/usa_states.min.js',
     ];
 
     public $depends = [

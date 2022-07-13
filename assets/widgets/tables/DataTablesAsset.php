@@ -9,12 +9,12 @@ class DataTablesAsset extends AssetBundle
     public $sourcePath = '@vendor/almasaeed2010/adminlte';
 
     public $css = [
-        'https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css',
+        '//cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css',
     ];
 
     public $js = [
-        'https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js',
-        'https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js',
+        '//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js',
+        '//cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js',
     ];
 
     public $depends = [

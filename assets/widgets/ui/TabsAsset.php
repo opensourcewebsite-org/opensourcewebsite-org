@@ -9,16 +9,14 @@ class TabsAsset extends AssetBundle
     public $sourcePath = '@vendor/almasaeed2010/adminlte';
 
     public $css = [
-        'https://cdn.jsdelivr.net/npm/overlayscrollbars@1.12.0/css/OverlayScrollbars.min.css',
-        'https://cdn.jsdelivr.net/npm/daterangepicker@3.0.5/daterangepicker.css',
-        'https://cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-bs4.css',
-        'https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.1.2/build/css/tempusdominus-bootstrap-4.min.css',
-        'https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css',
-        'https://cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/jqvmap.min.css',
-        'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700',
-
-        'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css',
-        //'plugins/fontawesome-free/css/all.min.css',
+        '//cdn.jsdelivr.net/npm/overlayscrollbars@1.12.0/css/OverlayScrollbars.min.css',
+        '//cdn.jsdelivr.net/npm/daterangepicker@3.0.5/daterangepicker.css',
+        '//cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-bs4.css',
+        '//cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.1.2/build/css/tempusdominus-bootstrap-4.min.css',
+        '//cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css',
+        '//cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/jqvmap.min.css',
+        '//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700',
+        '//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css',
 
         //ui sliders
         //'plugins/ion-rangeslider/css/ion.rangeSlider.min.css',
@@ -34,7 +32,7 @@ class TabsAsset extends AssetBundle
         //'plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css',
 
         //trumbowyg
-        'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.20.0/ui/trumbowyg.min.css',
+        '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.20.0/ui/trumbowyg.min.css',
 
         //tables data tables
         //'plugins/datatables-bs4/css/dataTables.bootstrap4.css',
@@ -56,21 +54,21 @@ class TabsAsset extends AssetBundle
     ];
 
     public $js = [
-//        'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js',
-//        'https://cdn.jsdelivr.net/npm/jquery-sparkline@2.4.0/jquery.sparkline.min.js',
-//        'https://cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/jquery.vmap.min.js',
-//        'https://cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/maps/jquery.vmap.usa.js',
-//        'https://cdn.jsdelivr.net/npm/jquery-knob@1.2.11/dist/jquery.knob.min.js',
-//        'https://cdn.jsdelivr.net/npm/moment@2.25.3/moment.min.js',
-//        'https://cdn.jsdelivr.net/npm/daterangepicker@3.0.5/daterangepicker.js',
-//        'https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.1.2/build/js/tempusdominus-bootstrap-4.min.js',
-//        'https://cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-bs4.min.js',
-//        'https://cdn.jsdelivr.net/npm/overlayscrollbars@1.12.0/js/jquery.overlayScrollbars.min.js',
-//        'https://cdn.jsdelivr.net/npm/jquery-mousewheel@3.1.13/jquery.mousewheel.js',
-//        'https://cdn.jsdelivr.net/npm/raphael@2.3.0/raphael.min.js',
-//        'https://cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/jquery.mapael.min.js',
-//        'https://cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/maps/usa_states.min.js',
-        //'https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js',
+//        '//code.jquery.com/ui/1.12.1/jquery-ui.min.js',
+//        '//cdn.jsdelivr.net/npm/jquery-sparkline@2.4.0/jquery.sparkline.min.js',
+//        '//cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/jquery.vmap.min.js',
+//        '//cdn.jsdelivr.net/npm/jqvmap@1.5.1/dist/maps/jquery.vmap.usa.js',
+//        '//cdn.jsdelivr.net/npm/jquery-knob@1.2.11/dist/jquery.knob.min.js',
+//        '//cdn.jsdelivr.net/npm/moment@2.25.3/moment.min.js',
+//        '//cdn.jsdelivr.net/npm/daterangepicker@3.0.5/daterangepicker.js',
+//        '//cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.1.2/build/js/tempusdominus-bootstrap-4.min.js',
+//        '//cdn.jsdelivr.net/npm/summernote@0.8.16/dist/summernote-bs4.min.js',
+//        '//cdn.jsdelivr.net/npm/overlayscrollbars@1.12.0/js/jquery.overlayScrollbars.min.js',
+//        '//cdn.jsdelivr.net/npm/jquery-mousewheel@3.1.13/jquery.mousewheel.js',
+//        '//cdn.jsdelivr.net/npm/raphael@2.3.0/raphael.min.js',
+//        '//cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/jquery.mapael.min.js',
+//        '//cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/maps/usa_states.min.js',
+        //'//cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js',
 
         //'plugins/jquery/jquery.min.js',
         //'plugins/jquery-ui/jquery-ui.min.js',
@@ -101,7 +99,6 @@ class TabsAsset extends AssetBundle
         //'dist/js/pages/dashboard.js',
         //'dist/js/pages/dashboard2.js',
         //'dist/js/pages/dashboard3.js',
-        'dist/js/demo.js',
 
         //ui sliders
         //'plugins/ion-rangeslider/js/ion.rangeSlider.min.js',
@@ -122,7 +119,7 @@ class TabsAsset extends AssetBundle
         //'plugins/bootstrap-switch/js/bootstrap-switch.min.js',
 
         //editors Trumbowyg
-        'https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.20.0/trumbowyg.min.js',
+        '//cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.20.0/trumbowyg.min.js',
 
         //tables data tables
         //'plugins/datatables/jquery.dataTables.js',
@@ -151,5 +148,6 @@ class TabsAsset extends AssetBundle
         'app\assets\widgets\CommonAsset',
         'app\assets\widgets\ui\SweetAlertAsset',
         'app\assets\widgets\ui\ToastAsset',
+        'app\assets\DemoAsset',
     ];
 }

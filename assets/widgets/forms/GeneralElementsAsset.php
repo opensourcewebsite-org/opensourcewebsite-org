@@ -12,7 +12,7 @@ class GeneralElementsAsset extends AssetBundle
     ];
 
     public $js = [
-        'https://cdn.jsdelivr.net/npm/bs-custom-file-input@1.3.4/dist/bs-custom-file-input.min.js',
+        '//cdn.jsdelivr.net/npm/bs-custom-file-input@1.3.4/dist/bs-custom-file-input.min.js',
     ];
 
     public $depends = [

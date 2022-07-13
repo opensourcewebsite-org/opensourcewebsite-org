@@ -9,9 +9,8 @@ class ModalsAsset extends AssetBundle
     public $sourcePath = '@vendor/almasaeed2010/adminlte';
 
     public $css = [
-        'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css',
-        'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700',
-        'plugins/fontawesome-free/css/all.min.css',
+        '//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css',
+        '//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700',
         'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css',
         'plugins/toastr/toastr.min.css',
     ];

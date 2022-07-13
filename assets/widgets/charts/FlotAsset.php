@@ -12,9 +12,9 @@ class FlotAsset extends AssetBundle
     ];
 
     public $js = [
-        'https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.js',
-        'https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.resize.js',
-        'https://cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.pie.min.js',
+        '//cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.js',
+        '//cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.resize.js',
+        '//cdn.jsdelivr.net/npm/jquery.flot@0.8.3/jquery.flot.pie.min.js',
     ];
 
     public $depends = [

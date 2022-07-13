@@ -12,7 +12,7 @@ class ChartAsset extends AssetBundle
     ];
 
     public $js = [
-        'https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js',
+        '//cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js',
     ];
 
     public $depends = [
