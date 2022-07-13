@@ -251,3 +251,7 @@ header.masthead {
 .sponsors__list [title="DigitalOcean.com"] img {
     width: 201px;
 }
+
+.float-right {
+    float: right;
+}
