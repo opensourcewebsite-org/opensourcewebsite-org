@@ -15,6 +15,8 @@ Please read through our [Contribution Guidelines](CONTRIBUTING.md).
 - Run `docker-compose up -d`
 - Run `docker-compose exec php composer install`
 - Run `docker-compose exec php ./yii migrate`
+  - Problem (Windows): `/usr/bin/env: 'php\r': No such file or directory`
+    - Solution: clone the repository with the key `--config core.autocrlf=input`
 
 The website can be accessed at http://localhost:8000.
 
