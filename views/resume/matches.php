@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         return Html::a(
                                             $matchModel->isNewMatch() ? Html::badge('info', 'new') : Html::icon('eye'),
                                             Url::to(['view-match', 'vacancyId' => $model->id, 'resumeId' => $matchModel->id]),
-                                            ['class' => 'btn btn-outline-primary']
+                                            ['class' => 'btn btn-outline-primary float-right']
                                         );
                                     },
                                 ],

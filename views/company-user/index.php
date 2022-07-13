@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'template' => '{view}',
                                 'buttons' => [
                                     'view' => function ($url) {
-                                        return Html::a(Html::icon('eye'), $url, ['class' => 'btn btn-outline-primary']);
+                                        return Html::a(Html::icon('eye'), $url, ['class' => 'btn btn-outline-primary float-right']);
                                     },
                                 ]
                             ],

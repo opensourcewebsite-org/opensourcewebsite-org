@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Matched Offers');
                                         return Html::a(
                                             $matchModel->isNewMatch() ? Html::badge('info', 'new') : Html::icon('eye'),
                                             Url::to(['view-match', 'order_id' => $model->id, 'match_order_id' => $matchModel->id]),
-                                            ['class' => 'btn btn-outline-primary']
+                                            ['class' => 'btn btn-outline-primary float-right']
                                         );
                                     },
                                 ],
