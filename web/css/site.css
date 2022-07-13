@@ -175,6 +175,8 @@ a.desc:after {
 
 .dropdown-menu-inner {
     padding-top: 0;
+    max-height: 80vh;
+    overflow: auto;
 }
 
 .dropdown-menu-inner input[type=text] {
