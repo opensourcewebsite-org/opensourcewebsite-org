@@ -139,7 +139,7 @@
             "version": "3.6.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jquery/jquery-dist.git",
+                "url": "git@github.com:jquery/jquery-dist.git",
                 "reference": "e786e3d9707ffd9b0dd330ca135b66344dcef85a"
             },
             "dist": {
@@ -1452,12 +1452,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-stellar-sdk.git",
-                "reference": "2ed2747472e1c08df17c2dd1c76f31840612238a"
+                "reference": "4ffa55b8e65200db370ac4f7e203882644bde438"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-stellar-sdk/zipball/2ed2747472e1c08df17c2dd1c76f31840612238a",
-                "reference": "2ed2747472e1c08df17c2dd1c76f31840612238a",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-stellar-sdk/zipball/4ffa55b8e65200db370ac4f7e203882644bde438",
+                "reference": "4ffa55b8e65200db370ac4f7e203882644bde438",
                 "shasum": ""
             },
             "require": {
@@ -1507,7 +1507,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-stellar-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-stellar-sdk"
             },
-            "time": "2021-11-05T07:22:39+00:00"
+            "time": "2022-07-15T12:11:16+00:00"
         },
         {
             "name": "opensourcewebsite-org/php-telegram-sdk",
@@ -1515,12 +1515,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-telegram-sdk.git",
-                "reference": "d0e438a327a3ede6beb55315d336f75e58ab34a8"
+                "reference": "908338719a8b931743c4646bebef9771f8a0be69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/d0e438a327a3ede6beb55315d336f75e58ab34a8",
-                "reference": "d0e438a327a3ede6beb55315d336f75e58ab34a8",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/908338719a8b931743c4646bebef9771f8a0be69",
+                "reference": "908338719a8b931743c4646bebef9771f8a0be69",
                 "shasum": ""
             },
             "require": {
@@ -1572,7 +1572,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-telegram-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-telegram-sdk"
             },
-            "time": "2022-04-29T04:11:34+00:00"
+            "time": "2022-07-15T12:06:57+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -4571,16 +4571,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.8.0",
+            "version": "v3.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "cbad1115aac4b5c3c5540e7210d3c9fba2f81fa3"
+                "reference": "bad87e63d7d87efa5e82aa4feafa52df6a37e6c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/cbad1115aac4b5c3c5540e7210d3c9fba2f81fa3",
-                "reference": "cbad1115aac4b5c3c5540e7210d3c9fba2f81fa3",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/bad87e63d7d87efa5e82aa4feafa52df6a37e6c1",
+                "reference": "bad87e63d7d87efa5e82aa4feafa52df6a37e6c1",
                 "shasum": ""
             },
             "require": {
@@ -4648,7 +4648,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/issues",
-                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.8.0"
+                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.9.3"
             },
             "funding": [
                 {
@@ -4656,7 +4656,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-18T17:20:59+00:00"
+            "time": "2022-07-13T09:53:20+00:00"
         },
         {
             "name": "myclabs/deep-copy",
