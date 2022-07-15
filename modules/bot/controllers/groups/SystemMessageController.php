@@ -2,15 +2,15 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\controllers\groups\JoinCaptchaController;
+use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatGreeting;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\ChatMember;
-use app\modules\bot\controllers\groups\JoinCaptchaController;
+use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
+use Yii;
 
 /**
 * Class SystemMessageController
@@ -30,11 +30,13 @@ class SystemMessageController extends Controller
             $role = JoinCaptchaController::ROLE_VERIFIED;
 
             if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
-                // Remove join message
-                $this->getBotApi()->deleteMessage(
-                    $chat->getChatId(),
-                    $this->getUpdate()->getMessage()->getMessageId()
-                );
+                if ($chat->filter_remove_join_messages == ChatSetting::STATUS_ON) {
+                    // Remove join message
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
             }
 
             foreach ($this->getUpdate()->getMessage()->getNewChatMembers() as $newChatMember) {
@@ -110,11 +112,13 @@ class SystemMessageController extends Controller
             $user = $this->getTelegramUser();
 
             if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
-                // Remove left message
-                $this->getBotApi()->deleteMessage(
-                    $chat->getChatId(),
-                    $this->getUpdate()->getMessage()->getMessageId()
-                );
+                if ($chat->filter_remove_left_messages == ChatSetting::STATUS_ON) {
+                    // Remove left message
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
             }
 
             // Remove captcha message if user left the group

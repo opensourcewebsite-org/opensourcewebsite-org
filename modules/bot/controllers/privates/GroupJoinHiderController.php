@@ -42,6 +42,22 @@ class GroupJoinHiderController extends Controller
                         ],
                         [
                             [
+                                'callback_data' => self::createRoute('set-remove-join-messages', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => ($chat->filter_remove_join_messages == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove join messages'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('set-remove-left-messages', [
+                                    'chatId' => $chatId,
+                                ]),
+                                'text' => ($chat->filter_remove_left_messages == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove left messages'),
+                            ],
+                        ],
+                        [
+                            [
                                 'callback_data' => GroupController::createRoute('view', [
                                     'chatId' => $chatId,
                                 ]),
@@ -73,16 +89,60 @@ class GroupJoinHiderController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('join_hider_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('join_hider_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('join_hider_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('join_hider_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
+
+                break;
+        }
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveJoinMessages($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        switch ($chat->filter_remove_join_messages) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_join_messages = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_join_messages = ChatSetting::STATUS_ON;
+
+                break;
+        }
+
+        return $this->actionIndex($chatId);
+    }
+
+    public function actionSetRemoveLeftMessages($chatId = null)
+    {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
+        switch ($chat->filter_remove_left_messages) {
+            case ChatSetting::STATUS_ON:
+                $chat->filter_remove_left_messages = ChatSetting::STATUS_OFF;
+
+                break;
+            case ChatSetting::STATUS_OFF:
+                $chat->filter_remove_left_messages = ChatSetting::STATUS_ON;
 
                 break;
         }

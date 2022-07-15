@@ -175,7 +175,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
         }
 
         if ($updatesCount) {
-            $this->output('Join Captcha. Users kicked from telegram groups: ' . $updatesCount);
+            $this->output('Captcha. Users kicked from telegram groups: ' . $updatesCount);
         }
 
         return true;

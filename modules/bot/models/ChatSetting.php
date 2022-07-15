@@ -36,6 +36,12 @@ class ChatSetting extends ActiveRecord
         'join_hider_status' => [
             'default' => self::STATUS_OFF,
         ],
+        'filter_remove_join_messages' => [
+            'default' => self::STATUS_ON,
+        ],
+        'filter_remove_left_messages' => [
+            'default' => self::STATUS_ON,
+        ],
         'join_captcha_status' => [
             'default' => self::STATUS_OFF,
         ],
@@ -200,13 +206,13 @@ class ChatSetting extends ActiveRecord
                         if (!is_int($this->value)) {
                             $this->addError('value', 'Value must be an integer.');
                         }
-                    break;
+                        break;
                     case 'float':
                         $this->value = floatval($this->value);
                         if (!is_float($this->value)) {
                             $this->addError('value', 'Value must be a number.');
                         }
-                    break;
+                        break;
                 }
             }
 

@@ -162,7 +162,15 @@ class GroupController extends Controller
                                     'callback_data' => GroupJoinHiderController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
-                                    'text' => ($chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Join Hider'),
+                                    'text' => ($chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notification Filter'),
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => GroupMessageFilterController::createRoute('index', [
+                                        'chatId' => $chat->id,
+                                    ]),
+                                    'text' => ($chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
                                 ],
                             ],
                             [
@@ -170,7 +178,7 @@ class GroupController extends Controller
                                     'callback_data' => GroupJoinCaptchaController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
-                                    'text' => ($chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Join Captcha'),
+                                    'text' => ($chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Captcha'),
                                 ],
                             ],
                             [
@@ -183,14 +191,6 @@ class GroupController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => GroupMembershipController::createRoute('index', [
-                                        'chatId' => $chat->id,
-                                    ]),
-                                    'text' => ($chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
-                                ],
-                            ],
-                            [
-                                [
                                     'callback_data' => GroupSlowModeController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
@@ -199,10 +199,10 @@ class GroupController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => GroupMessageFilterController::createRoute('index', [
+                                    'callback_data' => GroupMembershipController::createRoute('index', [
                                         'chatId' => $chat->id,
                                     ]),
-                                    'text' => ($chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
+                                    'text' => ($chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
                                 ],
                             ],
                             [
