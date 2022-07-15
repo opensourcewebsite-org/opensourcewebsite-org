@@ -1,11 +1,16 @@
 <?php
 
 # https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/usage.rst
-# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.8
+# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.9
 
 declare(strict_types=1);
 
 $config = new PhpCsFixer\Config();
+
+/*
+ * Available rules: https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/rules/index.rst
+ * Available sets: https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/ruleSets/index.rst
+ */
 
 return $config
     ->setRiskyAllowed(true)

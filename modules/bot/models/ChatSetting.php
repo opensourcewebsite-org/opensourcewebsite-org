@@ -36,11 +36,23 @@ class ChatSetting extends ActiveRecord
         'join_hider_status' => [
             'default' => self::STATUS_OFF,
         ],
-        'filter_remove_join_messages' => [
+        'filter_remove_member_joined' => [
             'default' => self::STATUS_ON,
         ],
-        'filter_remove_left_messages' => [
+        'filter_remove_member_left' => [
             'default' => self::STATUS_ON,
+        ],
+        'filter_remove_video_chat_scheduled' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_video_chat_started' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_video_chat_ended' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_video_chat_invited' => [
+            'default' => self::STATUS_OFF,
         ],
         'join_captcha_status' => [
             'default' => self::STATUS_OFF,

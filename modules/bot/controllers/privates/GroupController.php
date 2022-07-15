@@ -160,7 +160,7 @@ class GroupController extends Controller
                             [
                                 [
                                     'callback_data' => GroupJoinHiderController::createRoute('index', [
-                                        'chatId' => $chat->id,
+                                        'id' => $chat->id,
                                     ]),
                                     'text' => ($chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notification Filter'),
                                 ],
@@ -168,7 +168,7 @@ class GroupController extends Controller
                             [
                                 [
                                     'callback_data' => GroupMessageFilterController::createRoute('index', [
-                                        'chatId' => $chat->id,
+                                        'id' => $chat->id,
                                     ]),
                                     'text' => ($chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
                                 ],

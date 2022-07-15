@@ -13,5 +13,3 @@ use app\components\helpers\TimeHelper;
 <?= Yii::t('bot', 'Only the owner of the group can configure the list of administrators who have access to the settings of this group') ?>.<br/>
 <br/>
 <?= Yii::t('bot', 'Timezone') ?>: <?= TimeHelper::getNameByOffset($chat->timezone) ?><br/>
-<br/>
-<?= Yii::t('bot', 'Select a feature to manage the group') ?>.<br/>

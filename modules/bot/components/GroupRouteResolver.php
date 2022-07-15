@@ -40,6 +40,14 @@ class GroupRouteResolver extends Component
                 $commandText = SystemMessageController::createRoute('left-chat-member');
             } elseif ($requestMessage->getMigrateToChatId()) {
                 $commandText = SystemMessageController::createRoute('group-to-supergroup');
+            } elseif ($requestMessage->getVideoChatScheduled()) {
+                $commandText = SystemMessageController::createRoute('video-chat-scheduled');
+            } elseif ($requestMessage->getVideoChatStarted()) {
+                $commandText = SystemMessageController::createRoute('video-chat-started');
+            } elseif ($requestMessage->getVideoChatEnded()) {
+                $commandText = SystemMessageController::createRoute('video-chat-ended');
+            } elseif ($requestMessage->getVideoChatParticipantsInvited()) {
+                $commandText = SystemMessageController::createRoute('video-chat-participants-invited');
             }
         } else {
             $requestMessage = $update->getEditedMessage();

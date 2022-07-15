@@ -30,8 +30,7 @@ class SystemMessageController extends Controller
             $role = JoinCaptchaController::ROLE_VERIFIED;
 
             if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
-                if ($chat->filter_remove_join_messages == ChatSetting::STATUS_ON) {
-                    // Remove join message
+                if ($chat->filter_remove_member_joined == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
                         $this->getUpdate()->getMessage()->getMessageId()
@@ -112,8 +111,7 @@ class SystemMessageController extends Controller
             $user = $this->getTelegramUser();
 
             if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
-                if ($chat->filter_remove_left_messages == ChatSetting::STATUS_ON) {
-                    // Remove left message
+                if ($chat->filter_remove_member_left == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
                         $this->getUpdate()->getMessage()->getMessageId()
@@ -170,6 +168,82 @@ class SystemMessageController extends Controller
             ]);
 
             $chat->save();
+        }
+    }
+
+    /**
+    * @return array
+    */
+    public function actionVideoChatScheduled()
+    {
+        if ($this->getUpdate()->getMessage()->getVideoChatScheduled()) {
+            $chat = $this->getTelegramChat();
+
+            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+                if ($chat->filter_remove_video_chat_scheduled == ChatSetting::STATUS_ON) {
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+    * @return array
+    */
+    public function actionVideoChatStarted()
+    {
+        if ($this->getUpdate()->getMessage()->getVideoChatStarted()) {
+            $chat = $this->getTelegramChat();
+
+            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+                if ($chat->filter_remove_video_chat_started == ChatSetting::STATUS_ON) {
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+    * @return array
+    */
+    public function actionVideoChatEnded()
+    {
+        if ($this->getUpdate()->getMessage()->getVideoChatEnded()) {
+            $chat = $this->getTelegramChat();
+
+            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+                if ($chat->filter_remove_video_chat_ended == ChatSetting::STATUS_ON) {
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+    * @return array
+    */
+    public function actionVideoChatParticipantsInvited()
+    {
+        if ($this->getUpdate()->getMessage()->getVideoChatParticipantsInvited()) {
+            $chat = $this->getTelegramChat();
+
+            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+                if ($chat->filter_remove_video_chat_invited == ChatSetting::STATUS_ON) {
+                    $this->getBotApi()->deleteMessage(
+                        $chat->getChatId(),
+                        $this->getUpdate()->getMessage()->getMessageId()
+                    );
+                }
+            }
         }
     }
 }

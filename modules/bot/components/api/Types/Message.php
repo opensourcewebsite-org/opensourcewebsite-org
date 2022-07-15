@@ -2,23 +2,27 @@
 
 namespace app\modules\bot\components\api\Types;
 
+use TelegramBot\Api\Types\Animation;
+use TelegramBot\Api\Types\ArrayOfMessageEntity;
+use TelegramBot\Api\Types\ArrayOfPhotoSize;
+use TelegramBot\Api\Types\ArrayOfUser;
+use TelegramBot\Api\Types\Audio;
+use TelegramBot\Api\Types\Contact;
+use TelegramBot\Api\Types\Dice;
+use TelegramBot\Api\Types\Document;
+use TelegramBot\Api\Types\Location;
 use TelegramBot\Api\Types\Payments\Invoice;
 use TelegramBot\Api\Types\Payments\SuccessfulPayment;
-use TelegramBot\Api\Types\User;
-use TelegramBot\Api\Types\ArrayOfUser;
-use TelegramBot\Api\Types\ArrayOfMessageEntity;
-use TelegramBot\Api\Types\Audio;
-use TelegramBot\Api\Types\Document;
-use TelegramBot\Api\Types\Animation;
-use TelegramBot\Api\Types\ArrayOfPhotoSize;
-use TelegramBot\Api\Types\Sticker;
-use TelegramBot\Api\Types\Video;
-use TelegramBot\Api\Types\Voice;
-use TelegramBot\Api\Types\Contact;
-use TelegramBot\Api\Types\Location;
-use TelegramBot\Api\Types\Venue;
 use TelegramBot\Api\Types\Poll;
-use TelegramBot\Api\Types\Dice;
+use TelegramBot\Api\Types\Sticker;
+use TelegramBot\Api\Types\User;
+use TelegramBot\Api\Types\Venue;
+use TelegramBot\Api\Types\Video;
+use TelegramBot\Api\Types\VideoChatEnded;
+use TelegramBot\Api\Types\VideoChatParticipantsInvited;
+use TelegramBot\Api\Types\VideoChatScheduled;
+use TelegramBot\Api\Types\VideoChatStarted;
+use TelegramBot\Api\Types\Voice;
 
 class Message extends \TelegramBot\Api\Types\Message
 {
@@ -75,6 +79,10 @@ class Message extends \TelegramBot\Api\Types\Message
         'invoice' => Invoice::class,
         'successful_payment' => SuccessfulPayment::class,
         'connected_website' => true,
+        'video_chat_scheduled' => VideoChatScheduled::class,
+        'video_chat_started' => VideoChatStarted::class,
+        'video_chat_ended' => VideoChatEnded::class,
+        'video_chat_participants_invited' => VideoChatParticipantsInvited::class,
     ];
 
     /**
