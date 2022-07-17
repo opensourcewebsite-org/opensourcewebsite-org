@@ -99,7 +99,6 @@ class Module extends \yii\base\Module
                     return false;
                 }
             }
-
             // create a user for new forward from
             if ($this->getUpdate()->getRequestMessage() && ($providerForwardFrom = $this->getUpdate()->getRequestMessage()->getForwardFrom())) {
                 $forwardUser = User::findOne([
@@ -122,6 +121,10 @@ class Module extends \yii\base\Module
                     $globalForwardUser = GlobalUser::createWithRandomPassword();
                     $globalForwardUser->name = $forwardUser->getFullName();
 
+                    if (!$globalForwardUser->validate('name')) {
+                        $globalForwardUser->name = null;
+                    }
+
                     if (!$globalForwardUser->save()) {
                         Yii::warning($globalForwardUser->getErrors());
 
@@ -142,6 +145,7 @@ class Module extends \yii\base\Module
 
             if (!isset($chat)) {
                 $chat = new Chat();
+
                 $chat->setAttributes([
                     'chat_id' => $this->getUpdate()->getChat()->getId(),
                     'bot_id' => $this->getBot()->getId(),
@@ -167,7 +171,6 @@ class Module extends \yii\base\Module
             $this->setChat($chat);
 
             $this->updateNamespaceByChat($this->getChat());
-
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
                 $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
@@ -181,7 +184,6 @@ class Module extends \yii\base\Module
                         $botApiUser = $botApiAdministrator->getUser();
 
                         $administrator = User::createUser($botApiUser);
-
                         // Update user information
                         $administrator->updateInfo($botApiUser);
                         $administrator->save();
@@ -211,6 +213,10 @@ class Module extends \yii\base\Module
                 if (!$globalUser = $user->globalUser) {
                     $globalUser = GlobalUser::createWithRandomPassword();
                     $globalUser->name = $user->getFullName();
+
+                    if (!$globalUser->validate('name')) {
+                        $globalUser->name = null;
+                    }
 
                     if ($isNewUser) {
                         if ($chat->isPrivate() && $this->getUpdate()->getRequestMessage()) {
