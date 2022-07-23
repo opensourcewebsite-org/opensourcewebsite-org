@@ -2,8 +2,8 @@
 
 namespace app\modules\bot\controllers\channels;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use Yii;
 
 /**
  * Class MessageController

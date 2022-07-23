@@ -23,6 +23,16 @@ class PrivateRouteResolver extends Component
      */
     public $rules = [];
 
+    /**
+     * @var array
+     */
+    public $controllers = [];
+
+    /**
+     * @var array
+     */
+    public $actions = [];
+
     public function resolveRoute(Update $update, ?string $state)
     {
         $commandText = null;
@@ -147,6 +157,15 @@ class PrivateRouteResolver extends Component
 
             if (stripos($route, $token) !== false) {
                 if ($key == 'controller' || $key == 'action') {
+                    // replace short codes of controllers/actions to names
+                    if (is_numeric($value)) {
+                        if ($key == 'controller') {
+                            $value = $this->controllers[(int)$value] ?? $value;
+                        } elseif ($key == 'action') {
+                            $value = $this->actions[(int)$value] ?? $value;
+                        }
+                    }
+
                     $value = str_replace('_', '-', $value);
                 }
 

@@ -15,6 +15,18 @@ $config = [
                 '/<controller:\w+>__<action:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],
+            'controllers' => [
+                1 => 'hello',
+            ],
+            'actions' => [
+                1 => 'index',
+                2 => 'list',
+                3 => 'view',
+                4 => 'create',
+                5 => 'edit',
+                6 => 'update',
+                7 => 'delete',
+            ],
         ],
     ],
 ];

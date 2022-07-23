@@ -8,15 +8,15 @@ Please read through our [Contribution Guidelines](CONTRIBUTING.md).
 
 #### Using Docker (easy way)
 
-- Copy file `config/params.dist.php` to `config/params.php`
-- Copy file `config/web-local.dist.php` to `config/web-local.php`
-- Copy file `.env.docker.dist` to `.env`
-- Install [Docker](https://www.docker.com)
-- Run `docker-compose up -d`
-- Run `docker-compose exec php composer install`
-- Run `docker-compose exec php ./yii migrate`
-  - Problem (Windows): `/usr/bin/env: 'php\r': No such file or directory`
-    - Solution: clone the repository with the key `--config core.autocrlf=input`
+- Copy file `config/params.dist.php` to `config/params.php`.
+- Copy file `config/web-local.dist.php` to `config/web-local.php`.
+- Copy file `.env.docker.dist` to `.env`.
+- Install [Docker](https://www.docker.com).
+- Run `docker-compose up -d`.
+- Run `docker-compose exec php composer install`.
+- Run `docker-compose exec php ./yii migrate`.
+  - Problem (Windows): `/usr/bin/env: 'php\r': No such file or directory`.
+    - Solution: clone the repository with the key `--config core.autocrlf=input`.
 
 The website can be accessed at http://localhost:8000.
 
@@ -24,20 +24,20 @@ The website can be accessed at http://localhost:8000.
 
 #### Without Docker (advanced way)
 
-- Copy file `config/params.dist.php` to `config/params.php`
-- Copy file `config/web-local.dist.php` to `config/web-local.php`
-- Copy file `.env.dist` to `.env`
-- Set correct values in `.env` file for your environment
+- Copy file `config/params.dist.php` to `config/params.php`.
+- Copy file `config/web-local.dist.php` to `config/web-local.php`.
+- Copy file `.env.dist` to `.env`.
+- Set correct values in `.env` file for your environment.
 - Install [MySQL 8.X](https://www.mysql.com):
-  - Create a new MySQL InnoDB database ("opensourcewebsite" by default), with "utf8mb4_0900_ai_ci" collation for your environment
-  - Disable sql_mode=ONLY_FULL_GROUP_BY
+  - Create a new MySQL InnoDB database ("opensourcewebsite" by default), with "utf8mb4_0900_ai_ci" collation for your environment.
+  - Disable `sql_mode=ONLY_FULL_GROUP_BY`.
 - Install [Nginx web server](https://nginx.org) or [Apache web server](https://httpd.apache.org):
-  - Setup your web server root folder to `web`
-- Install [PHP 7.4.X](https://www.php.net)
-- Install [XDebug](https://xdebug.org)
-- Install [Composer](https://getcomposer.org)
-- Run `php composer.phar install`
-- Run `php yii migrate`
+  - Setup your web server root folder to `web`.
+- Install [PHP 7.4.X](https://www.php.net).
+- Install [XDebug](https://xdebug.org).
+- Install [Composer](https://getcomposer.org).
+- Run `php composer.phar install`.
+- Run `php yii migrate`.
 
 ## Fixtures
 

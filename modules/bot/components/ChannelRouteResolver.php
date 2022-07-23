@@ -23,6 +23,16 @@ class ChannelRouteResolver extends Component
      */
     public $rules = [];
 
+    /**
+     * @var array
+     */
+    public $controllers = [];
+
+    /**
+     * @var array
+     */
+    public $actions = [];
+
     public function resolveRoute(Update $update, ?string $state)
     {
         $commandText = null;

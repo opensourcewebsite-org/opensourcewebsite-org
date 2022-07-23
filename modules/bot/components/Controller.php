@@ -18,10 +18,6 @@ use Yii;
  */
 class Controller extends \yii\web\Controller
 {
-    public const PRIVATE_NAMESPACE = 'privates';
-    public const GROUP_NAMESPACE = 'groups';
-    public const CHANNEL_NAMESPACE = 'channels';
-
     /**
      * @var bool
      */
@@ -68,7 +64,7 @@ class Controller extends \yii\web\Controller
      */
     public function getUser()
     {
-        return $this->module->globalUser;
+        return $this->module->getGlobalUser();
     }
 
     /**
@@ -76,7 +72,7 @@ class Controller extends \yii\web\Controller
      */
     public function getGlobalUser()
     {
-        return $this->module->globalUser;
+        return $this->module->getGlobalUser();
     }
 
     /**
@@ -135,12 +131,24 @@ class Controller extends \yii\web\Controller
      */
     public static function createRoute(string $actionName = null, array $params = [])
     {
+        $module =  Yii::$app->getModule('bot');
         $controllerName = self::controllerName();
-        $route = "/$controllerName";
+
+        // replace names of actions to short codes
+        if ($key = array_search($controllerName, $module->commandRouteResolver->controllers)) {
+            $route = "/$key";
+        } else {
+            $route = "/$controllerName";
+        }
 
         if (!empty($actionName)) {
-            $actionName = str_replace('-', '_', $actionName);
-            $route .= "__$actionName";
+            // replace names of actions to short codes
+            if ($key = array_search($actionName, $module->commandRouteResolver->actions)) {
+                $route .= "__$key";
+            } else {
+                $actionName = str_replace('-', '_', $actionName);
+                $route .= "__$actionName";
+            }
         }
 
         if (!empty($params)) {

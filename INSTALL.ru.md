@@ -8,13 +8,13 @@
 
 #### C использованием Docker (простой способ)
 
-- Сделайте копию файла `config/params.dist.php` и переименуйте его в `config/params.php`
-- Сделайте копию файла `config/web-local.dist.php` и переименуйте его в `config/web-local.php`
-- Сделайте копию файла `.env.docker.dist` и переименуйте его в `.env`
-- Установите [Docker](https://www.docker.com)
-- Запустите `docker-compose up -d`
-- Запустите `docker-compose exec php composer install`
-- Запустите `docker-compose exec php ./yii migrate`
+- Сделайте копию файла `config/params.dist.php` и переименуйте его в `config/params.php`.
+- Сделайте копию файла `config/web-local.dist.php` и переименуйте его в `config/web-local.php`.
+- Сделайте копию файла `.env.docker.dist` и переименуйте его в `.env`.
+- Установите [Docker](https://www.docker.com).
+- Запустите `docker-compose up -d`.
+- Запустите `docker-compose exec php composer install`.
+- Запустите `docker-compose exec php ./yii migrate`.
 
 Сайт будет доступен по адресу http://localhost:8000.
 
@@ -22,20 +22,20 @@
 
 #### Без использования Docker (продвинутый способ)
 
-- Сделайте копию файла `config/params.dist.php` и переименуйте его в `config/params.php`
-- Сделайте копию файла `config/web-local.dist.php` и переименуйте его в `config/web-local.php`
-- Сделайте копию файла `.env.dist` и переименуйте его в `.env`
-- Установите правильные значения в файле `.env` для вашего окружения
+- Сделайте копию файла `config/params.dist.php` и переименуйте его в `config/params.php`.
+- Сделайте копию файла `config/web-local.dist.php` и переименуйте его в `config/web-local.php`.
+- Сделайте копию файла `.env.dist` и переименуйте его в `.env`.
+- Установите правильные значения в файле `.env` для вашего окружения.
 - Установите [MySQL 8.X](https://www.mysql.com):
-  - Создайте новую базу данных MySQL InnoDB ("opensourcewebsite" по умолчанию), с кодировкой "utf8mb4_0900_ai_ci" для вашего окружения
-  - Отключите sql_mode=ONLY_FULL_GROUP_BY
+  - Создайте новую базу данных MySQL InnoDB ("opensourcewebsite" по умолчанию), с кодировкой "utf8mb4_0900_ai_ci" для вашего окружения.
+  - Отключите `sql_mode=ONLY_FULL_GROUP_BY`.
 - Установите [веб-сервер Nginx](https://nginx.org) или [веб-сервер Apache](https://httpd.apache.org):
-  - Установите корневую папку веб-сервера на `web`
-- Установите [PHP 7.4.X](https://www.php.net)
-- Установите [XDebug](https://xdebug.org)
-- Установите [Composer](https://getcomposer.org)
-- Запустите `php composer.phar install`
-- Запустите `php yii migrate`
+  - Установите корневую папку веб-сервера на `web`.
+- Установите [PHP 7.4.X](https://www.php.net).
+- Установите [XDebug](https://xdebug.org).
+- Установите [Composer](https://getcomposer.org).
+- Запустите `php composer.phar install`.
+- Запустите `php yii migrate`.
 
 ## Фикстуры
 

@@ -24,6 +24,16 @@ class GroupRouteResolver extends Component
      */
     public $rules = [];
 
+    /**
+     * @var array
+     */
+    public $controllers = [];
+
+    /**
+     * @var array
+     */
+    public $actions = [];
+
     public function resolveRoute(Update $update, ?string $state)
     {
         $commandText = null;
@@ -152,7 +162,16 @@ class GroupRouteResolver extends Component
             $token = "<$key>";
 
             if (stripos($route, $token) !== false) {
-                if ($key == 'controller' || $key == 'action') {
+                if (($key == 'controller') || ($key == 'action')) {
+                    // for short codes of controllers/actions
+                    if (is_numeric($value)) {
+                        if ($key == 'controller') {
+                            $value = $this->controllers[(int)$value] ?? $value;
+                        } elseif ($key == 'action') {
+                            $value = $this->actions[(int)$value] ?? $value;
+                        }
+                    }
+
                     $value = str_replace('_', '-', $value);
                 }
 

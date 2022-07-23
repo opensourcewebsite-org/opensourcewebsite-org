@@ -520,7 +520,7 @@ return [
     'Send a maximum number of active posts per member' => 'Отправьте максимальное количество активных обьявлений для одного участника',
     'Hint for text' => 'Подсказка для текста',
     'This information is shown when members set the text of posts' => 'Эта информация отображается, когда участники устанавливают текст обьявлений',
-    'Add the bot to your group' => 'Добавить бота в вашу группу',
+    'Add the bot to group or channel' => 'Добавить бота в группу или канал',
     'Invite members to use this feature via the link' => 'Пригласите участников использовать эту функцию по ссылке',
     'The bot will send this link to the group as a response to the message «/faq»' => 'Бот отправит эту ссылку в группу в ответ на сообщение «/faq»',
     'Your last message in the group «{0}» was deleted due to violation of group rules' => 'Ваше последнее сообщение в группе «{0}» было удалено из-за нарушения правил группы',

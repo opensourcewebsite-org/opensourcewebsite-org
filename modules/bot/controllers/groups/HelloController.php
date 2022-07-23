@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\ChatSetting;
+use Yii;
 
 /**
  * Class HelloController
@@ -62,7 +62,7 @@ class HelloController extends Controller
                     [
                         [
                             'url' => ExternalLink::getBotToAddGroupLink(),
-                            'text' => Yii::t('bot', 'Add the bot to your group'),
+                            'text' => Yii::t('bot', 'Add the bot to group or channel'),
                         ],
                     ],
                     [

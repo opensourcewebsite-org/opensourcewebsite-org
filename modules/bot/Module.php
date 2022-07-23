@@ -22,21 +22,6 @@ use yii\base\InvalidRouteException;
  */
 class Module extends \yii\base\Module
 {
-    public $controllerNamespace = 'app\modules\bot\controllers';
-
-    public $defaultControllerNamespace = null;
-
-    public $defaultViewPath = null;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function init()
-    {
-        $this->defaultControllerNamespace = $this->controllerNamespace;
-        $this->defaultViewPath = $this->getViewPath();
-    }
-
     /**
      * @param string $input
      * @param string $token Bot token
@@ -542,8 +527,8 @@ class Module extends \yii\base\Module
             }
             // Set namespace
             Yii::configure($this, require __DIR__ . "/config/$namespace.php");
-            $this->controllerNamespace = $this->defaultControllerNamespace . '\\' . $namespace;
-            $this->setViewPath($this->defaultViewPath . '/' . $namespace);
+            $this->controllerNamespace = $this->controllerNamespace . '\\' . $namespace;
+            $this->setViewPath($this->getViewPath() . DIRECTORY_SEPARATOR . $namespace);
 
             return true;
         } else {

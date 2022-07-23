@@ -136,7 +136,16 @@ class User extends ActiveRecord
             ->where([
                 'or',
                 ['type' => Chat::TYPE_GROUP],
-                ['type' => Chat::TYPE_SUPERGROUP]
+                ['type' => Chat::TYPE_SUPERGROUP],
+            ])
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
+    }
+
+    public function getChannels()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->where([
+                'type' => Chat::TYPE_CHANNEL,
             ])
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }

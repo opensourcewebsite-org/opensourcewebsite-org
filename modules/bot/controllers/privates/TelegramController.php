@@ -2,9 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
+use Yii;
 
 /**
  * Class TelegramController
@@ -48,6 +49,10 @@ class TelegramController extends Controller
                         [
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
+                        ],
+                        [
+                            'url' => ExternalLink::getBotToAddGroupLink(),
+                            'text' => Emoji::ADD,
                         ],
                     ],
                 ]
