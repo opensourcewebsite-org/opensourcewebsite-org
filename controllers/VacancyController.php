@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+
 use app\components\Controller;
 use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
@@ -18,15 +25,22 @@ use app\models\User;
 use app\models\Vacancy;
 use app\models\VacancyLanguage;
 use app\models\WebModels\WebVacancy;
-use Yii;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
+use app\repositories\VacancyRepository;
+use app\repositories\ResumeRepository;
 
 class VacancyController extends Controller
 {
+    public VacancyRepository $vacancyRepository;
+    public ResumeRepository $resumeRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->vacancyRepository = new VacancyRepository();
+        $this->resumeRepository = new ResumeRepository();
+    }
+
     public function behaviors(): array
     {
         return [
@@ -85,7 +99,7 @@ class VacancyController extends Controller
 
     public function actionUpdate(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->vacancyRepository->findVacancyByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
@@ -101,14 +115,14 @@ class VacancyController extends Controller
 
     public function actionView(int $id): string
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->vacancyRepository->findVacancyByIdAndCurrentUser($id);
 
         return $this->render('view', ['model' => $model]);
     }
 
     public function actionDelete(int $id): Response
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->vacancyRepository->findVacancyByIdAndCurrentUser($id);
 
         $model->delete();
 
@@ -122,7 +136,7 @@ class VacancyController extends Controller
      */
     public function actionSetActive(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->vacancyRepository->findVacancyByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -137,7 +151,7 @@ class VacancyController extends Controller
 
     public function actionSetInactive(int $id): bool
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->vacancyRepository->findVacancyByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -153,7 +167,7 @@ class VacancyController extends Controller
 
     public function actionChangeLanguage(int $id, int $vacancyId)
     {
-        $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
+        $vacancy = $this->vacancyRepository->findVacancyByIdAndCurrentUser($vacancyId);
 
         $languages = array_map(function ($language) {
             return strtoupper($language->code) . ' - ' . $language->name;
@@ -200,7 +214,7 @@ class VacancyController extends Controller
 
     public function actionAddLanguage(int $vacancyId)
     {
-        $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
+        $vacancy = $this->vacancyRepository->findVacancyByIdAndCurrentUser($vacancyId);
 
         $languages = array_map(function ($language) {
             return strtoupper($language->code) . ' - ' . $language->name;
@@ -255,7 +269,7 @@ class VacancyController extends Controller
             $id = (int)Yii::$app->request->post('id');
             $vacancyId = (int)Yii::$app->request->post('vacancyId');
 
-            $vacancy = $this->findModelByIdAndCurrentUser($vacancyId);
+            $vacancy = $this->vacancyRepository->findVacancyByIdAndCurrentUser($vacancyId);
 
             if ($vacancy) {
                 $vacancyLanguage = VacancyLanguage::find()
@@ -283,7 +297,7 @@ class VacancyController extends Controller
 
     public function actionShowMatches(int $resumeId): string
     {
-        $model = $this->findResumeByIdAndCurrentUser($resumeId);
+        $model = $this->resumeRepository->findResumeByIdAndCurrentUser($resumeId);
 
         if ($model->getMatchesOrderByRank()->exists()) {
             $dataProvider = new ActiveDataProvider([
@@ -301,9 +315,9 @@ class VacancyController extends Controller
 
     public function actionViewMatch(int $resumeId, int $vacancyId): string
     {
-        $matchedVacancy = $this->findMatchedVacancyByIdAndResume(
+        $matchedVacancy = $this->vacancyRepository->findMatchedVacancyByIdAndResume(
             $vacancyId,
-            $this->findResumeByIdAndCurrentUser($resumeId)
+            $this->resumeRepository->findResumeByIdAndCurrentUser($resumeId)
         );
 
         $matchedVacancy->trigger(
@@ -312,46 +326,5 @@ class VacancyController extends Controller
         );
 
         return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
-    }
-
-    private function findModel(int $id): Vacancy
-    {
-        if ($model = Vacancy::findOne($id)) {
-            return $model;
-        }
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    private function findModelByIdAndCurrentUser(int $id): Vacancy
-    {
-        /** @var WebVacancy $model */
-        if ($model = WebVacancy::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    private function findResumeByIdAndCurrentUser(int $id): Resume
-    {
-        /** @var Resume $model */
-        if ($model = Resume::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-    private function findMatchedVacancyByIdAndResume(int $id, Resume $resume)
-    {
-        if ($vacancy = $resume->getMatches()->where(['id' => $id])->one()) {
-            return $vacancy;
-        }
-        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

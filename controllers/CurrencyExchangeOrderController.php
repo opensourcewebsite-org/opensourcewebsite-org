@@ -2,30 +2,38 @@
 
 namespace app\controllers;
 
-use app\components\Controller;
-use app\models\Currency;
-use app\models\CurrencyExchangeOrder;
-use app\models\CurrencyExchangeOrderMatch;
-use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
-use app\models\PaymentMethod;
-use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
-use app\models\scenarios\CurrencyExchangeOrder\UpdateBuyingPaymentMethodsByIdsScenario;
-use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
-use app\models\search\CurrencyExchangeOrderSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\db\ActiveQuery;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+
+use app\components\Controller;
+use app\models\CurrencyExchangeOrder;
+use app\models\CurrencyExchangeOrderMatch;
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
+use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateBuyingPaymentMethodsByIdsScenario;
+use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
+use app\models\search\CurrencyExchangeOrderSearch;
+use app\repositories\CurrencyExchangeOrderRepository;
 
 /**
  * CurrencyExchangeOrderController implements the CRUD actions for CurrencyExchangeOrder model.
  */
 class CurrencyExchangeOrderController extends Controller
 {
+    public CurrencyExchangeOrderRepository $currencyExchangeOrderRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->currencyExchangeOrderRepository = new CurrencyExchangeOrderRepository();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -71,7 +79,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionView(int $id)
     {
-        $order = $this->findModelByIdAndCurrentUser($id);
+        $order = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         return $this->render('view', [
             'model' => $order,
@@ -106,7 +114,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionUpdate(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -119,7 +127,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionUpdateSellingPaymentMethods(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
             if ($model->validate(['sellingPaymentMethodIds'])) {
@@ -145,7 +153,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionUpdateBuyingPaymentMethods(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
             if ($model->validate(['buyingPaymentMethodIds'])) {
@@ -176,7 +184,7 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionSetActive(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -192,7 +200,7 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionSetInactive(int $id): bool
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -203,24 +211,36 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionDelete(int $id): Response
     {
-        $this->findModelByIdAndCurrentUser($id)->delete();
+        $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id)->delete();
 
         return $this->redirect(['index']);
     }
 
     public function actionViewOrderSellingLocation(int $id): string
     {
-        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id), 'type' => 'sell']);
+        return $this->renderAjax(
+            'modals/view-location', 
+            [
+                'model' => $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id), 
+                'type' => 'sell'
+            ]
+        );
     }
 
     public function actionViewOrderBuyingLocation(int $id): string
     {
-        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id), 'type' => 'buy']);
+        return $this->renderAjax(
+            'modals/view-location', 
+            [
+                'model' => $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id), 
+                'type' => 'buy'
+            ]
+        );
     }
 
     public function actionShowMatches(int $id): string
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
         if ($model->getMatchesOrderByRank()->exists()) {
             $dataProvider = new ActiveDataProvider([
@@ -257,27 +277,5 @@ class CurrencyExchangeOrderController extends Controller
         }
 
         throw new NotFoundHttpException('No offer found with current orders combination!');
-    }
-
-    protected function findModelByIdAndCurrentUser(int $id): CurrencyExchangeOrder
-    {
-        /** @var CurrencyExchangeOrder $model */
-        if ($model = CurrencyExchangeOrder::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    public function findMatchedModelByIdAndSourceModel(int $id, Vacancy $vacancy)
-    {
-        if ($resume = $vacancy->getMatches()->where(['id' => $id])->one()) {
-            return $resume;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

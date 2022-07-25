@@ -4,24 +4,36 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
-use app\components\Controller;
-use app\models\AdOffer;
-use app\models\AdSearch;
-use app\models\Currency;
-use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
-use app\models\scenarios\AdOffer\SetActiveScenario;
-use app\models\scenarios\AdOffer\UpdateKeywordsByIdsScenario;
-use app\models\search\AdOfferSearch;
-use app\models\User;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
+use app\components\Controller;
+use app\models\AdOffer;
+use app\models\events\interfaces\ViewedByUserInterface;
+use app\models\events\ViewedByUserEvent;
+use app\models\scenarios\AdOffer\SetActiveScenario;
+use app\models\scenarios\AdOffer\UpdateKeywordsByIdsScenario;
+use app\models\search\AdOfferSearch;
+use app\models\User;
+use app\repositories\AdOfferRepository;
+use app\repositories\AdSearchRepository;
+
 class AdOfferController extends Controller
 {
+    public AdOfferRepository $adOfferRepository;
+    public AdSearchRepository $adSearchRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->adOfferRepository = new AdOfferRepository();
+        $this->adSearchRepository = new AdSearchRepository();
+    }
+
     public function behaviors(): array
     {
         return [
@@ -78,7 +90,7 @@ class AdOfferController extends Controller
      */
     public function actionUpdate(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
@@ -98,7 +110,7 @@ class AdOfferController extends Controller
      */
     public function actionSetActive(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -113,7 +125,7 @@ class AdOfferController extends Controller
 
     public function actionSetInactive(int $id): bool
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -125,7 +137,7 @@ class AdOfferController extends Controller
     public function actionView(int $id): string
     {
         return $this->render('view', [
-            'model' => $this->findModelByIdAndCurrentUser($id)
+            'model' => $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id)
         ]);
     }
 
@@ -136,7 +148,7 @@ class AdOfferController extends Controller
 
     public function actionShowMatches(int $adSearchId): string
     {
-        $model = $this->findAdSearchByIdAndCurrentUser($adSearchId);
+        $model = $this->adSearchRepository->findAdSearchByIdAndCurrentUser($adSearchId);
 
         if ($model->getMatchesOrderByRank()->exists()) {
             $dataProvider = new ActiveDataProvider([
@@ -154,9 +166,9 @@ class AdOfferController extends Controller
 
     public function actionViewMatch(int $adSearchId, int $adOfferId): string
     {
-        $matchedOffer = $this->findMatchedAdOfferByIdAndAdSearch(
+        $matchedOffer = $this->adOfferRepository->findMatchedAdOfferByIdAndAdSearch(
             $adOfferId,
-            $this->findAdSearchByIdAndCurrentUser($adSearchId)
+            $this->adSearchRepository->findAdSearchByIdAndCurrentUser($adSearchId)
         );
 
         $matchedOffer->trigger(
@@ -165,40 +177,5 @@ class AdOfferController extends Controller
         );
 
         return $this->render('view-match', ['model' => $matchedOffer, 'adSearchId' => $adSearchId]);
-    }
-
-    private function findModelByIdAndCurrentUser(int $id): AdOffer
-    {
-        /** @var AdOffer $model */
-        if ($model = AdOffer::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    private function findAdSearchByIdAndCurrentUser(int $id): AdSearch
-    {
-        /** @var AdSearch $model */
-        if ($model = AdSearch::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    public function findMatchedAdOfferByIdAndAdSearch(int $id, AdSearch $adSearch)
-    {
-        if ($adOffer = $adSearch->getMatches()->where(['id' => $id])->one()) {
-            return $adOffer;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

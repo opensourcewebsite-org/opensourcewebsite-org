@@ -2,6 +2,12 @@
 
 namespace app\controllers;
 
+use Yii;
+use yii\data\Pagination;
+use yii\db\StaleObjectException;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+
 use app\components\Controller;
 use app\components\Converter;
 use app\components\helpers\ReferrerHelper;
@@ -22,11 +28,6 @@ use app\models\UserLocation;
 use app\models\UserMoqupFollow;
 use app\models\UserStatistic;
 use app\models\UserStellar;
-use Yii;
-use yii\data\Pagination;
-use yii\db\StaleObjectException;
-use yii\filters\AccessControl;
-use yii\web\NotFoundHttpException;
 
 class UserController extends Controller
 {

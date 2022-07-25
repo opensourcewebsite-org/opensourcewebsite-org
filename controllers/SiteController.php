@@ -3,6 +3,12 @@
 namespace app\controllers;
 
 use Yii;
+use yii\base\InvalidParamException;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\BadRequestHttpException;
+use yii\web\Controller;
+
 use app\models\Contact;
 use app\models\Gender;
 use app\models\forms\LoginForm;
@@ -14,11 +20,6 @@ use app\models\User;
 use app\models\UserEmail;
 use app\models\Currency;
 use app\models\Sexuality;
-use yii\base\InvalidParamException;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
 use app\components\Converter;
 
 class SiteController extends Controller

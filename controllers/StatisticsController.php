@@ -3,6 +3,11 @@
 namespace app\controllers;
 
 use Yii;
+use yii\data\Pagination;
+use yii\db\StaleObjectException;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+
 use app\components\Controller;
 use app\components\helpers\ReferrerHelper;
 use app\models\Country;
@@ -19,10 +24,6 @@ use app\models\UserStatistic;
 use app\models\User;
 use app\models\UserEmail;
 use app\models\UserMoqupFollow;
-use yii\data\Pagination;
-use yii\db\StaleObjectException;
-use yii\filters\AccessControl;
-use yii\web\NotFoundHttpException;
 use app\components\Converter;
 
 class StatisticsController extends Controller

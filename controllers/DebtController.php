@@ -4,22 +4,21 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\data\Pagination;
+
 use app\models\Debt;
 use app\models\DebtBalance;
 use app\models\forms\CreateDebtForm;
 use app\models\User;
 use app\components\Controller;
 use app\models\Currency;
-use yii\filters\VerbFilter;
-use yii\data\ActiveDataProvider;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
-use yii\data\Pagination;
-use yii\helpers\ArrayHelper;
 
 class DebtController extends Controller
 {
-    
     public function behaviors(): array
     {
         return [

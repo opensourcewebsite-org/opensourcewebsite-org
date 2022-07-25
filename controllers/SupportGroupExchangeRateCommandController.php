@@ -8,13 +8,23 @@ use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use yii\base\ViewContextInterface;
+
 use app\models\SupportGroupExchangeRateCommand;
+use app\repositories\SupportGroupExchangeRateCommandRepository;
 
 /**
  * SupportGroupExchangeRateCommandController implements the CRUD actions for SupportGroupExchangeRateCommand model.
  */
 class SupportGroupExchangeRateCommandController extends Controller implements ViewContextInterface
 {
+    public SupportGroupExchangeRateCommandRepository $supportGroupExchangeRateCommandRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->supportGroupExchangeRateCommandRepository = new SupportGroupExchangeRateCommandRepository();
+    }
 
     /**
      * {@inheritdoc}
@@ -69,7 +79,7 @@ class SupportGroupExchangeRateCommandController extends Controller implements Vi
     public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $this->supportGroupExchangeRateCommandRepository->findSupportGroupExchangeRateCommand($id),
         ]);
     }
 
@@ -104,7 +114,7 @@ class SupportGroupExchangeRateCommandController extends Controller implements Vi
      */
     public function actionUpdate($id, $supportGroupExchangeRateId, $type)
     {
-        $model = $this->findModel($id);
+        $model = $this->supportGroupExchangeRateCommandRepository->findSupportGroupExchangeRateCommand($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type]);
@@ -126,24 +136,8 @@ class SupportGroupExchangeRateCommandController extends Controller implements Vi
      */
     public function actionDelete($id, $supportGroupExchangeRateId, $type)
     {
-        $this->findModel($id)->delete();
+        $this->supportGroupExchangeRateCommandRepository->findModel($id)->delete();
 
         return $this->redirect(['index', 'supportGroupExchangeRateId' => $supportGroupExchangeRateId, 'type' => $type]);
-    }
-
-    /**
-     * Finds the SupportGroupExchangeRateCommand model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return SupportGroupExchangeRateCommand the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = SupportGroupExchangeRateCommand::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

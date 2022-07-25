@@ -2,6 +2,13 @@
 
 namespace app\controllers;
 
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+
 use app\components\Controller;
 use app\models\Contact;
 use app\models\ContactGroup;
@@ -9,16 +16,19 @@ use app\models\DebtRedistribution;
 use app\models\scenarios\Contact\UpdateGroupsByIdsScenario;
 use app\models\search\DebtRedistributionSearch;
 use app\models\User;
-use Yii;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
-use yii\widgets\ActiveForm;
+use app\repositories\ContactRepository;
 
 class ContactController extends Controller
 {
+    public ContactRepository $contactRepository;
+
+    public function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->contactRepository = new ContactRepository();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -101,7 +111,7 @@ class ContactController extends Controller
      */
     public function actionView($id)
     {
-        $contact = $this->findModel($id);
+        $contact = $this->contactRepository->findContact($id);
 
         $searchModel  = new DebtRedistributionSearch();
         $dataProvider = $searchModel->search($contact, Yii::$app->request->queryParams);
@@ -493,35 +503,12 @@ class ContactController extends Controller
      */
     public function actionDelete(int $id)
     {
-        $model = $this->findModel($id);
+        $model = $this->contactRepository->findContact($id);
 
         if ($model) {
             $model->delete();
         }
 
         return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Contact model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Contact the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        $model = Contact::find()
-            ->andWhere([
-                'id' => $id,
-            ])
-            ->userOwner()
-            ->one();
-
-        if ($model) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

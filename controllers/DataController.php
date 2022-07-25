@@ -2,15 +2,16 @@
 
 namespace app\controllers;
 
+use yii\data\Pagination;
+use yii\filters\AccessControl;
+use yii\web\Controller;
+
 use app\models\Country;
 use app\models\Currency;
 use app\models\Language;
 use app\models\PaymentMethod;
 use app\models\Gender;
 use app\models\Sexuality;
-use yii\data\Pagination;
-use yii\filters\AccessControl;
-use yii\web\Controller;
 
 class DataController extends Controller
 {
