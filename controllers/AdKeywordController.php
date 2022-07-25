@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
-use app\models\AdKeyword;
-use app\models\JobKeyword;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
+
+use app\models\AdKeyword;
+use app\models\JobKeyword;
 
 class AdKeywordController extends Controller
 {

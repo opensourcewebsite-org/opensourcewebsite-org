@@ -3,11 +3,12 @@
 namespace app\controllers;
 
 use Yii;
-use app\components\Controller;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\data\ActiveDataProvider;
+
+use app\components\Controller;
 use app\models\User;
 use app\models\UserStellar;
 use app\models\Contact;

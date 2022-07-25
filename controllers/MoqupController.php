@@ -54,6 +54,20 @@ class MoqupController extends Controller
             ],
         ];
     }
+    
+    /**
+     * Do tasks before the action is executed
+     */
+    public function beforeAction($action)
+    {
+        if (Yii::$app->user->isGuest) {
+            $this->layout = 'adminlte-guest';
+        } else {
+            $this->layout = 'adminlte-user';
+        }
+
+        return parent::beforeAction($action);
+    }
 
     /**
      * Shows a list of the registered moqups
@@ -223,19 +237,5 @@ class MoqupController extends Controller
     {
         $this->layout = 'adminlte-moqup-preview';
         return $this->render('design-preview');
-    }
-
-    /**
-     * Do tasks before the action is executed
-     */
-    public function beforeAction($action)
-    {
-        if (Yii::$app->user->isGuest) {
-            $this->layout = 'adminlte-guest';
-        } else {
-            $this->layout = 'adminlte-user';
-        }
-
-        return parent::beforeAction($action);
     }
 }

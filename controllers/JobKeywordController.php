@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
-use app\models\JobKeyword;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
+
+use app\models\JobKeyword;
 
 class JobKeywordController extends Controller
 {

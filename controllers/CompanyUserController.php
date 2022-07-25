@@ -4,11 +4,6 @@ declare(strict_types=1);
 namespace app\controllers;
 
 use Yii;
-use app\models\Company;
-use app\models\CompanyUser;
-use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
-use app\models\search\CompanyUserSearch;
-use app\models\User;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
@@ -16,8 +11,24 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
+use app\models\Company;
+use app\models\CompanyUser;
+use app\models\scenarios\CompanyUser\DeleteCompanyScenario;
+use app\models\search\CompanyUserSearch;
+use app\models\User;
+use app\repositories\CompanyRepository;
+
 class CompanyUserController extends Controller
 {
+    public CompanyRepository $companyRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->companyRepository = new CompanyRepository();
+    }
+
     public function behaviors(): array
     {
         return [
@@ -112,7 +123,7 @@ class CompanyUserController extends Controller
         /** @var User $user */
         $user = Yii::$app->user->getIdentity();
 
-        $companyModel = $this->findCompanyModelByIdAndCurrentUser($id);
+        $companyModel = $this->companyRepository->findCompanyByIdAndCurrentUser($id);
 
         if (Yii::$app->request->isPost
             && $companyModel->load(Yii::$app->request->post())
@@ -139,13 +150,13 @@ class CompanyUserController extends Controller
     public function actionView(int $id): string
     {
         return $this->render('view', [
-            'model' => $this->findCompanyModelByIdAndCurrentUser($id),
+            'model' => $this->companyRepository->findCompanyByIdAndCurrentUser($id),
         ]);
     }
 
     public function actionDelete(int $id): Response
     {
-        $company = $this->findCompanyModelByIdAndCurrentUser($id);
+        $company = $this->companyRepository->findCompanyByIdAndCurrentUser($id);
 
         $scenario = new DeleteCompanyScenario($company);
 
@@ -156,22 +167,5 @@ class CompanyUserController extends Controller
         Yii::$app->session->setFlash('danger', Yii::t('app', $scenario->getFirstError()));
 
         return $this->redirect(['/company-user/update', 'id' => $company->id]);
-    }
-
-    private function findCompanyModelByIdAndCurrentUser(int $id): Company
-    {
-        $user = Yii::$app->user->identity;
-
-        /** @var Company $company */
-        if ($company = Company::find()
-            ->joinWith('companyUser cu')
-            ->where(['company.id' => $id])
-            ->andWhere(['cu.user_id' => $user->id])
-            ->andWhere(['cu.user_role' => CompanyUser::ROLE_OWNER])
-            ->one()) {
-            return $company;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }

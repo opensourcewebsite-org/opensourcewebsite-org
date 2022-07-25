@@ -8,13 +8,23 @@ use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use yii\base\ViewContextInterface;
+
 use app\models\SupportGroupExchangeRate;
+use app\repositories\SupportGroupExchangeRateRepository;
 
 /**
  * SupportGroupExchangeRateController implements the CRUD actions for SupportGroupExchangeRate model.
  */
 class SupportGroupExchangeRateController extends Controller implements ViewContextInterface
 {
+    public SupportGroupExchangeRateRepository $supportGroupExchangeRateRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->supportGroupExchangeRateRepository = new SupportGroupExchangeRateRepository();
+    }
 
     /**
      * {@inheritdoc}
@@ -65,7 +75,7 @@ class SupportGroupExchangeRateController extends Controller implements ViewConte
     public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $this->supportGroupExchangeRateRepository->findSupportGroupExchangeRate($id),
         ]);
     }
 
@@ -98,7 +108,7 @@ class SupportGroupExchangeRateController extends Controller implements ViewConte
      */
     public function actionUpdate($id, $supportGroupId)
     {
-        $model = $this->findModel($id);
+        $model = $this->supportGroupExchangeRateRepository->findSupportGroupExchangeRate($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index', 'supportGroupId' => $supportGroupId]);
@@ -119,24 +129,8 @@ class SupportGroupExchangeRateController extends Controller implements ViewConte
      */
     public function actionDelete($id, $supportGroupId)
     {
-        $this->findModel($id)->delete();
+        $this->supportGroupExchangeRateRepository->findSupportGroupExchangeRate($id)->delete();
 
         return $this->redirect(['index', 'supportGroupId' => $supportGroupId]);
-    }
-
-    /**
-     * Finds the SupportGroupExchangeRate model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return SupportGroupExchangeRate the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = SupportGroupExchangeRate::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

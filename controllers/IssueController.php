@@ -2,16 +2,17 @@
 
 namespace app\controllers;
 
-use app\models\Issue;
-use app\models\IssueSearch;
-use app\models\User;
-use app\models\UserIssueVote;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+
 use app\models\Setting;
+use app\models\Issue;
+use app\models\IssueSearch;
+use app\models\User;
+use app\models\UserIssueVote;
 
 /**
  * IssueController implements the CRUD actions for Issue model.
@@ -192,21 +193,5 @@ class IssueController extends Controller
             }
         }
         return 0;
-    }
-
-    /**
-     * Finds the Issue model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Issue the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Issue::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 }

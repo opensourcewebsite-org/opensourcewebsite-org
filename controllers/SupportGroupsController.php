@@ -2,6 +2,19 @@
 
 namespace app\controllers;
 
+use Yii;
+use yii\base\Model;
+use yii\bootstrap4\ActiveForm;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+
+use TelegramBot\Api\BotApi;
+use TelegramBot\Api\HttpException;
+
 use app\components\helpers;
 use app\components\SupportGroupComponent;
 use app\models\Language;
@@ -18,25 +31,23 @@ use app\models\SupportGroupCommandText;
 use app\models\SupportGroupInsideMessage;
 use app\models\SupportGroupLanguage;
 use app\models\SupportGroupMember;
-use TelegramBot\Api\BotApi;
-use TelegramBot\Api\HttpException;
-use Yii;
-use yii\base\Model;
-use yii\bootstrap4\ActiveForm;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
 use app\models\SupportGroupOutsideMessage;
 use app\models\User;
+use app\repositories\SupportGroupRepository;
 
 /**
  * SupportGroupController implements the CRUD actions for SupportGroup model.
  */
 class SupportGroupsController extends Controller
 {
+    public SupportGroupRepository $supportGroupRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->supportGroupRepository = new SupportGroupRepository();
+    }
 
     /** @var SupportGroupComponent\Keeper */
     protected $supportComponent;
@@ -100,7 +111,7 @@ class SupportGroupsController extends Controller
      */
     public function actionMembers($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->supportGroupRepository->findSupportGroup($id);
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
@@ -151,7 +162,7 @@ class SupportGroupsController extends Controller
      */
     public function actionBots($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->supportGroupRepository->findSupportGroup($id);
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
@@ -330,7 +341,7 @@ class SupportGroupsController extends Controller
      */
     public function actionCommands($id)
     {
-        $model = $this->accessFindModel($id);
+        $model = $this->supportGroupRepository->accessFindSupportGroup($id);
 
         $dataProvider = new ActiveDataProvider([
             'query' => SupportGroupCommand::find()->where(['support_group_id' => intval($id)]),
@@ -451,7 +462,7 @@ class SupportGroupsController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->supportGroupRepository->findSupportGroup($id);
         if ($model->user_id != Yii::$app->user->identity->id) {
             $this->redirect('index');
         }
@@ -635,54 +646,6 @@ class SupportGroupsController extends Controller
         $members->delete();
 
         return $this->redirect(['commands', 'id' => $members->support_group_id]);
-    }
-
-    /**
-     * Finds the SupportGroup model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     *
-     * @param integer $id
-     *
-     * @return SupportGroup the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = SupportGroup::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    /**
-     * Finds the SupportGroup model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     *
-     * @param integer $id
-     *
-     * @return SupportGroup the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function accessFindModel($id)
-    {
-        $supportGroup = SupportGroup::tableName();
-        $model = SupportGroup::find()
-            ->where([
-                $supportGroup . '.user_id' => Yii::$app->user->id,
-            ])
-            ->orWhere([
-                '{{%support_group_member}}.user_id' => Yii::$app->user->id,
-            ])
-            ->andWhere([$supportGroup . '.id' => intval($id)])
-            ->joinWith('supportGroupMembers')
-            ->one();
-
-        if (!$model) {
-            throw new NotFoundHttpException;
-        }
-
-        return $model;
     }
 
     /**

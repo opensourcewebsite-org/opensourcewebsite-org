@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace app\controllers;
 
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+
 use app\components\Controller;
-use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\events\ViewedByUserEvent;
 use app\models\Resume;
@@ -15,16 +21,22 @@ use app\models\search\ResumeSearch;
 use app\models\User;
 use app\models\Vacancy;
 use app\models\WebModels\WebResume;
-use app\models\WebModels\WebVacancy;
-use Yii;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
+use app\repositories\ResumeRepository;
+use app\repositories\VacancyRepository;
 
 class ResumeController extends Controller
 {
+    public ResumeRepository $resumeRepository;
+    public VacancyRepository $vacancyRepository;
+
+    function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->resumeRepository = new ResumeRepository();
+        $this->vacancyRepository = new VacancyRepository();
+    }
+
     public function behaviors(): array
     {
         return [
@@ -90,7 +102,7 @@ class ResumeController extends Controller
      */
     public function actionUpdate(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->resumeRepository->findResumeByIdAndCurrentUser($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             (new UpdateKeywordsByIdsScenario($model))->run();
@@ -105,14 +117,14 @@ class ResumeController extends Controller
 
     public function actionView(int $id): string
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->resumeRepository->findResumeByIdAndCurrentUser($id);
 
         return $this->render('view', ['model' => $model]);
     }
 
     public function actionDelete(int $id): Response
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->resumeRepository->findResumeByIdAndCurrentUser($id);
 
         $model->delete();
 
@@ -121,7 +133,7 @@ class ResumeController extends Controller
 
     public function actionViewLocation(int $id): string
     {
-        return $this->renderAjax('modals/view-location', ['model' => $this->findModelByIdAndCurrentUser($id)]);
+        return $this->renderAjax('modals/view-location', ['model' => $this->resumeRepository->findResumeByIdAndCurrentUser($id)]);
     }
 
     /**
@@ -131,7 +143,7 @@ class ResumeController extends Controller
      */
     public function actionSetActive(int $id)
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->resumeRepository->findResumeByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -146,7 +158,7 @@ class ResumeController extends Controller
 
     public function actionSetInactive(int $id): bool
     {
-        $model = $this->findModelByIdAndCurrentUser($id);
+        $model = $this->resumeRepository->findResumeByIdAndCurrentUser($id);
 
         $this->response->format = Response::FORMAT_JSON;
 
@@ -157,7 +169,7 @@ class ResumeController extends Controller
 
     public function actionShowMatches(int $vacancyId): string
     {
-        $model = $this->findVacancyByIdAndCurrentUser($vacancyId);
+        $model = $this->vacancyRepository->findVacancyByIdAndCurrentUser($vacancyId);
 
         if ($model->getMatchesOrderByRank()->exists()) {
             $dataProvider = new ActiveDataProvider([
@@ -175,9 +187,9 @@ class ResumeController extends Controller
 
     public function actionViewMatch(int $vacancyId, int $resumeId): string
     {
-        $matchedResume = $this->findMatchedResumeByIdAndVacancy(
+        $matchedResume = $resumeRepository->findMatchedResumeByIdAndVacancy(
             $resumeId,
-            $this->findVacancyByIdAndCurrentUser($vacancyId)
+            $vacancyRepository->findVacancyByIdAndCurrentUser($vacancyId)
         );
 
         $matchedResume->trigger(
@@ -186,40 +198,5 @@ class ResumeController extends Controller
         );
 
         return $this->render('view-match', ['model' => $matchedResume, 'vacancyId' => $vacancyId]);
-    }
-
-    private function findModelByIdAndCurrentUser(int $id): Resume
-    {
-        /** @var WebResume $model */
-        if ($model = WebResume::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    private function findVacancyByIdAndCurrentUser(int $id)
-    {
-        /** @var WebVacancy $model */
-        if ($model = WebVacancy::find()
-            ->where(['id' => $id])
-            ->userOwner()
-            ->one()) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    public function findMatchedResumeByIdAndVacancy(int $id, Vacancy $vacancy)
-    {
-        if ($resume = $vacancy->getMatches()->where(['id' => $id])->one()) {
-            return $resume;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
     }
 }
