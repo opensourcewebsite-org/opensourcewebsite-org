@@ -255,3 +255,7 @@ header.masthead {
 .float-right {
     float: right;
 }
+
+.pagination {
+    margin: 5px;
+}
