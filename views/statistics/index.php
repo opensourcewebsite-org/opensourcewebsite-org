@@ -83,7 +83,7 @@ use yii\data\ArrayDataProvider;
                     <?= GridView::widget([
                         'id' => 'ages',
                         'dataProvider' => $dataProvider,
-                        'layout' => "{items}<div class='pagination pagination-sm no-margin pull-right'>{pager}</div><div class='card-footer clearfix'></div>",
+                        'layout' => "{items}<div class='pagination float-right'>{pager}</div><div class='card-footer clearfix'></div>",
                         'tableOptions' => ['class' => 'table table-condensed table-hover'],
                         'pager' => [
                             'class' => '\yii\widgets\LinkPager',
