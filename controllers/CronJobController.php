@@ -2,20 +2,28 @@
 
 namespace app\controllers;
 
-use app\models\CronJob;
 use app\models\search\CronJobSearch;
+use app\repositories\CronJobRepository;
 use Yii;
-use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
- * Class CronJobsController
+ * Class CronJobController
  *
  * @package app\controllers
  */
 class CronJobController extends Controller
 {
+    public CronJobRepository $cronJobRepository;
+
+    public function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->cronJobRepository = new CronJobRepository();
+    }
 
     /**
      * {@inheritdoc}
@@ -43,12 +51,11 @@ class CronJobController extends Controller
      */
     public function actionIndex()
     {
-
         $searchModel = new CronJobSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'jobs'         => $this->findJobModel(),
+            'jobs'         => $this->cronJobRepository->findAllCronJob(),
             'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
             'jobId'        => null,
@@ -70,26 +77,10 @@ class CronJobController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'jobs'         => $this->findJobModel(),
+            'jobs'         => $this->cronJobRepository->findAllCronJob(),
             'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
             'jobId'        => $id,
         ]);
-    }
-
-    /**
-     * Finds the model.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     *
-     * @return CronJob the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findJobModel()
-    {
-        if (($model = CronJob::find()->all()) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 }

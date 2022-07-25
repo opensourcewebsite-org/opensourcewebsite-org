@@ -2,16 +2,16 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\components\Controller;
+use app\models\Contact;
+use app\models\StellarGiver;
+use app\models\User;
+use app\models\UserStellar;
+use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Response;
-use yii\data\ActiveDataProvider;
-use app\models\User;
-use app\models\UserStellar;
-use app\models\Contact;
-use app\models\StellarGiver;
 
 class StellarBasicIncomeController extends Controller
 {
