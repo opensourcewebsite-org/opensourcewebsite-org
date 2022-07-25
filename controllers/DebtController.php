@@ -2,24 +2,22 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
+use app\components\Controller;
+use app\models\Currency;
 use app\models\Debt;
 use app\models\DebtBalance;
 use app\models\forms\CreateDebtForm;
 use app\models\User;
-use app\components\Controller;
-use app\models\Currency;
-use yii\filters\VerbFilter;
+use Yii;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
-use yii\data\Pagination;
-use yii\helpers\ArrayHelper;
 
 class DebtController extends Controller
 {
-    
     public function behaviors(): array
     {
         return [
@@ -50,7 +48,7 @@ class DebtController extends Controller
         ]);
 
         return $this->render('pending', [
-            'dataProvider' => $dataProvider, 
+            'dataProvider' => $dataProvider,
             'user' => $this->user,
         ]);
     }
@@ -277,31 +275,31 @@ class DebtController extends Controller
         return $this->redirect(['index']);
     }
 
-    /** 
+    /**
      * @param string $q
-     * @return array 
+     * @return array
     */
-    
-    public function actionAjaxUsers($q = null) 
-    {
 
+    public function actionAjaxUsers($q = null)
+    {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        
+
         $out = ['results'=>[]];
 
         $page = (int)Yii::$app->request->get('page');
-        
+
         $userQuery = User::find()
         ->active()
         ->joinWith('contact')
-        ->select (['user.id as id','user.username'])
+        ->select(['user.id as id','user.username'])
         ->andWhere(['not',['link_user_id' => null]])
         ->orderBy([
             'user.username' => SORT_ASC,
         ]);
-        
-        if(!empty($q))
+
+        if (!empty($q)) {
             $userQuery->andWhere(['like', 'user.username', $q]);
+        }
 
         $countUserQuery = clone $userQuery;
 
@@ -315,16 +313,15 @@ class DebtController extends Controller
             return $out;
         }
 
-        foreach($users as $user){
+        foreach ($users as $user) {
             $out['results'][] = ['id' => $user->id, 'username' => $user->displayName];
         }
 
-        if($page < $pages->pageCount){
+        if ($page < $pages->pageCount) {
             $out['pagination']['more'] = true;
         }
 
-        return $out; 
-
+        return $out;
     }
 
     public function actionCancel(int $id): Response
