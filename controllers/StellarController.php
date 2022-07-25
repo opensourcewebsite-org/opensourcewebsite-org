@@ -2,8 +2,8 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\components\Controller;
+use Yii;
 use yii\filters\AccessControl;
 
 class StellarController extends Controller

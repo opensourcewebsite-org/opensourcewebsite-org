@@ -2,12 +2,12 @@
 
 namespace app\controllers;
 
-use yii\filters\AccessControl;
-use yii\web\Controller;
 use Yii;
-use yii\helpers\ArrayHelper;
-use yii\db\Query;
 use yii\data\Pagination;
+use yii\db\Query;
+use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
+use yii\web\Controller;
 
 class ExamplesController extends Controller
 {
