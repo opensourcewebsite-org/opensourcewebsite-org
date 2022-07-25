@@ -4,9 +4,9 @@ namespace app\controllers;
 
 use app\models\Country;
 use app\models\Currency;
+use app\models\Gender;
 use app\models\Language;
 use app\models\PaymentMethod;
-use app\models\Gender;
 use app\models\Sexuality;
 use yii\data\Pagination;
 use yii\filters\AccessControl;

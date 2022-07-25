@@ -2,20 +2,20 @@
 
 namespace app\controllers;
 
+use app\components\Converter;
+use app\models\Css;
+use app\models\Moqup;
+use app\models\MoqupSearch;
+use app\models\Setting;
+use app\models\User;
+use app\models\UserMoqupFollow;
 use Yii;
 use yii\base\InvalidParamException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use app\components\Converter;
-use app\models\User;
-use app\models\Moqup;
-use app\models\MoqupSearch;
-use app\models\Setting;
-use app\models\UserMoqupFollow;
-use app\models\Css;
-use yii\db\Query;
 
 class MoqupController extends Controller
 {
@@ -53,6 +53,20 @@ class MoqupController extends Controller
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
+    }
+
+    /**
+     * Do tasks before the action is executed
+     */
+    public function beforeAction($action)
+    {
+        if (Yii::$app->user->isGuest) {
+            $this->layout = 'adminlte-guest';
+        } else {
+            $this->layout = 'adminlte-user';
+        }
+
+        return parent::beforeAction($action);
     }
 
     /**
@@ -223,19 +237,5 @@ class MoqupController extends Controller
     {
         $this->layout = 'adminlte-moqup-preview';
         return $this->render('design-preview');
-    }
-
-    /**
-     * Do tasks before the action is executed
-     */
-    public function beforeAction($action)
-    {
-        if (Yii::$app->user->isGuest) {
-            $this->layout = 'adminlte-guest';
-        } else {
-            $this->layout = 'adminlte-user';
-        }
-
-        return parent::beforeAction($action);
     }
 }

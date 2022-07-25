@@ -2,15 +2,15 @@
 
 namespace app\controllers;
 
+use app\components\Controller;
+use app\models\search\SettingSearch;
+use app\models\search\SettingValueSearch;
 use app\models\Setting;
 use app\models\SettingValue;
 use app\models\SettingValueVote;
-use app\models\search\SettingSearch;
-use app\models\search\SettingValueSearch;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
-use app\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;

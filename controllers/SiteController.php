@@ -2,24 +2,24 @@
 
 namespace app\controllers;
 
-use Yii;
+use app\components\Converter;
 use app\models\Contact;
-use app\models\Gender;
+use app\models\Currency;
 use app\models\forms\LoginForm;
 use app\models\forms\RequestResetPasswordForm;
-use app\models\Rating;
 use app\models\forms\ResetPasswordForm;
 use app\models\forms\SignupForm;
+use app\models\Gender;
+use app\models\Rating;
+use app\models\Sexuality;
 use app\models\User;
 use app\models\UserEmail;
-use app\models\Currency;
-use app\models\Sexuality;
+use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use app\components\Converter;
 
 class SiteController extends Controller
 {
