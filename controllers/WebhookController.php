@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use app\models\SupportGroupBot;
 use app\modules\bot\WebHookAction;
-use app\services\webhook\WebHookService;
+use app\services\WebHookService;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
