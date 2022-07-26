@@ -6,12 +6,7 @@ use app\models\SupportGroupBot;
 use app\models\SupportGroupBotHandler;
 use Yii;
 
-/**
- * Class WebhookController
- *
- * @package app\controllers
- */
-class WebhookController extends Controller
+class WebhookService extends Controller
 {
     /**
      * @param SupportGroupBot $botInfo
