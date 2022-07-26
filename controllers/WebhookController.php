@@ -2,12 +2,12 @@
 
 namespace app\controllers;
 
-use Yii;
-use app\models\SupportGroupBotHandler;
 use app\models\SupportGroupBot;
+use app\modules\bot\WebHookAction;
+use app\services\webhook\WebHookService;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use app\modules\bot\WebHookAction;
 
 /**
  * Class WebhookController
@@ -16,6 +16,15 @@ use app\modules\bot\WebHookAction;
  */
 class WebhookController extends Controller
 {
+    public WebHookService $webHookService;
+
+    public function __construct()
+    {
+        parent::__construct(...func_get_args());
+
+        $this->webHookService = new WebHookService();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -48,7 +57,7 @@ class WebhookController extends Controller
 
                 $botInfo = SupportGroupBot::findOne(['token' => $token]);
                 if ($botInfo) {
-                    $result = $this->handleSupportGroupBot($botInfo, $postdata);
+                    $result = $this->webHookService->handleSupportGroupBot($botInfo, $postdata);
                 } else {
                     throw new NotFoundHttpException('The requested page does not exist.');
                 }
@@ -58,50 +67,5 @@ class WebhookController extends Controller
         }
 
         return $result;
-    }
-
-    /**
-     * @param SupportGroupBot $botInfo
-     * @param array $postdata
-     *
-     * @return bool
-     * @throws \yii\db\Exception
-     */
-    protected function handleSupportGroupBot($botInfo, $postdata)
-    {
-        $botApi = new SupportGroupBotHandler($botInfo->token, $postdata);
-
-        $botApi->support_group_id = $botInfo->support_group_id;
-        $botApi->bot_id = $botInfo->id;
-
-        if (isset(Yii::$app->params['telegramProxy'])) {
-            $botApi->setProxy(Yii::$app->params['telegramProxy']);
-        }
-
-        if (!$botApi->getMessage() || $botApi->getMessage()->getFrom()->isBot()) {
-            return false;
-        }
-
-        $botApi->bot_client_id = $botApi->saveClientInfo();
-
-        # check if it's command
-        if (substr(trim($botApi->getMessage()->getText()), 0, 1) != '/') {
-            //if (!$botApi->getMessage()->isBotCommand()) {
-            $botApi->type = 1;
-            $botApi->saveOutsideMessage();
-            $botApi->executeExchangeRateCommand();
-            $botApi->executeLangCommand(false);
-
-            return true;
-        }
-
-        $botApi->type = 2;
-        $botApi->saveOutsideMessage();
-
-        if ($botApi->executeLangCommand()) {
-            return true;
-        }
-
-        return $botApi->executeCommand();
     }
 }

@@ -2,28 +2,28 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\components\Controller;
+use app\components\Converter;
 use app\components\helpers\ReferrerHelper;
-use app\models\Country;
 use app\models\Contact;
+use app\models\Country;
+use app\models\Currency;
 use app\models\EditProfileForm;
 use app\models\Gender;
-use app\models\Currency;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\Sexuality;
-use app\models\UserCitizenship;
-use app\models\UserLanguage;
-use app\models\UserStatistic;
 use app\models\User;
+use app\models\UserCitizenship;
 use app\models\UserEmail;
+use app\models\UserLanguage;
 use app\models\UserMoqupFollow;
+use app\models\UserStatistic;
+use Yii;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
-use app\components\Converter;
 
 class StatisticsController extends Controller
 {

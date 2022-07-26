@@ -2,12 +2,12 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\components\Controller;
+use app\models\User;
+use Yii;
+use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
-use yii\data\ActiveDataProvider;
-use app\models\User;
 
 class UsersController extends Controller
 {

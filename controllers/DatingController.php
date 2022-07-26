@@ -30,5 +30,4 @@ class DatingController extends Controller
     {
         return $this->render('index');
     }
-
 }
