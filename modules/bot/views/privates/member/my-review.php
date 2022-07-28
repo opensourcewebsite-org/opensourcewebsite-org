@@ -1,5 +1,4 @@
-<b><?= Yii::t('bot', 'Your review') ?></b>.<br/>
-<br/>
+<b><?= Yii::t('bot', 'Your public review') ?></b>.<br/>
 ————<br/>
 <br/>
 <?php if ($review->text) : ?>

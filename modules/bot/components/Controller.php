@@ -142,11 +142,11 @@ class Controller extends \yii\web\Controller
         }
 
         if (!empty($actionName)) {
+            $actionName = str_replace('-', '_', $actionName);
             // replace names of actions to short codes
             if ($key = array_search($actionName, $module->commandRouteResolver->actions)) {
                 $route .= "__$key";
             } else {
-                $actionName = str_replace('-', '_', $actionName);
                 $route .= "__$actionName";
             }
         }

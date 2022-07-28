@@ -128,7 +128,7 @@ class MemberController extends Controller
                             'callback_data' => self::createRoute('my-review', [
                                 'id' => $chatMember->id,
                             ]),
-                            'text' => Yii::t('bot', 'Your review'),
+                            'text' => Yii::t('bot', 'Your public review'),
                         ],
                     ],
                     [

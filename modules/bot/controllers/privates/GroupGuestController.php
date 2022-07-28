@@ -5,8 +5,10 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\data\Pagination;
@@ -38,6 +40,15 @@ class GroupGuestController extends Controller
         $buttons = [];
 
         if ($chatMember) {
+            $buttons[] = [
+                [
+                    'callback_data' => self::createRoute('input-intro-text', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'Your public intro'),
+                ],
+            ];
+
             $buttons[] = [
                 [
                     'callback_data' => MemberReviewController::createRoute('index', [
@@ -84,5 +95,92 @@ class GroupGuestController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionInputIntroText($id = null)
+    {
+        $chatMember = ChatMember::findOne([
+            'id' => $id,
+        ]);
+
+        if (!isset($chatMember)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('input-intro-text', [
+                'id' => $chatMember->id,
+            ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
+                $chatMember->intro = $text;
+
+                if ($chatMember->validate('intro')) {
+                    $chatMember->save(false);
+
+                    return $this->runAction('view', [
+                         'id' => $chatMember->getChatId(),
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('input-intro-text', [
+                    'chatMember' => $chatMember,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('view', [
+                                'id' => $chatMember->getChatId(),
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-intro', [
+                                'id' => $chatMember->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => (bool)$chatMember->intro,
+                        ],
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionDeleteIntro($id = null)
+    {
+        $chatMember = ChatMember::findOne([
+            'id' => $id,
+        ]);
+
+        if (!isset($chatMember)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatMember->intro = null;
+        $chatMember->save(false);
+
+        return $this->runAction('view', [
+             'id' => $chatMember->getChatId(),
+         ]);
     }
 }

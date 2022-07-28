@@ -5,9 +5,11 @@ namespace app\modules\bot\controllers\privates;
 use app\models\Contact;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\User;
 use Yii;
+use yii\data\Pagination;
 
 /**
  * Class UserController
@@ -81,6 +83,15 @@ class UserController extends Controller
                     'contact' => $viewUser->globalUser->contact ?: $viewUser->globalUser->newContact,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('public-groups', [
+                                'id' => $viewUser->provider_user_id,
+                            ]),
+                            'text' => Yii::t('bot', 'Public groups'),
+                            'visible' => $viewUser->getPublicGroups()->exists(),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('input-name', [
@@ -464,5 +475,103 @@ class UserController extends Controller
                  $buttons
              )
              ->build();
+    }
+
+    /**
+     * @param int $page
+     * @param int|null $id User->provider_user_id
+     * @return array
+     */
+    public function actionPublicGroups($page = 1, $id = null)
+    {
+        if (!$id) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $viewUser = User::findOne([
+            'provider_user_id' => $id,
+            'is_bot' => 0,
+        ]);
+
+        if (!isset($viewUser)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $query = $viewUser->getPublicGroups()
+            ->orderByCreatorRank();
+
+        $pagination = new Pagination([
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $chats = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('public-groups', [
+                'page' => $page,
+            ]);
+        });
+
+        $buttons = [];
+
+        if ($chats) {
+            foreach ($chats as $chat) {
+                $chatMember = $chat->getChatMemberByUserId($viewUser->id);
+                $buttons[][] = [
+                    'callback_data' => MemberController::createRoute('id', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => $chat->title,
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        } else {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('id', [
+                    'id' => $id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('index', [
+                    'user' => $viewUser,
+                    'contact' => $viewUser->globalUser->contact ?: $viewUser->globalUser->newContact,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
     }
 }

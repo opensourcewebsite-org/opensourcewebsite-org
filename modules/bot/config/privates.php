@@ -27,6 +27,7 @@ $config = [
                 6 => 'services',
                 7 => 'my_account',
                 8 => 'my_profile',
+                9 => 'group_guest',
             ],
             'actions' => [
                 1 => 'index',
@@ -37,6 +38,9 @@ $config = [
                 6 => 'update',
                 7 => 'delete',
                 8 => 'select',
+                9 => 'input_intro_text',
+                10 => 'delete_intro',
+                11 => 'public_groups',
             ],
         ],
     ],

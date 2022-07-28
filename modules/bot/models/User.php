@@ -133,20 +133,30 @@ class User extends ActiveRecord
     public function getGroups()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'or',
-                ['type' => Chat::TYPE_GROUP],
-                ['type' => Chat::TYPE_SUPERGROUP],
-            ])
+            ->group()
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
+    }
+
+    public function getPublicGroups()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->group()
+            ->hasUsername()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
     public function getChannels()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'type' => Chat::TYPE_CHANNEL,
-            ])
+            ->channel()
+            ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
+    }
+
+    public function getPublicChannels()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'chat_id'])
+            ->channel()
+            ->hasUsername()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
@@ -154,9 +164,7 @@ class User extends ActiveRecord
     public function getChat()
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'type' => Chat::TYPE_PRIVATE,
-            ])
+            ->private()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
@@ -168,11 +176,7 @@ class User extends ActiveRecord
     public function getAdministratedGroups()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'or',
-                ['type' => Chat::TYPE_GROUP],
-                ['type' => Chat::TYPE_SUPERGROUP],
-            ])
+            ->group()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -186,11 +190,7 @@ class User extends ActiveRecord
     public function getActiveAdministratedGroups()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'or',
-                ['type' => Chat::TYPE_GROUP],
-                ['type' => Chat::TYPE_SUPERGROUP],
-            ])
+            ->group()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -207,9 +207,7 @@ class User extends ActiveRecord
     public function getAdministratedChannels()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'type' => Chat::TYPE_CHANNEL,
-            ])
+            ->channel()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -223,9 +221,7 @@ class User extends ActiveRecord
     public function getActiveAdministratedChannels()
     {
         return $this->hasMany(Chat::class, ['id' => 'chat_id'])
-            ->where([
-                'type' => Chat::TYPE_CHANNEL,
-            ])
+            ->channel()
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',

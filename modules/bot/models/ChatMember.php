@@ -18,6 +18,7 @@ use yii\db\ActiveRecord;
  * @property int|null $last_message_at
  * @property string|null $limiter_date
  * @property string|null membership_date
+ * @property string|null intro
  *
  * @package app\modules\bot\models
  */
@@ -89,6 +90,7 @@ class ChatMember extends ActiveRecord
             ['slow_mode_messages', 'default', 'value' => 0],
             ['status', 'string'],
             [['limiter_date', 'membership_date'], 'date'],
+            ['intro', 'string', 'max' => 10000],
         ];
     }
 
@@ -310,5 +312,10 @@ class ChatMember extends ActiveRecord
                 'status' => ChatMemberReview::STATUS_DISLIKE,
             ])
             ->count();
+    }
+
+    public function getIntro()
+    {
+        return $this->intro;
     }
 }

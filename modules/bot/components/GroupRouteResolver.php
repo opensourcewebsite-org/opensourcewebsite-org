@@ -163,7 +163,7 @@ class GroupRouteResolver extends Component
 
             if (stripos($route, $token) !== false) {
                 if (($key == 'controller') || ($key == 'action')) {
-                    // for short codes of controllers/actions
+                    // replace short codes of controllers/actions to names
                     if (is_numeric($value)) {
                         if ($key == 'controller') {
                             $value = $this->controllers[(int)$value] ?? $value;

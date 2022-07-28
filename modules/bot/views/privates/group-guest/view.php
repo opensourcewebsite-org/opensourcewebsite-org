@@ -9,6 +9,12 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?= nl2br($chat->description); ?><br/>
 <?php endif; ?>
 <?php if ($chatMember) : ?>
+<?php if ($chatMember->intro) : ?>
+————<br/>
+<b><?= Yii::t('bot', 'Your public intro') ?></b>:<br/>
+<br/>
+<?= nl2br($chatMember->intro) ?><br/>
+<?php endif; ?>
 <?php if ($chatMember->membership_date || $chatMember->limiter_date || ($chat->getUsername() && $user->getUsername())) : ?>
 ————<br/>
 <?php if ($chatMember->membership_date) : ?>

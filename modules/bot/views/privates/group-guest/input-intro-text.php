@@ -2,9 +2,9 @@
 
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 
-$markdownText = MessageWithEntitiesConverter::fromHtml($review->text ?? '');
+$markdownText = MessageWithEntitiesConverter::fromHtml($chatMember->intro ?? '');
 ?>
-<b><?= Yii::t('bot', 'Send a message for the review') ?>:</b><br/>
+<b><?= Yii::t('bot', 'Send a message for the intro') ?>:</b><br/>
 <?php if ($markdownText) : ?>
 ————<br/>
 <br/>
