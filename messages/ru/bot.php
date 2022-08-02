@@ -541,6 +541,9 @@ return [
     'Intro' => 'Интро',
     'Your public intro' => 'Ваше публичное интро',
     'Send a message for the intro' => 'Отправьте сообщение для интро',
+    'Privileged members' => 'Привилегированные участники',
+    'Members with intro' => 'Участники с интро',
+    'Members with reviews' => 'Участники с отзывами',
     'Reviews' => 'Отзывы',
     'Review' => 'Отзыв',
     'Your review' => 'Ваш отзыв',
@@ -564,4 +567,6 @@ return [
     'Send any @username to add a contact' => 'Отправьте любой @username чтобы добавить контакт',
     'Cash Exchange' => 'Обмен наличных',
     'No matches' => 'Нет совпадений',
+    'Sorted by user rank' => 'Отсортировано по рангу пользователей',
+    'Sorted by number of positive reviews and user rank' => 'Отсортировано по количеству положительных отзывов и по рангу пользователей',
 ];

@@ -796,7 +796,7 @@ class User extends ActiveRecord implements IdentityInterface
             ->onCondition(['user_id' => Yii::$app->user->id]);
     }
 
-    public function getNewContact(): Contact
+    public function getNewContact()
     {
         if (Yii::$app->user->id == $this->id) {
             return false;

@@ -21,6 +21,7 @@ use yii\data\Pagination;
 class GroupGuestController extends Controller
 {
     /**
+     * @param int $id Chat->id
      * @return array
      */
     public function actionView($id = null)
@@ -59,6 +60,36 @@ class GroupGuestController extends Controller
                 ],
             ];
         }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('privileged-members', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Yii::t('bot', 'Privileged members'),
+                'visible' => ($chat->membership_status == ChatSetting::STATUS_ON),
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('members-with-intro', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Yii::t('bot', 'Members with intro'),
+                'visible' => (bool)$chat->getUsername(),
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('members-with-reviews', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Yii::t('bot', 'Members with reviews'),
+                'visible' => (bool)$chat->getUsername(),
+            ],
+        ];
 
         $buttons[] = [
             [
@@ -182,5 +213,276 @@ class GroupGuestController extends Controller
         return $this->runAction('view', [
              'id' => $chatMember->getChatId(),
          ]);
+    }
+
+    /**
+     * @param int $page
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionPrivilegedMembers($page = 1, $id = null)
+    {
+        $chat = Chat::findOne($id);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chat->hasUsername() && !$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $query = $chat->getPrivilegedChatMembers();
+
+        $pagination = new Pagination([
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
+            return self::createRoute('privileged-members', [
+                'id' => $chat->id,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons = [];
+
+        $members = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($members) {
+            foreach ($members as $member) {
+                $memberUser = $member->user;
+                $contact = $memberUser->globalUser->contact ?: $memberUser->globalUser->newContact;
+
+                $buttons[][] = [
+                    'callback_data' => MemberController::createRoute('id', [
+                        'id' => $member->id,
+                    ]),
+                    'text' => ($contact ? $contact->getTelegramDisplayName() : $memberUser->getFullName()),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('privileged-members'),
+                $buttons
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $page
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionMembersWithIntro($page = 1, $id = null)
+    {
+        $chat = Chat::findOne($id);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chat->hasUsername() && !$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $query = $chat->getChatMembersWithIntro();
+
+        $pagination = new Pagination([
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
+            return self::createRoute('members-with-intro', [
+                'id' => $chat->id,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons = [];
+
+        $members = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($members) {
+            foreach ($members as $member) {
+                $memberUser = $member->user;
+                $contact = $memberUser->globalUser->contact ?: $memberUser->globalUser->newContact;
+
+                $buttons[][] = [
+                    'callback_data' => MemberController::createRoute('id', [
+                        'id' => $member->id,
+                    ]),
+                    'text' => ($contact ? $contact->getTelegramDisplayName() : $memberUser->getFullName()),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('members-with-intro'),
+                $buttons
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $page
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionMembersWithReviews($page = 1, $id = null)
+    {
+        $chat = Chat::findOne($id);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chat->hasUsername() && !$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $query = $chat->getChatMembersWithPositiveReviews();
+
+        $pagination = new Pagination([
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
+            return self::createRoute('members-with-reviews', [
+                'id' => $chat->id,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons = [];
+
+        $members = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($members) {
+            foreach ($members as $member) {
+                $memberUser = $member->user;
+                $contact = $memberUser->globalUser->contact ?: $memberUser->globalUser->newContact;
+
+                $buttons[][] = [
+                    'callback_data' => MemberController::createRoute('id', [
+                        'id' => $member->id,
+                    ]),
+                    'text' => ($member->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $member->getPositiveReviewsCount() . ' - ' : '') . ($contact ? $contact->getTelegramDisplayName() : $memberUser->getFullName()),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('members-with-reviews'),
+                $buttons
+            )
+            ->build();
     }
 }

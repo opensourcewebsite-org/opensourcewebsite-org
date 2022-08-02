@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\models;
 
+use app\modules\bot\models\queries\ChatMemberQuery;
 use DateTime;
 use Yii;
 use yii\db\ActiveRecord;
@@ -101,6 +102,11 @@ class ChatMember extends ActiveRecord
         ];
     }
 
+    public static function find(): ChatMemberQuery
+    {
+        return new ChatMemberQuery(get_called_class());
+    }
+
     public function isCreator()
     {
         return $this->status == self::STATUS_CREATOR;
@@ -171,7 +177,7 @@ class ChatMember extends ActiveRecord
             if ($this->last_message_at) {
                 $today = new DateTime('today');
 
-                if (($today->getTimestamp() + $chat->timezone) <= $this->last_message_at) {
+                if (($today->getTimestamp() + ($chat->timezone * 60)) <= $this->last_message_at) {
                     if ($chat->slow_mode_messages_limit <= $this->slow_mode_messages) {
                         return false;
                     }
@@ -191,7 +197,7 @@ class ChatMember extends ActiveRecord
             if ($this->limiter_date) {
                 $date = new DateTime($this->limiter_date);
 
-                if (($date->getTimestamp() + $chat->timezone) <= time()) {
+                if (($date->getTimestamp() + ($chat->timezone * 60)) <= time()) {
                     return false;
                 }
             }
@@ -209,7 +215,7 @@ class ChatMember extends ActiveRecord
             if ($this->membership_date) {
                 $date = new DateTime($this->membership_date);
 
-                if (($date->getTimestamp() + $chat->timezone) <= time()) {
+                if (($date->getTimestamp() + ($chat->timezone * 60)) <= time()) {
                     return false;
                 }
             }
@@ -286,7 +292,7 @@ class ChatMember extends ActiveRecord
     {
         return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
             ->andWhere([
-                '>', 'status', 0,
+                '>', ChatMemberReview::tableName() . '.status', 0,
             ]);
     }
 
@@ -296,21 +302,31 @@ class ChatMember extends ActiveRecord
             ->count();
     }
 
-    public function getPositiveReviewsCount()
+    public function getPositiveReviews()
     {
         return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
             ->andWhere([
-                'status' => ChatMemberReview::STATUS_LIKE,
-            ])
+                ChatMemberReview::tableName() . '.status' => ChatMemberReview::STATUS_LIKE,
+            ]);
+    }
+
+    public function getPositiveReviewsCount()
+    {
+        return $this->getPositiveReviews()
             ->count();
+    }
+
+    public function getNegativeReviews()
+    {
+        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
+            ->andWhere([
+                ChatMemberReview::tableName() . '.status' => ChatMemberReview::STATUS_DISLIKE,
+            ]);
     }
 
     public function getNegativeReviewsCount()
     {
-        return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
-            ->andWhere([
-                'status' => ChatMemberReview::STATUS_DISLIKE,
-            ])
+        return $this->getNegativeReviews()
             ->count();
     }
 

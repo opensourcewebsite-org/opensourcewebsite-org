@@ -44,17 +44,11 @@ class StartController extends Controller
                             ['provider_user_name' => $username],
                             ['provider_user_id' => $username],
                         ])
-                        ->andWhere([
-                            'is_bot' => 0,
-                        ])
+                        ->human()
                         ->one();
 
                     if (isset($viewUser)) {
                         $user = $this->getTelegramUser();
-
-                        if (($user->provider_user_name == $username) || ($user->provider_user_id == $username)) {
-                            return $this->run('my-profile/index');
-                        }
 
                         if (isset($matches[1])) {
                             $username2 = $matches[1];
@@ -64,6 +58,18 @@ class StartController extends Controller
                             ]);
 
                             if (isset($chat)) {
+                                if (($user->provider_user_name == $username) || ($user->provider_user_id == $username)) {
+                                    if ($chat->isGroup()) {
+                                        return $this->run('group-guest/view', [
+                                            'id' => $chat->id,
+                                        ]);
+                                    } elseif ($chat->isChannel()) {
+                                        return $this->run('channel-guest/view', [
+                                            'id' => $chat->id,
+                                        ]);
+                                    }
+                                }
+
                                 $chatMember = ChatMember::findOne([
                                     'chat_id' => $chat->id,
                                     'user_id' => $viewUser->id,
@@ -75,6 +81,10 @@ class StartController extends Controller
                                     ]);
                                 }
                             }
+                        }
+
+                        if (($user->provider_user_name == $username) || ($user->provider_user_id == $username)) {
+                            return $this->run('my-profile/index');
                         }
 
                         return $this->run('user/id', [

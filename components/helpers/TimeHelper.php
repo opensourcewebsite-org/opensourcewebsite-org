@@ -51,9 +51,11 @@ class TimeHelper
             720,
             765,
             780,
-            840];
+            840,
+        ];
 
         $timeOffsetsNames = [];
+
         foreach ($timeOffsets as $timeOffset) {
             $timeOffsetsNames[$timeOffset] = self::getNameByOffset($timeOffset);
         }

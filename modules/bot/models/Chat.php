@@ -4,6 +4,7 @@ namespace app\modules\bot\models;
 
 use app\models\User as GlobalUser;
 use app\modules\bot\models\queries\ChatQuery;
+use DateTime;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -220,9 +221,7 @@ class Chat extends ActiveRecord
     public function getHumanUsers()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
-            ->where([
-                'is_bot' => 0,
-            ])
+            ->human()
             ->viaTable(ChatMember::tableName(), ['chat_id' => 'id']);
     }
 
@@ -255,9 +254,7 @@ class Chat extends ActiveRecord
     public function getHumanAdministrators()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
-            ->where([
-                'is_bot' => 0,
-            ])
+            ->human()
             ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -270,9 +267,7 @@ class Chat extends ActiveRecord
     public function getActiveAdministrators()
     {
         return $this->hasMany(User::class, ['id' => 'user_id'])
-            ->where([
-                'is_bot' => 0,
-            ])
+            ->human()
             ->viaTable(ChatMember::tableName(), ['chat_id' => 'id'], function ($query) {
                 $query->andWhere([
                     'or',
@@ -336,11 +331,44 @@ class Chat extends ActiveRecord
         return $this->username;
     }
 
+    public function hasUsername()
+    {
+        return (bool)$this->username;
+    }
+
     public function getChatMemberCreator()
     {
         return $this->hasOne(ChatMember::className(), ['chat_id' => 'id'])
             ->andWhere([
                 ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR,
             ]);
+    }
+
+    public function getPrivilegedChatMembers()
+    {
+        $today = new DateTime('@' . (time() + ($this->timezone * 60)));
+
+        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+            ->andWhere([
+                '>', ChatMember::tableName() . '.membership_date',  $today->format('Y-m-d'),
+            ])
+            ->orderByRank();
+    }
+
+    public function getChatMembersWithIntro()
+    {
+        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+            ->andWhere([
+                'not',
+                [ChatMember::tableName() . '.intro' => null],
+            ])
+            ->orderByRank();
+    }
+
+    public function getChatMembersWithPositiveReviews()
+    {
+        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+            ->joinWith('positiveReviews')
+            ->orderByRank();
     }
 }

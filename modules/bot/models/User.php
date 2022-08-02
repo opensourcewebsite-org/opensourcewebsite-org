@@ -10,6 +10,7 @@ use app\models\UserLocation;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\controllers\privates\DeleteMessageController;
+use app\modules\bot\models\queries\UserQuery;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -103,8 +104,13 @@ class User extends ActiveRecord
         ];
     }
 
+    public static function find(): UserQuery
+    {
+        return new UserQuery(get_called_class());
+    }
+
     /**
-     * @return int|string
+     * @return string
      */
     public function getFullName()
     {

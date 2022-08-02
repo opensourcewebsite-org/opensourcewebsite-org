@@ -101,9 +101,18 @@ class MemberController extends Controller
 
         $viewUser = $chatMember->user;
         $user = $this->getTelegramUser();
+        $chat = $chatMember->chat;
 
         if ($user->id == $viewUser->id) {
-            return $this->run('my-profile/index');
+            if ($chat->isGroup()) {
+                return $this->run('group-guest/view', [
+                    'id' => $chat->id,
+                ]);
+            } elseif ($chat->isChannel()) {
+                return $this->run('channel-guest/view', [
+                    'id' => $chat->id,
+                ]);
+            }
         }
 
         $this->getState()->setName(null);
