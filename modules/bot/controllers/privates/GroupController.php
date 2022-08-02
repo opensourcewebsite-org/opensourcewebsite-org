@@ -244,6 +244,11 @@ class GroupController extends Controller
                                     ]),
                                     'text' => Emoji::REFRESH,
                                 ],
+                                [
+                                    'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                                    'text' => Yii::t('bot', 'Group'),
+                                    'visible' => (bool)$chat->getUsername(),
+                                ],
                             ],
                         ]
                     )

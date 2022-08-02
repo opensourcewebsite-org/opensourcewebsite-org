@@ -147,6 +147,7 @@ return [
     'Bot' => 'Бот',
     'BOT' => 'БОТ',
     'Group' => 'Группа',
+    'Channel' => 'Канал',
     'Source Code' => 'Исходный код',
     'Contact' => 'Контакт',
     'Your donations and contributions increase your Rating' => 'Ваши пожертвования и помощь проекту повышают ваш рейтинг',
@@ -569,4 +570,5 @@ return [
     'No matches' => 'Нет совпадений',
     'Sorted by user rank' => 'Отсортировано по рангу пользователей',
     'Sorted by number of positive reviews and user rank' => 'Отсортировано по количеству положительных отзывов и по рангу пользователей',
+    'Details' => 'Детали',
 ];

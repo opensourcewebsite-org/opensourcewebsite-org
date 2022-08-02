@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
@@ -156,6 +157,11 @@ class ChannelController extends Controller
                                         'chatId' => $chat->id,
                                     ]),
                                     'text' => Emoji::REFRESH,
+                                ],
+                                [
+                                    'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                                    'text' => Yii::t('bot', 'Channel'),
+                                    'visible' => (bool)$chat->getUsername(),
                                 ],
                             ],
                         ]

@@ -6,6 +6,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
@@ -66,6 +67,15 @@ class PublicChannelController extends Controller
                 ->build();
         }
 
+        // $buttons[] = [
+        //     [
+        //         'callback_data' => ChannelGuestController::createRoute('view', [
+        //             'id' => $chat->id,
+        //         ]),
+        //         'text' => Yii::t('bot', 'Details'),
+        //     ],
+        // ];
+
         $buttons[] = [
             [
                 'callback_data' => TelegramController::createRoute(),
@@ -81,6 +91,10 @@ class PublicChannelController extends Controller
                     'page' => $page,
                 ]),
                 'text' => Emoji::REFRESH,
+            ],
+            [
+                'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                'text' => Yii::t('bot', 'Channel'),
             ],
         ];
 
