@@ -369,6 +369,7 @@ class Chat extends ActiveRecord
     {
         return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
             ->joinWith('positiveReviews')
+            ->groupBy(ChatMember::tableName() . '.id')
             ->orderByRank();
     }
 }

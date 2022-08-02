@@ -270,13 +270,13 @@ class GroupGuestController extends Controller
         if ($members) {
             foreach ($members as $member) {
                 $memberUser = $member->user;
-                $contact = $memberUser->globalUser->contact ?: $memberUser->globalUser->newContact;
+                $contact = $memberUser->globalUser->contact;
 
                 $buttons[][] = [
                     'callback_data' => MemberController::createRoute('id', [
                         'id' => $member->id,
                     ]),
-                    'text' => ($contact ? $contact->getTelegramDisplayName() : $memberUser->getFullName()),
+                    'text' => ($contact ? $contact->getTelegramDisplayName() : $memberUser->getDisplayName()),
                 ];
             }
 
@@ -359,13 +359,13 @@ class GroupGuestController extends Controller
         if ($members) {
             foreach ($members as $member) {
                 $memberUser = $member->user;
-                $contact = $memberUser->globalUser->contact ?: $memberUser->globalUser->newContact;
+                $contact = $memberUser->globalUser->contact;
 
                 $buttons[][] = [
                     'callback_data' => MemberController::createRoute('id', [
                         'id' => $member->id,
                     ]),
-                    'text' => ($contact ? $contact->getTelegramDisplayName() : $memberUser->getFullName()),
+                    'text' => ($contact ? $contact->getTelegramDisplayName() : $memberUser->getDisplayName()),
                 ];
             }
 
@@ -450,13 +450,13 @@ class GroupGuestController extends Controller
         if ($members) {
             foreach ($members as $member) {
                 $memberUser = $member->user;
-                $contact = $memberUser->globalUser->contact ?: $memberUser->globalUser->newContact;
+                $contact = $memberUser->globalUser->contact;
 
                 $buttons[][] = [
                     'callback_data' => MemberController::createRoute('id', [
                         'id' => $member->id,
                     ]),
-                    'text' => ($member->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $member->getPositiveReviewsCount() . ' - ' : '') . ($contact ? $contact->getTelegramDisplayName() : $memberUser->getFullName()),
+                    'text' => ($member->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $member->getPositiveReviewsCount() . ' - ' : '') . ($contact ? $contact->getTelegramDisplayName() : $memberUser->getDisplayName()),
                 ];
             }
 

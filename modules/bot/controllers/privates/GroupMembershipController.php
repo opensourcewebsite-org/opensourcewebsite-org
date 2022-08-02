@@ -89,16 +89,16 @@ class GroupMembershipController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('membership_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('membership_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('membership_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('membership_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
@@ -161,7 +161,7 @@ class GroupMembershipController extends Controller
                         'chatId' => $chatId,
                         'memberId' => $member->id,
                     ]),
-                    'text' => $member->membership_date . ' - ' . ($member->user->provider_user_name ? '@' . $member->user->provider_user_name . ' - ' : '') . $member->user->getFullName(),
+                    'text' => $member->membership_date . ' - ' . $member->user->getDisplayName(),
                 ];
             }
 

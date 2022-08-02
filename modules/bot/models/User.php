@@ -123,11 +123,24 @@ class User extends ActiveRecord
         if (!empty($this->provider_user_last_name)) {
             return $this->provider_user_last_name;
         }
-        if (!empty($this->provider_user_name)) {
-            return $this->provider_user_name;
-        }
 
         return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        if ($this->provider_user_name) {
+            $name = '@' . $this->provider_user_name;
+        } else {
+            $name = '#' . $this->user_id;
+        }
+
+        $name .= ($this->getFullName() ? ' - ' . $this->getFullName() : '');
+
+        return $name;
     }
 
     public function getChats()

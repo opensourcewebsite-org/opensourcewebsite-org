@@ -89,16 +89,16 @@ class GroupLimiterController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('limiter_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('limiter_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('limiter_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('limiter_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
@@ -161,7 +161,7 @@ class GroupLimiterController extends Controller
                         'chatId' => $chatId,
                         'memberId' => $member->id,
                     ]),
-                    'text' => $member->limiter_date . ' - ' . ($member->user->provider_user_name ? '@' . $member->user->provider_user_name . ' - ' : '') . $member->user->getFullName(),
+                    'text' => $member->limiter_date . ' - ' . $member->user->getDisplayName(),
                 ];
             }
 

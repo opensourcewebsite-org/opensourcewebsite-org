@@ -82,7 +82,7 @@ class ChannelAdministratorsController extends Controller
                             'chatId' => $chatId,
                             'administratorId' => $administrator->id,
                         ]),
-                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . ($administrator->provider_user_name ? '@' . $administrator->provider_user_name . ' - ' : '') . $administrator->getFullName(),
+                        'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $administrator->getDisplayName(),
                     ];
                 }
 

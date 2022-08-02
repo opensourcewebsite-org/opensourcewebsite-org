@@ -307,15 +307,15 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         if ($this->link_user_id) {
             if ($this->counterBotUser) {
                 if ($this->counterBotUser->provider_user_name) {
-                    $name =  '@' . $this->counterBotUser->provider_user_name;
+                    $name = '@' . $this->counterBotUser->provider_user_name;
                 } else {
-                    $name =  '#' . $this->link_user_id;
+                    $name = '#' . $this->link_user_id;
                 }
             } else {
                 if ($this->linkedUser->username) {
-                    $name =  '@' . $this->linkedUser->username;
+                    $name = '@' . $this->linkedUser->username;
                 } else {
-                    $name =  '#' . $this->link_user_id;
+                    $name = '#' . $this->link_user_id;
                 }
             }
 
