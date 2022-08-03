@@ -233,7 +233,7 @@ class ChatMember extends ActiveRecord
         if ($chat = $this->chat) {
             $today = new DateTime('today');
 
-            if (($today->getTimestamp() + $chat->timezone) <= $this->last_message_at) {
+            if (($today->getTimestamp() + ($chat->timezone * 60)) <= $this->last_message_at) {
                 $this->slow_mode_messages += 1;
             } else {
                 $this->slow_mode_messages = 1;
