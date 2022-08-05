@@ -177,7 +177,7 @@ class ChatMember extends ActiveRecord
             if ($this->last_message_at) {
                 $today = new DateTime('today');
 
-                if (($today->getTimestamp() + ($chat->timezone * 60)) <= $this->last_message_at) {
+                if (($today->getTimestamp() - ($chat->timezone * 60)) <= $this->last_message_at) {
                     if ($chat->slow_mode_messages_limit <= $this->slow_mode_messages) {
                         return false;
                     }
@@ -197,7 +197,7 @@ class ChatMember extends ActiveRecord
             if ($this->limiter_date) {
                 $date = new DateTime($this->limiter_date);
 
-                if (($date->getTimestamp() + ($chat->timezone * 60)) <= time()) {
+                if (($date->getTimestamp() - ($chat->timezone * 60)) <= time()) {
                     return false;
                 }
             }
@@ -215,7 +215,7 @@ class ChatMember extends ActiveRecord
             if ($this->membership_date) {
                 $date = new DateTime($this->membership_date);
 
-                if (($date->getTimestamp() + ($chat->timezone * 60)) <= time()) {
+                if (($date->getTimestamp() - ($chat->timezone * 60)) <= time()) {
                     return false;
                 }
             }
@@ -233,7 +233,7 @@ class ChatMember extends ActiveRecord
         if ($chat = $this->chat) {
             $today = new DateTime('today');
 
-            if (($today->getTimestamp() + ($chat->timezone * 60)) <= $this->last_message_at) {
+            if (($today->getTimestamp() - ($chat->timezone * 60)) <= $this->last_message_at) {
                 $this->slow_mode_messages += 1;
             } else {
                 $this->slow_mode_messages = 1;
