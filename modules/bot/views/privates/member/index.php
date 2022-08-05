@@ -23,16 +23,16 @@ use app\components\helpers\Html;
 <b><?= Yii::t('app', 'Personal identification') ?></b>: <?= $contact->getIsRealLabel() ?><br/>
 <b><?= Yii::t('app', 'Personal relation') ?></b>: <?= $contact->getRelationLabel() ?><br/>
 <?php endif; ?>
+————<br/>
+<b><?= Yii::t('bot', 'Group') ?></b>:<br/>
+<br/>
+<?= $chat->title ?><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
 <?php if ($chatMember->intro) : ?>
 ————<br/>
 <b><?= Yii::t('bot', 'Intro') ?></b>:<br/>
 <br/>
 <?= nl2br($chatMember->intro) ?><br/>
 <?php endif; ?>
-————<br/>
-<b><?= Yii::t('bot', 'Group') ?></b>:<br/>
-<br/>
-<?= $chat->title ?><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
 <?php if ($review && $review->text) : ?>
 ————<br/>
 <b><?= Yii::t('bot', 'Your public review') ?></b>:<br/>

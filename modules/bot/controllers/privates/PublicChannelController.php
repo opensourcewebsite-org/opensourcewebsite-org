@@ -72,7 +72,7 @@ class PublicChannelController extends Controller
         //         'callback_data' => ChannelGuestController::createRoute('view', [
         //             'id' => $chat->id,
         //         ]),
-        //         'text' => Yii::t('bot', 'Details'),
+        //         'text' => Yii::t('bot', 'Channel View'),
         //     ],
         // ];
 

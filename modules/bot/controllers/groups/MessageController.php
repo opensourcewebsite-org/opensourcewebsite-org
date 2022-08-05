@@ -3,6 +3,8 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\controllers\privates\GroupGuestController;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -65,7 +67,17 @@ class MessageController extends Controller
                     $this->render('/privates/warning-limiter', [
                         'chat' => $chat,
                         'chatMember' => $chatMember,
-                    ])
+                    ]),
+                    [
+                        [
+                            [
+                                'callback_data' => GroupGuestController::createRoute('view', [
+                                    'id' => $chat->id,
+                                ]),
+                                'text' => Yii::t('bot', 'Group View'),
+                            ],
+                        ],
+                    ]
                 );
             }
         }
@@ -79,7 +91,17 @@ class MessageController extends Controller
                         $this->render('/privates/warning-membership', [
                             'chat' => $chat,
                             'chatMember' => $chatMember,
-                        ])
+                        ]),
+                        [
+                            [
+                                [
+                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                        'id' => $chat->id,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Group View'),
+                                ],
+                            ],
+                        ]
                     );
                 }
             }
@@ -93,7 +115,17 @@ class MessageController extends Controller
                     $telegramUser->sendMessage(
                         $this->render('/privates/warning-slow-mode', [
                             'chat' => $chat,
-                        ])
+                        ]),
+                        [
+                            [
+                                [
+                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                        'id' => $chat->id,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Group View'),
+                                ],
+                            ],
+                        ]
                     );
                 } else {
                     $isSlowModeOn = true;
@@ -123,7 +155,17 @@ class MessageController extends Controller
                                 $telegramUser->sendMessage(
                                     $this->render('/privates/warning-filter-remove-reply', [
                                         'chat' => $chat,
-                                    ])
+                                    ]),
+                                    [
+                                        [
+                                            [
+                                                'callback_data' => GroupGuestController::createRoute('view', [
+                                                    'id' => $chat->id,
+                                                ]),
+                                                'text' => Yii::t('bot', 'Group View'),
+                                            ],
+                                        ],
+                                    ]
                                 );
                             }
                         }
@@ -146,7 +188,17 @@ class MessageController extends Controller
                                     $telegramUser->sendMessage(
                                         $this->render('/privates/warning-filter-remove-username', [
                                             'chat' => $chat,
-                                        ])
+                                        ]),
+                                        [
+                                            [
+                                                [
+                                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                                        'id' => $chat->id,
+                                                    ]),
+                                                    'text' => Yii::t('bot', 'Group View'),
+                                                ],
+                                            ],
+                                        ]
                                     );
                                 }
                             }
@@ -163,7 +215,17 @@ class MessageController extends Controller
                                     $telegramUser->sendMessage(
                                         $this->render('/privates/warning-filter-remove-empty-line', [
                                             'chat' => $chat,
-                                        ])
+                                        ]),
+                                        [
+                                            [
+                                                [
+                                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                                        'id' => $chat->id,
+                                                    ]),
+                                                    'text' => Yii::t('bot', 'Group View'),
+                                                ],
+                                            ],
+                                        ]
                                     );
                                 } elseif (preg_match('/(?:(( ){2,}\S))/i', $this->getMessage()->getText())) {
                                     // removes double spaces
@@ -172,7 +234,17 @@ class MessageController extends Controller
                                     $telegramUser->sendMessage(
                                         $this->render('/privates/warning-filter-remove-double-spaces', [
                                             'chat' => $chat,
-                                        ])
+                                        ]),
+                                        [
+                                            [
+                                                [
+                                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                                        'id' => $chat->id,
+                                                    ]),
+                                                    'text' => Yii::t('bot', 'Group View'),
+                                                ],
+                                            ],
+                                        ]
                                     );
                                 }
                             }
@@ -190,7 +262,17 @@ class MessageController extends Controller
                                     $telegramUser->sendMessage(
                                         $this->render('/privates/warning-filter-remove-emoji', [
                                             'chat' => $chat,
-                                        ])
+                                        ]),
+                                        [
+                                            [
+                                                [
+                                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                                        'id' => $chat->id,
+                                                    ]),
+                                                    'text' => Yii::t('bot', 'Group View'),
+                                                ],
+                                            ],
+                                        ]
                                     );
                                 }
                             }
@@ -212,7 +294,17 @@ class MessageController extends Controller
                                             $this->render('/privates/warning-filter-blacklist', [
                                                 'chat' => $chat,
                                                 'text' => $phrase->text,
-                                            ])
+                                            ]),
+                                            [
+                                                [
+                                                    [
+                                                        'callback_data' => GroupGuestController::createRoute('view', [
+                                                            'id' => $chat->id,
+                                                        ]),
+                                                        'text' => Yii::t('bot', 'Group View'),
+                                                    ],
+                                                ],
+                                            ]
                                         );
 
                                         break;

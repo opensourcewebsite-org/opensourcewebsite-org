@@ -71,7 +71,7 @@ class PublicGroupController extends Controller
                 'callback_data' => GroupGuestController::createRoute('view', [
                     'id' => $chat->id,
                 ]),
-                'text' => Yii::t('bot', 'Details'),
+                'text' => Yii::t('bot', 'Group View'),
             ],
         ];
 

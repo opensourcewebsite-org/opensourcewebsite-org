@@ -259,11 +259,11 @@ class MemberController extends Controller
      */
     public function actionSetStatus($id = null, $v = null)
     {
-        $chatMember = ChatMember::findOne([
+        $counterChatMember = ChatMember::findOne([
             'id' => $id,
         ]);
 
-        if (!isset($chatMember)) {
+        if (!isset($counterChatMember)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -273,7 +273,7 @@ class MemberController extends Controller
 
         $chatMemberReview = ChatMemberReview::findOne([
             'user_id' => $user->id,
-            'member_id' => $chatMember->id,
+            'member_id' => $counterChatMember->id,
         ]);
 
         if (!isset($chatMemberReview)) {
@@ -297,14 +297,24 @@ class MemberController extends Controller
                 $chatMemberReview->counterUser->sendMessage(
                     $this->render('notify-review', [
                         'authorUser' => $chatMemberReview->user,
-                        'chat' => $chatMember->chat,
+                        'chat' => $chatMemberReview->chat,
                         'review' => $chatMemberReview,
-                    ])
+                    ]),
+                    [
+                        [
+                            [
+                                'callback_data' => self::createRoute('id', [
+                                    'id' => $chatMemberReview->chatMember->id,
+                                ]),
+                                'text' => Yii::t('bot', 'Member View'),
+                            ],
+                        ],
+                    ]
                 );
             }
 
             return $this->runAction('my-review', [
-                 'id' => $chatMember->id,
+                 'id' => $counterChatMember->id,
              ]);
         }
 

@@ -83,11 +83,22 @@ class ChatMemberReview extends ActiveRecord
     }
 
     /**
+     * Gets query for [[Chat]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChat()
+    {
+        return $this->hasOne(Chat::className(), ['id' => 'chat_id'])
+            ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
+    }
+
+    /**
      * Gets query for [[ChatMember]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getMember()
+    public function getCounterChatMember()
     {
         return $this->hasOne(ChatMember::className(), ['id' => 'member_id']);
     }
@@ -105,6 +116,16 @@ class ChatMemberReview extends ActiveRecord
     public function getUserId()
     {
         return $this->user_id;
+    }
+
+    public function getChatMember()
+    {
+        return ChatMember::find()
+            ->andWhere([
+                'chat_id' => $this->chat->id,
+                'user_id' => $this->user_id,
+            ])
+            ->one();
     }
 
     /**
