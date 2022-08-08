@@ -295,15 +295,15 @@ class MemberController extends Controller
             // if the review has received an active status, then notify the counter user
             if ($chatMemberReview->isActive()) {
                 // when the creator of the review is a member of the group
+                $buttons = [];
+
                 if ($chatMember = $chatMemberReview->chatMember) {
-                    $buttons = [
+                    $buttons[] = [
                         [
-                            [
-                                'callback_data' => self::createRoute('id', [
-                                    'id' => $chatMember->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Member View'),
-                            ],
+                            'callback_data' => self::createRoute('id', [
+                                'id' => $chatMember->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Member View'),
                         ],
                     ];
                 }

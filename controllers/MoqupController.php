@@ -9,6 +9,7 @@ use app\models\MoqupSearch;
 use app\models\Setting;
 use app\models\UserMoqupFollow;
 use Yii;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 
