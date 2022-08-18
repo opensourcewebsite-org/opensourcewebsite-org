@@ -31,6 +31,8 @@ $config = [
                 10 => 'member_review',
                 11 => 'group_guest_faq',
                 12 => 'member',
+                13 => 'group_timezone',
+                14 => 'group_currency',
             ],
             'actions' => [
                 1 => 'index',
@@ -49,6 +51,7 @@ $config = [
                 14 => 'word_list',
                 15 => 'privileged_members',
                 16 => 'id',
+                17 => 'input',
             ],
         ],
     ],

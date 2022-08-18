@@ -42,8 +42,8 @@ class CurrencyQuery extends ActiveQuery
             ->andWhere($condition);
     }
 
-    public function code($code): self
+    public function byCode($code): self
     {
-        return $this->andWhere(['currency.code' => $code]);
+        return $this->andWhere([Currency::tableName() . '.code' => $code]);
     }
 }

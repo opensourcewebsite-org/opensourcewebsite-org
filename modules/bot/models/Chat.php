@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\models;
 
+use app\models\Currency;
 use app\models\User as GlobalUser;
 use app\modules\bot\models\queries\ChatQuery;
 use DateTime;
@@ -11,6 +12,8 @@ use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "bot_chat".
+ *
+ * @property integer $currency_id
  *
  * @package app\modules\bot\models
  */
@@ -31,8 +34,8 @@ class Chat extends ActiveRecord
     public function rules()
     {
         return [
-            [['type', 'bot_id', 'chat_id'], 'required'],
-            [['id', 'chat_id', 'bot_id'], 'integer'],
+            [['chat_id', 'type', 'bot_id'], 'required'],
+            [['chat_id', 'bot_id', 'currency_id'], 'integer'],
             [['type', 'title', 'username', 'first_name', 'last_name', 'description'], 'string'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
@@ -62,11 +65,11 @@ class Chat extends ActiveRecord
     public function __get($name)
     {
         if ($this->hasAttribute($name)) {
-            return $this->getAttribute($name);
+            return parent::__get($name);
         }
 
         if ($this->hasMethod('get' . ucfirst($name))) {
-            return $this->{'get' . ucfirst($name)}();
+            return parent::__get($name);
         }
 
         if (isset($this->settings[$name]) || array_key_exists($name, $this->settings)) {
@@ -104,11 +107,11 @@ class Chat extends ActiveRecord
     public function __set($name, $value)
     {
         if ($this->hasAttribute($name)) {
-            return $this->setAttribute($name, $value);
+            return parent::__set($name, $value);
         }
 
         if ($this->hasMethod('set' . ucfirst($name))) {
-            return $this->{'set' . ucfirst($name)}($value);
+            return parent::__set($name, $value);
         }
 
         $chatSetting = $this->getSettings()
@@ -371,5 +374,13 @@ class Chat extends ActiveRecord
             ->joinWith('positiveReviews')
             ->groupBy(ChatMember::tableName() . '.id')
             ->orderByRank();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrency()
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 }

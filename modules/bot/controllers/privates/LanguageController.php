@@ -75,11 +75,11 @@ class LanguageController extends Controller
         }
 
         $buttons[] = [
-                [
-                    'callback_data' => MenuController::createRoute(),
-                    'text' => Emoji::BACK,
-                ]
-            ];
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::BACK,
+            ]
+        ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

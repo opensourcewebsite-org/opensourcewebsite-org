@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\components\helpers\TimeHelper;
+use app\models\Currency;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -12,11 +12,11 @@ use Yii;
 use yii\data\Pagination;
 
 /**
- * Class GroupTimezoneController
+ * Class GroupCurrencyController
  *
  * @package app\modules\bot\controllers\privates
  */
-class GroupTimezoneController extends Controller
+class GroupCurrencyController extends Controller
 {
     /**
      * @return array
@@ -36,12 +36,15 @@ class GroupTimezoneController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input'));
+        $this->getState()->setName(self::createRoute('input', [
+            'chatId' => $chatId,
+        ]));
 
-        $timezones = TimeHelper::timezonesList();
+        $query = Currency::find()
+            ->orderBy(['code' => SORT_ASC]);
 
         $pagination = new Pagination([
-            'totalCount' => count($timezones),
+            'totalCount' => $query->count(),
             'pageSize' => 9,
             'params' => [
                 'page' => $page,
@@ -50,7 +53,10 @@ class GroupTimezoneController extends Controller
             'validatePage' => true,
         ]);
 
-        $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
+        $currencies = $query
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
             return self::createRoute('list', [
@@ -61,18 +67,20 @@ class GroupTimezoneController extends Controller
 
         $buttons = [];
 
-        foreach ($timezones as $timezone => $name) {
-            $buttons[][] = [
-                'text' => $name,
-                'callback_data' => self::createRoute('select', [
-                    'chatId' => $chatId,
-                    'timezone' => $timezone,
-                ]),
-            ];
-        }
+        if ($currencies) {
+            foreach ($currencies as $currency) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('select', [
+                        'chatId' => $chatId,
+                        'code' => $currency->code,
+                    ]),
+                    'text' => $currency->code . ' - ' . $currency->name,
+                ];
+            }
 
-        if ($paginationButtons) {
-            $buttons[] = $paginationButtons;
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
         }
 
         $buttons[][] = [
@@ -90,7 +98,7 @@ class GroupTimezoneController extends Controller
             ->build();
     }
 
-    public function actionSelect($chatId = null, $timezone = null)
+    public function actionSelect($chatId = null, $code = null)
     {
         $chat = Chat::findOne($chatId);
 
@@ -100,13 +108,21 @@ class GroupTimezoneController extends Controller
                 ->build();
         }
 
-        if (!$timezone) {
-            return $this->actionList($chatId);
+        if (!$code) {
+            return $this->actionList();
         }
 
-        $chat->timezone = $timezone;
+        $currency = Currency::findOne([
+            'code' => $code,
+        ]);
 
-        if ($chat->validate('timezone') && $chat->save(false)) {
+        if (!$currency) {
+            return $this->actionList();
+        }
+
+        $chat->currency_id = $currency->id;
+
+        if ($chat->validate('currency_id') && $chat->save(false)) {
             return $this->run('group/view', [
                 'chatId' => $chatId,
             ]);
@@ -117,8 +133,26 @@ class GroupTimezoneController extends Controller
             ->build();
     }
 
-    public function actionInput()
+    public function actionInput($chatId = null)
     {
-        // TODO add text input to set timezone (Examples: 07, 06:30, -07, -06:30)
+        if ($text = $this->getUpdate()->getMessage()->getText()) {
+            if (strlen($text) <= 3) {
+                $currency = Currency::find()
+                    ->orFilterWhere(['like', 'code', $text, false])
+                    ->one();
+            } else {
+                $currency = Currency::find()
+                    ->orFilterWhere(['like', 'name', $text . '%', false])
+                    ->one();
+            }
+
+            if (isset($currency)) {
+                return $this->actionSelect($chatId, $currency->code);
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }

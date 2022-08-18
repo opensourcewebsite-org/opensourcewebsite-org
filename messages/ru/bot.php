@@ -406,6 +406,7 @@ return [
     'Skip' => 'Пропустить',
     'SKIP' => 'ПРОПУСТИТЬ',
     'Photo' => 'Фото',
+    'Choose a currency or type it' => 'Выберите валюту или введите ее',
     'Choose a currency for price or type it' => 'Выберите валюту для цены или введите ее',
     'Choose a currency for hourly rate or type it' => 'Выберите валюту для часовой ставки или введите ее',
     'Max. price' => 'Максимальная цена',

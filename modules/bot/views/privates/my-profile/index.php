@@ -7,13 +7,13 @@ use app\modules\bot\components\helpers\ExternalLink;
 <b><?= Yii::t('bot', 'Your Profile') ?></b><br/>
 <br/>
 <?php if ($user->birthday) : ?>
-<?= Yii::t('bot', 'Birthday') . ': ' . $user->birthday; ?><br/>
+<?= Yii::t('bot', 'Birthday') ?>: <?= $user->birthday; ?><br/>
 <?php endif; ?>
 <?php if ($user->gender) : ?>
-<?= Yii::t('bot', 'Gender') . ': ' . Yii::t('bot', $user->gender->name); ?><br/>
+<?= Yii::t('bot', 'Gender') ?>: <?= Yii::t('bot', $user->gender->name); ?><br/>
 <?php endif; ?>
 <?php if ($user->sexuality) : ?>
-<?= Yii::t('bot', 'Sexuality') . ': ' . Yii::t('bot', $user->sexuality->name); ?><br/>
+<?= Yii::t('bot', 'Sexuality') ?>: <?= Yii::t('bot', $user->sexuality->name); ?><br/>
 <?php endif; ?>
 <?php if ($user->languages) : ?>
 <br/>
@@ -33,7 +33,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php if ($userLocation = $user->userLocation) : ?>
 <?= Yii::t('bot', 'Location') ?>: <a href="<?= ExternalLink::getOSMLink($userLocation->location_lat, $userLocation->location_lon) ?>"><?= $userLocation->location ?></a><br/>
 <?php endif; ?>
-<?= Yii::t('bot', 'Timezone') . ': ' . TimeHelper::getNameByOffset($user->timezone); ?><br/>
+<?= Yii::t('bot', 'Timezone') ?>: <?= TimeHelper::getNameByOffset($user->timezone); ?><br/>
 <?php if ($user->currency) : ?>
-<?= Yii::t('bot', 'Currency') . ': ' .  $user->currency->code . ' - ' . $user->currency->name; ?><br/>
+<?= Yii::t('bot', 'Currency') ?>: <?= $user->currency->code . ' - ' . $user->currency->name; ?><br/>
 <?php endif; ?>

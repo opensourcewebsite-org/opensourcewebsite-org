@@ -12,7 +12,7 @@ class Currency extends \app\models\Currency
         $query = parent::find();
 
         if (!empty(self::CODE_RANGE)) {
-            $query->code(self::CODE_RANGE);
+            $query->byCode(self::CODE_RANGE);
         }
 
         return $query;
