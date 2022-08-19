@@ -7,6 +7,8 @@ use app\components\Converter;
 use app\components\helpers\ReferrerHelper;
 use app\models\Contact;
 use app\models\Gender;
+use app\models\Language;
+use app\models\LanguageLevel;
 use app\models\StellarServer;
 use app\models\User;
 use app\models\UserCitizenship;
