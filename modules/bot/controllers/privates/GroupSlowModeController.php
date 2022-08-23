@@ -49,7 +49,7 @@ class GroupSlowModeController extends Controller
                             'callback_data' => self::createRoute('set-messages-limit', [
                                 'chatId' => $chatId,
                             ]),
-                            'text' => Yii::t('bot', 'Messages limit'),
+                            'text' => Yii::t('bot', 'Limit of messages'),
                         ],
                     ],
                     [
@@ -85,16 +85,16 @@ class GroupSlowModeController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('slow_mode_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('slow_mode_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('slow_mode_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('slow_mode_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }

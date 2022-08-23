@@ -7,17 +7,27 @@ use app\modules\bot\models\Chat;
 
 class InsertAction extends BaseAction
 {
+    /**
+    * @param int|null $chatId Chat->id
+    */
     public function run($chatId = null)
     {
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return [];
+        }
+
         $text = $this->getUpdate()->getMessage()->getText();
+
         $rows = explode(PHP_EOL, $text);
 
         foreach ($rows as $row) {
             if ($row) {
-                if (!$this->wordModelClass::find()->where(array_merge($this->modelAttributes, ['chat_id' => $chatId, 'text' => $row]))->exists()) {
+                if (!$this->wordModelClass::find()->where(array_merge($this->modelAttributes, ['chat_id' => $chat->id, 'text' => $row]))->exists()) {
                     $phrase = new $this->wordModelClass();
                     $phrase->setAttributes(array_merge($this->modelAttributes, [
-                        'chat_id' => $chatId,
+                        'chat_id' => $chat->id,
                         'text' => $row,
                         'updated_by' => $this->getTelegramUser()->id,
                     ]));
@@ -28,7 +38,7 @@ class InsertAction extends BaseAction
         }
 
         return $this->controller->runAction($this->listActionId, [
-            'chatId' => $chatId,
+            'chatId' => $chat->id,
         ]);
     }
 }

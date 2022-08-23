@@ -25,8 +25,8 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?= Yii::t('bot', 'You can send messages until') ?>: <?= $chatMember->limiter_date; ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($chat->getUsername() && $user->getUsername()) : ?>
-<?= Yii::t('bot', 'Your link for reviews') ?>: <?= ExternalLink::getBotStartLink($user->getUsername() . '-' . $chat->getUsername()); ?><br/>
+<?php if ($user->getUsername()) : ?>
+<?= Yii::t('bot', 'Your link for reviews') ?>: <?= $chatMember->getReviewsLink(); ?><br/>
 <?php endif; ?>
 <?php endif; ?>
 <?php endif; ?>

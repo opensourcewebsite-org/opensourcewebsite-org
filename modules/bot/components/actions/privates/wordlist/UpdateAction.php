@@ -6,13 +6,17 @@ use app\modules\bot\components\actions\BaseAction;
 
 class UpdateAction extends BaseAction
 {
-    public function run($phraseId = null)
+    /**
+    * @param int|null $id ChatPhrase->id
+    */
+    public function run($id = null)
     {
-        $phrase = $this->wordModelClass::findOne($phraseId);
+        $phrase = $this->wordModelClass::findOne($id);
+
         $text = htmlspecialchars($this->getUpdate()->getMessage()->getText());
 
         if (!$this->wordModelClass::find()->where([
-            'chat_id' => $phrase->chat_id,
+            'chat_id' => $phrase->getChatId(),
             'text' => $text,
         ])->exists()) {
             $phrase->text = $text;
@@ -21,7 +25,7 @@ class UpdateAction extends BaseAction
             $phrase->save();
 
             return $this->controller->run($this->viewActionId, [
-                'phraseId' => $phraseId,
+                'id' => $phrase->id,
             ]);
         }
         //TODO missing return

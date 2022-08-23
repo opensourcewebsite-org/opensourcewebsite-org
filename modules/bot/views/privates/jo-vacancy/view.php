@@ -9,7 +9,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?= Emoji::JO_VACANCY ?> <b><?= Yii::t('bot', 'Vacancy') ?>: #<?= $model->id ?> <?= $model->name ?></b><br/>
 <?php if ($company) : ?>
 ————<br/>
-<?= Emoji::JO_COMPANY?> <b><?= $company->name; ?></b><br/>
+<?= Emoji::JO_COMPANY ?> <b><?= $company->name; ?></b><br/>
 <?php if ($company->description) : ?>
 <br/>
 <?= nl2br($company->description); ?><br/>

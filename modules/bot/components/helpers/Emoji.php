@@ -42,4 +42,6 @@ class Emoji
     public const SPEAKER = '🔈';
     public const PAUSE = '⏸';
     public const HIDDEN = '🔒';
+    public const SEND = '↗️';
+    public const RIGHT = '➡️';
 }

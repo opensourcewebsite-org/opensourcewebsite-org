@@ -69,5 +69,5 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endif; ?>
 <?php if ($user = $model->user->botUser) : ?>
 ————<br/>
-<b><?= Yii::t('bot', 'Contact') ?></b>: <?= $user->getFullLink(); ?>
+<?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?>
 <?php endif; ?>

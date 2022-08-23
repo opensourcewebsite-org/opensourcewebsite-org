@@ -2,14 +2,15 @@
 
 namespace app\modules\bot\components\actions;
 
-use yii\base\Action;
-use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\components\api\Types\Update;
+use app\modules\bot\components\response\ResponseBuilder;
+use yii\base\Action;
 
 abstract class BaseAction extends Action
 {
     private array $defaultOptions = [
         'actions' => [
+            'select' => false,
             'insert' => true,
             'update' => true,
             'delete' => true,
@@ -21,6 +22,7 @@ abstract class BaseAction extends Action
     public $modelAttributes = [];
     public $listActionId = 'w-l';
     public $viewActionId = 'w-v';
+    public $selectActionId = 'w-s';
     public $enterActionId = 'w-e';
     public $insertActionId = 'w-i';
     public $changeActionId = 'w-c';

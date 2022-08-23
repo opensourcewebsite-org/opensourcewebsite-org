@@ -75,6 +75,7 @@ class WordlistComponent extends \yii\base\Component
 
         $listActionId = $prefix . ($this->short ? 'w-l' : 'word-list');
         $viewActionId = $prefix . ($this->short ? 'w-v' : 'word-view');
+        $selectActionId = $prefix . ($this->short ? 'w-s' : 'word-select');
         $enterActionId = $prefix . ($this->short ? 'w-e' : 'word-enter');
         $insertActionId = $prefix . ($this->short ? 'w-i' : 'word-insert');
         $updateActionId = $prefix . ($this->short ? 'w-u' : 'word-update');
@@ -84,16 +85,17 @@ class WordlistComponent extends \yii\base\Component
         $updateFieldActionId = $prefix . 'w-u-f';
 
         return [
-            //список фраз
+            // word list
             $listActionId => [
                 'class' => ListAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
+                'selectActionId' => $selectActionId,
                 'enterActionId' => $enterActionId,
                 'modelAttributes' => $this->modelAttributes,
                 'options' => $this->options,
             ],
-            //просмотр фразы
+            // word view
             $viewActionId => [
                 'class' => ViewAction::class,
                 'wordModelClass' => $this->wordModelClass,
@@ -103,7 +105,14 @@ class WordlistComponent extends \yii\base\Component
                 'buttons' => $this->buttons,
                 'options' => $this->options,
             ],
-            //форма ввода новой фразы
+            // word select
+            $selectActionId => [
+                'class' => SelectAction::class,
+                'wordModelClass' => $this->wordModelClass,
+                'listActionId' => $listActionId,
+                'options' => $this->options,
+            ],
+            // word enter new
             $enterActionId => [
                 'class' => EnterAction::class,
                 'wordModelClass' => $this->wordModelClass,
@@ -111,7 +120,7 @@ class WordlistComponent extends \yii\base\Component
                 'insertActionId' => $insertActionId,
                 'options' => $this->options,
             ],
-            //сохранение новой фразы
+            // word save new
             $insertActionId => [
                 'class' => InsertAction::class,
                 'wordModelClass' => $this->wordModelClass,
@@ -119,7 +128,7 @@ class WordlistComponent extends \yii\base\Component
                 'modelAttributes' => $this->modelAttributes,
                 'options' => $this->options,
             ],
-            //форма ввода фразы для изменения
+            // word enter old
             $changeActionId => [
                 'class' => ChangeAction::class,
                 'wordModelClass' => $this->wordModelClass,
@@ -127,21 +136,21 @@ class WordlistComponent extends \yii\base\Component
                 'viewActionId' => $viewActionId,
                 'options' => $this->options,
             ],
-            //сохранение фразы после изменения
+            // word save old
             $updateActionId => [
                 'class' => UpdateAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'viewActionId' => $viewActionId,
                 'options' => $this->options,
             ],
-            //удаление фразы
+            // word delete
             $deleteActionId => [
                 'class' => DeleteAction::class,
                 'wordModelClass' => $this->wordModelClass,
                 'listActionId' => $listActionId,
                 'options' => $this->options,
             ],
-            //форма ввода фразы для изменения поля
+            // field enter old
             $changeFieldActionId => [
                 'class' => ChangeFieldAction::class,
                 'wordModelClass' => $this->wordModelClass,
@@ -149,7 +158,7 @@ class WordlistComponent extends \yii\base\Component
                 'buttons' => $this->buttons,
                 'options' => $this->options,
             ],
-            //сохранение фразы после изменения поля
+            // field save old
             $updateFieldActionId => [
                 'class' => UpdateFieldAction::class,
                 'wordModelClass' => $this->wordModelClass,

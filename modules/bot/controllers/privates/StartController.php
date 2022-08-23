@@ -53,9 +53,22 @@ class StartController extends Controller
                         if (isset($matches[1])) {
                             $username2 = $matches[1];
 
-                            $chat = Chat::findOne([
-                                'username' => $username2,
-                            ]);
+                            $chat = User::find()
+                                ->andWhere([
+                                    'or',
+                                    ['provider_user_name' => $username],
+                                    ['provider_user_id' => $username],
+                                ])
+                                ->human()
+                                ->one();
+
+                            $chat = Chat::find()
+                                ->andWhere([
+                                    'or',
+                                    ['username' => $username2],
+                                    ['chat_id' => '-' . $username2],
+                                ])
+                                ->one();
 
                             if (isset($chat)) {
                                 if (($user->provider_user_name == $username) || ($user->provider_user_id == $username)) {

@@ -3,15 +3,20 @@
 namespace app\modules\bot\components\actions\privates\wordlist;
 
 use app\modules\bot\components\actions\BaseAction;
-use app\modules\bot\models\Chat;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\models\Chat;
 
 class ChangeAction extends BaseAction
 {
-    public function run($phraseId = null)
+    /**
+    * @param int|null $id ChatPhrase->id
+    */
+    public function run($id = null)
     {
+        $phrase = $this->wordModelClass::findOne($id);
+
         $this->getState()->setName($this->createRoute($this->updateActionId, [
-            'phraseId' => $phraseId,
+            'id' => $id,
         ]));
 
         return $this->getResponseBuilder()
@@ -21,7 +26,7 @@ class ChangeAction extends BaseAction
                     [
                         [
                             'callback_data' => $this->createRoute($this->viewActionId, [
-                                'phraseId' => $phraseId,
+                                'id' => $phrase->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],

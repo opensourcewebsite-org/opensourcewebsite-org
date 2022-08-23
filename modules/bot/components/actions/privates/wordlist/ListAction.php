@@ -3,16 +3,18 @@
 namespace app\modules\bot\components\actions\privates\wordlist;
 
 use app\modules\bot\components\actions\BaseAction;
-use app\modules\bot\models\Chat;
-use app\modules\bot\components\helpers\PaginationButtons;
-use yii\data\Pagination;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\Chat;
+use Yii;
+use yii\data\Pagination;
 
 class ListAction extends BaseAction
 {
-    public $pageWordsCount = 9;
+    public $paginationPageSize = 9;
 
     /**
+    * @param int|null $chatId Chat->id
     * @return array
     */
     public function run($chatId = null, $page = 1)
@@ -25,15 +27,15 @@ class ListAction extends BaseAction
 
         $this->getState()->setName(null);
 
-        $phraseQuery = $this->wordModelClass::find()
+        $query = $this->wordModelClass::find()
             ->where(array_merge($this->modelAttributes, [
-                'chat_id' => $chatId,
+                'chat_id' => $chat->id,
             ]))
             ->orderBy(['text' => SORT_ASC]);
 
         $pagination = new Pagination([
-            'totalCount' => $phraseQuery->count(),
-            'pageSize' => $this->pageWordsCount,
+            'totalCount' => $query->count(),
+            'pageSize' => $this->paginationPageSize,
             'params' => [
                 'page' => $page,
             ],
@@ -41,26 +43,41 @@ class ListAction extends BaseAction
             'validatePage' => true,
         ]);
 
-        $phrases = $phraseQuery->offset($pagination->offset)
+        $phrases = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
             return $this->createRoute($this->id, [
-                    'chatId' => $chatId,
+                    'chatId' => $chat->id,
                     'page' => $page,
                 ]);
         });
+
         $buttons = [];
+
+        $chatMember = $chat->getChatMemberByUserId();
 
         if ($phrases) {
             foreach ($phrases as $phrase) {
-                $buttons[][] = [
-                    'callback_data' => $this->createRoute($this->viewActionId, [
-                        'phraseId' => $phrase->id,
-                    ]),
-                    'text' => $phrase->text
-                ];
+                if ($this->options['actions']['select']) {
+                    if ($chatMember) {
+                        $buttons[][] = [
+                            'callback_data' => $this->createRoute($this->selectActionId, [
+                                'id' => $phrase->id,
+                                'page' => $page,
+                            ]),
+                            'text' => ($chatMember->hasPhrase($phrase) ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . $phrase->text,
+                        ];
+                    }
+                } else {
+                    $buttons[][] = [
+                        'callback_data' => $this->createRoute($this->viewActionId, [
+                            'id' => $phrase->id,
+                        ]),
+                        'text' => $phrase->text,
+                    ];
+                }
             }
 
             if ($paginationButtons) {

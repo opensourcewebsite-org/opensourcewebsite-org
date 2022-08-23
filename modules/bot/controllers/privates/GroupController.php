@@ -97,168 +97,169 @@ class GroupController extends Controller
      */
     public function actionView($chatId = null)
     {
-        $this->getState()->setName(null);
+        $chat = Chat::findOne($chatId);
 
-        if ($chatId) {
-            $chat = Chat::findOne($chatId);
-
-            if (!isset($chat) || !$chat->isGroup()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
-            }
-
-            $user = $this->getTelegramUser();
-
-            $chatMember = ChatMember::findOne([
-                'chat_id' => $chat->id,
-                'user_id' => $user->id,
-            ]);
-
-            if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
-            }
-
-            $administrators = $chat->getActiveAdministrators()->all();
-
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('view', [
-                        'chat' => $chat,
-                        'administrators' => $administrators,
-                    ]),
-                    [
-                        [
-                            [
-                                'callback_data' => GroupAdministratorsController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Administrators'),
-                                'visible' => $chatMember->isCreator(),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupTimezoneController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Timezone'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupCurrencyController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Currency'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupBasicCommandsController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Basic Commands'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupJoinHiderController::createRoute('index', [
-                                    'id' => $chat->id,
-                                ]),
-                                'text' => ($chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notification Filter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupMessageFilterController::createRoute('index', [
-                                    'id' => $chat->id,
-                                ]),
-                                'text' => ($chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupJoinCaptchaController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Captcha'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupGreetingController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->greeting_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Greeting'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupSlowModeController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Slow Mode'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupMembershipController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupLimiterController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Time Limiter'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupFaqController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->faq_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'FAQ'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupStellarController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->stellar_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' Stellar',
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => GroupController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                            [
-                                'callback_data' => GroupRefreshController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => Emoji::REFRESH,
-                            ],
-                            [
-                                'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
-                                'text' => Yii::t('bot', 'Group'),
-                                'visible' => (bool)$chat->getUsername(),
-                            ],
-                        ],
-                    ]
-                )
+                ->answerCallbackQuery()
                 ->build();
         }
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $administrators = $chat->getActiveAdministrators()->all();
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('view', [
+                    'chat' => $chat,
+                    'administrators' => $administrators,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => GroupAdministratorsController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Administrators'),
+                            'visible' => $chatMember->isCreator(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupTimezoneController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Timezone'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupCurrencyController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Currency'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupBasicCommandsController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => ($chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Basic Commands'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupJoinHiderController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notification Filter'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupMessageFilterController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupJoinCaptchaController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => ($chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Captcha'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupGreetingController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => ($chat->greeting_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Greeting'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupSlowModeController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => ($chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Slow Mode'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupMembershipController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupLimiterController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Time Limiter'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupMarketplaceController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupFaqController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => ($chat->faq_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'FAQ'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupStellarController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => ($chat->stellar_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' Stellar',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => GroupRefreshController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Emoji::REFRESH,
+                        ],
+                        [
+                            'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                            'text' => Yii::t('bot', 'Group'),
+                            'visible' => (bool)$chat->getUsername(),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 }

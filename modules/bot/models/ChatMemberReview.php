@@ -33,7 +33,7 @@ class ChatMemberReview extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'bot_chat_member_review';
+        return '{{%bot_chat_member_review}}';
     }
 
     /**

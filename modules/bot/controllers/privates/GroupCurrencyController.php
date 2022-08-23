@@ -26,7 +26,7 @@ class GroupCurrencyController extends Controller
         return $this->actionList($chatId);
     }
 
-    public function actionList($chatId = null, $page = 2)
+    public function actionList($chatId = null, $page = 1)
     {
         $chat = Chat::findOne($chatId);
 

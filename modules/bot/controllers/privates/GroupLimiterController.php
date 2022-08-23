@@ -24,9 +24,9 @@ class GroupLimiterController extends Controller
     /**
     * @return array
     */
-    public function actionIndex($chatId = null)
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -43,7 +43,7 @@ class GroupLimiterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => $chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -51,7 +51,7 @@ class GroupLimiterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('members', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Members'),
                         ],
@@ -59,7 +59,7 @@ class GroupLimiterController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -73,9 +73,9 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat)) {
             return [];
@@ -103,12 +103,12 @@ class GroupLimiterController extends Controller
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($id);
     }
 
-    public function actionMembers($page = 1, $chatId = null): array
+    public function actionMembers($page = 1, $id = null): array
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -117,7 +117,7 @@ class GroupLimiterController extends Controller
         }
 
         $this->getState()->setName(self::createRoute('input-member', [
-            'chatId' => $chat->id,
+            'id' => $chat->id,
         ]));
 
         $query = ChatMember::find()
@@ -143,7 +143,7 @@ class GroupLimiterController extends Controller
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
             return self::createRoute('members', [
-                'chatId' => $chat->id,
+                'id' => $chat->id,
                 'page' => $page,
             ]);
         });
@@ -158,7 +158,7 @@ class GroupLimiterController extends Controller
             foreach ($members as $member) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('member', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                         'memberId' => $member->id,
                     ]),
                     'text' => $member->limiter_date . ' - ' . $member->user->getDisplayName(),
@@ -173,7 +173,7 @@ class GroupLimiterController extends Controller
         $buttons[] = [
             [
                 'callback_data' => self::createRoute('index', [
-                    'chatId' => $chatId,
+                    'id' => $chat->id,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -193,9 +193,9 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionInputMember($chatId = null): array
+    public function actionInputMember($id = null): array
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -217,7 +217,7 @@ class GroupLimiterController extends Controller
 
         $member = ChatMember::find()
             ->where([
-                'chat_id' => $chatId,
+                'chat_id' => $chat->id,
             ])
             ->joinWith('user')
             ->andWhere([
@@ -237,14 +237,14 @@ class GroupLimiterController extends Controller
         }
 
         return $this->runAction('member', [
-            'chatId' => $chatId,
+            'id' => $chat->id,
             'memberId' => $member->id,
          ]);
     }
 
-    public function actionMember($memberId = null, $chatId = null): array
+    public function actionMember($memberId = null, $id = null): array
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -254,7 +254,7 @@ class GroupLimiterController extends Controller
 
         $member = ChatMember::findOne([
             'id' => $memberId,
-            'chat_id' => $chatId,
+            'chat_id' => $chat->id,
         ]);
 
         if (!isset($member)) {
@@ -264,7 +264,7 @@ class GroupLimiterController extends Controller
         }
 
         $this->getState()->setName(self::createRoute('input-date', [
-            'chatId' => $chat->id,
+            'id' => $chat->id,
             'memberId' => $memberId,
         ]));
 
@@ -278,7 +278,7 @@ class GroupLimiterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('members', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -288,7 +288,7 @@ class GroupLimiterController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete-date', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                                 'memberId' => $memberId,
                             ]),
                             'text' => Emoji::DELETE,
@@ -299,9 +299,9 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionInputDate($memberId = null, $chatId = null): array
+    public function actionInputDate($memberId = null, $id = null): array
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -311,7 +311,7 @@ class GroupLimiterController extends Controller
 
         $member = ChatMember::findOne([
             'id' => $memberId,
-            'chat_id' => $chatId,
+            'chat_id' => $chat->id,
         ]);
 
         if (!isset($member)) {
@@ -329,7 +329,7 @@ class GroupLimiterController extends Controller
                     $member->save();
 
                     return $this->runAction('member', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                         'memberId' => $member->id,
                      ]);
                 }
@@ -341,9 +341,9 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionDeleteDate($memberId = null, $chatId = null): array
+    public function actionDeleteDate($memberId = null, $id = null): array
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -353,7 +353,7 @@ class GroupLimiterController extends Controller
 
         $member = ChatMember::findOne([
             'id' => $memberId,
-            'chat_id' => $chatId,
+            'chat_id' => $chat->id,
         ]);
 
         if (!isset($member)) {
@@ -366,7 +366,7 @@ class GroupLimiterController extends Controller
         $member->save(false);
 
         return $this->runAction('members', [
-             'chatId' => $chatId,
+             'id' => $chat->id,
          ]);
     }
 }

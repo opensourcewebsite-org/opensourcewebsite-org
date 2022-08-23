@@ -91,80 +91,73 @@ class ChannelController extends Controller
      */
     public function actionView($chatId = null)
     {
-        $this->getState()->setName(null);
+        $chat = Chat::findOne($chatId);
 
-        if ($chatId) {
-            $chat = Chat::findOne($chatId);
-
-            if (!isset($chat) || !$chat->isChannel()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
-            }
-
-            $user = $this->getTelegramUser();
-
-            $chatMember = ChatMember::findOne([
-                'chat_id' => $chat->id,
-                'user_id' => $user->id,
-            ]);
-
-            if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
-            }
-
-            $administrators = $chat->getActiveAdministrators()->all();
-
+        if (!isset($chat) || !$chat->isChannel()) {
             return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('view', [
-                        'chat' => $chat,
-                        'administrators' => $administrators,
-                    ]),
-                    [
-                        [
-                            [
-                                'callback_data' => ChannelAdministratorsController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Administrators'),
-                                'visible' => $chatMember->isCreator(),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => ChannelMarketplaceController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => ($chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => ChannelController::createRoute(),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                            [
-                                'callback_data' => ChannelRefreshController::createRoute('index', [
-                                    'chatId' => $chat->id,
-                                ]),
-                                'text' => Emoji::REFRESH,
-                            ],
-                            [
-                                'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
-                                'text' => Yii::t('bot', 'Channel'),
-                                'visible' => (bool)$chat->getUsername(),
-                            ],
-                        ],
-                    ]
-                )
+                ->answerCallbackQuery()
                 ->build();
         }
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(null);
+
+        $administrators = $chat->getActiveAdministrators()->all();
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('view', [
+                    'chat' => $chat,
+                    'administrators' => $administrators,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => ChannelAdministratorsController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Administrators'),
+                            'visible' => $chatMember->isCreator(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ChannelMarketplaceController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => ChannelController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => ChannelRefreshController::createRoute('index', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Emoji::REFRESH,
+                        ],
+                        [
+                            'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                            'text' => Yii::t('bot', 'Channel'),
+                            'visible' => (bool)$chat->getUsername(),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 }

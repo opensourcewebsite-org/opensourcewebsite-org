@@ -166,14 +166,17 @@ class Chat extends ActiveRecord
 
     public function getPhrases()
     {
-        return $this->hasMany(Phrase::class, ['chat_id' => 'id']);
+        return $this->hasMany(ChatPhrase::class, ['chat_id' => 'id']);
     }
 
     public function getBlacklistPhrases()
     {
         return $this->getPhrases()
             ->where([
-                'type' => Phrase::TYPE_BLACKLIST,
+                'type' =>ChatPhrase::TYPE_BLACKLIST,
+            ])
+            ->orderBy([
+                'text' => SORT_ASC,
             ]);
     }
 
@@ -181,7 +184,21 @@ class Chat extends ActiveRecord
     {
         return $this->getPhrases()
             ->where([
-                'type' => Phrase::TYPE_WHITELIST,
+                'type' =>ChatPhrase::TYPE_WHITELIST,
+            ])
+            ->orderBy([
+                'text' => SORT_ASC,
+            ]);
+    }
+
+    public function getMarketplaceTags()
+    {
+        return $this->getPhrases()
+            ->where([
+                'type' =>ChatPhrase::TYPE_MARKETPLACE_TAGS,
+            ])
+            ->orderBy([
+                'text' => SORT_ASC,
             ]);
     }
 
@@ -309,6 +326,19 @@ class Chat extends ActiveRecord
             ChatSetting::FILTER_MODE_OFF => Yii::t('bot', 'No list'),
             ChatSetting::FILTER_MODE_BLACKLIST => Yii::t('bot', 'Blacklist'),
             ChatSetting::FILTER_MODE_WHITELIST => Yii::t('bot', 'Whitelist'),
+        ];
+    }
+
+    public function getMarketplaceModeLabel(): string
+    {
+        return static::getMarketplaceModeLabels()[$this->marketplace_mode];
+    }
+
+    public static function getMarketplaceModeLabels(): array
+    {
+        return [
+            ChatSetting::MARKETPLACE_MODE_ALL => Yii::t('bot', 'All members'),
+            ChatSetting::MARKETPLACE_MODE_MEMBERSHIP => Yii::t('bot', 'Privileged members'),
         ];
     }
 

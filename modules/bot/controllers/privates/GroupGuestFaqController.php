@@ -42,11 +42,12 @@ class GroupGuestFaqController extends Controller
     }
 
     /**
+     * @param int $id Chat->id
      * @return array
      */
-    public function actionIndex($chatId = null)
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()

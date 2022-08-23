@@ -134,19 +134,19 @@ class MemberController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('my-review', [
-                                'id' => $chatMember->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Your public review'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MemberReviewController::createRoute('index', [
                                 'id' => $chatMember->id,
                             ]),
                             'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
                             'visible' => $chatMember->getActiveReviews()->exists(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('my-review', [
+                                'id' => $chatMember->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Your public review'),
                         ],
                     ],
                     [
@@ -358,8 +358,8 @@ class MemberController extends Controller
         }
 
         $this->getState()->setName(self::createRoute('input-text', [
-                'id' => $chatMember->id,
-            ]));
+            'id' => $chatMember->id,
+        ]));
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {

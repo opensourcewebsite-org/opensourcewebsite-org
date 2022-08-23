@@ -32,6 +32,7 @@ class HelloController extends Controller
                 '/my_fake_face',
                 '/my_fake_cat',
                 '/my_fake_art',
+                '/chat_id',
             ];
 
             if ($chat->faq_status == ChatSetting::STATUS_ON) {

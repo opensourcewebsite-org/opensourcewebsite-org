@@ -1,8 +1,3 @@
-<?php
-
-use app\models\User;
-
-?>
 <?php if ($user) : ?>
 <b>OSW ID</b>: #<?= $user->id; ?><?= ($user->username ? ' @' . $user->username : '') ?><br/>
 <br/>

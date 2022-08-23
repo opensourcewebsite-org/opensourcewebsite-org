@@ -13,7 +13,7 @@ use yii\db\ActiveRecord;
  * @property int $user_id
  * @property int $chat_id
  * @property string $text
- * @property int $updated_at
+ * @property int $created_at
  * @property int|null $sent_at
  * @property int|null $provider_message_id
  *
@@ -26,8 +26,8 @@ class ChatMarketplacePost extends ActiveRecord
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
-    // minimum time between re-posting a post
-    public const TIME_LIMIT_TO_REPOST =  5 * 60; // seconds
+    // minimum seconds between re-posting a post
+    public const REPOST_SECONDS_LIMIT = 1 * 60; // seconds
 
     /**
      * {@inheritdoc}
@@ -44,7 +44,7 @@ class ChatMarketplacePost extends ActiveRecord
     {
         return [
             [['user_id', 'chat_id', 'text'], 'required'],
-            [['user_id', 'chat_id', 'status', 'updated_at', 'sent_at', 'provider_message_id'], 'integer'],
+            [['user_id', 'chat_id', 'status', 'created_at', 'sent_at', 'provider_message_id'], 'integer'],
             [['title'], 'string', 'max' => 255],
             [['text'], 'string', 'max' => 10000],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::className(), 'targetAttribute' => ['chat_id' => 'id']],
@@ -64,7 +64,7 @@ class ChatMarketplacePost extends ActiveRecord
             'status' => Yii::t('app', 'Status'),
             'title' => Yii::t('app', 'Title'),
             'text' => Yii::t('app', 'Text'),
-            'updated_at' => Yii::t('app', 'Updated At'),
+            'created_at' => Yii::t('app', 'Created At'),
             'sent_at' => 'Sent At',
             'provider_message_id' => 'Provider Message ID',
         ];
@@ -75,7 +75,7 @@ class ChatMarketplacePost extends ActiveRecord
         return [
             [
                 'class' => TimestampBehavior::class,
-                'createdAtAttribute' => false,
+                'updatedAtAttribute' => false,
             ],
         ];
     }
@@ -88,6 +88,11 @@ class ChatMarketplacePost extends ActiveRecord
     public function getChat()
     {
         return $this->hasOne(Chat::className(), ['id' => 'chat_id']);
+    }
+
+    public function getChatId()
+    {
+        return $this->chat_id;
     }
 
     /**
@@ -126,15 +131,15 @@ class ChatMarketplacePost extends ActiveRecord
 
     public function canRepost()
     {
-        if (!$this->sent_at || (($this->sent_at + self::TIME_LIMIT_TO_REPOST) < time())) {
+        if (!$this->sent_at || (($this->sent_at + self::REPOST_SECONDS_LIMIT) < time())) {
             return true;
         }
 
         return false;
     }
 
-    public function getRepostTimeLimit()
+    public function getRepostSecondsLimit()
     {
-        return (int)(self::TIME_LIMIT_TO_REPOST / 60);
+        return self::REPOST_SECONDS_LIMIT;
     }
 }

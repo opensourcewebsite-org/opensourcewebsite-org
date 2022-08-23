@@ -14,6 +14,10 @@
 <b><?= Yii::t('bot', 'Group') ?></b>:<br/>
 <br/>
 <?= $chat->title ?><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
+<?php if ($membershipTag = $chatMember->getMembershipTag()) : ?>
+<br/>
+<b><?= Yii::t('bot', 'Member status') ?></b>: <?= $membershipTag ?><br/>
+<?php endif; ?>
 <?php if ($review && $review->text) : ?>
 ————<br/>
 <b><?= Yii::t('bot', 'Review') ?></b>: <?= $review->getStatusLabel() ?><br/>

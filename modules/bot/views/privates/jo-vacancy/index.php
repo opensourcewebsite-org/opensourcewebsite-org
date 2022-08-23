@@ -8,5 +8,5 @@ use app\modules\bot\components\helpers\Emoji;
 <br/>
 <?= Emoji::JO_VACANCY ?> <b><?= Yii::t('bot', 'Vacancies') ?></b>
 <?php else : ?>
-<?= Emoji::JO_VACANCY ?> <b><?= Yii::t('bot', 'Your Vacancies') ?></b>
+<?= Emoji::JO_VACANCY ?> <b><?= Yii::t('bot', 'Your vacancies') ?></b>
 <?php endif; ?>

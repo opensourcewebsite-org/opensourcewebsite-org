@@ -2,9 +2,11 @@
 
 namespace app\modules\bot\models;
 
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\queries\ChatMemberQuery;
 use DateTime;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -75,6 +77,10 @@ class ChatMember extends ActiveRecord
             'active_bot_group_stellar_quantity_value_per_one_rating',
             'active_bot_group_stellar_min_quantity_value_per_one_user',
         ],
+        'marketplace_status' => [
+            'active_bot_group_marketplace_quantity_value_per_one_rating',
+            'active_bot_group_marketplace_min_quantity_value_per_one_user',
+        ],
     ];
 
     public static function tableName()
@@ -135,7 +141,7 @@ class ChatMember extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
@@ -143,7 +149,7 @@ class ChatMember extends ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getChat()
+    public function getChat(): ActiveQuery
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id']);
     }
@@ -204,6 +210,24 @@ class ChatMember extends ActiveRecord
         }
 
         return true;
+    }
+
+    /**
+    * @return bool
+    */
+    public function hasMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->membership_date) {
+                $date = new DateTime($this->membership_date);
+
+                if (($date->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -288,7 +312,7 @@ class ChatMember extends ActiveRecord
         return 1;
     }
 
-    public function getActiveReviews()
+    public function getActiveReviews(): ActiveQuery
     {
         return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
             ->andWhere([
@@ -302,7 +326,7 @@ class ChatMember extends ActiveRecord
             ->count();
     }
 
-    public function getPositiveReviews()
+    public function getPositiveReviews(): ActiveQuery
     {
         return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
             ->andWhere([
@@ -316,7 +340,7 @@ class ChatMember extends ActiveRecord
             ->count();
     }
 
-    public function getNegativeReviews()
+    public function getNegativeReviews(): ActiveQuery
     {
         return $this->hasMany(ChatMemberReview::class, ['member_id' => 'id'])
             ->andWhere([
@@ -333,5 +357,81 @@ class ChatMember extends ActiveRecord
     public function getIntro()
     {
         return $this->intro;
+    }
+
+    public function getReviewsLink()
+    {
+        return ExternalLink::getBotStartLink(($this->user->getUsername() ?: $this->user->getProviderUserId()) . '-' . ($this->chat->getUsername() ?: abs($this->chat->getChatId())));
+    }
+
+    /**
+    * @param ChatMemberPhrase $phrase
+    * @return bool
+    */
+    public function hasPhrase($phrase)
+    {
+        $chatMemberPhraseExists = ChatMemberPhrase::find()
+            ->andWhere([
+                'member_id' => $this->id,
+                'phrase_id' => $phrase->id,
+            ])
+            ->exists();
+
+        if ($chatMemberPhraseExists) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+    * @param string|null $type ChatPhrase->type
+    * @return \yii\db\ActiveQuery
+    */
+    public function getPhrases($type = ''): ActiveQuery
+    {
+        $query = $this->hasMany(ChatPhrase::class, ['id' => 'phrase_id'])
+            ->viaTable(ChatMemberPhrase::tableName(), ['member_id' => 'id'])
+            ->orderBy([ChatPhrase::tableName() . '.text' => SORT_ASC]);
+
+        if ($type) {
+            $query = $query->andWhere([
+                ChatPhrase::tableName() . '.type' => $type,
+            ]);
+        }
+
+        return $query;
+    }
+
+    public function canUseMarketplace()
+    {
+        $chat = $this->chat;
+
+        if ($chat->isGroup() || $chat->isChannel()) {
+            if ($chat->marketplace_status == ChatSetting::STATUS_ON) {
+                if (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_ALL)
+                   || (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_MEMBERSHIP)
+                       && ($chat->membership_status == ChatSetting::STATUS_ON) && $this->hasMembership())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function getMembershipTag()
+    {
+        $chat = $this->chat;
+
+        if ($chat->isGroup() || $chat->isChannel()) {
+            if (($chat->membership_status == ChatSetting::STATUS_ON) && $chat->membership_tag) {
+                if ($this->hasMembership()) {
+                    return $chat->membership_tag;
+                }
+            }
+        }
+
+        return false;
     }
 }

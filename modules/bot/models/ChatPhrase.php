@@ -5,26 +5,25 @@ namespace app\modules\bot\models;
 use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "bot_phrase".
+ * This is the model class for table "bot_chat_phrase".
  *
  * @property int $id
  * @property int $chat_id
- * @property int $user_id
- * @property string $status
- * @property int $role
- * @property int $slow_mode_messages
- * @property int|null $last_message_at
+ * @property string $type
+ * @property string $text
+ * @property int $updated_by
  *
  * @package app\modules\bot\models
  */
-class Phrase extends ActiveRecord
+class ChatPhrase extends ActiveRecord
 {
     public const TYPE_WHITELIST = 'whitelist';
     public const TYPE_BLACKLIST = 'blacklist';
+    public const TYPE_MARKETPLACE_TAGS = 'marketplace-tags';
 
     public static function tableName()
     {
-        return '{{%bot_phrase}}';
+        return '{{%bot_chat_phrase}}';
     }
 
     public function rules()
@@ -54,5 +53,10 @@ class Phrase extends ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
+    }
+
+    public function getChatId()
+    {
+        return $this->chat_id;
     }
 }

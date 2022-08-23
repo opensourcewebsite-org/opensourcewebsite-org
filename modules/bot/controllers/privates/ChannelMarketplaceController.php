@@ -19,17 +19,17 @@ class ChannelMarketplaceController extends Controller
     /**
      * @return array
      */
-    public function actionIndex($chatId = null)
+    public function actionIndex($id = null)
     {
-        $this->getState()->setName(null);
+        $chat = Chat::findOne($id);
 
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isChannel()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        $statusOn = ($chat->marketplace_status == ChatSetting::STATUS_ON);
+        $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -38,15 +38,15 @@ class ChannelMarketplaceController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
-                            'text' => $statusOn ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('set-limit', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Limit'),
                         ],
@@ -54,15 +54,16 @@ class ChannelMarketplaceController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-text-hint', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Hint for text'),
                         ],
                     ],
+                    // TODO add optional tags (look GroupMarketplaceController)
                     [
                         [
                             'callback_data' => ChannelController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -79,12 +80,14 @@ class ChannelMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isChannel()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->marketplace_status) {
@@ -93,24 +96,37 @@ class ChannelMarketplaceController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chat->marketplace_status = ChatSetting::STATUS_ON;
+                $chatMember = $chat->getChatMemberByUserId();
+
+                if (!$chatMember->trySetChatSetting('marketplace_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('marketplace_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($id);
     }
 
-    public function actionSetLimit($chatId = null)
+    public function actionSetLimit($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isChannel()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-limit', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
             ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -118,10 +134,8 @@ class ChannelMarketplaceController extends Controller
                 if ($chat->validateSettingValue('marketplace_active_post_limit_per_member', $text)) {
                     $chat->marketplace_active_post_limit_per_member = $text;
 
-                    $this->getState()->setName(null);
-
                     return $this->runAction('index', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                     ]);
                 }
             }
@@ -134,7 +148,7 @@ class ChannelMarketplaceController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -144,16 +158,18 @@ class ChannelMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionSetTextHint($chatId = null)
+    public function actionSetTextHint($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isChannel()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-text-hint', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
             ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -162,7 +178,7 @@ class ChannelMarketplaceController extends Controller
                     $chat->marketplace_text_hint = $text;
 
                     return $this->runAction('index', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                     ]);
                 }
             }
@@ -179,7 +195,7 @@ class ChannelMarketplaceController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],

@@ -8,7 +8,7 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\Phrase;
+use app\modules\bot\models\ChatPhrase;
 use Yii;
 use yii\data\Pagination;
 
@@ -34,19 +34,19 @@ class GroupMessageFilterController extends Controller
             parent::actions(),
             Yii::createObject([
                 'class' => WordlistComponent::class,
-                'wordModelClass' => Phrase::class,
+                'wordModelClass' => ChatPhrase::class,
                 'modelAttributes' => [
-                    'type' => Phrase::TYPE_BLACKLIST,
+                    'type' =>ChatPhrase::TYPE_BLACKLIST,
                 ],
-                'actionGroupName' => Phrase::TYPE_BLACKLIST,
+                'actionGroupName' =>ChatPhrase::TYPE_BLACKLIST,
             ])->actions(),
             Yii::createObject([
                 'class' => WordlistComponent::class,
-                'wordModelClass' => Phrase::class,
+                'wordModelClass' => ChatPhrase::class,
                 'modelAttributes' => [
-                    'type' => Phrase::TYPE_WHITELIST,
+                    'type' =>ChatPhrase::TYPE_WHITELIST,
                 ],
-                'actionGroupName' => Phrase::TYPE_WHITELIST,
+                'actionGroupName' =>ChatPhrase::TYPE_WHITELIST,
             ])->actions()
         );
     }

@@ -36,9 +36,9 @@ class GroupGuestController extends Controller
 
         $this->getState()->setName(null);
 
-        $chatMember = $chat->getChatMemberByUserId();
-
         $buttons = [];
+
+        $chatMember = $chat->getChatMemberByUserId();
 
         if ($chatMember) {
             $buttons[] = [
@@ -57,6 +57,28 @@ class GroupGuestController extends Controller
                     ]),
                     'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
                     'visible' => $chatMember->getActiveReviews()->exists(),
+                ],
+            ];
+
+            if ($chatMember->canUseMarketplace()) {
+                $buttons[] = [
+                    [
+                        'callback_data' => GroupGuestMarketplaceController::createRoute('index', [
+                            'id' => $chat->id,
+                        ]),
+                        'text' => Yii::t('bot', 'Your posts'),
+                    ],
+                ];
+            }
+        }
+
+        if ($chat->faq_status == ChatSetting::STATUS_ON) {
+            $buttons[] = [
+                [
+                    'callback_data' => GroupGuestFaqController::createRoute('word-list', [
+                        'chatId' => $chat->id,
+                    ]),
+                    'text' => Yii::t('bot', 'FAQ'),
                 ],
             ];
         }
@@ -88,16 +110,6 @@ class GroupGuestController extends Controller
                 ]),
                 'text' => Yii::t('bot', 'Members with reviews'),
                 'visible' => (bool)$chat->getUsername(),
-            ],
-        ];
-
-        $buttons[] = [
-            [
-                'callback_data' => GroupGuestFaqController::createRoute('word-list', [
-                    'chatId' => $chat->id,
-                ]),
-                'text' => Yii::t('bot', 'FAQ'),
-                'visible' => ($chat->faq_status == ChatSetting::STATUS_ON),
             ],
         ];
 

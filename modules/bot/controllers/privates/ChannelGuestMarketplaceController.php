@@ -2,15 +2,15 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\models\ChatMarketplacePost;
-use yii\data\Pagination;
-use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatMarketplacePost;
+use app\modules\bot\models\ChatSetting;
+use Yii;
+use yii\data\Pagination;
 
 /**
  * Class ChannelGuestMarketplaceController
@@ -20,13 +20,13 @@ use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 class ChannelGuestMarketplaceController extends Controller
 {
     /**
+     * @param int $id Chat->id
+     * @param int $page
      * @return array
      */
-    public function actionIndex($chatId = null, $page = 1)
+    public function actionIndex($id = null, $page = 1)
     {
-        $this->getState()->setName(null);
-
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
@@ -34,10 +34,12 @@ class ChannelGuestMarketplaceController extends Controller
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         $query = ChatMarketplacePost::find()
             ->where([
                 'chat_id' => $chat->id,
-                'user_id' => $this->user->id,
+                'user_id' => $this->globalUser->id,
             ])
             ->orderBy([
                 'title' => SORT_ASC,
@@ -60,7 +62,7 @@ class ChannelGuestMarketplaceController extends Controller
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
             return self::createRoute('index', [
-                'chatId' => $chat->id,
+                'id' => $chat->id,
                 'page' => $page,
             ]);
         });
@@ -71,9 +73,9 @@ class ChannelGuestMarketplaceController extends Controller
             foreach ($posts as $post) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('view', [
-                        'postId' => $post->id,
+                        'id' => $post->id,
                     ]),
-                    'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . ($post->title ?: '#' . $post->id),
+                    'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $post->id . ' ' . $post->title,
                 ];
             }
 
@@ -85,7 +87,7 @@ class ChannelGuestMarketplaceController extends Controller
         $buttons[] = [
             [
                 'callback_data' => ChannelGuestController::createRoute('view', [
-                    'chatId' => $chat->id,
+                    'id' => $chat->id,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -95,7 +97,7 @@ class ChannelGuestMarketplaceController extends Controller
             ],
             [
                 'callback_data' => self::createRoute('add', [
-                    'chatId' => $chatId,
+                    'id' => $chat->id,
                 ]),
                 'text' => Emoji::ADD,
             ],
@@ -114,24 +116,28 @@ class ChannelGuestMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionAdd($chatId = null)
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionAdd($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat) || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if (!isset($chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
         $this->getState()->setName(self::createRoute('add', [
-            'chatId' => $chat->id,
+            'id' => $chat->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
                 $post = new ChatMarketplacePost();
-                $post->user_id = $this->user->id;
+                $post->user_id = $this->globalUser->id;
                 $post->chat_id = $chat->id;
                 $post->text = $text;
 
@@ -150,7 +156,7 @@ class ChannelGuestMarketplaceController extends Controller
                     [
                         [
                             'callback_data' =>  self::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -163,14 +169,16 @@ class ChannelGuestMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionView($postId = null)
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
+    public function actionView($id = null)
     {
-        $this->getState()->setName(null);
-
         $post = ChatMarketplacePost::find()
             ->where([
-                'id' => $postId,
-                'user_id' => $this->user->id,
+                'id' => $id,
+                'user_id' => $this->globalUser->id,
             ])
             ->one();
 
@@ -180,24 +188,30 @@ class ChannelGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if ((!$chat = $post->chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+
+        $this->getState()->setName(null);
+
+        $user = $this->getTelegramUser();
+        $chatMember = $chat->getChatMemberByUserId();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'chat' => $chat,
                     'post' => $post,
-                    'user' => $this->telegramUser,
+                    'chatMember' => $chatMember,
+                    'user' => $user,
                 ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'postId' => $post->id,
+                                'id' => $post->id,
                             ]),
                             'text' => $post->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -205,7 +219,7 @@ class ChannelGuestMarketplaceController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-title', [
-                                'postId' => $post->id,
+                                'id' => $post->id,
                             ]),
                             'text' => Yii::t('app', 'Title'),
                         ],
@@ -213,15 +227,16 @@ class ChannelGuestMarketplaceController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-text', [
-                                'postId' => $post->id,
+                                'id' => $post->id,
                             ]),
                             'text' => Yii::t('app', 'Text'),
                         ],
                     ],
+                    // TODO update and send a post (look GroupGuestMarketplaceController)
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -231,7 +246,7 @@ class ChannelGuestMarketplaceController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete', [
-                                'postId' => $post->id,
+                                'id' => $post->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -244,14 +259,16 @@ class ChannelGuestMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($postId = null)
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
+    public function actionSetStatus($id = null)
     {
-        $this->getState()->setName(null);
-
         $post = ChatMarketplacePost::find()
             ->where([
-                'id' => $postId,
-                'user_id' => $this->user->id,
+                'id' => $id,
+                'user_id' => $this->globalUser->id,
             ])
             ->one();
 
@@ -261,27 +278,21 @@ class ChannelGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if ((!$chat = $post->chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         if ($post->isActive()) {
             $post->setInactive();
-
-            if ($post->getProviderMessageId()) {
-                $response = $this->getBotApi()->deleteMessage(
-                    $post->chat->getChatId(),
-                    $post->getProviderMessageId()
-                );
-
-                $post->provider_message_id = null;
-            }
+            $post->save(false);
         } else {
             $activePostsCount = ChatMarketplacePost::find()
                 ->where([
-                    'user_id' => $this->user->id,
+                    'user_id' => $this->globalUser->id,
                     'status' => ChatMarketplacePost::STATUS_ON,
                 ])
                 ->count();
@@ -289,7 +300,7 @@ class ChannelGuestMarketplaceController extends Controller
             if ($activePostsCount >= $chat->marketplace_active_post_limit_per_member) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
-                        $this->render('alert-post-limit', [
+                        $this->render('alert-active-posts-limit', [
                             'chat' => $chat,
                         ]),
                         true
@@ -298,51 +309,22 @@ class ChannelGuestMarketplaceController extends Controller
             }
 
             $post->setActive();
-
-            if (!$post->getProviderMessageId()) {
-                if ($post->canRepost()) {
-                    $response = $this->getResponseBuilder()
-                        ->setChatId($chat->getChatId())
-                        ->sendMessage(
-                            $this->render('channel-view', [
-                                'post' => $post,
-                                'user' => $this->telegramUser,
-                            ]),
-                            [],
-                            [
-                                'disablePreview' => true,
-                            ]
-                        )
-                        ->send();
-
-                    if ($response) {
-                        $post->sent_at = time();
-                        $post->provider_message_id = $response->getMessageId();
-                    }
-                } else {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery(
-                            $this->render('alert-time-repost', [
-                                'post' => $post,
-                            ]),
-                            true
-                        )
-                        ->build();
-                }
-            }
+            $post->save(false);
         }
-
-        $post->save();
 
         return $this->actionView($post->id);
     }
 
-    public function actionSetTitle($postId = null)
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
+    public function actionSetTitle($id = null)
     {
         $post = ChatMarketplacePost::find()
             ->where([
-                'id' => $postId,
-                'user_id' => $this->user->id,
+                'id' => $id,
+                'user_id' => $this->globalUser->id,
             ])
             ->one();
 
@@ -352,14 +334,14 @@ class ChannelGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if ((!$chat = $post->chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-title', [
-            'postId' => $post->id,
+            'id' => $post->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -367,8 +349,6 @@ class ChannelGuestMarketplaceController extends Controller
                 $post->title = $text;
 
                 if ($post->save()) {
-                    $this->getState()->setName(null);
-
                     return $this->actionView($post->id);
                 }
             }
@@ -381,7 +361,7 @@ class ChannelGuestMarketplaceController extends Controller
                     [
                         [
                             'callback_data' =>  self::createRoute('view', [
-                                'postId' => $post->id,
+                                'id' => $post->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -391,12 +371,16 @@ class ChannelGuestMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionSetText($postId = null)
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
+    public function actionSetText($id = null)
     {
         $post = ChatMarketplacePost::find()
             ->where([
-                'id' => $postId,
-                'user_id' => $this->user->id,
+                'id' => $id,
+                'user_id' => $this->globalUser->id,
             ])
             ->one();
 
@@ -406,14 +390,14 @@ class ChannelGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if ((!$chat = $post->chat) || !$chat->isChannel() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-text', [
-            'postId' => $post->id,
+            'id' => $post->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -421,23 +405,6 @@ class ChannelGuestMarketplaceController extends Controller
                 $post->text = $text;
 
                 if ($post->save()) {
-                    if ($post->isActive() && $post->getProviderMessageId()) {
-                        $response = $this->getResponseBuilder()
-                            ->setChatId($chat->getChatId())
-                            ->editMessage(
-                                $post->getProviderMessageId(),
-                                $this->render('channel-view', [
-                                    'post' => $post,
-                                    'user' => $this->telegramUser,
-                                ]),
-                                [],
-                                [
-                                    'disablePreview' => true,
-                                ]
-                            )
-                            ->send();
-                    }
-
                     return $this->actionView($post->id);
                 }
             }
@@ -455,7 +422,7 @@ class ChannelGuestMarketplaceController extends Controller
                     [
                         [
                             'callback_data' =>  self::createRoute('view', [
-                                'postId' => $post->id,
+                                'id' => $post->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -468,12 +435,16 @@ class ChannelGuestMarketplaceController extends Controller
             ->build();
     }
 
-    public function actionDelete($postId = null): array
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
+    public function actionDelete($id = null)
     {
         $post = ChatMarketplacePost::find()
             ->where([
-                'id' => $postId,
-                'user_id' => $this->user->id,
+                'id' => $id,
+                'user_id' => $this->globalUser->id,
             ])
             ->one();
 
@@ -490,7 +461,7 @@ class ChannelGuestMarketplaceController extends Controller
             );
         }
 
-        $chatId = $post->chat->id;
+        $chatId = $post->getChatId();
         $post->delete();
 
         return $this->actionIndex($chatId);

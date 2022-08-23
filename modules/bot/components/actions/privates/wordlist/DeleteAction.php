@@ -3,15 +3,18 @@
 namespace app\modules\bot\components\actions\privates\wordlist;
 
 use app\modules\bot\components\actions\BaseAction;
-use app\modules\bot\models\Chat;
 
 class DeleteAction extends BaseAction
 {
-    public function run($phraseId = null)
+    /**
+    * @param int|null $id ChatPhrase->id
+    * @return array
+    */
+    public function run($id = null)
     {
-        $phrase = $this->wordModelClass::findOne($phraseId);
+        $phrase = $this->wordModelClass::findOne($id);
 
-        $chatId = $phrase->chat_id;
+        $chatId = $phrase->getChatId();
         $phrase->delete();
 
         return $this->controller->run($this->listActionId, ['chatId' => $chatId]);

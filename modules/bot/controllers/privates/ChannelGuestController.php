@@ -19,6 +19,7 @@ use yii\data\Pagination;
 class ChannelGuestController extends Controller
 {
     /**
+     * @param int $id Chat->id
      * @return array
      */
     public function actionView($id = null)
@@ -31,33 +32,41 @@ class ChannelGuestController extends Controller
 
         $this->getState()->setName(null);
 
+        $buttons = [];
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if ($chatMember) {
+            if ($chatMember->canUseMarketplace()) {
+                $buttons[] = [
+                    [
+                        'callback_data' => ChannelGuestMarketplaceController::createRoute('index', [
+                            'id' => $chat->id,
+                        ]),
+                        'text' => Yii::t('bot', 'Your posts'),
+                    ],
+                ];
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+            [
+                'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
+                'text' => Yii::t('bot', 'Channel'),
+                'visible' => (bool)$chat->getUsername(),
+            ],
+        ];
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'chat' => $chat,
                 ]),
-                [
-                    [
-                        [
-                            'callback_data' => ChannelGuestMarketplaceController::createRoute('index', [
-                                'chatId' => $chat->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Marketplace'),
-                            'visible' => ($chat->marketplace_status == ChatSetting::STATUS_ON),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
-                            'text' => Yii::t('bot', 'Channel'),
-                            'visible' => (bool)$chat->getUsername(),
-                        ],
-                    ]
-                ],
+                $buttons,
                 [
                     'disablePreview' => true,
                 ]
