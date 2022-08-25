@@ -112,6 +112,9 @@ class GroupMarketplaceController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $id Chat->id
+    */
     public function actionSetStatus($id = null)
     {
         $chat = Chat::findOne($id);
@@ -175,6 +178,10 @@ class GroupMarketplaceController extends Controller
         return $this->actionIndex($id);
     }
 
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
     public function actionSetLimit($id = null)
     {
         $chat = Chat::findOne($id);
@@ -218,6 +225,10 @@ class GroupMarketplaceController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
     public function actionSetTextHint($id = null)
     {
         $chat = Chat::findOne($id);

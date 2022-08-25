@@ -192,7 +192,7 @@ class GroupController extends Controller
                     [
                         [
                             'callback_data' => GroupSlowModeController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => ($chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Slow Mode'),
                         ],

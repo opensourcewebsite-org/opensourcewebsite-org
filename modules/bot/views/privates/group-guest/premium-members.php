@@ -1,3 +1,3 @@
-<b><?= Yii::t('bot', 'Privileged members') ?></b><br/>
+<b><?= Yii::t('bot', 'Premium members') ?></b><br/>
 <br/>
 <i><?= Yii::t('bot', 'Sorted by user rank') ?></i>.

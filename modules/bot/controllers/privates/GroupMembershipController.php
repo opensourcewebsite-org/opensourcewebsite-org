@@ -6,6 +6,7 @@ use app\models\User as GlobalUser;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\controllers\groups\PremiumMembersController;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -22,6 +23,7 @@ use yii\validators\DateValidator;
 class GroupMembershipController extends Controller
 {
     /**
+    * @param int $id Chat->id
     * @return array
     */
     public function actionIndex($id = null)
@@ -66,6 +68,15 @@ class GroupMembershipController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('send-message', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new message to the group'),
+                            'visible' => $chat->getPremiumChatMembers()->exists(),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => GroupController::createRoute('view', [
                                 'chatId' => $chat->id,
                             ]),
@@ -81,12 +92,17 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $id Chat->id
+    */
     public function actionSetStatus($id = null)
     {
         $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->membership_status) {
@@ -114,6 +130,10 @@ class GroupMembershipController extends Controller
         return $this->actionIndex($id);
     }
 
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
     public function actionSetTag($id = null)
     {
         $chat = Chat::findOne($id);
@@ -157,6 +177,11 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $page
+    * @param int $id Chat->id
+    * @return array
+    */
     public function actionMembers($page = 1, $id = null): array
     {
         $chat = Chat::findOne($id);
@@ -209,8 +234,7 @@ class GroupMembershipController extends Controller
             foreach ($members as $member) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('member', [
-                        'id' => $chat->id,
-                        'memberId' => $member->id,
+                        'id' => $member->id,
                     ]),
                     'text' => $member->membership_date . ' - ' . $member->user->getDisplayName(),
                 ];
@@ -244,6 +268,9 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $id Chat->id
+    */
     public function actionInputMember($id = null): array
     {
         $chat = Chat::findOne($id);
@@ -288,25 +315,16 @@ class GroupMembershipController extends Controller
         }
 
         return $this->runAction('member', [
-            'id' => $chat->id,
-            'memberId' => $member->id,
+            'id' => $member->id,
          ]);
     }
 
-    public function actionMember($memberId = null, $id = null): array
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionMember($id = null): array
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $member = ChatMember::findOne([
-            'id' => $memberId,
-            'chat_id' => $chat->id,
-        ]);
+        $member = ChatMember::findOne($id);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -314,9 +332,16 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(self::createRoute('input-date', [
-            'id' => $chat->id,
-            'memberId' => $memberId,
+            'id' => $member->id,
         ]));
 
         return $this->getResponseBuilder()
@@ -339,8 +364,7 @@ class GroupMembershipController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete-date', [
-                                'id' => $chat->id,
-                                'memberId' => $memberId,
+                                'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -350,22 +374,22 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
-    public function actionInputDate($memberId = null, $id = null): array
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionInputDate($id = null): array
     {
-        $chat = Chat::findOne($id);
+        $member = ChatMember::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup()) {
+        if (!isset($member)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $member = ChatMember::findOne([
-            'id' => $memberId,
-            'chat_id' => $chat->id,
-        ]);
+        $chat = $member->chat;
 
-        if (!isset($member)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -380,8 +404,7 @@ class GroupMembershipController extends Controller
                     $member->save();
 
                     return $this->runAction('member', [
-                        'id' => $chat->id,
-                        'memberId' => $member->id,
+                        'id' => $member->id,
                      ]);
                 }
             }
@@ -392,22 +415,22 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
-    public function actionDeleteDate($memberId = null, $id = null): array
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionDeleteDate($id = null): array
     {
-        $chat = Chat::findOne($id);
+        $member = ChatMember::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup()) {
+        if (!isset($member)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $member = ChatMember::findOne([
-            'id' => $memberId,
-            'chat_id' => $chat->id,
-        ]);
+        $chat = $member->chat;
 
-        if (!isset($member)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -419,5 +442,47 @@ class GroupMembershipController extends Controller
         return $this->runAction('members', [
              'id' => $chat->id,
          ]);
+    }
+
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionSendMessage($id = null)
+    {
+        $chat = Chat::findOne($id);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $response = $this->getResponseBuilder()
+            ->setChatId($chat->getChatId())
+            ->sendMessage(
+                $this->render('send-message'),
+                [
+                    [
+                        [
+                            'callback_data' => PremiumMembersController::createRoute(),
+                            'text' => 'OK',
+                        ],
+                    ],
+                ]
+            )
+            ->send();
+
+        if ($response) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('../alert-ok')
+                )
+                ->build();
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }

@@ -18,11 +18,12 @@ use yii\data\Pagination;
 class GroupSlowModeController extends Controller
 {
     /**
+    * @param int $id Chat->id
     * @return array
     */
-    public function actionIndex($chatId = null)
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -39,7 +40,7 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => $chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -47,7 +48,7 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-messages-limit', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Limit of messages'),
                         ],
@@ -55,7 +56,7 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -69,12 +70,17 @@ class GroupSlowModeController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    /**
+    * @param int $id Chat->id
+    */
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->slow_mode_status) {
@@ -99,19 +105,25 @@ class GroupSlowModeController extends Controller
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 
-    public function actionSetMessagesLimit($chatId = null)
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionSetMessagesLimit($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-messages-limit', [
-            'chatId' => $chatId,
+            'id' => $chat->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -120,7 +132,7 @@ class GroupSlowModeController extends Controller
                     $chat->slow_mode_messages_limit = $text;
 
                     return $this->runAction('index', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                     ]);
                 }
             }
@@ -133,7 +145,7 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],

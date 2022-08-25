@@ -22,6 +22,7 @@ use yii\validators\DateValidator;
 class GroupLimiterController extends Controller
 {
     /**
+    * @param int $id Chat->id
     * @return array
     */
     public function actionIndex($id = null)
@@ -73,12 +74,17 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $id Chat->id
+    */
     public function actionSetStatus($id = null)
     {
         $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->limiter_status) {
@@ -106,6 +112,11 @@ class GroupLimiterController extends Controller
         return $this->actionIndex($id);
     }
 
+    /**
+    * @param int $id Chat->id
+    * @param int $page
+    * @return array
+    */
     public function actionMembers($page = 1, $id = null): array
     {
         $chat = Chat::findOne($id);
@@ -158,8 +169,7 @@ class GroupLimiterController extends Controller
             foreach ($members as $member) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('member', [
-                        'id' => $chat->id,
-                        'memberId' => $member->id,
+                        'id' => $member->id,
                     ]),
                     'text' => $member->limiter_date . ' - ' . $member->user->getDisplayName(),
                 ];
@@ -193,6 +203,9 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
+    /**
+    * @param int $id Chat->id
+    */
     public function actionInputMember($id = null): array
     {
         $chat = Chat::findOne($id);
@@ -237,25 +250,16 @@ class GroupLimiterController extends Controller
         }
 
         return $this->runAction('member', [
-            'id' => $chat->id,
-            'memberId' => $member->id,
+            'id' => $member->id,
          ]);
     }
 
-    public function actionMember($memberId = null, $id = null): array
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionMember($id = null): array
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $member = ChatMember::findOne([
-            'id' => $memberId,
-            'chat_id' => $chat->id,
-        ]);
+        $member = ChatMember::findOne($id);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -263,9 +267,16 @@ class GroupLimiterController extends Controller
                 ->build();
         }
 
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(self::createRoute('input-date', [
-            'id' => $chat->id,
-            'memberId' => $memberId,
+            'id' => $member->id,
         ]));
 
         return $this->getResponseBuilder()
@@ -288,8 +299,7 @@ class GroupLimiterController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete-date', [
-                                'id' => $chat->id,
-                                'memberId' => $memberId,
+                                'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -299,22 +309,22 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionInputDate($memberId = null, $id = null): array
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionInputDate($id = null): array
     {
-        $chat = Chat::findOne($id);
+        $member = ChatMember::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup()) {
+        if (!isset($member)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $member = ChatMember::findOne([
-            'id' => $memberId,
-            'chat_id' => $chat->id,
-        ]);
+        $chat = $member->chat;
 
-        if (!isset($member)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -329,8 +339,7 @@ class GroupLimiterController extends Controller
                     $member->save();
 
                     return $this->runAction('member', [
-                        'id' => $chat->id,
-                        'memberId' => $member->id,
+                        'id' => $member->id,
                      ]);
                 }
             }
@@ -341,22 +350,19 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionDeleteDate($memberId = null, $id = null): array
+    public function actionDeleteDate($id = null): array
     {
-        $chat = Chat::findOne($id);
+        $member = ChatMember::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup()) {
+        if (!isset($member)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $member = ChatMember::findOne([
-            'id' => $memberId,
-            'chat_id' => $chat->id,
-        ]);
+        $chat = $member->chat;
 
-        if (!isset($member)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

@@ -85,10 +85,10 @@ class GroupGuestController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('privileged-members', [
+                'callback_data' => self::createRoute('premium-members', [
                     'id' => $chat->id,
                 ]),
-                'text' => Yii::t('bot', 'Privileged members'),
+                'text' => Yii::t('bot', 'Premium members'),
                 'visible' => ($chat->membership_status == ChatSetting::STATUS_ON),
             ],
         ];
@@ -232,7 +232,7 @@ class GroupGuestController extends Controller
      * @param int $id Chat->id
      * @return array
      */
-    public function actionPrivilegedMembers($page = 1, $id = null)
+    public function actionPremiumMembers($page = 1, $id = null)
     {
         $chat = Chat::findOne($id);
 
@@ -241,8 +241,6 @@ class GroupGuestController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
-        $this->getState()->setName(null);
 
         $chatMember = $chat->getChatMemberByUserId();
 
@@ -254,7 +252,7 @@ class GroupGuestController extends Controller
 
         $this->getState()->setName(null);
 
-        $query = $chat->getPrivilegedChatMembers();
+        $query = $chat->getPremiumChatMembers();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
@@ -267,7 +265,7 @@ class GroupGuestController extends Controller
         ]);
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
-            return self::createRoute('privileged-members', [
+            return self::createRoute('premium-members', [
                 'id' => $chat->id,
                 'page' => $page,
             ]);
@@ -312,7 +310,7 @@ class GroupGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('privileged-members'),
+                $this->render('premium-members'),
                 $buttons
             )
             ->build();
@@ -421,8 +419,6 @@ class GroupGuestController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
-        $this->getState()->setName(null);
 
         $chatMember = $chat->getChatMemberByUserId();
 

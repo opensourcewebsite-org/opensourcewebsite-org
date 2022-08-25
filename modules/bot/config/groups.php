@@ -17,6 +17,9 @@ $config = [
             ],
             'controllers' => [
                 1 => 'hello',
+                2 => 'message',
+                3 => 'system_message',
+                4 => 'premium_members'
             ],
             'actions' => [
                 1 => 'index',

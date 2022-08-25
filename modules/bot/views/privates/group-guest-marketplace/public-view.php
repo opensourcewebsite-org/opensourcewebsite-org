@@ -1,7 +1,6 @@
 <?php
 
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\models\ChatSetting;
 
 ?>
 <?= nl2br($post->text) ?><br/>

@@ -288,7 +288,7 @@ class GroupGuestMarketplaceController extends Controller
                             'callback_data' => self::createRoute('update-post', [
                                 'id' => $post->id,
                             ]),
-                            'text' => Emoji::REFRESH . ' ' . Yii::t('bot', 'Update last post'),
+                            'text' => Emoji::REFRESH . ' ' . Yii::t('bot', 'Update last post in the group'),
                             'visible' => (bool)$post->getProviderMessageId(),
                         ],
                     ],
@@ -297,7 +297,7 @@ class GroupGuestMarketplaceController extends Controller
                             'callback_data' => self::createRoute('send-post', [
                                 'id' => $post->id,
                             ]),
-                            'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new post'),
+                            'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new post to the group'),
                         ],
                     ],
                     [

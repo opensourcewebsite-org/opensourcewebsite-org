@@ -338,7 +338,7 @@ class Chat extends ActiveRecord
     {
         return [
             ChatSetting::MARKETPLACE_MODE_ALL => Yii::t('bot', 'All members'),
-            ChatSetting::MARKETPLACE_MODE_MEMBERSHIP => Yii::t('bot', 'Privileged members'),
+            ChatSetting::MARKETPLACE_MODE_MEMBERSHIP => Yii::t('bot', 'Premium members'),
         ];
     }
 
@@ -377,7 +377,7 @@ class Chat extends ActiveRecord
             ]);
     }
 
-    public function getPrivilegedChatMembers()
+    public function getPremiumChatMembers()
     {
         $today = new DateTime('@' . (time() + ($this->timezone * 60)));
 
