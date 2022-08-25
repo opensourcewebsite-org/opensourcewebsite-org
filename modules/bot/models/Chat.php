@@ -388,6 +388,16 @@ class Chat extends ActiveRecord
             ->orderByRank();
     }
 
+    public function getPremiumChatMembersWithLimiter()
+    {
+        $today = new DateTime('@' . (time() + ($this->timezone * 60)));
+
+        return $this->getPremiumChatMembers()
+            ->andWhere([
+                '>', ChatMember::tableName() . '.limiter_date',  $today->format('Y-m-d'),
+            ]);
+    }
+
     public function getChatMembersWithIntro()
     {
         return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
