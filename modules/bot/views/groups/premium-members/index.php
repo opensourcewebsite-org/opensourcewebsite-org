@@ -3,7 +3,7 @@
 <?php else : ?>
 <b><?= Yii::t('bot', 'Members status') ?></b>: #<?= $chat->membership_tag ?><br/>
 <?php endif; ?>
-<?php foreach ($members as $member) : ?>
 <br/>
+<?php foreach ($members as $member) : ?>
 • <?= $member->user->getFullLink(); ?><br/>
 <?php endforeach; ?>
