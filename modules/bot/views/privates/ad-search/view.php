@@ -2,7 +2,6 @@
 
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
-use app\components\helpers\Html;
 
 ?>
 <?= Emoji::AD_SEARCH ?> <b><?= Yii::t('bot', $model->getSectionName()) ?>: #<?= $model->id ?> <?= $model->title ?></b><br/>

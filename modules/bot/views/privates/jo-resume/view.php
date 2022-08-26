@@ -1,6 +1,5 @@
 <?php
 
-use app\components\helpers\Html;
 use app\models\Resume;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
