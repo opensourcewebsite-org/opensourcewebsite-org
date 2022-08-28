@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $user->provider_user_id ?><?= ($user->provider_user_name ? ' @' . $user->provider_user_name : '') ?><br/>
+<b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $user->getIdFullLink() ?><?= ($user->provider_user_name ? ' @' . $user->provider_user_name : '') ?><br/>
 <?php if ($user->provider_user_first_name) : ?>
 <b><?= Yii::t('bot', 'First Name') ?></b>: <?= $user->provider_user_first_name ?><br/>
 <?php endif; ?>
@@ -7,7 +7,7 @@
 <?php endif; ?>
 <?php if ($globalUser = $user->globalUser) : ?>
 <br/>
-<b>ID</b>: #<?= $globalUser->id ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
+<b>ID</b>: #<?= $globalUser->getIdFullLink() ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
 <b><?= Yii::t('user', 'Rank') ?></b>: <?= $globalUser->getRank() ?><br/>
 <?php endif; ?>
 ————<br/>
@@ -26,7 +26,7 @@
 ————<br/>
 <b><?= Yii::t('bot', 'Author') ?></b>:<br/>
 <br/>
-<b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $authorUser->provider_user_id ?><?= ($authorUser->provider_user_name ? ' @' . $authorUser->provider_user_name : '') ?><br/>
+<b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $authorUser->getIdFullLink() ?><?= ($authorUser->provider_user_name ? ' @' . $authorUser->provider_user_name : '') ?><br/>
 <?php if ($authorUser->provider_user_first_name) : ?>
 <b><?= Yii::t('bot', 'First Name') ?></b>: <?= $authorUser->provider_user_first_name ?><br/>
 <?php endif; ?>
@@ -35,7 +35,7 @@
 <?php endif; ?>
 <?php if ($globalAuthorUser = $authorUser->globalUser) : ?>
 <br/>
-<b>ID</b>: #<?= $globalAuthorUser->id ?><?= ($globalAuthorUser->username ? ' @' . $globalAuthorUser->username : '') ?><br/>
+<b>ID</b>: #<?= $globalAuthorUser->getIdFullLink() ?><?= ($globalAuthorUser->username ? ' @' . $globalAuthorUser->username : '') ?><br/>
 <b><?= Yii::t('user', 'Rank') ?></b>: <?= $globalAuthorUser->getRank() ?><br/>
 <?php endif; ?>
 <?php endif; ?>

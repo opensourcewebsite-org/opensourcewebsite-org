@@ -287,6 +287,11 @@ class User extends ActiveRecord
         return '<a href="tg://user?id=' . $this->provider_user_id . '">' . $this->getFullName() . '</a>' . ($this->provider_user_name ? ' @' . $this->provider_user_name : '');
     }
 
+    public function getIdFullLink()
+    {
+        return '<a href="tg://user?id=' . $this->provider_user_id . '">' . $this->provider_user_id . '</a>';
+    }
+
     public static function getFullLinkByProviderUserId(int $providerUserId)
     {
         $telegramUser = self::findOne(['provider_user_id' => $providerUserId]);

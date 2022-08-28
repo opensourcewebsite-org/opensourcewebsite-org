@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\components\Converter;
+use app\components\helpers\Html;
 use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\queries\UserQuery;
@@ -1258,13 +1259,23 @@ class User extends ActiveRecord implements IdentityInterface
     public function getAuthLink()
     {
         $time = time();
-        $link = Yii::$app->urlManager->createAbsoluteUrl([
+
+        return Yii::$app->urlManager->createAbsoluteUrl([
             'site/login-by-auth-link',
             'id' => $this->id,
             'time' => $time,
             'hash' => md5($this->id . $this->auth_key . $time),
         ]);
+    }
 
-        return $link;
+    public function getIdFullLink()
+    {
+        return Html::a(
+            $this->id,
+            Yii::$app->urlManager->createAbsoluteUrl([
+                'contact/view-user',
+                'id' => $this->id,
+            ])
+        );
     }
 }
