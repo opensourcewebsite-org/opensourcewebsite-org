@@ -18,6 +18,7 @@ use yii\db\ActiveRecord;
  * @property string $status
  * @property int $role
  * @property int $slow_mode_messages
+ * @property int $slow_mode_messages_limit
  * @property int|null $last_message_at
  * @property string|null $limiter_date
  * @property string|null membership_date
@@ -92,7 +93,7 @@ class ChatMember extends ActiveRecord
     {
         return [
             [['chat_id', 'user_id', 'status', 'role', 'slow_mode_messages'], 'required'],
-            [['id', 'chat_id', 'user_id', 'role', 'last_message_at'], 'integer'],
+            [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages_limit'], 'integer'],
             ['role', 'default', 'value' => 1],
             ['slow_mode_messages', 'default', 'value' => 0],
             ['status', 'string'],
@@ -184,7 +185,9 @@ class ChatMember extends ActiveRecord
                 $today = new DateTime('today');
 
                 if (($today->getTimestamp() - ($chat->timezone * 60)) <= $this->last_message_at) {
-                    if ($chat->slow_mode_messages_limit <= $this->slow_mode_messages) {
+                    $slowModeMessagesLimit = $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
+
+                    if ($slowModeMessagesLimit <= $this->slow_mode_messages) {
                         return false;
                     }
                 }

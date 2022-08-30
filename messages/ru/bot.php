@@ -206,6 +206,8 @@ return [
     'Limit of messages per member per day' => 'Лимит сообщений на одного участника в день',
     'Limit of messages' => 'Лимит сообщений',
     'Send a maximum number of messages per member per day' => 'Отправьте максимальное количество сообщений на одного участника в день',
+    'Send a maximum number of messages for this member per day to change the value' => 'Отправьте максимальное количество сообщений для этого участника в день чтобы изменить значение',
+    'Members with exceptions' => 'Участники с исключениями',
     'Message Filter' => 'Фильтр сообщений',
     'filters messages in the group using a list of allowed phrases (Whitelist) or a list of forbidden phrases (Blacklist)' => 'фильтрует сообщения в группе, используя список разрешенных фраз (Белый список) или список запрещенных фраз (Черный список)',
     'All messages that do not meet the requirements will be deleted' => 'Все сообщения, не соответствующие требованиям, будут удалены',

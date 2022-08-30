@@ -2,7 +2,6 @@
 
 use app\components\helpers\Html;
 
-// TODO add link to user website profile
 ?>
 <b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $user->getIdFullLink() ?><?= ($user->provider_user_name ? ' @' . $user->provider_user_name : '') ?><br/>
 <?php if ($user->provider_user_first_name) : ?>

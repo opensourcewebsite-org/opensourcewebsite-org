@@ -6,6 +6,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\data\Pagination;
@@ -43,6 +44,14 @@ class GroupSlowModeController extends Controller
                                 'id' => $chat->id,
                             ]),
                             'text' => $chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('members', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Members with exceptions'),
                         ],
                     ],
                     [
@@ -153,5 +162,268 @@ class GroupSlowModeController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+    * @param int $page
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionMembers($page = 1, $id = null): array
+    {
+        $chat = Chat::findOne($id);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('input-member', [
+            'id' => $chat->id,
+        ]));
+
+        $query = ChatMember::find()
+            ->where([
+                'chat_id' => $chat->id,
+            ])
+            ->andWhere([
+                'not', ['slow_mode_messages_limit' => null],
+            ]);
+
+        $pagination = new Pagination([
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
+            return self::createRoute('members', [
+                'id' => $chat->id,
+                'page' => $page,
+            ]);
+        });
+
+        $buttons = [];
+
+        $members = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($members) {
+            foreach ($members as $member) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('member', [
+                        'id' => $member->id,
+                    ]),
+                    'text' => $member->slow_mode_messages_limit . ' - ' . $member->user->getDisplayName(),
+                ];
+            }
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('members', [
+                    'chat' => $chat,
+                ]),
+                $buttons
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id Chat->id
+    */
+    public function actionInputMember($id = null): array
+    {
+        $chat = Chat::findOne($id);
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ($text = $this->getMessage()->getText()) {
+            if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
+                $username = ltrim($matches[0], '@');
+            }
+        }
+
+        if (!isset($username)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member = ChatMember::find()
+            ->where([
+                'chat_id' => $chat->id,
+            ])
+            ->joinWith('user')
+            ->andWhere([
+                '{{%bot_user}}.provider_user_name' => $username,
+            ])
+            ->one();
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if (!$member->slow_mode_messages_limit) {
+            $member->slow_mode_messages_limit = 1;
+            $member->save(false);
+        }
+
+        return $this->runAction('member', [
+            'id' => $member->id,
+         ]);
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionMember($id = null): array
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('input-slow-mode-messages-limit', [
+            'id' => $member->id,
+        ]));
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('member', [
+                    'chat' => $chat,
+                    'chatMember' => $member,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('members', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-slow-mode-messages-limit', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                        ],
+                    ]
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionInputSlowModeMessagesLimit($id = null): array
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $member->slow_mode_messages_limit = $text;
+
+                if ($member->validate('slow_mode_messages_limit')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionDeleteSlowModeMessagesLimit($id = null): array
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->slow_mode_messages_limit = null;
+        $member->save(false);
+
+        return $this->runAction('members', [
+             'id' => $chat->id,
+         ]);
     }
 }

@@ -336,7 +336,7 @@ class GroupLimiterController extends Controller
 
                 if ($dateValidator->validate($text)) {
                     $member->limiter_date = Yii::$app->formatter->format($text, 'date');
-                    $member->save();
+                    $member->save(false);
 
                     return $this->runAction('member', [
                         'id' => $member->id,

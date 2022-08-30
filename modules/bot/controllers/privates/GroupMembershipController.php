@@ -401,7 +401,7 @@ class GroupMembershipController extends Controller
 
                 if ($dateValidator->validate($text)) {
                     $member->membership_date = Yii::$app->formatter->format($text, 'date');
-                    $member->save();
+                    $member->save(false);
 
                     return $this->runAction('member', [
                         'id' => $member->id,
