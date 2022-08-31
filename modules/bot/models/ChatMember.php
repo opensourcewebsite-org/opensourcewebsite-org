@@ -21,8 +21,9 @@ use yii\db\ActiveRecord;
  * @property int $slow_mode_messages_limit
  * @property int|null $last_message_at
  * @property string|null $limiter_date
- * @property string|null membership_date
- * @property string|null intro
+ * @property string|null $membership_date
+ * @property string $membership_note
+ * @property string|null $intro
  *
  * @package app\modules\bot\models
  */
@@ -96,7 +97,7 @@ class ChatMember extends ActiveRecord
             [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages_limit'], 'integer'],
             ['role', 'default', 'value' => 1],
             ['slow_mode_messages', 'default', 'value' => 0],
-            ['status', 'string'],
+            [['status', 'membership_note'], 'string'],
             [['limiter_date', 'membership_date'], 'date'],
             ['intro', 'string', 'max' => 10000],
         ];
@@ -436,5 +437,10 @@ class ChatMember extends ActiveRecord
         }
 
         return false;
+    }
+
+    public function getMembershipNote()
+    {
+        return $this->membership_note;
     }
 }

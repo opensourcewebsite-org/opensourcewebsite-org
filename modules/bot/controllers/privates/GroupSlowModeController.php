@@ -324,7 +324,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-slow-mode-messages-limit', [
+        $this->getState()->setName(self::createRoute('input-member-messages-limit', [
             'id' => $member->id,
         ]));
 
@@ -347,7 +347,7 @@ class GroupSlowModeController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('delete-slow-mode-messages-limit', [
+                            'callback_data' => self::createRoute('delete-member-messages-limit', [
                                 'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
@@ -361,7 +361,7 @@ class GroupSlowModeController extends Controller
     /**
     * @param int $id ChatMember->id
     */
-    public function actionInputSlowModeMessagesLimit($id = null): array
+    public function actionInputMemberMessagesLimit($id = null): array
     {
         $member = ChatMember::findOne($id);
 
@@ -401,7 +401,7 @@ class GroupSlowModeController extends Controller
     /**
     * @param int $id ChatMember->id
     */
-    public function actionDeleteSlowModeMessagesLimit($id = null): array
+    public function actionDeleteMemberMessagesLimit($id = null): array
     {
         $member = ChatMember::findOne($id);
 

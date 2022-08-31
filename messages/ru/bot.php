@@ -232,6 +232,8 @@ return [
     'Send any date in format «YYYY-MM-DD» to change the date' => 'Отправьте любую дату в формате «YYYY-MM-DD», чтобы изменить дату',
     'Tag for members' => 'Тег для участников',
     'Send a tag for members' => 'Отправьте тег для участников',
+    'Note' => 'Заметка',
+    'Send a note' => 'Отправьте заметку',
     'FAQ' => 'ЧАВО',
     'answers questions and other messages from members in the group' => 'отвечает на вопросы и другие сообщения от участников группы',
     'Questions' => 'Вопросы',

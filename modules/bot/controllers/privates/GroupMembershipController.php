@@ -340,7 +340,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-date', [
+        $this->getState()->setName(self::createRoute('input-member-date', [
             'id' => $member->id,
         ]));
 
@@ -353,6 +353,14 @@ class GroupMembershipController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('set-member-note', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Note'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('members', [
                                 'id' => $chat->id,
                             ]),
@@ -363,7 +371,7 @@ class GroupMembershipController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('delete-date', [
+                            'callback_data' => self::createRoute('delete-member-date', [
                                 'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
@@ -377,7 +385,7 @@ class GroupMembershipController extends Controller
     /**
     * @param int $id ChatMember->id
     */
-    public function actionInputDate($id = null): array
+    public function actionInputMemberDate($id = null): array
     {
         $member = ChatMember::findOne($id);
 
@@ -418,7 +426,7 @@ class GroupMembershipController extends Controller
     /**
     * @param int $id ChatMember->id
     */
-    public function actionDeleteDate($id = null): array
+    public function actionDeleteMemberDate($id = null): array
     {
         $member = ChatMember::findOne($id);
 
@@ -441,6 +449,97 @@ class GroupMembershipController extends Controller
 
         return $this->runAction('members', [
              'id' => $chat->id,
+         ]);
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionSetMemberNote($id = null): array
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-note', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $member->membership_note = $text;
+                if ($member->validate('membership_note')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-member-note'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-note', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => (bool)$member->getMembershipNote(),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    */
+    public function actionDeleteMemberNote($id = null): array
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->membership_note = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
          ]);
     }
 

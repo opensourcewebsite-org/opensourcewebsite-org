@@ -275,7 +275,7 @@ class GroupLimiterController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-date', [
+        $this->getState()->setName(self::createRoute('input-member-date', [
             'id' => $member->id,
         ]));
 
@@ -298,7 +298,7 @@ class GroupLimiterController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('delete-date', [
+                            'callback_data' => self::createRoute('delete-member-date', [
                                 'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
@@ -312,7 +312,7 @@ class GroupLimiterController extends Controller
     /**
     * @param int $id ChatMember->id
     */
-    public function actionInputDate($id = null): array
+    public function actionInputMemberDate($id = null): array
     {
         $member = ChatMember::findOne($id);
 
@@ -350,7 +350,7 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
-    public function actionDeleteDate($id = null): array
+    public function actionDeleteMemberDate($id = null): array
     {
         $member = ChatMember::findOne($id);
 
