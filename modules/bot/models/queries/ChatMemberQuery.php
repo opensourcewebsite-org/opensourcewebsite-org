@@ -20,7 +20,7 @@ class ChatMemberQuery extends ActiveQuery
         return $this->joinWith('user.globalUser')
             ->orderBy([
                 GlobalUser::tableName() . '.rating' => SORT_DESC,
-                GlobalUser::tableName() . '.created_at' => SORT_ASC
+                GlobalUser::tableName() . '.created_at' => SORT_ASC,
             ]);
     }
 }

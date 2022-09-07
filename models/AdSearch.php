@@ -142,7 +142,7 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInt
             'location_lon' => Yii::t('app', 'Location Lon'),
             'status' => Yii::t('app', 'Status'),
             'created_at' => Yii::t('app', 'Created At'),
-            'processed_at' => Yii::t('app', 'Processed At')
+            'processed_at' => Yii::t('app', 'Processed At'),
         ];
     }
 

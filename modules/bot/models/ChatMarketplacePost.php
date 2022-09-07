@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\models;
 
+use app\components\helpers\TimeHelper;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -10,15 +11,16 @@ use yii\db\ActiveRecord;
  * This is the model class for table "bot_chat_marketplace_post".
  *
  * @property int $id
- * @property int $user_id
- * @property int $chat_id
+ * @property int $member_id
  * @property string $text
+ * @property int $time minutes (time of day)
+ * @property int $skip_days
  * @property int $created_at
  * @property int|null $sent_at
  * @property int|null $provider_message_id
+ * @property int|null $processed_at
  *
- * @property Chat $chat
- * @property User $user
+ * @property ChatMember $chatMember
  *
  * @package app\modules\bot\models
  */
@@ -43,12 +45,15 @@ class ChatMarketplacePost extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'chat_id', 'text'], 'required'],
-            [['user_id', 'chat_id', 'status', 'created_at', 'sent_at', 'provider_message_id'], 'integer'],
+            [['member_id', 'text'], 'required'],
+            [['member_id', 'status', 'time', 'skip_days', 'created_at', 'sent_at', 'provider_message_id', 'processed_at'], 'integer'],
             [['title'], 'string', 'max' => 255],
             [['text'], 'string', 'max' => 10000],
-            [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::className(), 'targetAttribute' => ['chat_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['time'], 'default', 'value' => rand(0, 1439)],
+            [['time'], 'integer', 'min' => 0, 'max' => 1439],
+            [['skip_days'], 'default', 'value' => 0],
+            [['skip_days'], 'integer', 'min' => 0, 'max' => 365],
+            [['member_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatMember::className(), 'targetAttribute' => ['member_id' => 'id']],
         ];
     }
 
@@ -59,14 +64,16 @@ class ChatMarketplacePost extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'chat_id' => 'Chat ID',
+            'member_id' => 'Member ID',
             'status' => Yii::t('app', 'Status'),
             'title' => Yii::t('app', 'Title'),
             'text' => Yii::t('app', 'Text'),
+            'time' => Yii::t('app', 'Time of day'),
+            'skip_days' => Yii::t('app', 'Skip days'),
             'created_at' => Yii::t('app', 'Created At'),
             'sent_at' => 'Sent At',
             'provider_message_id' => 'Provider Message ID',
+            'processed_at' => Yii::t('app', 'Processed At'),
         ];
     }
 
@@ -81,28 +88,13 @@ class ChatMarketplacePost extends ActiveRecord
     }
 
     /**
-     * Gets query for [[Chat]].
+     * Gets query for [[ChatMember]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getChat()
+    public function getChatMember()
     {
         return $this->hasOne(Chat::className(), ['id' => 'chat_id']);
-    }
-
-    public function getChatId()
-    {
-        return $this->chat_id;
-    }
-
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
     public function isActive(): bool
@@ -141,5 +133,36 @@ class ChatMarketplacePost extends ActiveRecord
     public function getRepostSecondsLimit()
     {
         return self::REPOST_SECONDS_LIMIT;
+    }
+
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+    public function getTimeOfDay()
+    {
+        return TimeHelper::getTimeOfDayByMinutes($this->time);
+    }
+
+    public function getSkipDays()
+    {
+        return $this->skip_days;
+    }
+
+    public function getChatMemberId()
+    {
+        return $this->member_id;
+    }
+
+    /**
+     * Gets query for [[Chat]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChat()
+    {
+        return $this->hasOne(Chat::class, ['id' => 'chat_id'])
+            ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
     }
 }

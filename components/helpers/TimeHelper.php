@@ -2,6 +2,7 @@
 
 namespace app\components\helpers;
 
+use DateTime;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidParamException;
@@ -13,7 +14,7 @@ class TimeHelper
 {
     public static function timezonesList()
     {
-        $timeOffsets = [
+        $offsets = [
             -720,
             -660,
             -600,
@@ -54,17 +55,35 @@ class TimeHelper
             840,
         ];
 
-        $timeOffsetsNames = [];
+        $offsetsNames = [];
 
-        foreach ($timeOffsets as $timeOffset) {
-            $timeOffsetsNames[$timeOffset] = self::getNameByOffset($timeOffset);
+        foreach ($offsets as $offset) {
+            $offsetsNames[$offset] = self::getNameByOffset($offset);
         }
 
-        return $timeOffsetsNames;
+        return $offsetsNames;
     }
 
-    public static function getNameByOffset($timeOffset)
+    public static function getNameByOffset($offset)
     {
-        return 'UTC ' . ($timeOffset < 0 ? '-' : '+') . date('H:i', abs($timeOffset) * 60);
+        return 'UTC ' . ($offset < 0 ? '-' : '+') . date('H:i', abs($offset) * 60);
+    }
+
+    public static function getTimeOfDayByMinutes(int $minutes = 0)
+    {
+        return date('H:i', $minutes * 60);
+    }
+
+    public static function getMinutesByTimeOfDay(string $timeOfDay = null)
+    {
+        if (!$timeOfDay) {
+            return 0;
+        }
+
+        if (!$date = DateTime::createFromFormat('H:i|', $timeOfDay)) {
+            return null;
+        }
+
+        return (int)($date->getTimestamp() / 60);
     }
 }

@@ -383,7 +383,7 @@ class Chat extends ActiveRecord
 
         return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
             ->andWhere([
-                '>', ChatMember::tableName() . '.membership_date',  $today->format('Y-m-d'),
+                '>', ChatMember::tableName() . '.membership_date', $today->format('Y-m-d'),
             ])
             ->orderByRank();
     }
@@ -394,7 +394,7 @@ class Chat extends ActiveRecord
 
         return $this->getPremiumChatMembers()
             ->andWhere([
-                '>', ChatMember::tableName() . '.limiter_date',  $today->format('Y-m-d'),
+                '>', ChatMember::tableName() . '.limiter_date', $today->format('Y-m-d'),
             ]);
     }
 
@@ -412,6 +412,14 @@ class Chat extends ActiveRecord
     {
         return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
             ->joinWith('positiveReviews')
+            ->groupBy(ChatMember::tableName() . '.id')
+            ->orderByRank();
+    }
+
+    public function getChatMembersWithMarketplaceLinks()
+    {
+        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+            ->joinWith('marketplaceLinks', $eagerLoading = true, $joinType = 'INNER JOIN')
             ->groupBy(ChatMember::tableName() . '.id')
             ->orderByRank();
     }

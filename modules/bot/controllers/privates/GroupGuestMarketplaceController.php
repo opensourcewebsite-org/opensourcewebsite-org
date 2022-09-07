@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\components\helpers\ArrayHelper;
+use app\components\helpers\TimeHelper;
 use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
@@ -66,11 +67,15 @@ class GroupGuestMarketplaceController extends Controller
 
         $this->getState()->setName(null);
 
-        $query = ChatMarketplacePost::find()
-            ->where([
-                'chat_id' => $chat->id,
-                'user_id' => $this->globalUser->id,
-            ])
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $query = $chatMember->getMarketplacePosts()
             ->orderBy([
                 'title' => SORT_ASC,
                 'id' => SORT_ASC,
@@ -164,11 +169,18 @@ class GroupGuestMarketplaceController extends Controller
             'id' => $chat->id,
         ]));
 
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
                 $post = new ChatMarketplacePost();
-                $post->user_id = $this->globalUser->id;
-                $post->chat_id = $chat->id;
+                $post->member_id = $chatMember->id;
                 $post->text = $text;
 
                 if ($post->save()) {
@@ -205,12 +217,7 @@ class GroupGuestMarketplaceController extends Controller
      */
     public function actionView($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -224,10 +231,17 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(null);
 
         $user = $this->getTelegramUser();
-        $chatMember = $chat->getChatMemberByUserId();
 
         $tags = [];
 
@@ -257,6 +271,22 @@ class GroupGuestMarketplaceController extends Controller
                                 'id' => $post->id,
                             ]),
                             'text' => $post->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-time', [
+                                'id' => $post->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-skip-days', [
+                                'id' => $post->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Skip days') . ': ' . $post->getSkipDays(),
                         ],
                     ],
                     [
@@ -332,12 +362,7 @@ class GroupGuestMarketplaceController extends Controller
      */
     public function actionSetStatus($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -351,6 +376,14 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(null);
 
         if ($post->isActive()) {
@@ -359,7 +392,7 @@ class GroupGuestMarketplaceController extends Controller
         } else {
             $activePostsCount = ChatMarketplacePost::find()
                 ->where([
-                    'user_id' => $this->globalUser->id,
+                    'member_id' => $chatMember->id,
                     'status' => ChatMarketplacePost::STATUS_ON,
                 ])
                 ->count();
@@ -388,12 +421,7 @@ class GroupGuestMarketplaceController extends Controller
      */
     public function actionSetTitle($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -407,6 +435,14 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(self::createRoute('set-title', [
             'id' => $post->id,
         ]));
@@ -415,7 +451,7 @@ class GroupGuestMarketplaceController extends Controller
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $post->title = $text;
 
-                if ($post->save()) {
+                if ($post->validate('title') && $post->save(false)) {
                     return $this->actionView($post->id);
                 }
             }
@@ -444,12 +480,7 @@ class GroupGuestMarketplaceController extends Controller
      */
     public function actionSetText($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -463,6 +494,14 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(self::createRoute('set-text', [
             'id' => $post->id,
         ]));
@@ -471,7 +510,7 @@ class GroupGuestMarketplaceController extends Controller
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
                 $post->text = $text;
 
-                if ($post->save()) {
+                if ($post->validate('text') && $post->save(false)) {
                     return $this->actionView($post->id);
                 }
             }
@@ -506,14 +545,127 @@ class GroupGuestMarketplaceController extends Controller
      * @param int $id ChatMarketplacePost->id
      * @return array
      */
+    public function actionSetTime($id = null)
+    {
+        $post = ChatMarketplacePost::findOne($id);
+
+        if (!isset($post)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ((!$chat = $post->chat) || !$chat->isGroup() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-time', [
+            'id' => $post->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = TimeHelper::getMinutesByTimeOfDay($this->getUpdate()->getMessage()->getText())) !== null) {
+                $post->time = $text;
+
+                if ($post->validate('time') && $post->save(false)) {
+                    return $this->actionView($post->id);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-time'),
+                [
+                    [
+                        [
+                            'callback_data' =>  self::createRoute('view', [
+                                'id' => $post->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
+    public function actionSetSkipDays($id = null)
+    {
+        $post = ChatMarketplacePost::findOne($id);
+
+        if (!isset($post)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ((!$chat = $post->chat) || !$chat->isGroup() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-skip-days', [
+            'id' => $post->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = $this->getUpdate()->getMessage()->getText()) !== null) {
+                $post->skip_days = $text;
+
+                if ($post->validate('skip_days') && $post->save(false)) {
+                    return $this->actionView($post->id);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-skip-days'),
+                [
+                    [
+                        [
+                            'callback_data' =>  self::createRoute('view', [
+                                'id' => $post->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id ChatMarketplacePost->id
+     * @return array
+     */
     public function actionUpdatePost($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post) || !$post->getProviderMessageId()) {
             return $this->getResponseBuilder()
@@ -527,14 +679,15 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        $user = $this->getTelegramUser();
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!$chatMember) {
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+
+        $user = $this->getTelegramUser();
 
         if (!$post->canRepost()) {
             return $this->getResponseBuilder()
@@ -571,6 +724,19 @@ class GroupGuestMarketplaceController extends Controller
                 'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
             ],
         ];
+
+        if ($links = $chatMember->marketplaceLinks) {
+            foreach ($links as $link) {
+                if ($link->url && $link->title) {
+                    $buttons[] = [
+                        [
+                            'url' => $link->url,
+                            'text' => $link->title,
+                        ],
+                    ];
+                }
+            }
+        }
 
         $response = $this->getResponseBuilder()
             ->setChatId($chat->getChatId())
@@ -612,12 +778,7 @@ class GroupGuestMarketplaceController extends Controller
      */
     public function actionSendPost($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -631,14 +792,15 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        $user = $this->getTelegramUser();
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!$chatMember) {
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+
+        $user = $this->getTelegramUser();
 
         if (!$post->canRepost()) {
             return $this->getResponseBuilder()
@@ -717,6 +879,19 @@ class GroupGuestMarketplaceController extends Controller
             ],
         ];
 
+        if ($links = $chatMember->marketplaceLinks) {
+            foreach ($links as $link) {
+                if ($link->url && $link->title) {
+                    $buttons[] = [
+                        [
+                            'url' => $link->url,
+                            'text' => $link->title,
+                        ],
+                    ];
+                }
+            }
+        }
+
         $response = $this->getResponseBuilder()
             ->setChatId($chat->getChatId())
             ->sendMessage(
@@ -761,14 +936,23 @@ class GroupGuestMarketplaceController extends Controller
      */
     public function actionDelete($id = null)
     {
-        $post = ChatMarketplacePost::find()
-            ->where([
-                'id' => $id,
-                'user_id' => $this->globalUser->id,
-            ])
-            ->one();
+        $post = ChatMarketplacePost::findOne($id);
 
         if (!isset($post)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ((!$chat = $post->chat) || !$chat->isGroup() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chatMember || ($post->getChatMemberId() != $chatMember->id)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -781,7 +965,7 @@ class GroupGuestMarketplaceController extends Controller
             );
         }
 
-        $chatId = $post->getChatId();
+        $chatId = $post->chat->id;
         $post->delete();
 
         return $this->actionIndex($chatId);

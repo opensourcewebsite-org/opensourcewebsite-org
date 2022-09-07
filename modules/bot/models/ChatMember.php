@@ -358,6 +358,16 @@ class ChatMember extends ActiveRecord
             ->count();
     }
 
+    public function getMarketplacePosts(): ActiveQuery
+    {
+        return $this->hasMany(ChatMarketplacePost::class, ['member_id' => 'id']);
+    }
+
+    public function getMarketplaceLinks(): ActiveQuery
+    {
+        return $this->hasMany(ChatMarketplaceLink::class, ['member_id' => 'id']);
+    }
+
     public function getIntro()
     {
         return $this->intro;
