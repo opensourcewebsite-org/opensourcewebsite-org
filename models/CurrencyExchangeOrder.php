@@ -282,6 +282,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'buying_currency_label' => Yii::t('app', 'Label'),
             'sellingPaymentMethodIds' => Yii::t('app', 'Selling payment methods'),
             'buyingPaymentMethodIds' => Yii::t('app', 'Buying payment methods'),
+            'selling_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->sellingCurrency->code ?? '') . ' ' . Yii::t('app', 'parameters'),
+            'buying_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->buyingCurrency->code ?? ''). ' ' . Yii::t('app', 'parameters'),
         ];
     }
 
@@ -598,7 +600,23 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     }
 
     public function beforeSave($insert)
-    {
+    {   
+        if ($this->isAttributeChanged('selling_rate')) {
+            if (floatval($this->selling_rate)) {
+                $this->buying_rate = 1 / $this->selling_rate;
+            } else {
+                $this->selling_rate = null;
+                $this->buying_rate = null;
+            }
+        } elseif ($this->isAttributeChanged('buying_rate')) {
+            if (floatval($this->buying_rate)) {
+                $this->selling_rate = 1 / $this->buying_rate;
+            } else {
+                $this->selling_rate = null;
+                $this->buying_rate = null;
+            }
+        }
+
         if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }
