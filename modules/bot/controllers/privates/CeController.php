@@ -139,8 +139,35 @@ class CeController extends CrudController
                 'selling_currency_min_amount' => [
                     'isRequired' => false,
                 ],
-                'selling_currency_max_amount' => [
+                'sellingPaymentMethods' => [
                     'isRequired' => false,
+                    'view' => 'set-selling_payment_methods',
+                    'samePageAfterAdd' => true,
+                    'enableAddButton' => true,
+                    'showRowsList' => true,
+                    'createRelationIfEmpty' => true,
+                    'relation' => [
+                        'model' => CurrencyExchangeOrderSellingPaymentMethod::class,
+                        'attributes' => [
+                            'order_id' => [CurrencyExchangeOrder::class, 'id'],
+                            'payment_method_id' => [PaymentMethodCurrencyByCurrency::class, 'payment_method_id'],
+                        ],
+                        'removeOldRows' => true,
+                    ],
+                    'buttons' => [
+                        [
+                            'text' => Yii::t('bot', 'NEXT'),
+                            'callback' => function (CurrencyExchangeOrder $model) {
+                                return $model;
+                            },
+                        ],
+                    ],
+                    'buttonSkip' => [
+                        'callback_data' => self::createRoute('en-a', [
+                            'a' => 'selling_cash_on',
+                            'text' => self::VALUE_NO,
+                        ]),
+                    ],
                 ],
                 'sellingPaymentMethods' => [
                     'isRequired' => false,
