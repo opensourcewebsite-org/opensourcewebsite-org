@@ -82,7 +82,8 @@ class ModelRelationService
     public function prepareRelationData($attributeName, $relationData)
     {
         $rule = $this->controller->rule;
-        $attributes = $this->controller->getAttributes($rule);
+        //$attributes = $this->controller->getAttributes($rule);
+        $attributes = $this->controller->attributes;
         $relation = $this->getRelation($attributes[$attributeName]);
         [, , $thirdRelation] = $this->getRelationAttributes($relation);
 
