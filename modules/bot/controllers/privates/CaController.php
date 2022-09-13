@@ -25,6 +25,7 @@ use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
+use app\modules\bot\components\crud\CrudController;
 
 /**
  * Class CaController
@@ -200,7 +201,7 @@ class CaController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-
+        
         $matchOrder = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();

@@ -957,10 +957,6 @@ abstract class CrudController extends Controller
                     'id' => $model->id,
                 ]),
             ],
-            [
-                'text' => Emoji::MENU,
-                'callback_data' => MenuController::createRoute(),
-            ],
         ];
 
         $params = [
@@ -1410,7 +1406,9 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $this->field->reset();
+                    if (!isset($this->rule['isVirtual'])) {
+                        $this->field->reset(); // Keep user state for virtual orders
+                    }
                     $transaction->commit();
 
                     return $this->actionView($model->id);
@@ -2022,13 +2020,6 @@ abstract class CrudController extends Controller
         }
         if (($config['createRelationIfEmpty'] ?? false) && $this->modelRelation->filledRelationCount($attributeName) <= 1) {
             unset($systemButtons['delete']);
-        }
-
-        if (!isset($systemButtons['menu'])) {
-            $systemButtons['menu'] = [
-                'text' => Emoji::MENU,
-                'callback_data' => MenuController::createRoute(),
-            ];
         }
 
         return array_values($systemButtons);
