@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace app\models\search;
 
 use app\models\Setting;
-use yii\data\ActiveDataProvider;
 use Yii;
+use yii\data\ActiveDataProvider;
 
 class SettingSearch extends Setting
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\queries;
 
 use app\interfaces\UserRelation\ByDebtInterface;
@@ -21,11 +23,17 @@ class DebtRedistributionQuery extends ActiveQuery
 {
     use SelfSearchTrait;
 
+    /**
+     * @return self
+     */
     public function userOwner($id = null, $method = 'andWhere'): self
     {
         return $this->$method(['debt_redistribution.user_id' => $id ?? Yii::$app->user->id]);
     }
 
+    /**
+     * @return self
+     */
     public function userLinked($id, $method = 'andWhere'): self
     {
         return $this->$method(['debt_redistribution.link_user_id' => $id]);
@@ -33,6 +41,7 @@ class DebtRedistributionQuery extends ActiveQuery
 
     /**
      * @param ByOwnerInterface|ByDebtInterface $modelSource
+     * @return self
      */
     public function usersByModelSource($modelSource, $method = 'andWhere'): self
     {
@@ -42,11 +51,17 @@ class DebtRedistributionQuery extends ActiveQuery
             ->userLinked($model->link_user_id, $method);
     }
 
+    /**
+     * @return self
+     */
     public function currency($id, $method = 'andWhere'): self
     {
         return $this->$method(['debt_redistribution.currency_id' => $id]);
     }
 
+    /**
+     * @return self
+     */
     public function maxAmount($amount, $method = 'andWhere', &$condition = null): self
     {
         if ($amount === DebtRedistribution::MAX_AMOUNT_ANY) {
@@ -58,6 +73,9 @@ class DebtRedistributionQuery extends ActiveQuery
         return $this->$method($condition);
     }
 
+    /**
+     * @return self
+     */
     public function maxAmountIsNotDeny($method = 'andWhere'): self
     {
         (clone $this)->maxAmount(DebtRedistribution::MAX_AMOUNT_ANY, 'andWhere', $maxAmountAny);

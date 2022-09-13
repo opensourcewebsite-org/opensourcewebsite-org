@@ -128,4 +128,13 @@ class UserStellar extends \yii\db\ActiveRecord
 
         return false;
     }
+
+    public function beforeSave($insert)
+    {
+        if (!$insert && $this->confirmed_at && $this->isAttributeChanged('public_key')) {
+            $this->confirmed_at = null;
+        }
+
+        return parent::beforeSave($insert);
+    }
 }

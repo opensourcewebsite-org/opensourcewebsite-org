@@ -17,6 +17,9 @@ use yii\db\ActiveQuery;
  */
 class VacancyQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function live(): self
     {
         return $this->andWhere([Vacancy::tableName() . '.status' => Vacancy::STATUS_ON])
@@ -24,6 +27,9 @@ class VacancyQuery extends ActiveQuery
             ->andWhere(['>=', User::tableName() . '.last_activity_at', time() - Vacancy::LIVE_DAYS * 24 * 60 * 60]);
     }
 
+    /**
+     * @return self
+     */
     public function orderByRank(): self
     {
         return $this->orderBy([
@@ -32,6 +38,9 @@ class VacancyQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function applyBuilder(ConditionExpressionBuilderInterface $builder): self
     {
         $ret = $builder->build();
@@ -40,11 +49,17 @@ class VacancyQuery extends ActiveQuery
         return $new->andWhere($ret);
     }
 
+    /**
+     * @return self
+     */
     public function userOwner(int $id = null, string $method = 'andWhere'): self
     {
         return $this->$method([Vacancy::tableName() . '.user_id' => ($id ?? Yii::$app->user->id)]);
     }
 
+    /**
+     * @return self
+     */
     public function excludeUserId(int $id = null, string $method = 'andWhere'): self
     {
         return $this->$method(['!=', Vacancy::tableName() . '.user_id', ($id ?? Yii::$app->user->id)]);

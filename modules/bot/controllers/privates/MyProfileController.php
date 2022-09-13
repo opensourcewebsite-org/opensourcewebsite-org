@@ -21,7 +21,7 @@ class MyProfileController extends Controller
         $this->getState()->setName(null);
 
         $user = $this->getTelegramUser();
-        $globalUser = $this->getUser();
+        $globalUser = $this->getGlobalUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

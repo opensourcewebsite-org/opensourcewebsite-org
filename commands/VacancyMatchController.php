@@ -2,14 +2,14 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
 use app\models\matchers\VacancyMatcher;
+use app\models\Vacancy;
 use Yii;
 use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
-use app\commands\traits\ControllerLogTrait;
-use app\models\Vacancy;
-use yii\db\ActiveRecord;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * Class VacancyMatchController

@@ -6,8 +6,8 @@ namespace app\models\search;
 
 use app\models\Setting;
 use app\models\SettingValue;
-use yii\data\ActiveDataProvider;
 use Yii;
+use yii\data\ActiveDataProvider;
 
 class SettingValueSearch extends SettingValue
 {
@@ -31,6 +31,7 @@ class SettingValueSearch extends SettingValue
         }
 
         $query = SettingValue::findByCondition(['setting_id' => $setting_id]);
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort'=> [

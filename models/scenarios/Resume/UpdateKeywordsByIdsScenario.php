@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\Resume;
 
-use app\models\Resume;
-use app\models\JobResumeKeyword;
 use app\components\helpers\ArrayHelper;
+use app\models\JobResumeKeyword;
+use app\models\Resume;
 
 class UpdateKeywordsByIdsScenario
 {

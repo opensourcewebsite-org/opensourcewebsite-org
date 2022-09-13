@@ -2,12 +2,12 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
+use app\models\AdSearch;
 use app\models\matchers\AdSearchMatcher;
 use Yii;
 use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
-use app\commands\traits\ControllerLogTrait;
-use app\models\AdSearch;
 use yii\console\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;

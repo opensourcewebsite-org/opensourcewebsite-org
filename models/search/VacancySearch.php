@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace app\models\search;
 
-use Yii;
 use app\models\Vacancy;
+use Yii;
 use yii\data\ActiveDataProvider;
 
 class VacancySearch extends Vacancy
@@ -35,12 +35,15 @@ class VacancySearch extends Vacancy
         $query = Vacancy::find()
             ->userOwner();
 
-        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
             $query->where(['0=1']);
+
             return $dataProvider;
         }
 

@@ -278,7 +278,7 @@ class GroupGuestMarketplaceController extends Controller
                             'callback_data' => self::createRoute('set-time', [
                                 'id' => $post->id,
                             ]),
-                            'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay(),
+                            'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay() . ' (' . TimeHelper::getNameByOffset($chat->timezone) . ')',
                         ],
                     ],
                     [
@@ -585,7 +585,9 @@ class GroupGuestMarketplaceController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-time'),
+                $this->render('set-time', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [

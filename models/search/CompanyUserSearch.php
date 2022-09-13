@@ -18,16 +18,21 @@ class CompanyUserSearch extends Company
 
     public function search(array $params): ActiveDataProvider
     {
-        $query = Company::find()->joinWith('companyUser cu')->where(['cu.user_id' => Yii::$app->user->identity->id]);
+        $query = Company::find()
+            ->joinWith('companyUser cu')
+            ->where([
+                'cu.user_id' => Yii::$app->user->identity->id,
+            ]);
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query
+            'query' => $query,
         ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
             $query->where('0=1');
+
             return $dataProvider;
         }
 

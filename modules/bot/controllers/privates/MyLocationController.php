@@ -21,7 +21,7 @@ class MyLocationController extends Controller
     public function actionIndex()
     {
         if (!$userLocation = $this->globalUser->userLocation) {
-            return $this->actionUpdate();
+            return $this->actionSet();
         }
 
         $this->getState()->setName(null);
@@ -42,7 +42,7 @@ class MyLocationController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                         [
@@ -58,28 +58,7 @@ class MyLocationController extends Controller
             ->build();
     }
 
-    public function actionUpdate()
-    {
-        $this->getState()->setName(self::createRoute('input'));
-
-        $userLocation = $this->globalUser->userLocation ?: $this->globalUser->newUserLocation;
-
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('update'),
-                [
-                    [
-                        [
-                            'callback_data' => ($userLocation->isNewRecord ? MyProfileController::createRoute() : self::createRoute()),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
-                ]
-            )
-            ->build();
-    }
-
-    public function actionInput()
+    public function actionSet()
     {
         $userLocation = $this->globalUser->userLocation ?: $this->globalUser->newUserLocation;
 
@@ -105,8 +84,20 @@ class MyLocationController extends Controller
             }
         }
 
+        $this->getState()->setName(self::createRoute('set'));
+
         return $this->getResponseBuilder()
-            ->answerCallbackQuery()
+            ->editMessageTextOrSendMessage(
+                $this->render('set'),
+                [
+                    [
+                        [
+                            'callback_data' => (!$userLocation->isNewRecord ? self::createRoute() : MyProfileController::createRoute()),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
             ->build();
     }
 

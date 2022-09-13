@@ -2,15 +2,15 @@
 
 namespace app\commands;
 
-use Yii;
-use yii\console\Controller;
-use app\models\Rating;
-use app\models\User;
+use app\helpers\Number;
 use app\models\Debt;
 use app\models\DebtBalance;
-use yii\helpers\VarDumper;
+use app\models\Rating;
+use app\models\User;
+use Yii;
+use yii\console\Controller;
 use yii\db\Query;
-use app\helpers\Number;
+use yii\helpers\VarDumper;
 
 /**
  * Class CoreController

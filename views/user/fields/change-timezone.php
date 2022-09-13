@@ -3,11 +3,11 @@
 use app\components\helpers\TimeHelper;
 use app\widgets\buttons\CancelButton;
 use app\widgets\buttons\SaveButton;
+use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\select2\Select2;
 
-$timezones = TimeHelper::timezonesList();
+$timezones = TimeHelper::getTimezoneNames();
 
 $form = ActiveForm::begin();
 ?>

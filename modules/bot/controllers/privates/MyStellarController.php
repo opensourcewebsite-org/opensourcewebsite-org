@@ -23,32 +23,30 @@ class MyStellarController extends Controller
      */
     public function actionIndex(): array
     {
+        if (!($userStellar = $this->globalUser->userStellar)) {
+            return $this->actionSetPublicKey();
+        }
+
+        if ($userStellar->isExpired()) {
+            $userStellar->delete();
+            unset($this->globalUser->userStellar);
+
+            return $this->actionSetPublicKey();
+        }
+
         $this->getState()->setName(null);
-
-        $user = $this->getUser();
-
-        if (!isset($user->stellar)) {
-            return $this->actionSetPublicKey();
-        }
-
-        if ($user->stellar->isExpired()) {
-            $user->stellar->delete();
-            unset($user->stellar);
-
-            return $this->actionSetPublicKey();
-        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'stellar' => $user->stellar,
+                    'stellar' => $userStellar,
                 ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('confirm'),
                             'text' => Yii::t('bot', 'CONFIRM'),
-                            'visible' => !$user->stellar->isConfirmed(),
+                            'visible' => !$userStellar->isConfirmed(),
                         ],
                     ],
                     [
@@ -73,7 +71,7 @@ class MyStellarController extends Controller
                         [
                             'callback_data' => self::createRoute('groups'),
                             'text' => Yii::t('bot', 'Telegram groups'),
-                            'visible' => $user->stellar->isConfirmed(),
+                            'visible' => $userStellar->isConfirmed(),
                         ],
                     ],
                     [
@@ -106,29 +104,18 @@ class MyStellarController extends Controller
     {
         $this->getState()->setName(self::createRoute('set-public-key'));
 
-        $user = $this->getUser();
+        $userStellar = $this->globalUser->userStellar ?: $this->globalUser->newUserStellar;
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if (isset($user->stellar)) {
-                    if ($user->stellar->public_key != $text) {
-                        $user->stellar->public_key = $text;
-                        $user->stellar->created_at = time();
-                        $user->stellar->confirmed_at = null;
-                    }
-
-                    $userStellar = $user->stellar;
-                } else {
-                    $userStellar = new UserStellar();
-
-                    $userStellar->user_id = $user->id;
+                if ($userStellar->isNewRecord || ($userStellar->public_key != $text)) {
                     $userStellar->public_key = $text;
-                }
 
-                if ($userStellar->save()) {
-                    unset($user->stellar);
+                    if ($userStellar->save()) {
+                        unset($this->globalUser->userStellar);
 
-                    return $this->actionIndex();
+                        return $this->actionIndex();
+                    }
                 }
             }
         }
@@ -139,7 +126,7 @@ class MyStellarController extends Controller
                 [
                     [
                         [
-                            'callback_data' => ($user->stellar ? self::createRoute() : MyAccountController::createRoute()),
+                            'callback_data' => (!$userStellar->isNewRecord ? self::createRoute() : MyAccountController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],
@@ -150,11 +137,9 @@ class MyStellarController extends Controller
 
     public function actionDelete(): array
     {
-        $user = $this->getUser();
-
-        if (isset($user->stellar)) {
-            $user->stellar->delete();
-            unset($user->stellar);
+        if ($userStellar = $this->globalUser->userStellar) {
+            $userStellar->delete();
+            unset($this->globalUser->userStellar);
         }
 
         return $this->actionIndex();
@@ -162,9 +147,7 @@ class MyStellarController extends Controller
 
     public function actionConfirm(): array
     {
-        $user = $this->getUser();
-
-        if (!($userStellar = $user->stellar) || $userStellar->isConfirmed()) {
+        if (!($userStellar = $this->globalUser->userStellar) || $userStellar->isConfirmed()) {
             return $this->actionIndex();
         }
 
@@ -195,7 +178,7 @@ class MyStellarController extends Controller
             }
 
             $userStellar->confirm();
-            unset($user->stellar);
+            unset($this->globalUser->userStellar);
         }
 
         return $this->actionIndex();
@@ -203,13 +186,9 @@ class MyStellarController extends Controller
 
     public function actionGroups(): array
     {
-        $user = $this->getUser();
-
-        if (!isset($user->stellar) || !$user->stellar->isConfirmed()) {
+        if (!($userStellar = $this->globalUser->userStellar) || !$userStellar->isConfirmed()) {
             return $this->actionIndex();
         }
-
-        $userStellar = $user->stellar;
 
         if ($stellarServer = new StellarServer()) {
             if (!$account = $stellarServer->getAccount($userStellar->getPublicKey())) {
@@ -311,13 +290,13 @@ class MyStellarController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('basic-income', [
-                    'user' => $this->user,
+                    'user' => $this->globalUser,
                 ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-basic-income-status'),
-                            'text' => $this->user->isBasicIncomeOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $this->globalUser->isBasicIncomeOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -346,13 +325,13 @@ class MyStellarController extends Controller
 
     public function actionSetBasicIncomeStatus()
     {
-        if ($this->user->basic_income_on) {
-            $this->user->basic_income_on = 0;
+        if ($this->globalUser->basic_income_on) {
+            $this->globalUser->basic_income_on = 0;
         } else {
-            $this->user->basic_income_on = 1;
+            $this->globalUser->basic_income_on = 1;
         }
 
-        $this->user->save();
+        $this->globalUser->save();
 
         return $this->actionBasicIncome();
     }

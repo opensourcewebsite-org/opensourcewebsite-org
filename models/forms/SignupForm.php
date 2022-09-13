@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace app\models\forms;
 
-use Yii;
 use app\components\helpers\ReferrerHelper;
-use yii\base\Model;
 use app\models\User;
+use Yii;
+use yii\base\Model;
 
 /**
  * Signup form

@@ -2,9 +2,11 @@
 
 namespace app\modules\bot\models;
 
+use app\components\helpers\TimeHelper;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\queries\ChatMemberQuery;
 use DateTime;
+use DateTimeZone;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -95,7 +97,7 @@ class ChatMember extends ActiveRecord
         return [
             [['chat_id', 'user_id', 'status', 'role', 'slow_mode_messages'], 'required'],
             [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages_limit'], 'integer'],
-            ['role', 'default', 'value' => 1],
+            ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['slow_mode_messages', 'default', 'value' => 0],
             [['status', 'membership_note'], 'string'],
             [['limiter_date', 'membership_date'], 'date'],
@@ -183,9 +185,9 @@ class ChatMember extends ActiveRecord
     {
         if ($chat = $this->chat) {
             if ($this->last_message_at) {
-                $today = new DateTime('today');
+                $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
 
-                if (($today->getTimestamp() - ($chat->timezone * 60)) <= $this->last_message_at) {
+                if ($today->getTimestamp() < $this->last_message_at) {
                     $slowModeMessagesLimit = $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
 
                     if ($slowModeMessagesLimit <= $this->slow_mode_messages) {
@@ -259,9 +261,9 @@ class ChatMember extends ActiveRecord
         }
 
         if ($chat = $this->chat) {
-            $today = new DateTime('today');
+            $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
 
-            if (($today->getTimestamp() - ($chat->timezone * 60)) <= $this->last_message_at) {
+            if ($today->getTimestamp() < $this->last_message_at) {
                 $this->slow_mode_messages += 1;
             } else {
                 $this->slow_mode_messages = 1;

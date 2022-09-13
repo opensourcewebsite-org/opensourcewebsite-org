@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\search;
 
 use app\models\SupportGroupInsideMessage;
@@ -43,7 +45,6 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
      */
     public function search($params)
     {
-
         $unionQuery = self::find()
             ->select([
                 'message',
@@ -64,12 +65,16 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
                 true
             );
 
-        $query = self::find()->with('supportGroupBotClient');
+        $query = self::find()
+            ->with('supportGroupBotClient');
+
         $query->from(['a' => $unionQuery])
-            ->orderBy(['created_at'=>SORT_ASC]);
+            ->orderBy([
+                'created_at' => SORT_ASC,
+            ]);
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
+            'query' => $query,
         ]);
 
         $this->load($params);
@@ -94,6 +99,7 @@ class SupportGroupOutsideMessageSearch extends SupportGroupOutsideMessage
             if (!empty($this->member_name)) {
                 return $this->member_name;
             }
+
             return 'Member ' . $this->created_by;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\traits;
 
 use app\models\queries\traits\SelfSearchTrait;

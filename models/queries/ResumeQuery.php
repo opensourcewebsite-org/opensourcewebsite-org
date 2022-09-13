@@ -17,6 +17,9 @@ use yii\db\ActiveQuery;
  */
 class ResumeQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function live(): self
     {
         return $this->andWhere([Resume::tableName() . '.status' => Resume::STATUS_ON])
@@ -24,6 +27,9 @@ class ResumeQuery extends ActiveQuery
             ->andWhere(['>=', User::tableName() . '.last_activity_at', time() - Resume::LIVE_DAYS * 24 * 60 * 60]);
     }
 
+    /**
+     * @return self
+     */
     public function orderByRank(): self
     {
         return $this->orderBy([
@@ -32,6 +38,9 @@ class ResumeQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function applyBuilder(ConditionExpressionBuilderInterface $builder): self
     {
         $ret = $builder->build();
@@ -40,11 +49,17 @@ class ResumeQuery extends ActiveQuery
         return $new->andWhere($ret);
     }
 
+    /**
+     * @return self
+     */
     public function userOwner(int $id = null, string $method = 'andWhere'): self
     {
         return $this->$method([Resume::tableName() . '.user_id' => ($id ?? Yii::$app->user->id)]);
     }
 
+    /**
+     * @return self
+     */
     public function excludeUserId(int $id = null, string $method = 'andWhere'): self
     {
         return $this->$method(['!=', Resume::tableName() . '.user_id', ($id ?? Yii::$app->user->id)]);

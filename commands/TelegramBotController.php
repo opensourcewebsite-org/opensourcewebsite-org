@@ -2,14 +2,14 @@
 
 namespace app\commands;
 
-use Yii;
-use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatSetting;
+use Yii;
+use yii\console\Controller;
 use yii\console\Exception;
 
 /**
@@ -25,6 +25,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
     {
         $this->removeCaptchaMessages();
         //$this->removeGreetingMessages();
+        //$this->sendMarketplaceMessages();
     }
 
     /**
@@ -222,6 +223,12 @@ class TelegramBotController extends Controller implements CronChainedInterface
             $this->output('Greeting. Greetings removed from telegram groups: ' . $updatesCount);
         }
 
+        return true;
+    }
+
+    // TODO
+    public function sendMarketplaceMessages()
+    {
         return true;
     }
 }

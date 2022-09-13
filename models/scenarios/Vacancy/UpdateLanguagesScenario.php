@@ -54,7 +54,6 @@ class UpdateLanguagesScenario
         }
 
         foreach ($toChange as $langId => $langLevelId) {
-
             /** @var VacancyLanguage $vacancyLanguage */
             $vacancyLanguage = VacancyLanguage::find()
                 ->where(['vacancy_id' => $this->model->id])

@@ -28,12 +28,15 @@ class AdSearchSearch extends AdSearch
         $query = AdSearch::find()
             ->userOwner();
 
-        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
             $query->where(['0=1']);
+
             return $dataProvider;
         }
 

@@ -22,18 +22,16 @@ class MyGenderController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
-
-        $globalUser = $this->getUser();
-
-        if (!$globalUser->gender_id) {
-            return $this->actionList();
+        if (!$this->globalUser->gender_id) {
+            return $this->actionSet();
         }
+
+        $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'gender' => $globalUser->gender->name,
+                    'gender' => $this->globalUser->gender,
                 ]),
                 [
                     [
@@ -46,7 +44,7 @@ class MyGenderController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('list'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -55,9 +53,25 @@ class MyGenderController extends Controller
             ->build();
     }
 
-    public function actionList($page = 1)
+    /**
+     * @param int|null $id Gender->id
+     * @param int $page
+     * @return array
+     */
+    public function actionSet($id = null, $page = 1)
     {
-        $globalUser = $this->getUser();
+        if ($id) {
+            $gender = Gender::findOne($id);
+
+            if ($gender) {
+                $this->globalUser->gender_id = $gender->id;
+                $this->globalUser->save();
+
+                return $this->actionIndex();
+            }
+        }
+
+        $this->getState()->setName(null);
 
         $query = Gender::find();
 
@@ -71,28 +85,27 @@ class MyGenderController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('update', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
-        $genders = $query
-            ->offset($pagination->offset)
+        $genders = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
         if ($genders) {
             foreach ($genders as $gender) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('select', [
+                    'callback_data' => self::createRoute('set', [
                         'id' => $gender->id,
                     ]),
                     'text' => Yii::t('bot', $gender->name),
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('set', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -101,34 +114,16 @@ class MyGenderController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => ($globalUser->gender_id ? self::createRoute() : MyProfileController::createRoute()),
+                'callback_data' => ($this->globalUser->gender_id ? self::createRoute() : MyProfileController::createRoute()),
                 'text' => Emoji::BACK,
             ],
         ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('set'),
                 $buttons
             )
             ->build();
-    }
-
-    public function actionSelect($id = null)
-    {
-        $globalUser = $this->getUser();
-
-        if (!$id) {
-            return $this->actionList();
-        }
-
-        $gender = Gender::findOne($id);
-
-        if ($gender) {
-            $globalUser->gender_id = $gender->id;
-            $globalUser->save();
-        }
-
-        return $this->actionIndex();
     }
 }

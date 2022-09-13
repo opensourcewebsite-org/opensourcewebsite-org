@@ -1111,6 +1111,14 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
     }
 
+    public function getNewUserStellar(): UserStellar
+    {
+        $model = new UserStellar();
+        $model->user_id = Yii::$app->user->id;
+
+        return $model;
+    }
+
     public function getPendingDebts()
     {
         $query = Debt::find()
@@ -1277,5 +1285,15 @@ class User extends ActiveRecord implements IdentityInterface
                 'id' => $this->id,
             ])
         );
+    }
+
+    /**
+     * Gets query for [[Wallet]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWallets()
+    {
+        return $this->hasMany(Wallet::class, ['user_id' => 'id']);
     }
 }

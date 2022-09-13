@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\queries;
 
 use app\components\debt\Redistribution;
 use app\components\debt\Reduction;
 use app\models\Debt;
+use app\models\DebtBalance;
 use app\models\queries\traits\SelfSearchTrait;
 use yii\db\ActiveQuery;
-use app\models\DebtBalance;
 
 /**
  * This is the ActiveQuery class for [[\app\models\DebtBalance]].
@@ -20,6 +22,9 @@ class DebtBalanceQuery extends ActiveQuery
 {
     use SelfSearchTrait;
 
+    /**
+     * @return self
+     */
     public function debt(Debt $debt): self
     {
         /**
@@ -41,8 +46,7 @@ class DebtBalanceQuery extends ActiveQuery
     /**
      * @param array|int $id
      * @param string $operand
-     *
-     * @return DebtBalanceQuery
+     * @return self
      */
     public function userTo($id, $operand = 'IN'): self
     {
@@ -54,8 +58,7 @@ class DebtBalanceQuery extends ActiveQuery
      * To avoid processing of the same row twice we use field `debt_balance.reduction_try_at`.
      *
      * @param bool $can
-     *
-     * @return DebtBalanceQuery
+     * @return self
      */
     public function canBeReduced(bool $can): self
     {
@@ -67,7 +70,7 @@ class DebtBalanceQuery extends ActiveQuery
      * {@see Redistribution} should process all rows.
      * To avoid processing of the same row twice we use field `debt_balance.redistribute_try_at`.
      *
-     * @return DebtBalanceQuery
+     * @return self
      */
     public function canBeRedistributed(): self
     {
@@ -75,6 +78,9 @@ class DebtBalanceQuery extends ActiveQuery
             ->andWhere('debt_balance.redistribute_try_at IS NULL');
     }
 
+    /**
+     * @return self
+     */
     public function amount($value, $alias = 'debt_balance'): self
     {
         return $this->andWhere(["{{{$alias}}}.amount" => $value]);
@@ -83,8 +89,7 @@ class DebtBalanceQuery extends ActiveQuery
     /**
      * @param DebtBalance[] $models
      * @param string $operand
-     *
-     * @return self|ActiveQuery
+     * @return self
      */
     public function balances(array $models, string $operand = 'IN'): self
     {

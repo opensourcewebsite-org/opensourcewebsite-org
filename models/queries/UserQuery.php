@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\queries;
 
 use app\models\queries\traits\RandomTrait;
@@ -18,7 +20,7 @@ class UserQuery extends ActiveQuery
     use RandomTrait;
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function active()
     {
@@ -28,7 +30,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function age()
     {
@@ -41,7 +43,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function statisticYearOfBirth()
     {
@@ -54,7 +56,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function gender()
     {
@@ -70,7 +72,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function sexuality()
     {
@@ -85,7 +87,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function currency()
     {
@@ -101,7 +103,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function interfaceLanguage()
     {
@@ -115,7 +117,7 @@ class UserQuery extends ActiveQuery
     }
 
     /**
-     * @return UserQuery
+     * @return self
      */
     public function languageAndLevel()
     {
@@ -129,6 +131,9 @@ class UserQuery extends ActiveQuery
             ]);
     }
 
+    /**
+     * @return self
+     */
     public function citizenship()
     {
         return $this->select('country.name as country, count(*) as users')

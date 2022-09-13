@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\queries;
 
 use app\models\Contact;
@@ -24,26 +26,41 @@ class ContactQuery extends ActiveQuery
 
     use SelfSearchTrait;
 
+    /**
+     * @return self
+     */
     public function user(string $method = 'andWhere'): self
     {
         return $this->$method(['not', [Contact::tableName() . '.link_user_id' => null]]);
     }
 
+    /**
+     * @return self
+     */
     public function nonUser(string $method = 'andWhere'): self
     {
         return $this->$method([Contact::tableName() . '.link_user_id' => null]);
     }
 
+    /**
+     * @return self
+     */
     public function userOwner($id = null, $method = 'andWhere'): self
     {
         return $this->$method([Contact::tableName() . '.user_id' => ($id ?? Yii::$app->user->id)]);
     }
 
+    /**
+     * @return self
+     */
     public function userLinked($id, $operand = 'IN', $method = 'andWhere'): self
     {
         return $this->$method([$operand, Contact::tableName() . '.link_user_id', $id]);
     }
 
+    /**
+     * @return self
+     */
     public function forDebtRedistribution($contactId): self
     {
         return $this
@@ -54,6 +71,9 @@ class ContactQuery extends ActiveQuery
             ->user();
     }
 
+    /**
+     * @return self
+     */
     public function withDebtRedistributionByCurrency($currencyId, $joinType = 'LEFT JOIN'): self
     {
         return $this->joinWith([
@@ -69,7 +89,7 @@ class ContactQuery extends ActiveQuery
      * - it has DebtRedistribution;
      * - And DebtBalance.amount did not reached limit (DebtRedistribution.max_amount) yet.
      *
-     * @return ContactQuery
+     * @return self
      */
     public function canRedistributeInto(DebtBalance $debtBalance, ?int $level): self
     {

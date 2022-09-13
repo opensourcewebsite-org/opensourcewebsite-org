@@ -31,7 +31,8 @@ use app\models\UserLanguage;
 use app\models\UserMoqupFollow;
 use app\models\UserStellar;
 use app\models\Vacancy;
-use app\modules\bot\models\ChatMarketplacePost;
+use app\models\Wallet;
+use app\models\WalletTransaction;
 use app\modules\bot\models\User as BotUser;
 use app\modules\comment\models\IssueComment;
 use app\modules\comment\models\MoqupComment;
@@ -75,8 +76,6 @@ class MergeAccountsService
             'status' => CurrencyExchangeOrder::STATUS_OFF,
         ], "user_id = {$userToMerge->id}");
         CurrencyExchangeOrderResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
-        ChatMarketplacePost::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
 
         MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
         Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
@@ -267,6 +266,41 @@ class MergeAccountsService
                     $debt->save(false);
                 }
             } catch (Exception $e) {
+                return false;
+            }
+        }
+
+        // TODO Wallet
+        if ($userToMerge->wallets) {
+            $transaction = Yii::$app->db->beginTransaction();
+
+            try {
+                // delete empty Wallets
+                Wallet::deleteAll([
+                    'user_id' => $userToMerge->id,
+                    'amount' => 0,
+                ]);
+
+                // delete WalletTransactions between this users
+                WalletTransaction::deleteAll([
+                    'from_user_id' => [
+                        $user->id,
+                        $userToMerge->id,
+                    ],
+                    'to_user_id' => [
+                        $user->id,
+                        $userToMerge->id,
+                    ],
+                ]);
+
+                WalletTransaction::updateAll(['from_user_id' => $user->id], "from_user_id = {$userToMerge->id}");
+
+                WalletTransaction::updateAll(['to_user_id' => $user->id], "to_user_id = {$userToMerge->id}");
+
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+
                 return false;
             }
         }

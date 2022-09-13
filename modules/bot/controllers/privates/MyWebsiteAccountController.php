@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
+use app\components\helpers\TimeHelper;
 use app\models\Currency;
 use app\models\Language;
-use app\components\helpers\TimeHelper;
-use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
+use Yii;
 
 /**
  * Class MyWebsiteAccountController

@@ -2,13 +2,13 @@
 
 namespace app\commands;
 
-use Yii;
-use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
 use app\commands\traits\ControllerLogTrait;
+use app\components\CustomConsole;
+use app\interfaces\CronChainedInterface;
 use app\models\CronJob;
 use app\models\CronJobConsole;
-use app\components\CustomConsole;
+use Yii;
+use yii\console\Controller;
 use yii\console\Exception;
 
 /**

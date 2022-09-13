@@ -7,6 +7,7 @@ use app\models\Language;
 use app\models\queries\ContactQuery;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
+use app\models\Wallet;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\controllers\privates\DeleteMessageController;
@@ -179,7 +180,11 @@ class User extends ActiveRecord
             ->viaTable(ChatMember::tableName(), ['user_id' => 'id']);
     }
 
-    // Get private chat
+    /**
+     * Gets query for private [[Chat]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getChat()
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id'])
@@ -254,11 +259,21 @@ class User extends ActiveRecord
             ->orderBy(['title' => SORT_ASC]);
     }
 
+    /**
+     * Gets query for [[Language]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getLanguage()
     {
         return $this->hasOne(Language::class, [ 'id' => 'language_id' ]);
     }
 
+    /**
+     * Gets query for [[GlobalUser]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getGlobalUser()
     {
         return $this->hasOne(GlobalUser::class, ['id' => 'user_id']);
@@ -314,6 +329,8 @@ class User extends ActiveRecord
     }
 
     /**
+     * Gets query for [[UserLocation]].
+     *
      * @return \yii\db\ActiveQuery
      */
     public function getUserLocation()
@@ -377,9 +394,25 @@ class User extends ActiveRecord
         return false;
     }
 
+    /**
+     * Gets query for [[Contact]].
+     *
+     * @return ContactQuery
+     */
     public function getContacts(): ContactQuery
     {
         return $this->hasMany(Contact::class, ['user_id' => 'user_id'])
             ->joinWith('counterBotUser', $eagerLoading = true, $joinType = 'INNER JOIN');
+    }
+
+    /**
+     * Gets query for [[Wallet]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWallets()
+    {
+        return $this->hasMany(Wallet::class, ['user_id' => 'id'])
+            ->viaTable(GlobalUser::tableName(), ['id' => 'user_id']);
     }
 }

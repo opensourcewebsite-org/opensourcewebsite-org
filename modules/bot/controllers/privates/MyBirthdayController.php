@@ -20,18 +20,16 @@ class MyBirthdayController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
-
-        $globalUser = $this->getUser();
-
-        if (!$globalUser->birthday) {
-            return $this->actionInput();
+        if (!$this->globalUser->birthday) {
+            return $this->actionSet();
         }
+
+        $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'birthday' => $globalUser->birthday,
+                    'user' => $this->globalUser,
                 ]),
                 [
                     [
@@ -44,7 +42,7 @@ class MyBirthdayController extends Controller
                             'callback_data' => MenuController::createRoute(),
                         ],
                         [
-                            'callback_data' => self::createRoute('input'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -53,32 +51,30 @@ class MyBirthdayController extends Controller
             ->build();
     }
 
-    public function actionInput()
+    public function actionSet()
     {
-        $this->getState()->setName(self::createRoute('input'));
-
-        $globalUser = $this->getUser();
-
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $dateValidator = new DateValidator();
 
                 if ($dateValidator->validate($text)) {
-                    $globalUser->birthday = Yii::$app->formatter->format($text, 'date');
-                    $globalUser->save();
+                    $this->globalUser->birthday = Yii::$app->formatter->format($text, 'date');
+                    $this->globalUser->save();
 
                     return $this->actionIndex();
                 }
             }
         }
 
+        $this->getState()->setName(self::createRoute('set'));
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('input'),
+                $this->render('set'),
                 [
                     [
                         [
-                            'callback_data' => ($globalUser->birthday ? self::createRoute() : MyProfileController::createRoute()),
+                            'callback_data' => ($this->globalUser->birthday ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],

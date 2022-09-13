@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace app\models\forms;
 
-use Yii;
 use app\models\User;
+use Yii;
 
 /**
  * Login form

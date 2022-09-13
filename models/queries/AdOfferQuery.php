@@ -16,6 +16,9 @@ use yii\db\ActiveQuery;
  */
 class AdOfferQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function live(): self
     {
         return $this->andWhere([AdOffer::tableName() . '.status' => AdOffer::STATUS_ON])
@@ -23,6 +26,9 @@ class AdOfferQuery extends ActiveQuery
             ->andWhere(['>=', User::tableName() . '.last_activity_at', time() - AdOffer::LIVE_DAYS * 24 * 60 * 60]);
     }
 
+    /**
+     * @return self
+     */
     public function orderByRank(): self
     {
         return $this->orderBy([
@@ -31,11 +37,17 @@ class AdOfferQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function userOwner(int $id = null, string $method = 'andWhere'): self
     {
         return $this->$method([AdOffer::tableName() . '.user_id' => ($id ?? Yii::$app->user->id)]);
     }
 
+    /**
+     * @return self
+     */
     public function excludeUserId(int $id = null, string $method = 'andWhere'): self
     {
         return $this->$method(['!=', AdOffer::tableName() . '.user_id', ($id ?? Yii::$app->user->id)]);

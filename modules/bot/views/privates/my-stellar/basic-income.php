@@ -1,9 +1,9 @@
 <?php
 
+use app\components\helpers\Html;
+use app\models\StellarGiver;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
-use app\models\StellarGiver;
-use app\components\helpers\Html;
 
 $stellarGiver = new StellarGiver();
 ?>
@@ -23,15 +23,13 @@ $stellarGiver = new StellarGiver();
 <?= Emoji::STATUS_OFF ?> <?= Yii::t('bot', 'You have refused to participate in this program') ?>.<br/>
 <?php endif; ?>
 <?php if (StellarGiver::getGiverPublicKey()) : ?>
-<br/>
 ————<br/>
-<br/>
-<?= Yii::t('bot', 'Start earning a weekly basic income every Friday') ?>. <?= Yii::t('bot', 'Weekly {0}% of the total basic income fund is sent in equal parts to all eligible participants', StellarGiver::WEEKLY_PAYMENT_PERCENT) ?>. <?= Yii::t('bot', 'The total basic income fund is formed by donations from people who support the principles and values of the free society') ?>.<br/>
-<br/>
 <?= Yii::t('bot', 'Weekly payment to each participant') ?>: <b><?= $stellarGiver->getPaymentAmount() ?> XLM</b><br/>
 <br/>
 <?= Yii::t('bot', 'Total participants') ?>: <b><?= $stellarGiver->getParticipantsCount() ?></b><br/>
 <?= Yii::t('bot', 'Weekly Basic Income Fund') ?>: <b><?= $stellarGiver->getAvailableBalance() ?> XLM</b><br/>
+<br/>
+<?= Yii::t('bot', 'Start earning a weekly basic income every Friday') ?>. <?= Yii::t('bot', 'Weekly {0}% of the total basic income fund is sent in equal parts to all eligible participants', StellarGiver::WEEKLY_PAYMENT_PERCENT) ?>. <?= Yii::t('bot', 'The total basic income fund is formed by donations from people who support the principles and values of the free society') ?>.<br/>
 <br/>
 <?= Yii::t('bot', 'Any person who meets these criteria can become a participant in a free society and receive a weekly basic income') ?>:<br/>
 <br/>

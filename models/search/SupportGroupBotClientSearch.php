@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\search;
 
-use Yii;
 use app\models\SupportGroupBotClient;
+use Yii;
 use yii\data\ActiveDataProvider;
 
 /**
@@ -36,7 +38,6 @@ class SupportGroupBotClientSearch extends SupportGroupBotClient
      */
     public function search($params)
     {
-
         $query = self::find()
             ->joinWith([
                 'supportGroupClient',
@@ -44,8 +45,8 @@ class SupportGroupBotClientSearch extends SupportGroupBotClient
             ]);
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
-            'sort'       => [
+            'query' => $query,
+            'sort' => [
                 'defaultOrder' => [
                     'last_message_at' => SORT_DESC,
                 ],

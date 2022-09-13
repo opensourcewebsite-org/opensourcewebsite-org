@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\Debt;
 
-use Yii;
 use app\models\Debt;
 use app\models\DebtBalance;
+use Yii;
 
+// TODO old
 final class ConfirmScenario
 {
     private Debt $model;
-    private $modelClass = 'AdOffer';
+
+    private $modelClass = 'Debt';
+
     private array $errors = [];
 
     public function __construct(AdOffer $model)

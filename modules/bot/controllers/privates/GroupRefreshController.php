@@ -138,10 +138,14 @@ class GroupRefreshController extends Controller
             ]);
 
             if (!$chatMember) {
-                $user->link('chats', $chat, ['status' => $botApiAdministrator->getStatus()]);
+                $user->link('chats', $chat, [
+                    'status' => $botApiAdministrator->getStatus(),
+                    'role' => ($botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR) ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
+                ]);
             } else {
                 $chatMember->setAttributes([
                     'status' => $botApiAdministrator->getStatus(),
+                    'role' => ($botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR) ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
                 ]);
 
                 $chatMember->save(false);

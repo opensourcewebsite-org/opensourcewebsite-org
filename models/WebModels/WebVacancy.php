@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace app\models\WebModels;
 
-use Yii;
 use app\models\Vacancy;
 use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
+use Yii;
 use yii\web\JsExpression;
 
 class WebVacancy extends Vacancy

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace app\models\search;
 
 use app\models\Resume;
-use yii\data\ActiveDataProvider;
 use Yii;
+use yii\data\ActiveDataProvider;
 
 class ResumeSearch extends Resume
 {
@@ -34,7 +34,7 @@ class ResumeSearch extends Resume
             ->userOwner();
 
         $dataProvider = new ActiveDataProvider([
-            'query' => $query
+            'query' => $query,
         ]);
 
         $this->load($params);

@@ -15,6 +15,9 @@ use yii\db\ActiveQuery;
  */
 class UserQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function human(): self
     {
         return $this->andWhere([

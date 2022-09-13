@@ -1,17 +1,17 @@
 <?php
 
+use app\models\StellarCroupier;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
-use app\models\StellarCroupier;
 
 $stellarCroupier = new StellarCroupier();
 ?>
 <b><?= Yii::t('bot', 'Fortune Game') ?></b><br/>
 <br/>
 <?php if (StellarCroupier::getCroupierPublicKey()) : ?>
-<?= Yii::t('bot', 'Try your luck at blockchain based fortune game with transparent open source winning algorithms') ?>. <?= Yii::t('bot', 'When you win, your prize will be instantly sent to your Stellar account') ?>.<br/>
-<br/>
 <?= Yii::t('bot', 'Prize Fund') ?>: <b><?= $stellarCroupier->getAvailableBalance() ?> XLM</b><br/>
+<br/>
+<?= Yii::t('bot', 'Try your luck at blockchain based fortune game with transparent open source winning algorithms') ?>. <?= Yii::t('bot', 'When you win, your prize will be instantly sent to your Stellar account') ?>.<br/>
 <br/>
 <?= Yii::t('bot', 'Every bet has a chance to win a prize that significantly exceeds the bet') ?>:<br/>
 <br/>

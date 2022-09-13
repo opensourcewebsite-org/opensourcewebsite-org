@@ -16,6 +16,9 @@ use yii\db\ActiveQuery;
  */
 class ChatQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function private(): self
     {
         return $this->andWhere([
@@ -23,6 +26,9 @@ class ChatQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function group(): self
     {
         return $this->andWhere([
@@ -32,6 +38,9 @@ class ChatQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function channel(): self
     {
         return $this->andWhere([
@@ -39,6 +48,9 @@ class ChatQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function hasUsername(): self
     {
         return $this->andWhere([
@@ -46,6 +58,9 @@ class ChatQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function orderByCreatorRank(): self
     {
         return $this->joinWith('chatMemberCreator.user.globalUser')

@@ -23,14 +23,10 @@ class MyTimezoneController extends Controller
     {
         $this->getState()->setName(null);
 
-        $globalUser = $this->getUser();
-
-        $timezones = TimeHelper::timezonesList();
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => TimeHelper::getNameByOffset($globalUser->timezone),
+                    'timezone' => TimeHelper::getNameByOffset($this->globalUser->timezone),
                 ]),
                 [
                     [
@@ -43,7 +39,7 @@ class MyTimezoneController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('list'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -52,11 +48,28 @@ class MyTimezoneController extends Controller
             ->build();
     }
 
-    public function actionList($page = 2)
+    /**
+     * @param string|null $timezone
+     * @param int $page
+     * @return array
+     */
+    public function actionSet($timezone = null, $page = 2)
     {
-        $this->getState()->setName(self::createRoute('input'));
+        if ($timezone) {
+            $this->globalUser->timezone = $timezone;
 
-        $timezones = TimeHelper::timezonesList();
+            if ($this->globalUser->validate('timezone')) {
+                $this->globalUser->save(false);
+
+                return $this->actionIndex();
+            }
+        }
+
+        // TODO add text input to set timezone (Examples: 07, 06:30, -07, -06:30)
+
+        $this->getState()->setName(self::createRoute('set'));
+
+        $timezones = TimeHelper::getTimezoneNames();
 
         $pagination = new Pagination([
             'totalCount' => count($timezones),
@@ -69,7 +82,7 @@ class MyTimezoneController extends Controller
         ]);
 
         $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('list', [
+            return self::createRoute('set', [
                 'page' => $page,
             ]);
         });
@@ -80,7 +93,7 @@ class MyTimezoneController extends Controller
 
         foreach ($timezones as $timezone => $name) {
             $buttons[][] = [
-                'callback_data' => self::createRoute('select', [
+                'callback_data' => self::createRoute('set', [
                     'timezone' => $timezone,
                 ]),
                 'text' => $name,
@@ -100,34 +113,9 @@ class MyTimezoneController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('set'),
                 $buttons
             )
             ->build();
-    }
-
-    public function actionSelect($timezone = null)
-    {
-        if (!$timezone) {
-            return $this->actionList();
-        }
-
-        $globalUser = $this->getUser();
-        $globalUser->timezone = $timezone;
-
-        if ($globalUser->validate('timezone')) {
-            $globalUser->save(false);
-
-            return $this->actionIndex();
-        }
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
-            ->build();
-    }
-
-    public function actionInput()
-    {
-        // TODO add text input to set timezone (Examples: 07, 06:30, -07, -06:30)
     }
 }

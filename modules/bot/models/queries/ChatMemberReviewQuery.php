@@ -16,6 +16,9 @@ use yii\db\ActiveQuery;
  */
 class ChatMemberReviewQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function active(): self
     {
         return $this->andWhere([
@@ -23,6 +26,9 @@ class ChatMemberReviewQuery extends ActiveQuery
         ]);
     }
 
+    /**
+     * @return self
+     */
     public function orderByRank(): self
     {
         return $this->joinWith('globalUser')

@@ -2,12 +2,12 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
+use app\models\AdOffer;
 use app\models\matchers\AdOfferMatcher;
 use Yii;
 use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
-use app\commands\traits\ControllerLogTrait;
-use app\models\AdOffer;
 use yii\console\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;

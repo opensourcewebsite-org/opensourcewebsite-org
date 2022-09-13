@@ -31,8 +31,8 @@ class MenuController extends Controller
                 [
                     [
                         [
-                            'callback_data' => TelegramController::createRoute(),
-                            'text' => Yii::t('bot', 'Telegram'),
+                            'callback_data' => WalletController::createRoute(),
+                            'text' => Yii::t('bot', 'Money'),
                         ],
                     ],
                     [
@@ -67,6 +67,12 @@ class MenuController extends Controller
                             'callback_data' => JoController::createRoute(),
                             'text' => Yii::t('bot', 'Jobs'),
                             'visible' => $globalUser->getResumes()->exists() || $globalUser->getVacancies()->exists(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => TelegramController::createRoute(),
+                            'text' => Yii::t('bot', 'Telegram'),
                         ],
                     ],
                     [

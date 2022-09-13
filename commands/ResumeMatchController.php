@@ -2,14 +2,14 @@
 
 namespace app\commands;
 
+use app\commands\traits\ControllerLogTrait;
+use app\interfaces\CronChainedInterface;
 use app\models\matchers\ResumeMatcher;
+use app\models\Resume;
 use Yii;
 use yii\console\Controller;
-use app\interfaces\CronChainedInterface;
-use app\commands\traits\ControllerLogTrait;
-use app\models\Resume;
-use yii\db\ActiveRecord;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * Class ResumeMatchController

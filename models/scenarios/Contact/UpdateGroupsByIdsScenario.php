@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\Contact;
 
+use app\components\helpers\ArrayHelper;
 use app\models\Contact;
 use app\models\ContactHasGroup;
-use app\components\helpers\ArrayHelper;
 
 class UpdateGroupsByIdsScenario
 {

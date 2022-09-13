@@ -22,18 +22,16 @@ class MySexualityController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
-
-        $globalUser = $this->getUser();
-
-        if (!$globalUser->sexuality_id) {
-            return $this->actionSelect();
+        if (!$this->globalUser->sexuality_id) {
+            return $this->actionSet();
         }
+
+        $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'sexuality' => $globalUser->sexuality->name,
+                    'sexuality' => $this->globalUser->sexuality,
                 ]),
                 [
                     [
@@ -46,7 +44,7 @@ class MySexualityController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('list'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -55,9 +53,25 @@ class MySexualityController extends Controller
             ->build();
     }
 
-    public function actionList($page = 1)
+    /**
+     * @param int|null $id Sexuality->id
+     * @param int $page
+     * @return array
+     */
+    public function actionSet($id = null, $page = 1)
     {
-        $globalUser = $this->getUser();
+        if ($id) {
+            $sexuality = Sexuality::findOne($id);
+
+            if ($sexuality) {
+                $this->globalUser->sexuality_id = $sexuality->id;
+                $this->globalUser->save();
+
+                return $this->actionIndex();
+            }
+        }
+
+        $this->getState()->setName(null);
 
         $query = Sexuality::find();
 
@@ -71,26 +85,25 @@ class MySexualityController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('update', [
-                'page' => $page,
-            ]);
-        });
-
-        $sexualities = $query
-            ->offset($pagination->offset)
+        $sexualities = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
         if ($sexualities) {
             foreach ($sexualities as $sexuality) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('select', [
+                    'callback_data' => self::createRoute('set', [
                         'id' => $sexuality->id,
                     ]),
                     'text' => Yii::t('bot', $sexuality->name),
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('set', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -99,34 +112,16 @@ class MySexualityController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => ($globalUser->sexuality_id ? self::createRoute() : MyProfileController::createRoute()),
+                'callback_data' => ($this->globalUser->sexuality_id ? self::createRoute() : MyProfileController::createRoute()),
                 'text' => Emoji::BACK,
             ],
         ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('set'),
                 $buttons
             )
             ->build();
-    }
-
-    public function actionSelect($id = null)
-    {
-        $globalUser = $this->getUser();
-
-        if (!$id) {
-            return $this->actionList();
-        }
-
-        $sexuality = Sexuality::findOne($id);
-
-        if ($sexuality) {
-            $globalUser->sexuality_id = $sexuality->id;
-            $globalUser->save();
-        }
-
-        return $this->actionIndex();
     }
 }

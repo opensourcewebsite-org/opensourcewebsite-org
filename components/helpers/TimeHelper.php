@@ -12,7 +12,7 @@ use yii\base\InvalidParamException;
  */
 class TimeHelper
 {
-    public static function timezonesList()
+    public static function getTimezoneNames()
     {
         $offsets = [
             -720,
@@ -66,7 +66,12 @@ class TimeHelper
 
     public static function getNameByOffset($offset)
     {
-        return 'UTC ' . ($offset < 0 ? '-' : '+') . date('H:i', abs($offset) * 60);
+        return 'UTC ' . self::getTimezoneByOffset($offset);
+    }
+
+    public static function getTimezoneByOffset($offset)
+    {
+        return ($offset < 0 ? '-' : '+') . date('H:i', abs($offset) * 60);
     }
 
     public static function getTimeOfDayByMinutes(int $minutes = 0)

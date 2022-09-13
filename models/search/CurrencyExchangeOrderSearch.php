@@ -35,7 +35,9 @@ class CurrencyExchangeOrderSearch extends CurrencyExchangeOrder
         $query = CurrencyExchangeOrder::find()
             ->userOwner();
 
-        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         $this->load($params);
 

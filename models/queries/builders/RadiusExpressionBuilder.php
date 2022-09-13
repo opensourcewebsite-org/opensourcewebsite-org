@@ -10,6 +10,7 @@ use yii\db\Expression;
 class RadiusExpressionBuilder implements ConditionExpressionBuilderInterface
 {
     private ModelWithLocationInterface $model;
+
     private string $targetTableName;
 
     public function __construct(ModelWithLocationInterface $model, string $targetTableName)

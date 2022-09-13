@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\Vacancy;
 
-use app\models\Vacancy;
-use app\models\JobVacancyKeyword;
 use app\components\helpers\ArrayHelper;
+use app\models\JobVacancyKeyword;
+use app\models\Vacancy;
 
 class UpdateKeywordsByIdsScenario
 {

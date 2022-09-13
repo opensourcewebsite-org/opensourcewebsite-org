@@ -38,7 +38,7 @@ class GroupTimezoneController extends Controller
 
         $this->getState()->setName(self::createRoute('input'));
 
-        $timezones = TimeHelper::timezonesList();
+        $timezones = TimeHelper::getTimezoneNames();
 
         $pagination = new Pagination([
             'totalCount' => count($timezones),
@@ -52,13 +52,6 @@ class GroupTimezoneController extends Controller
 
         $timezones = array_slice($timezones, $pagination->offset, $pagination->limit, true);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-            return self::createRoute('list', [
-                'chatId' => $chatId,
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         foreach ($timezones as $timezone => $name) {
@@ -70,6 +63,13 @@ class GroupTimezoneController extends Controller
                 ]),
             ];
         }
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+            return self::createRoute('list', [
+                'chatId' => $chatId,
+                'page' => $page,
+            ]);
+        });
 
         if ($paginationButtons) {
             $buttons[] = $paginationButtons;

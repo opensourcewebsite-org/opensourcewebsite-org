@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace app\models\scenarios\CurrencyExchangeOrder;
 
+use app\components\helpers\ArrayHelper;
 use app\models\CurrencyExchangeOrder;
 use app\models\CurrencyExchangeOrderSellingPaymentMethod;
-use app\components\helpers\ArrayHelper;
 
 class UpdateSellingPaymentMethodsByIdsScenario
 {

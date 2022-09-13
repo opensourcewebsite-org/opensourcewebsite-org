@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\search;
 
 use app\interfaces\UserRelation\ByDebtInterface;
 use app\interfaces\UserRelation\ByOwnerInterface;
+use app\models\DebtRedistribution;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\DebtRedistribution;
 use yii\data\Sort;
 
 /**
@@ -14,7 +16,6 @@ use yii\data\Sort;
  */
 class DebtRedistributionSearch extends DebtRedistribution
 {
-
     public function rules(): array
     {
         return [
@@ -46,8 +47,8 @@ class DebtRedistributionSearch extends DebtRedistribution
             'attributes'   => [
                 'max_amount',
                 'currency_id' => [
-                    'asc'     => ['currency.code' => SORT_ASC],
-                    'desc'    => ['currency.code' => SORT_DESC],
+                    'asc' => ['currency.code' => SORT_ASC],
+                    'desc' => ['currency.code' => SORT_DESC],
                     'default' => SORT_ASC,
                 ],
             ],
@@ -61,8 +62,8 @@ class DebtRedistributionSearch extends DebtRedistribution
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
-            'sort'       => $sort,
+            'query' => $query,
+            'sort' => $sort,
             'pagination' => false,
         ]);
 

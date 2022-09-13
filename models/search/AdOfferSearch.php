@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace app\models\search;
 
-use Yii;
 use app\models\AdOffer;
+use Yii;
 use yii\data\ActiveDataProvider;
 
 class AdOfferSearch extends AdOffer
@@ -27,12 +27,15 @@ class AdOfferSearch extends AdOffer
         $query = AdOffer::find()
             ->userOwner();
 
-        $dataProvider = new ActiveDataProvider(['query' => $query]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
             $query->where(['0=1']);
+
             return $dataProvider;
         }
 

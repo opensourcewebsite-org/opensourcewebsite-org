@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\queries;
 
 use app\interfaces\UserRelation\ByDebtInterface;
@@ -23,7 +25,6 @@ class CurrencyQuery extends ActiveQuery
     /**
      * @param ByOwnerInterface|ByDebtInterface $modelSource
      * @param int|null $modelId specify it on Update form (to exclude all except this one)
-     *
      * @return self
      */
     public function excludeExistedInDebtRedistribution($modelSource, $modelId = null): self
@@ -42,6 +43,9 @@ class CurrencyQuery extends ActiveQuery
             ->andWhere($condition);
     }
 
+    /**
+     * @return self
+     */
     public function byCode($code): self
     {
         return $this->andWhere([Currency::tableName() . '.code' => $code]);

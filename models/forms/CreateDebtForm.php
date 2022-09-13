@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace app\models\forms;
 
+use app\models\Contact;
+use app\models\Debt;
 use Yii;
 use yii\base\Model;
-use app\models\Debt;
-use app\models\Contact;
 
 class CreateDebtForm extends Model
 {

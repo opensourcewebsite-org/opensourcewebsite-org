@@ -15,6 +15,9 @@ use yii\db\ActiveQuery;
  */
 class ChatMemberQuery extends ActiveQuery
 {
+    /**
+     * @return self
+     */
     public function orderByRank(): self
     {
         return $this->joinWith('user.globalUser')

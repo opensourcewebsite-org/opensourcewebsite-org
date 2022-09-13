@@ -9,6 +9,7 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
+
 use function foo\func;
 
 /**
@@ -19,13 +20,14 @@ use function foo\func;
 class MyCitizenshipsController extends Controller
 {
     /**
+     * @param int $page
      * @return array
      */
     public function actionIndex($page = 1)
     {
         $this->getState()->setName(null);
 
-        $query = $this->getUser()->getCitizenships();
+        $query = $this->globalUser->getCitizenships();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
@@ -37,16 +39,9 @@ class MyCitizenshipsController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
-        $citizenships = $query
-            ->offset($pagination->offset)
+        $citizenships = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -59,6 +54,12 @@ class MyCitizenshipsController extends Controller
                     'text' => $citizenship->country->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -75,7 +76,7 @@ class MyCitizenshipsController extends Controller
                 'callback_data' => MenuController::createRoute(),
             ],
             [
-                'callback_data' => self::createRoute('list'),
+                'callback_data' => self::createRoute('add'),
                 'text' => Emoji::ADD,
             ],
         ];
@@ -88,9 +89,67 @@ class MyCitizenshipsController extends Controller
             ->build();
     }
 
-    public function actionList($page = 1)
+    /**
+     * @param int|null $id Country->id
+     * @param int $page
+     * @return array
+     */
+    public function actionAdd($id = null, $page = 1)
     {
-        $this->getState()->setName(self::createRoute('input'));
+        if ($id) {
+            $country = Country::findOne($id);
+
+            if ($country) {
+                $citizenship = $this->globalUser
+                    ->getCitizenships()
+                    ->where([
+                        'country_id' => $id,
+                    ])
+                    ->one() ?? new UserCitizenship();
+
+                $citizenship->setAttributes([
+                    'user_id' => $this->globalUser->id,
+                    'country_id' => $country->id,
+                ]);
+                $citizenship->save();
+
+                return $this->actionIndex();
+            }
+        }
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if (strlen($text) <= 3) {
+                    $country = Country::find()
+                        ->orFilterWhere(['like', 'code', $text, false])
+                        ->one();
+                } else {
+                    $country = Country::find()
+                        ->orFilterWhere(['like', 'name', $text . '%', false])
+                        ->orFilterWhere(['like', 'slug', $text, false])
+                        ->one();
+                }
+
+                if ($country) {
+                    $citizenship = $this->globalUser
+                        ->getCitizenships()
+                        ->where([
+                            'country_id' => $id,
+                        ])
+                        ->one() ?? new UserCitizenship();
+
+                    $citizenship->setAttributes([
+                        'user_id' => $this->globalUser->id,
+                        'country_id' => $country->id,
+                    ]);
+                    $citizenship->save();
+
+                    return $this->actionIndex();
+                }
+            }
+        }
+
+        $this->getState()->setName(self::createRoute('add'));
 
         $query = Country::find();
 
@@ -104,26 +163,25 @@ class MyCitizenshipsController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('list', [
-                'page' => $page,
-            ]);
-        });
-
-        $countries = $query
-            ->offset($pagination->offset)
+        $countries = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
         if ($countries) {
             foreach ($countries as $country) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('select', [
+                    'callback_data' => self::createRoute('add', [
                         'id' => $country->id,
                     ]),
                     'text' => $country->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('add', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -139,43 +197,22 @@ class MyCitizenshipsController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('add'),
                 $buttons
             )
             ->build();
     }
 
-    public function actionSelect($id = null)
-    {
-        if (!$id) {
-            return $this->actionList();
-        }
-
-        $country = Country::findOne($id);
-
-        if ($country) {
-            $citizenship = $this
-                ->getUser()
-                ->getCitizenships()
-                ->where([
-                    'country_id' => $id,
-                ])
-                ->one() ?? new UserCitizenship();
-
-            $citizenship->setAttributes([
-                'user_id' => $this->getUser()->id,
-                'country_id' => $country->id,
-            ]);
-            $citizenship->save();
-        }
-
-        return $this->actionIndex();
-    }
-
+    /**
+     * @param int|null $id Country->id
+     * @return array
+     */
     public function actionView($id = null)
     {
         if (!$id) {
-            return $this->actionIndex();
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $country = Country::findOne($id);
@@ -223,8 +260,7 @@ class MyCitizenshipsController extends Controller
                 ->build();
         }
 
-        $citizenship = $this
-            ->getUser()
+        $citizenship = $this->globalUser
             ->getCitizenships()
             ->where([
                 'country_id' => $id,
@@ -244,29 +280,5 @@ class MyCitizenshipsController extends Controller
         }
 
         return $this->actionIndex();
-    }
-
-    public function actionInput()
-    {
-        if ($text = $this->getUpdate()->getMessage()->getText()) {
-            if (strlen($text) <= 3) {
-                $country = Country::find()
-                    ->orFilterWhere(['like', 'code', $text, false])
-                    ->one();
-            } else {
-                $country = Country::find()
-                    ->orFilterWhere(['like', 'name', $text . '%', false])
-                    ->orFilterWhere(['like', 'slug', $text, false])
-                    ->one();
-            }
-
-            if (isset($country)) {
-                return $this->actionSelect($country->id);
-            }
-        }
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
-            ->build();
     }
 }

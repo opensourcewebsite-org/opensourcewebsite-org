@@ -2,16 +2,16 @@
 
 namespace app\commands;
 
-use Yii;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
+use app\models\Contact;
 use app\models\StellarGiver;
 use app\models\User;
 use app\models\UserStellar;
-use app\models\Contact;
-use DateTime;
-use yii\console\Controller;
 use app\models\UserStellarBasicIncome;
+use DateTime;
+use Yii;
+use yii\console\Controller;
 
 /**
  * Class StellarGiverController

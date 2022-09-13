@@ -53,17 +53,9 @@ class GroupCurrencyController extends Controller
             'validatePage' => true,
         ]);
 
-        $currencies = $query
-            ->offset($pagination->offset)
+        $currencies = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
-            return self::createRoute('list', [
-                'chatId' => $chatId,
-                'page' => $page,
-            ]);
-        });
 
         $buttons = [];
 
@@ -77,6 +69,13 @@ class GroupCurrencyController extends Controller
                     'text' => $currency->code . ' - ' . $currency->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+                return self::createRoute('list', [
+                    'chatId' => $chatId,
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;

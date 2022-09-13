@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models\search;
 
 use app\models\CronJob;
-use Yii;
 use app\models\CronJobLog;
+use Yii;
 use yii\data\ActiveDataProvider;
 
 /**
@@ -34,11 +36,12 @@ class CronJobSearch extends CronJobLog
      */
     public function search($params)
     {
-        $query = self::find()->with('cronJob');
+        $query = self::find()
+            ->with('cronJob');
 
         $dataProvider = new ActiveDataProvider([
-            'query'      => $query,
-            'sort'       => [
+            'query' => $query,
+            'sort' => [
                 'defaultOrder' => [
                     'id' => SORT_DESC,
                 ],
@@ -54,15 +57,8 @@ class CronJobSearch extends CronJobLog
             return $dataProvider;
         }
 
-        $query->andFilterWhere([
-            'cron_job_id' => $this->cron_job_id,
-        ]);
-
-        $query->andFilterWhere(
-            [
-                'like', 'message', $this->message,
-            ]
-        );
+        $query->andFilterWhere(['cron_job_id' => $this->cron_job_id])
+            ->andFilterWhere(['like', 'message', $this->message]);
 
         return $dataProvider;
     }

@@ -3,6 +3,7 @@
 namespace app\modules\bot\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "bot_chat_marketplace_link".
@@ -16,7 +17,7 @@ use Yii;
  * @property ChatMember $chatMember
  * @property User $updatedBy
  */
-class ChatMarketplaceLink extends \yii\db\ActiveRecord
+class ChatMarketplaceLink extends ActiveRecord
 {
     /**
      * {@inheritdoc}

@@ -19,18 +19,16 @@ class MyUsernameController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
-
-        $user = $this->getUser();
-
-        if (!$user->username) {
-            return $this->actionUpdate();
+        if (!$this->globalUser->username) {
+            return $this->actionSet();
         }
+
+        $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'user' => $user,
+                    'user' => $this->globalUser,
                 ]),
                 [
                     [
@@ -43,7 +41,7 @@ class MyUsernameController extends Controller
                             'callback_data' => MenuController::createRoute(),
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -52,33 +50,31 @@ class MyUsernameController extends Controller
             ->build();
     }
 
-    public function actionUpdate()
+    public function actionSet()
     {
-        $this->getState()->setName(self::createRoute('update'));
-
-        $user = $this->getUser();
+        $this->getState()->setName(self::createRoute('set'));
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
-                $user->username = $text;
+                $this->globalUser->username = $text;
 
-                if ($user->validate('username')) {
-                    $user->save(false);
+                if ($this->globalUser->validate('username')) {
+                    $this->globalUser->save(false);
 
                     return $this->actionIndex();
                 } else {
-                    $user->refresh();
+                    $this->globalUser->refresh();
                 }
             }
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
+                $this->render('set'),
                 [
                     [
                         [
-                            'callback_data' => ($user->username ? self::createRoute() : MyProfileController::createRoute()),
+                            'callback_data' => ($this->globalUser->username ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],

@@ -16,22 +16,20 @@ use yii\data\Pagination;
 class MyCurrencyController extends Controller
 {
     /**
-     * @param null|string $currencyCode
-     *
      * @return array
      */
     public function actionIndex()
     {
-        $globalUser = $this->getUser();
-
-        if (!$globalUser->currency_id) {
-            return $this->actionList();
+        if (!$this->globalUser->currency_id) {
+            return $this->actionSet();
         }
+
+        $this->getState()->setName(null);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'currency' => $globalUser->currency,
+                    'currency' => $this->globalUser->currency,
                 ]),
                 [
                     [
@@ -44,7 +42,7 @@ class MyCurrencyController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => MyCurrencyController::createRoute('list'),
+                            'callback_data' => MyCurrencyController::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                     ],
@@ -54,18 +52,52 @@ class MyCurrencyController extends Controller
     }
 
     /**
+     * @param string|null $code Currency->code
      * @param int $page
-     *
      * @return array
      */
-    public function actionList($page = 1)
+    public function actionSet($code = null, $page = 1)
     {
-        $this->getState()->setName(self::createRoute('input'));
+        if ($code) {
+            $currency = Currency::findOne([
+                'code' => $code,
+            ]);
 
-        $globalUser = $this->getUser();
+            if ($currency) {
+                $this->globalUser->currency_id = $currency->id;
+                $this->globalUser->save();
+
+                return $this->actionIndex();
+            }
+        }
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if (strlen($text) <= 3) {
+                    $currency = Currency::find()
+                        ->orFilterWhere(['like', 'code', $text, false])
+                        ->one();
+                } else {
+                    $currency = Currency::find()
+                        ->orFilterWhere(['like', 'name', $text . '%', false])
+                        ->one();
+                }
+
+                if ($currency) {
+                    $this->globalUser->currency_id = $currency->id;
+                    $this->globalUser->save();
+
+                    return $this->actionIndex();
+                }
+            }
+        }
+
+        $this->getState()->setName(self::createRoute('set'));
 
         $query = Currency::find()
-            ->orderBy(['code' => SORT_ASC]);
+            ->orderBy([
+                'code' => SORT_ASC,
+            ]);
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
@@ -77,28 +109,27 @@ class MyCurrencyController extends Controller
             'validatePage' => true,
         ]);
 
-        $currencies = $query
-            ->offset($pagination->offset)
+        $currencies = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('update', [
-                'page' => $page,
-            ]);
-        });
 
         $buttons = [];
 
         if ($currencies) {
             foreach ($currencies as $currency) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('select', [
+                    'callback_data' => self::createRoute('set', [
                         'code' => $currency->code,
                     ]),
                     'text' => $currency->code . ' - ' . $currency->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('set', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -107,59 +138,16 @@ class MyCurrencyController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => ($globalUser->currency_id ? self::createRoute() : MyProfileController::createRoute()),
+                'callback_data' => ($this->globalUser->currency_id ? self::createRoute() : MyProfileController::createRoute()),
                 'text' => Emoji::BACK,
             ],
         ];
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('list'),
+                $this->render('set'),
                 $buttons
             )
-            ->build();
-    }
-
-    public function actionSelect($code = null)
-    {
-        $globalUser = $this->getUser();
-
-        if (!$code) {
-            return $this->actionList();
-        }
-
-        $currency = Currency::findOne([
-            'code' => $code,
-        ]);
-
-        if ($currency) {
-            $globalUser->currency_id = $currency->id;
-            $globalUser->save();
-        }
-
-        return $this->actionIndex();
-    }
-
-    public function actionInput()
-    {
-        if ($text = $this->getUpdate()->getMessage()->getText()) {
-            if (strlen($text) <= 3) {
-                $currency = Currency::find()
-                    ->orFilterWhere(['like', 'code', $text, false])
-                    ->one();
-            } else {
-                $currency = Currency::find()
-                    ->orFilterWhere(['like', 'name', $text . '%', false])
-                    ->one();
-            }
-
-            if (isset($currency)) {
-                return $this->actionSelect($currency->code);
-            }
-        }
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
             ->build();
     }
 }

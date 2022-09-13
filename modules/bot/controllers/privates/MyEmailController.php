@@ -22,7 +22,7 @@ class MyEmailController extends Controller
     public function actionIndex()
     {
         if (!$userEmail = $this->globalUser->userEmail) {
-            return $this->actionUpdate();
+            return $this->actionSet();
         }
 
         $this->getState()->setName(null);
@@ -31,7 +31,7 @@ class MyEmailController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'userEmail' => $userEmail,
-                    'user' => $this->getGlobalUser(),
+                    'user' => $this->globalUser,
                 ]),
                 [
                     [
@@ -44,7 +44,7 @@ class MyEmailController extends Controller
                             'callback_data' => MenuController::createRoute(),
                         ],
                         [
-                            'callback_data' => self::createRoute('update'),
+                            'callback_data' => self::createRoute('set'),
                             'text' => Emoji::EDIT,
                         ],
                         [
@@ -57,44 +57,40 @@ class MyEmailController extends Controller
             ->build();
     }
 
-    public function actionUpdate()
+    public function actionSet()
     {
-        $this->getState()->setName(self::createRoute('input'));
+        $this->getState()->setName(self::createRoute('set'));
 
         $userEmail = $this->globalUser->userEmail ?: $this->globalUser->newUserEmail;
 
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if ($userEmail->isNewRecord || ($userEmail->email != $text)) {
+                    $userEmail->email = $text;
+
+                    if ($userEmail->save()) {
+                        unset($this->globalUser->userEmail);
+                        $this->globalUser->sendConfirmationEmail();
+
+                        return $this->actionIndex();
+                    }
+                }
+            }
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('update'),
+                $this->render('set'),
                 [
                     [
                         [
-                            'callback_data' => ($userEmail->isNewRecord ? MyProfileController::createRoute() : self::createRoute()),
+                            'callback_data' => (!$userEmail->isNewRecord ? self::createRoute() : MyProfileController::createRoute()),
                             'text' => Emoji::BACK,
                         ],
                     ],
                 ]
             )
             ->build();
-    }
-
-    public function actionInput()
-    {
-        $userEmail = $this->globalUser->userEmail ?: $this->globalUser->newUserEmail;
-
-        if ($this->getUpdate()->getMessage()) {
-            if ($text = $this->getUpdate()->getMessage()->getText()) {
-                $userEmail->email = $text;
-
-                if ($userEmail->validate()) {
-                    $userEmail->save(false);
-                    unset($this->globalUser->userEmail);
-                    $this->globalUser->sendConfirmationEmail();
-
-                    return $this->actionIndex();
-                }
-            }
-        }
     }
 
     public function actionDelete()

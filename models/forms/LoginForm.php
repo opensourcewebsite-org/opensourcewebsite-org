@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace app\models\forms;
 
+use app\models\User;
 use Yii;
 use yii\base\Model;
-use app\models\User;
 
 /**
  * Login form
