@@ -18,8 +18,8 @@ $config = [
             'controllers' => [
                 'hello',
                 'message',
-                'system_message',
                 'premium_members',
+                'system_message',
                 'tip',
             ],
             'actions' => [
