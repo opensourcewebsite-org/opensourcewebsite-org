@@ -125,8 +125,8 @@ class CeController extends CrudController
                 ],
                 'buying_rate' => [
                     'isRequired' => false,
-                    'hidden' => function ($state) {
-                        $selling_rate = $state->getIntermediateField('currencyexchangeorderselling_rate');
+                    'hidden' => function () {
+                        $selling_rate = $this->field->get($this->modelName, 'selling_rate');
                         return isset($selling_rate);
                     },
                 ],
@@ -187,8 +187,8 @@ class CeController extends CrudController
                     ],
                 ],
                 'selling_location' => [
-                    'hidden' => function ($state) {
-                        if ($state->getIntermediateField('currencyexchangeorderselling_cash_on') === 1) {
+                    'hidden' => function () {
+                        if ($this->field->get($this->modelName, 'selling_cash_on') === 1) {
                             return false;
                         }
                         else {
@@ -221,8 +221,8 @@ class CeController extends CrudController
                     ],
                 ],
                 'selling_delivery_radius' => [
-                    'hidden' => function ($state) {
-                        if ($state->getIntermediateField('currencyexchangeorderselling_cash_on') === 1) {
+                    'hidden' => function () {
+                        if ($this->field->get($this->modelName, 'selling_cash_on') === 1) {
                             return false;
                         }
                         else {
@@ -291,8 +291,8 @@ class CeController extends CrudController
                     ],
                 ],
                 'buying_location' => [
-                    'hidden' => function ($state) {
-                        if ($state->getIntermediateField('currencyexchangeorderbuying_cash_on') === 1) {
+                    'hidden' => function () {
+                        if ($this->field->get($this->modelName, 'buying_cash_on') === 1) {
                             return false;
                         }
                         else {
@@ -325,8 +325,8 @@ class CeController extends CrudController
                     ],
                 ],
                 'buying_delivery_radius' => [
-                    'hidden' => function ($state) {
-                        if ($state->getIntermediateField('currencyexchangeorderbuying_cash_on') === 1) {
+                    'hidden' => function () {
+                        if ($this->field->get($this->modelName, 'buying_cash_on') === 1) {
                             return false;
                         }
                         else {
