@@ -939,10 +939,6 @@ abstract class CrudController extends Controller
                     'id' => $model->id,
                 ]),
             ],
-            [
-                'text' => Emoji::MENU,
-                'callback_data' => MenuController::createRoute(),
-            ],
         ];
 
         $params = [
@@ -1285,15 +1281,12 @@ abstract class CrudController extends Controller
     private function save()
     {
         $model = $this->getFilledModel($this->rule);
-        $rule = $this->rule;
         $isNew = $model->isNewRecord;
 
         if ($model->validate()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save()) {
-                    //isset($model->cross_rate_on) ? Yii::warning('cross_rate_on: ' . $model->cross_rate_on) : null;
-                    //Yii::warning('delivery_radius: ' . $model->delivery_radius);
+                if (isset($this->rule['isVirtual']) || $model->save()) { //Don't save DB record for virtual orders
                     $relationModel = $this->createRelationModel($model, $this->rule);
                     if ($relationModel && !$relationModel->save()) {
                         throw new \Exception('not possible to save ' . $relationModel->formName() . ' because ' . serialize($relationModel->getErrors()));
@@ -1389,7 +1382,9 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $this->field->reset();
+                    if (!isset($this->rule['isVirtual'])) {
+                        $this->field->reset(); // Keep user state for virtual orders
+                    }
                     $transaction->commit();
 
                     return $this->actionView($model->id);
@@ -1441,7 +1436,7 @@ abstract class CrudController extends Controller
         if (isset($assocArray[$nextKey]['hidden'])) {
             $hidden = $assocArray[$nextKey]['hidden'];
             if (is_callable($hidden)) {
-                $hidden = call_user_func($hidden, $this->getState());
+                $hidden = call_user_func($hidden, []);
             }
 
             if ($hidden === true) {
@@ -1996,13 +1991,6 @@ abstract class CrudController extends Controller
         }
         if (($config['createRelationIfEmpty'] ?? false) && $this->modelRelation->filledRelationCount($attributeName) <= 1) {
             unset($systemButtons['delete']);
-        }
-
-        if (!isset($systemButtons['menu'])) {
-            $systemButtons['menu'] = [
-                'text' => Emoji::MENU,
-                'callback_data' => MenuController::createRoute(),
-            ];
         }
 
         return array_values($systemButtons);

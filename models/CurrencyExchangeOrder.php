@@ -220,7 +220,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'buying_delivery_radius',
                 ],
                 'filter', 'filter' => function ($value) {
-                    return ($value ? intval($value) : null);
+                    return ($value ? intval($value) : 0);
                 },
             ],
             [
@@ -465,11 +465,12 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      * @throws \yii\base\InvalidConfigException
      */
     public function getCashMatchesOrderByRank(): ActiveQuery
-    {
+    {   // Since we request only one location in the CaController, we use it here alone
         return self::find()
             //->live()
-            //->andWhere(['buying_currency_id' => $this->selling_currency_id])
-            //->andWhere(['selling_currency_id' => $this->buying_currency_id])
+            ->andWhere([self::tableName() . '.status' => self::STATUS_ON])
+            ->andWhere(['buying_currency_id' => $this->selling_currency_id])
+            ->andWhere(['selling_currency_id' => $this->buying_currency_id])
             ->andWhere(['buying_cash_on' => self::CASH_ON])
             ->andWhere("ST_Distance_Sphere(
                         POINT({$this->selling_location_lon}, {$this->selling_location_lat}),
@@ -477,9 +478,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                         ) <= 1000 * {$this->selling_delivery_radius}")
             ->andWhere(['selling_cash_on' => self::CASH_ON])
             ->andWhere("ST_Distance_Sphere(
-                        POINT({$this->buying_location_lon}, {$this->buying_location_lat}),
+                        POINT({$this->selling_location_lon}, {$this->selling_location_lat}),
                         POINT(selling_location_lon, selling_location_lat)
-                        ) <= 1000 * {$this->buying_delivery_radius}")
+                        ) <= 1000 * {$this->selling_delivery_radius}")
             ->joinWith('user')
             ->orderBy([
                 'buying_rate' => SORT_DESC,
