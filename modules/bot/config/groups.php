@@ -18,9 +18,9 @@ $config = [
             'controllers' => [
                 'hello',
                 'message',
-                'premium_members',
                 'system_message',
                 'tip',
+                'premium_members',
             ],
             'actions' => [
                 'view',
