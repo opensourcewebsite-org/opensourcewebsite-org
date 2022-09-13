@@ -23,9 +23,9 @@ $config = [
                 'tip',
             ],
             'actions' => [
+                'view',
                 'index',
                 'list',
-                'view',
                 'create',
                 'edit',
                 'update',
