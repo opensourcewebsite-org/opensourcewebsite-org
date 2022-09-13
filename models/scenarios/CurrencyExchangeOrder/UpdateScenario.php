@@ -22,22 +22,6 @@ class UpdateScenario
 
     public function run(): bool
     {
-        if ($this->model->isAttributeChanged('selling_rate')) {
-            if (floatval($this->model->selling_rate)) {
-                $this->model->buying_rate = 1 / $this->model->selling_rate;
-            } else {
-                $this->model->selling_rate = null;
-                $this->model->buying_rate = null;
-            }
-        } elseif ($this->model->isAttributeChanged('buying_rate')) {
-            if (floatval($this->model->buying_rate)) {
-                $this->model->selling_rate = 1 / $this->model->buying_rate;
-            } else {
-                $this->model->selling_rate = null;
-                $this->model->buying_rate = null;
-            }
-        }
-
         if ($this->model->isAttributeChanged('status') ||
         $this->model->isAttributeChanged('selling_currency_id') ||
         $this->model->isAttributeChanged('buying_currency_id') ||

@@ -220,7 +220,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'buying_delivery_radius',
                 ],
                 'filter', 'filter' => function ($value) {
-                    return ($value ? intval($value) : null);
+                    return ($value ? intval($value) : 0);
                 },
             ],
             [
@@ -282,6 +282,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'buying_currency_label' => Yii::t('app', 'Label'),
             'sellingPaymentMethodIds' => Yii::t('app', 'Selling payment methods'),
             'buyingPaymentMethodIds' => Yii::t('app', 'Buying payment methods'),
+            'selling_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->sellingCurrency->code ?? '') . ' ' . Yii::t('app', 'parameters'),
+            'buying_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->buyingCurrency->code ?? ''). ' ' . Yii::t('app', 'parameters'),
         ];
     }
 
@@ -463,11 +465,12 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      * @throws \yii\base\InvalidConfigException
      */
     public function getCashMatchesOrderByRank(): ActiveQuery
-    {
+    {   // Since we request only one location in the CaController, we use it here alone
         return self::find()
             //->live()
-            //->andWhere(['buying_currency_id' => $this->selling_currency_id])
-            //->andWhere(['selling_currency_id' => $this->buying_currency_id])
+            ->andWhere([self::tableName() . '.status' => self::STATUS_ON])
+            ->andWhere(['buying_currency_id' => $this->selling_currency_id])
+            ->andWhere(['selling_currency_id' => $this->buying_currency_id])
             ->andWhere(['buying_cash_on' => self::CASH_ON])
             ->andWhere("ST_Distance_Sphere(
                         POINT({$this->selling_location_lon}, {$this->selling_location_lat}),
@@ -475,9 +478,9 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                         ) <= 1000 * {$this->selling_delivery_radius}")
             ->andWhere(['selling_cash_on' => self::CASH_ON])
             ->andWhere("ST_Distance_Sphere(
-                        POINT({$this->buying_location_lon}, {$this->buying_location_lat}),
+                        POINT({$this->selling_location_lon}, {$this->selling_location_lat}),
                         POINT(selling_location_lon, selling_location_lat)
-                        ) <= 1000 * {$this->buying_delivery_radius}")
+                        ) <= 1000 * {$this->selling_delivery_radius}")
             ->joinWith('user')
             ->orderBy([
                 'buying_rate' => SORT_DESC,
@@ -598,7 +601,23 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     }
 
     public function beforeSave($insert)
-    {
+    {   
+        if ($this->isAttributeChanged('selling_rate')) {
+            if (floatval($this->selling_rate)) {
+                $this->buying_rate = 1 / $this->selling_rate;
+            } else {
+                $this->selling_rate = null;
+                $this->buying_rate = null;
+            }
+        } elseif ($this->isAttributeChanged('buying_rate')) {
+            if (floatval($this->buying_rate)) {
+                $this->selling_rate = 1 / $this->buying_rate;
+            } else {
+                $this->selling_rate = null;
+                $this->buying_rate = null;
+            }
+        }
+
         if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;
         }

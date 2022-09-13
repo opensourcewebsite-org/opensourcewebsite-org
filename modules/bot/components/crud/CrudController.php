@@ -21,6 +21,7 @@ use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\BadRequestHttpException;
+use app\modules\bot\controllers\privates\MenuController;
 
 /**
  * Class CrudController
@@ -61,8 +62,8 @@ abstract class CrudController extends Controller
     /** @var boolean */
     protected $enableGlobalBackRoute = false;
     /** @var boolean */
-    protected $enableEndRoute = false;
-
+    protected $enableEndRoute = true;
+    
     /** @inheritDoc */
     public function __construct($id, $module, $config = [])
     {
@@ -783,6 +784,7 @@ abstract class CrudController extends Controller
                 $prevAttributeName = $this->getPrevKey($this->attributes, $attributeName);
             }
             if (isset($prevAttributeName) && !$isEdit) {
+                $rule = $this->getRule($this->modelName);
                 return $this->generateResponse($this->modelName, $prevAttributeName, compact('rule'));
             } else {
                 $response = $this->onCancel(
@@ -1279,15 +1281,12 @@ abstract class CrudController extends Controller
     private function save()
     {
         $model = $this->getFilledModel($this->rule);
-        $rule = $this->rule;
         $isNew = $model->isNewRecord;
 
         if ($model->validate()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                if ($model->save()) {
-                    isset($model->cross_rate_on) ? Yii::warning('cross_rate_on: ' . $model->cross_rate_on) : null;
-                    //Yii::warning('delivery_radius: ' . $model->delivery_radius);
+                if (isset($this->rule['isVirtual']) || $model->save()) { //Don't save DB record for virtual orders
                     $relationModel = $this->createRelationModel($model, $this->rule);
                     if ($relationModel && !$relationModel->save()) {
                         throw new \Exception('not possible to save ' . $relationModel->formName() . ' because ' . serialize($relationModel->getErrors()));
@@ -1383,7 +1382,9 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $this->field->reset();
+                    if (!isset($this->rule['isVirtual'])) {
+                        $this->field->reset(); // Keep user state for virtual orders
+                    }
                     $transaction->commit();
 
                     return $this->actionView($model->id);
@@ -1431,16 +1432,24 @@ abstract class CrudController extends Controller
     {
         $keys = array_keys($assocArray);
         $nextKey = $keys[array_search($element, $keys) + 1] ?? null;
+        
         if (isset($assocArray[$nextKey]['hidden'])) {
-            if (isset($assocArray[$nextKey]['behaviors'])) {
-                $model = $this->getFilledModel($this->rule);
-                $model->validate();
-                $data = $this->getModelDataForAttribute($model, $nextKey);
-                if ($data) {
-                    $this->field->set($this->modelName, $nextKey, $data);
-                }
+            $hidden = $assocArray[$nextKey]['hidden'];
+            if (is_callable($hidden)) {
+                $hidden = call_user_func($hidden, []);
             }
-            $nextKey = $this->getNextKey($assocArray, $nextKey);
+
+            if ($hidden === true) {
+                if (isset($assocArray[$nextKey]['behaviors'])) {
+                    $model = $this->getFilledModel($this->rule);
+                    $model->validate();
+                    $data = $this->getModelDataForAttribute($model, $nextKey);
+                    if ($data) {
+                        $this->field->set($this->modelName, $nextKey, $data);
+                    }
+                }
+                $nextKey = $this->getNextKey($assocArray, $nextKey);
+            }
         }
 
         return $nextKey;
@@ -1457,7 +1466,14 @@ abstract class CrudController extends Controller
         $keys = array_keys($assocArray);
         $prevKey = $keys[array_search($element, $keys) - 1] ?? null;
         if (isset($assocArray[$prevKey]['hidden'])) {
-            $prevKey = $this->getPrevKey($assocArray, $prevKey);
+            $hidden = $assocArray[$prevKey]['hidden'];
+            if (is_callable($hidden)) {
+                $hidden = call_user_func($hidden, $this->getState());
+            }
+
+            if ($hidden === true) {
+                $prevKey = $this->getPrevKey($assocArray, $prevKey);
+            }
         }
 
         return $prevKey;
@@ -1492,12 +1508,12 @@ abstract class CrudController extends Controller
             }
         }
         /* 'Next' button */
-        if (!$relationAttributeName && !$isAttributeRequired) {
+        if ((!isset($relationAttributeName) || isset($config['buttonSkip'])) && !$isAttributeRequired && !$isEdit) {
             $buttonSkip = $config['buttonSkip'] ?? [];
             $isPrivateAttribute = $this->attributeButtons->isPrivateAttribute($attributeName, $rule);
             $buttonSkip = ArrayHelper::merge(
                 [
-                'text' => Yii::t('bot', $isEdit ? 'NO' : 'SKIP'),
+                'text' => Yii::t('bot', 'SKIP'),
                 'callback_data' => self::createRoute($isPrivateAttribute ? 's-a' : 'en-a', [
                     'a' => $attributeName,
                     'text' => self::VALUE_NO,
@@ -1506,7 +1522,7 @@ abstract class CrudController extends Controller
                 $buttonSkip
             );
 
-            $buttons[] = [$buttonSkip];
+            $systemButtons[] = $buttonSkip;
         }
 
         return array_merge($buttons, [$systemButtons]);
@@ -1568,7 +1584,7 @@ abstract class CrudController extends Controller
                 }
             }
             /* @var ActiveQuery $query */
-            $query = call_user_func([$relationAttribute[0], 'find'], []);
+            $query = call_user_func([$relationAttribute[0], 'find'], [$this->getState()]);
             $valueAttribute = $relationAttribute[1];
             if (is_array($valueAttribute)) {
                 $itemButtons = [];
@@ -1822,9 +1838,9 @@ abstract class CrudController extends Controller
     {
         Yii::warning('generateResponse modelName: ' . $modelName);
 
-        $rule = ArrayHelper::getValue($options, 'rule', []);
+        //$rule = ArrayHelper::getValue($options, 'rule', []);
         $config = $this->rule['attributes'][$attributeName];
-        if ($this->attributeButtons->isPrivateAttribute($attributeName, $rule)) {
+        if ($this->attributeButtons->isPrivateAttribute($attributeName, $this->rule)) {
             $relationAttributes = $config['relation']['attributes'];
             $relationAttributeName = (count($relationAttributes) == 1) ? array_keys($relationAttributes)[0] : null;
             $this->field->set(
@@ -1876,7 +1892,8 @@ abstract class CrudController extends Controller
             ];
         }
 
-        if ($this->enableEndRoute && ($endRoute = $this->endRoute->get())) {
+        $isEdit = !is_null($this->field->get($this->modelName, self::FIELD_NAME_ID, null));
+        if (!$isEdit && $this->enableEndRoute && ($endRoute = $this->endRoute->get())) {
             /* 'End' button */
             $systemButtons['end'] = [
                 'text' => Emoji::END,

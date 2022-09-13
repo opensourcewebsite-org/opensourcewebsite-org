@@ -52,7 +52,7 @@ class MenuController extends Controller
                         [
                             'callback_data' => CeController::createRoute(),
                             'text' => Yii::t('bot', 'Currency Exchange'),
-                            'visible' => $globalUser->getCurrencyExchangeOrders()->exists(),
+                            'visible' => YII_ENV_DEV,
                         ],
                     ],
                     [

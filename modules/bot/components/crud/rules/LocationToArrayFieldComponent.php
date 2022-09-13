@@ -32,18 +32,31 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
             [$latitude, $longitude] = (new LocationParser($text, $this->delimiters))->parse();
         }
 
-        return [
-            'location_lat' => $latitude,
-            'location_lon' => $longitude,
-        ];
+        if (isset($this->config['fieldNames'])) {
+            return [
+                $this->config['fieldNames'][0] => $latitude,
+                $this->config['fieldNames'][1] => $longitude,
+            ];
+        }
+        else {
+            return [
+                'location_lat' => $latitude,
+                'location_lon' => $longitude,
+            ];
+        }
     }
 
     /** @inheritDoc */
     public function getFields()
     {
-        return [
-            'location_lat',
-            'location_lon',
-        ];
+        if (isset($this->config['fieldNames'])) {
+            return $this->config['fieldNames'];
+        }
+        else {
+            return [
+                'location_lat',
+                'location_lon',
+            ];
+        }
     }
 }
