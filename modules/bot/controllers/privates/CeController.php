@@ -552,7 +552,6 @@ class CeController extends CrudController
 
         $buttons = array_merge($buttons, $buttons_rate);
         
-//777
         $matchesCount = $order->getMatches()->count();
 
         if ($matchesCount) {
