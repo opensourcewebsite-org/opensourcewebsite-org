@@ -46,9 +46,21 @@ class CaController extends CrudController
                 ];
             },
             'isVirtual' => true,
-            'rememberState' => true,
             'attributes' => [
                 'sellingCurrency' => [
+                    'buttons' => [
+                        [   
+                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_currency_id') === null),
+                            'text' => Yii::t('bot', 'NEXT'),
+                            'callback' => function (CurrencyExchangeOrder $model) {
+                                return $model;
+                            },
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
                     'view' => 'set-selling_currency',
                     'relation' => [
                         'attributes' => [
@@ -57,6 +69,15 @@ class CaController extends CrudController
                     ],
                 ],
                 'buyingCurrency' => [
+                    'buttons' => [
+                        [   
+                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'buying_currency_id') === null),
+                            'text' => Yii::t('bot', 'NEXT'),
+                            'callback' => function (CurrencyExchangeOrder $model) {
+                                return $model;
+                            },
+                        ],
+                    ],
                     'view' => 'set-buying_currency',
                     'relation' => [
                         'attributes' => [
@@ -87,6 +108,13 @@ class CaController extends CrudController
                                 return null;
                             },
                         ],
+                        [   
+                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_location_lat') === null),
+                            'text' => Yii::t('bot', 'NEXT'),
+                            'callback' => function (CurrencyExchangeOrder $model) {
+                                return $model;
+                            },
+                        ],
                     ],
                 ],
                 'selling_delivery_radius' => [
@@ -96,6 +124,13 @@ class CaController extends CrudController
                             'callback' => function (CurrencyExchangeOrder $model) {
                                 $model->selling_delivery_radius = 0;
 
+                                return $model;
+                            },
+                        ],
+                        [   
+                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_delivery_radius') === null),
+                            'text' => Yii::t('bot', 'NEXT'),
+                            'callback' => function (CurrencyExchangeOrder $model) {
                                 return $model;
                             },
                         ],

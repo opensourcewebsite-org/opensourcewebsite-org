@@ -121,7 +121,9 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        $this->field->reset();
+        if (!isset($this->rule['isVirtual'])) { // Keep user.state for virtual objects
+            $this->field->reset();
+        }
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -1497,7 +1499,7 @@ abstract class CrudController extends Controller
         $rule = $this->getRule($modelName);
         $modelId = $this->field->get($modelName, self::FIELD_NAME_ID, null);
         $isEdit = !is_null($modelId);
-        if (!$relationAttributeName) {
+        if (!$relationAttributeName || isset($config['buttons'])) {
             $configButtons = $this->attributeButtons->get($rule, $attributeName, $modelId);
         } else {
             $configButtons = [];
@@ -1985,6 +1987,7 @@ abstract class CrudController extends Controller
         $systemButtons = ArrayHelper::merge($systemButtons, $configSystemButtons);
         if ($isFirstScreen) {
             unset($systemButtons['end']);
+            unset($systemButtons['back']);
         }
         if ($relationAttributeName) {
             unset($systemButtons['add']);
