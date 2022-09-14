@@ -426,8 +426,9 @@ class ChatMember extends ActiveRecord
         if ($chat->isGroup() || $chat->isChannel()) {
             if ($chat->marketplace_status == ChatSetting::STATUS_ON) {
                 if (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_ALL)
-                   || (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_MEMBERSHIP)
-                       && ($chat->membership_status == ChatSetting::STATUS_ON) && $this->hasMembership())) {
+                    || (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_MEMBERSHIP)
+                        && ($chat->membership_status == ChatSetting::STATUS_ON) && $this->hasMembership())
+                    || $this->isCreator()) {
                     return true;
                 }
             }

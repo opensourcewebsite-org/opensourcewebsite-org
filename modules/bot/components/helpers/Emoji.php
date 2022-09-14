@@ -44,4 +44,5 @@ class Emoji
     public const HIDDEN = '🔒';
     public const SEND = '↗️';
     public const RIGHT = '➡️';
+    public const SOON = '🔜';
 }

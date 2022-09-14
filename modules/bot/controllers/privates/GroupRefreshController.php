@@ -145,7 +145,7 @@ class GroupRefreshController extends Controller
             } else {
                 $chatMember->setAttributes([
                     'status' => $botApiAdministrator->getStatus(),
-                    'role' => ($botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR) ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
+                    'role' => ($botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR) ? ChatMember::ROLE_ADMINISTRATOR : $chatMember->role,
                 ]);
 
                 $chatMember->save(false);

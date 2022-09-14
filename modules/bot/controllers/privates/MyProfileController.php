@@ -32,12 +32,6 @@ class MyProfileController extends Controller
                 [
                     [
                         [
-                            'callback_data' => MyLocationController::createRoute(),
-                            'text' => (!$globalUser->userLocation ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Location'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MyTimezoneController::createRoute(),
                             'text' => Yii::t('bot', 'Timezone'),
                         ],

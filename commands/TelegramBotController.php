@@ -5,8 +5,10 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\modules\bot\models\Bot;
+use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatGreeting;
+use app\modules\bot\models\ChatMarketplacePost;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\console\Controller;
@@ -51,11 +53,9 @@ class TelegramBotController extends Controller implements CronChainedInterface
     public function actionEnableAll()
     {
         /** @var null|Bot[] $bots */
-        $bots = Bot::find()
-            ->where([
+        $bots = Bot::findAll([
                 'status' => Bot::BOT_STATUS_DISABLED,
-                ])
-            ->all();
+                ]);
 
         if ($bots) {
             foreach ($bots as $bot) {
@@ -78,11 +78,9 @@ class TelegramBotController extends Controller implements CronChainedInterface
     public function actionDisableAll()
     {
         /** @var null|Bot[] $bots */
-        $bots = Bot::find()
-            ->where([
+        $bots = Bot::findAll([
                 'status' => Bot::BOT_STATUS_ENABLED,
-                ])
-            ->all();
+                ]);
 
         if ($bots) {
             foreach ($bots as $bot) {
@@ -104,15 +102,11 @@ class TelegramBotController extends Controller implements CronChainedInterface
     {
         if (!$bot = Bot::findOne(['token' => $token])) {
             $bot = new Bot();
-            $botApi = new \TelegramBot\Api\BotApi($token);
+            $botApi = $bot->botApi;
 
-            if (isset(Yii::$app->params['telegramProxy'])) {
-                $botApi->setProxy(Yii::$app->params['telegramProxy']);
-            }
+            $botApiUser = $botApi->getMe();
 
-            $user = $botApi->getMe();
-
-            $bot->name = $user->getUsername();
+            $bot->name = $botApiUser->getUsername();
             $bot->token = $token;
             $bot->status = 0;
 
@@ -143,13 +137,17 @@ class TelegramBotController extends Controller implements CronChainedInterface
         if ($bots) {
             foreach ($bots as $bot) {
                 $messagesToRemove = ChatCaptcha::find()
-                    ->where(['<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME])
+                    ->where([
+                        '<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME,
+                    ])
                     ->joinWith('chat')
-                    ->andWhere(['bot_chat.bot_id' => $bot->id])
+                    ->andWhere([
+                        Chat::tableName() . '.bot_id' => $bot->id,
+                    ])
                     ->all();
 
                 if ($messagesToRemove) {
-                    $botApi = new \TelegramBot\Api\BotApi($bot->token);
+                    $botApi = $bot->botApi;
 
                     foreach ($messagesToRemove as $record) {
                         ChatCaptcha::deleteAll([
@@ -193,13 +191,17 @@ class TelegramBotController extends Controller implements CronChainedInterface
         if ($bots) {
             foreach ($bots as $bot) {
                 $messagesToRemove = ChatGreeting::find()
-                    ->where(['<', 'sent_at', time() - ChatSetting::GREETING_MESSAGE_LIFETIME])
+                    ->where([
+                        '<', 'sent_at', time() - ChatSetting::GREETING_MESSAGE_LIFETIME,
+                    ])
                     ->joinWith('chat')
-                    ->andWhere(['bot_chat.bot_id' => $bot->id])
+                    ->andWhere([
+                        Chat::tableName() . '.bot_id' => $bot->id,
+                    ])
                     ->all();
 
                 if ($messagesToRemove) {
-                    $botApi = new \TelegramBot\Api\BotApi($bot->token);
+                    $botApi = $bot->botApi;
 
                     foreach ($messagesToRemove as $record) {
                         ChatGreeting::deleteAll([

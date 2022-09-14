@@ -1,11 +1,15 @@
 <b><?= Yii::t('bot', 'Commands') ?></b><br/>
 <br/>
-/telegram - <?= Yii::t('bot', 'Telegram catalog of public groups and channels') ?>. <?= Yii::t('bot', 'Telegram admin management of groups and channels') ?>.<br/>
+/my_location - <?= Yii::t('bot', 'Location') ?><br/>
+<br/>
+/wallet - <?= Yii::t('bot', 'Money') ?><br/>
 <br/>
 /ca - <?= Yii::t('bot', 'Cash exchange') ?>.<br/>
 /ce - <?= Yii::t('bot', 'Currency exchange') ?>. <?= Yii::t('bot', 'Banks, E-money, cash, stablecoins') ?>.<br/>
 /ad - <?= Yii::t('bot', 'Ads') ?>. <?= Yii::t('bot', 'Buying, selling, renting, services') ?>.<br/>
 /jo - <?= Yii::t('bot', 'Jobs') ?>. <?= Yii::t('bot', 'Vacancies and resumes') ?>.<br/>
+<br/>
+/telegram - <?= Yii::t('bot', 'Telegram catalog of public groups and channels') ?>. <?= Yii::t('bot', 'Telegram admin management of groups and channels') ?>.<br/>
 <br/>
 /my_account - <?= Yii::t('bot', 'Account') ?><br/>
   • /my_rating - <?= Yii::t('bot', 'Rating') ?><br/>
@@ -13,7 +17,6 @@
   • /my_stellar - <?= Yii::t('bot', 'Stellar account') ?><br/>
   • /my_website_account - <?= Yii::t('bot', 'Website account') ?><br/>
   • /my_profile - <?= Yii::t('bot', 'Profile') ?><br/>
-    • /my_location - <?= Yii::t('bot', 'Location') ?><br/>
     • /my_timezone - <?= Yii::t('bot', 'Timezone') ?><br/>
     • /my_gender - <?= Yii::t('bot', 'Gender') ?><br/>
     • /my_sexuality - <?= Yii::t('bot', 'Sexuality') ?><br/>

@@ -26,5 +26,4 @@ return [
     'Wiki' => '',
     'is an open source website for online social community. The site is managed by users. Any user can suggest changes to the code. The site is updated on the server after each code change. Thus, anyone can influence the functions of the site.' => '',
     'Career'=>'Profesión',
-    'Slack chat'=>'Chat en Slack',
 ];

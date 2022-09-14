@@ -60,6 +60,14 @@ class Controller extends \yii\web\Controller
     }
 
     /**
+     * @return \app\modules\bot\models\Chat
+     */
+    public function getChat()
+    {
+        return $this->module->getChat();
+    }
+
+    /**
      * @return GlobalUser
      */
     public function getUser()

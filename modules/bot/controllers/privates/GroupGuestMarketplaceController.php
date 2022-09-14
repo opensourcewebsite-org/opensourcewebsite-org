@@ -828,17 +828,15 @@ class GroupGuestMarketplaceController extends Controller
             }
         }
 
-        if (($chat->membership_status == ChatSetting::STATUS_ON) && !$chatMember->isCreator()) {
-            if (!$chatMember->checkMembership()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery(
-                        $this->render('alert-membership', [
-                            'chatMember' => $chatMember,
-                        ]),
-                        true
-                    )
-                    ->build();
-            }
+        if (!$chatMember->canUseMarketplace()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('alert-membership', [
+                        'chatMember' => $chatMember,
+                    ]),
+                    true
+                )
+                ->build();
         }
 
         if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && !$chatMember->isCreator()) {

@@ -44,6 +44,7 @@ $config = [
                 'group',
                 'wallet',
                 'message',
+                'my_location',
             ],
             'actions' => [
                 'index',

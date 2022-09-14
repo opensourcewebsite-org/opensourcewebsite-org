@@ -18,9 +18,9 @@ $stellarCroupier = new StellarCroupier();
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <?= Yii::t('bot', 'Try your luck at blockchain based fortune game with transparent open source winning algorithms') ?>. <?= Yii::t('bot', 'When you win, your prize will be instantly sent to your Stellar account') ?>.<br/>
-                <br/>
                 <?= Yii::t('bot', 'Prize Fund') ?>: <b><?= $stellarCroupier->getAvailableBalance() ?> XLM</b><br/>
+                <br/>
+                <?= Yii::t('bot', 'Try your luck at blockchain based fortune game with transparent open source winning algorithms') ?>. <?= Yii::t('bot', 'When you win, your prize will be instantly sent to your Stellar account') ?>.<br/>
                 <br/>
                 <?= Yii::t('bot', 'Every bet has a chance to win a prize that significantly exceeds the bet') ?>:<br/>
                 <br/>

@@ -150,4 +150,15 @@ class Bot extends ActiveRecord
     {
         return $this->id;
     }
+
+    public function getBotApi()
+    {
+        $botApi = new BotApi($this->token);
+
+        if (isset(Yii::$app->params['telegramProxy'])) {
+            $botApi->setProxy(Yii::$app->params['telegramProxy']);
+        }
+
+        return $botApi;
+    }
 }

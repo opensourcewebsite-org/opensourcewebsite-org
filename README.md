@@ -1,6 +1,6 @@
 [![Website](https://img.shields.io/badge/Website-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
 [![Telegram Bot](https://img.shields.io/badge/Telegram_bot-opensourcewebsite__bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
-[![Slack](https://img.shields.io/badge/Slack-chat-CC2B5E.svg?style=flat-square&logo=slack)](https://join.slack.com/t/opensourcewebsite/shared_invite/enQtNDE0MDc2OTcxMDExLWJmMjFjOGUxNjFiZTg2OTc0ZDdkNTdhNDIzZDE2ODJiMGMzY2M5Yjg3NzEyNGMxNjIwZWE0YTFhNTE3MjhiYjY)
+[![Discord](https://img.shields.io/badge/Discord-opensourcewebsite-blue.svg?style=flat-square&logo=discord)](https://discord.gg/wRehagFg2j)
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)

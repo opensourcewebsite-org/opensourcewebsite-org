@@ -60,7 +60,7 @@ class GroupGuestController extends Controller
                 ],
             ];
 
-            if ($chatMember->canUseMarketplace() || $chatMember->isCreator()) {
+            if ($chatMember->canUseMarketplace()) {
                 $buttons[] = [
                     [
                         'callback_data' => GroupGuestMarketplaceController::createRoute('index', [

@@ -31,6 +31,12 @@ class MenuController extends Controller
                 [
                     [
                         [
+                            'callback_data' => MyLocationController::createRoute(),
+                            'text' => (!$globalUser->userLocation ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Location'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => WalletController::createRoute(),
                             'text' => Yii::t('bot', 'Money'),
                         ],
@@ -77,12 +83,6 @@ class MenuController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => ServicesController::createRoute(),
-                            'text' => Yii::t('bot', 'Development'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => StartController::createRoute(),
                             'text' => Emoji::GREETING,
                         ],
@@ -91,10 +91,17 @@ class MenuController extends Controller
                             'text' => Yii::t('bot', 'Account'),
                         ],
                         [
+                            'callback_data' => ServicesController::createRoute(),
+                            'text' => Emoji::SOON,
+                        ],
+                        [
                             'callback_data' => LanguageController::createRoute(),
                             'text' => Emoji::LANGUAGE . ' ' . strtoupper(Yii::$app->language),
                         ],
                     ],
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();
