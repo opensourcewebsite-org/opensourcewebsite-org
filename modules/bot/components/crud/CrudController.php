@@ -121,7 +121,9 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        $this->field->reset();
+        if (!isset($this->rule['isVirtual'])) { // Keep user.state for virtual objects
+            $this->field->reset();
+        }
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -2014,6 +2016,7 @@ abstract class CrudController extends Controller
         if ($isFirstScreen) {
             unset($systemButtons['back']);
             unset($systemButtons['end']);
+            unset($systemButtons['back']);
         }
         if ($relationAttributeName) {
             unset($systemButtons['add']);
