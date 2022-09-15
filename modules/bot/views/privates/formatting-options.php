@@ -4,7 +4,6 @@ use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
 <?= Yii::t('bot', 'Formatting options') ?>:<br/>
-<br/>
 <code>**<?= Yii::t('bot', 'bold') ?>**</code> => <b><?= Yii::t('bot', 'bold') ?></b><br/>
 <code>__<?= Yii::t('bot', 'italic') ?>__</code> => <i><?= Yii::t('bot', 'italic') ?></i><br/>
 <code>~~<?= Yii::t('bot', 'strike') ?>~~</code> => <s><?= Yii::t('bot', 'strike') ?></s><br/>

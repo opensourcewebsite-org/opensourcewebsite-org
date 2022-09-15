@@ -13,3 +13,5 @@ use app\modules\bot\components\helpers\ExternalLink;
 <br/>
 <b><?= Yii::t('bot', 'Location') ?></b>: <?= Html::a($userLocation->location, ExternalLink::getOSMLink($userLocation->location_lat, $userLocation->location_lon)) ?><br/>
 <?php endif; ?>
+————<br/>
+<i><?= Yii::t('bot', 'Send any @username or Telegram ID to view information about the user or group') ?>.</i>

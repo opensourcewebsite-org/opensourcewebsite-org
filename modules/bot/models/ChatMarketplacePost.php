@@ -94,7 +94,7 @@ class ChatMarketplacePost extends ActiveRecord
      */
     public function getChatMember()
     {
-        return $this->hasOne(Chat::className(), ['id' => 'chat_id']);
+        return $this->hasOne(ChatMember::className(), ['id' => 'member_id']);
     }
 
     public function isActive(): bool

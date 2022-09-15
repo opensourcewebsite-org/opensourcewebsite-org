@@ -5,9 +5,7 @@
 <?php endif; ?>
 <?php if (isset($messageMarkdown) && $messageMarkdown) : ?>
 ————<br/>
-<br/>
 <?= nl2br($messageMarkdown) ?><br/>
-<br/>
 <?php endif; ?>
 ————<br/>
 <?= $this->render('../formatting-options') ?>

@@ -7,7 +7,6 @@ use app\modules\bot\components\helpers\Emoji;
 <br/>
 <b><?= Yii::t('bot', 'Post') ?>: #<?= $post->id ?> <?= $post->title ?></b><br/>
 ————<br/>
-<br/>
 <?= nl2br($post->text) ?><br/>
 <?php if ($tags) : ?>
 <br/>
@@ -18,5 +17,14 @@ use app\modules\bot\components\helpers\Emoji;
 <?php endif; ?>
 <br/>
 <?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?><br/>
-<br/>
 ————<br/>
+<?= Yii::t('bot', 'Buttons will be automatically added') ?>:<br/>
+  • <?= Yii::t('bot', 'Contact') ?><br/>
+  • <?= Yii::t('bot', 'Reviews') ?><br/>
+<?php if ($links = $chatMember->marketplaceLinks) : ?>
+<?php foreach ($links as $link) : ?>
+<?php if ($link->title) : ?>
+  • <?= $link->title ?><br/>
+<?php endif; ?>
+<?php endforeach; ?>
+<?php endif; ?>
