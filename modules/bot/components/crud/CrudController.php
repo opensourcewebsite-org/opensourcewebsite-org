@@ -121,9 +121,7 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        if (!isset($this->rule['isVirtual'])) { // Keep user.state for virtual objects
-            $this->field->reset();
-        }
+        $this->field->reset();
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -1408,9 +1406,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    if (!isset($this->rule['isVirtual'])) {
-                        $this->field->reset(); // Keep user state for virtual orders
-                    }
+                    $this->field->reset();
                     $transaction->commit();
 
                     return $this->actionView($model->id);
@@ -2014,7 +2010,6 @@ abstract class CrudController extends Controller
         }
         $systemButtons = ArrayHelper::merge($systemButtons, $configSystemButtons);
         if ($isFirstScreen) {
-            unset($systemButtons['back']);
             unset($systemButtons['end']);
             unset($systemButtons['back']);
         }

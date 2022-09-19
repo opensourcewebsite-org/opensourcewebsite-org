@@ -6,6 +6,7 @@ use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\CashExchangeOrder;
 use app\models\Currency;
+use app\models\CurrencyExchangeOrder;
 use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\CurrencyExchangeOrderSellingPaymentMethod;
@@ -25,7 +26,6 @@ use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
-use app\modules\bot\components\crud\CrudController;
 
 /**
  * Class CaController
@@ -81,15 +81,6 @@ class CaController extends CrudController
                     ],
                 ],
                 'buyingCurrency' => [
-                    'buttons' => [
-                        [   
-                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'buying_currency_id') === null),
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                return $model;
-                            },
-                        ],
-                    ],
                     'view' => 'set-buying_currency',
                     'relation' => [
                         'attributes' => [
@@ -140,13 +131,6 @@ class CaController extends CrudController
                             'callback' => function (CashExchangeOrder $model) {
                                 $model->selling_delivery_radius = 0;
 
-                                return $model;
-                            },
-                        ],
-                        [   
-                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_delivery_radius') === null),
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
                                 return $model;
                             },
                         ],
@@ -326,7 +310,7 @@ class CaController extends CrudController
             'text' => Emoji::MENU,
             ]
         ];
-
+        
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
