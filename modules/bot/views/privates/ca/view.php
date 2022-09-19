@@ -5,7 +5,7 @@ use app\components\helpers\Html;
 use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
-<?= Yii::t('bot', 'We could not find any match for the following criteria') . ':' ?> <br/>
+<b><?= Yii::t('bot', 'Your search criteria') . ':' ?></b> <br/>
 <br/>
 <b><?= Yii::t('bot', 'Sell') ?></b>: <?= $model->sellingCurrency->code ?><br/>
 <b><?= Yii::t('bot', 'Buy') ?></b>: <?= $model->buyingCurrency->code ?><br/>
