@@ -161,6 +161,11 @@ class AttributeButtonsService
                 $configButton['item'],
                 $id
             );
+            // Assign attribute label for the item
+            if (!isset($configButton['text'])) {
+                $model = $model = $this->controller->getRuleModel($rule, $id);
+                $configButton['text'] = $model->getAttributeLabel($configButton['item']);
+            }
             unset($configButton['item']);
         } elseif (isset($configButton['route'])) {
             $route = $configButton['route'];
