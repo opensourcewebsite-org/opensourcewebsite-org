@@ -121,9 +121,7 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        if (!isset($this->rule['isVirtual'])) { // Keep user.state for virtual objects
-            $this->field->reset();
-        }
+        $this->field->reset();
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -257,6 +255,10 @@ abstract class CrudController extends Controller
         }
 
         $isEdit = !is_null($this->field->get($this->modelName, self::FIELD_NAME_ID, null));
+        if (isset($this->rule['isVirtual']) && !empty($this->getEditingAttributes())) {
+            $isEdit = true;
+        }
+
         $nextAttribute = $this->getNextKey($this->attributes, $attributeName);
 
         if (isset($nextAttribute) && !$isEdit) {
@@ -428,7 +430,12 @@ abstract class CrudController extends Controller
             $isValidRequest = true;
         }
         if ($isValidRequest) {
+            $editingAttributes = $this->getEditingAttributes();
             $isEdit = !is_null($this->field->get($this->modelName, self::FIELD_NAME_ID, null));
+
+            if (isset($this->rule['isVirtual']) && !empty($editingAttributes)) {
+                $isEdit = true;
+            }
 
             if ($config['samePageAfterAdd'] ?? false) {
                 $nextAttribute = $attributeName;
@@ -438,9 +445,8 @@ abstract class CrudController extends Controller
             if (isset($nextAttribute) && !$isEdit) {
                 return $this->generateResponse($this->modelName, $nextAttribute, compact('rule'));
             }
-            $editingAttributes = $this->getEditingAttributes();
             $prevAttribute = $this->getPrevKey($editingAttributes, $attributeName);
-            if ($prevAttribute) {
+            if ($prevAttribute && !isset($this->rule['isVirtual']) && !$isEdit) {
                 $model = $this->getFilledModel($rule);
                 $model->save();
 
@@ -518,7 +524,12 @@ abstract class CrudController extends Controller
         $attributeName = &$a;
 
         if (array_key_exists($attributeName, $this->attributes)) {
-            $model = $this->getRuleModel($this->rule, $id);
+            if (isset($this->rule['isVirtual'])) {
+                $model = new $this->rule['model'];
+            }
+            else {
+                $model = $this->getRuleModel($this->rule, $id);
+            }
             if (isset($model)) {
                 $this->addEditingAttribute($attributeName);
                 $attributeRule = $this->attributes[$attributeName];
@@ -601,8 +612,13 @@ abstract class CrudController extends Controller
         $this->field->set($this->modelName, $model->getAttributes());
 
         if ($model->isNewRecord) {
+            $isEdit = !is_null($this->field->get($this->modelName, self::FIELD_NAME_ID, null));
+            if (isset($this->rule['isVirtual']) && !empty($this->getEditingAttributes())) {
+                $isEdit = true;
+            }
+
             $nextAttribute = $this->getNextKey($this->attributes, $attributeName);
-            if (isset($nextAttribute)) {
+            if (isset($nextAttribute) && !$isEdit) {
                 return $this->generateResponse($this->modelName, $nextAttribute, [
                     'rule' => $this->rule,
                 ]);
@@ -1114,7 +1130,8 @@ abstract class CrudController extends Controller
                 }
             } else {
                 $value = $this->field->get($modelName, $attributeName, null);
-                $model->setAttribute($attributeName, $value ?? null);
+                //$model->setAttribute($attributeName, $value ?? null);
+                $model->$attributeName = $value ?? null; // Respect model getters and setters
             }
         }
 
@@ -1288,7 +1305,12 @@ abstract class CrudController extends Controller
         if ($model->validate()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                if (isset($this->rule['isVirtual']) || $model->save()) { //Don't save DB record for virtual orders
+                if (isset($this->rule['isVirtual'])) { //Don't save DB record for virtual orders
+                    $transaction->commit();
+                    return $this->actionView($model->id);
+                }
+
+                if ($model->save()) {
                     $relationModel = $this->createRelationModel($model, $this->rule);
                     if ($relationModel && !$relationModel->save()) {
                         throw new \Exception('not possible to save ' . $relationModel->formName() . ' because ' . serialize($relationModel->getErrors()));
@@ -1384,9 +1406,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    if (!isset($this->rule['isVirtual'])) {
-                        $this->field->reset(); // Keep user state for virtual orders
-                    }
+                    $this->field->reset();
                     $transaction->commit();
 
                     return $this->actionView($model->id);
@@ -1876,9 +1896,9 @@ abstract class CrudController extends Controller
      *
      * @return array ['back => ['text' => 'this is text', 'callback_data' => 'route']]
      */
-    private function getDefaultSystemButtons()
+    private function getDefaultSystemButtons($isEdit)
     {
-        if ($this->enableGlobalBackRoute) {
+        if ($isEdit && $this->enableGlobalBackRoute ) {
             $backRoute = $this->backRoute->get();
         } else {
             $backRoute = self::createRoute('p-a');
@@ -1894,7 +1914,6 @@ abstract class CrudController extends Controller
             ];
         }
 
-        $isEdit = !is_null($this->field->get($this->modelName, self::FIELD_NAME_ID, null));
         if (!$isEdit && $this->enableEndRoute && ($endRoute = $this->endRoute->get())) {
             /* 'End' button */
             $systemButtons['end'] = [
@@ -1936,16 +1955,21 @@ abstract class CrudController extends Controller
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', false);
         $modelId = ArrayHelper::getValue($options, 'modelId', null);
         $editableRelationId = ArrayHelper::getValue($options, 'editableRelationId', null);
+        
         $isEdit = !is_null($modelId);
+        if (isset($this->rule['isVirtual']) && !empty($this->getEditingAttributes())) {
+            $isEdit = true;
+        }
+
         $config = $this->getAttributeRule($attributeName);
         $isFirstScreen = !strcmp($attributeName, array_key_first($this->attributes));
         if ($isFirstScreen || $isEdit) {
             $this->enableGlobalBackRoute = true;
         }
-        $systemButtons = $this->getDefaultSystemButtons(!$isEdit);
+        $systemButtons = $this->getDefaultSystemButtons($isEdit);
         $configSystemButtons = $this->attributeButtons->getSystems($this->rule, $attributeName, $modelId);
         $editingAttributes = $this->getEditingAttributes();
-        if ($editingAttributes && ($prevAttribute = $this->getPrevKey($editingAttributes, $attributeName))) {
+        if (!$isEdit && $editingAttributes && ($prevAttribute = $this->getPrevKey($editingAttributes, $attributeName))) {
             $systemButtons['back']['callback_data'] = $this->attributeButtons->createAttributeRoute($modelName, $prevAttribute, $modelId);
         }
 
@@ -1986,8 +2010,8 @@ abstract class CrudController extends Controller
         }
         $systemButtons = ArrayHelper::merge($systemButtons, $configSystemButtons);
         if ($isFirstScreen) {
-            unset($systemButtons['end']);
             unset($systemButtons['back']);
+            unset($systemButtons['end']);
         }
         if ($relationAttributeName) {
             unset($systemButtons['add']);

@@ -31,7 +31,13 @@ use yii\db\ActiveRecord;
  * @package app\modules\bot\controllers\privates
  */
 class CeController extends CrudController
-{
+{   
+    public function init()
+    {
+        $this->enableGlobalBackRoute = true;
+
+        parent::init();
+    }
     protected $updateAttributes = [
         'selling_currency_edit',
         'buying_currency_edit'

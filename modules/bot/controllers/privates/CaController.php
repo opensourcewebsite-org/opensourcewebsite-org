@@ -2,10 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\modules\bot\components\helpers\MessageText;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
-use app\models\CurrencyExchangeOrder;
+use app\models\CurrencyExchangeOrderVirtualCa;
 use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\CurrencyExchangeOrderSellingPaymentMethod;
@@ -33,12 +34,21 @@ use app\modules\bot\components\crud\CrudController;
  */
 class CaController extends CrudController
 {   
+    public function init()
+    {
+        $this->enableGlobalBackRoute = true;
+
+        parent::init();
+    }
+    protected $searchAttributes = [
+        'selling_currency_id', 'buying_currency_id', 'selling_delivery_radius', 'selling_location_lat', 'selling_location_lon'
+    ];
     protected function rules()
     {
         return [
-            'model' => CurrencyExchangeOrder::class,
+            'model' => CurrencyExchangeOrderVirtualCa::class,
             'prepareViewParams' => function ($params) {
-                /** @var CurrencyExchangeOrder $model */
+                /** @var CurrencyExchangeOrderVirtualCa $model */
                 $model = $params['model'] ?? null;
 
                 return [
@@ -50,15 +60,14 @@ class CaController extends CrudController
                 'sellingCurrency' => [
                     'buttons' => [
                         [   
-                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_currency_id') === null),
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                return $model;
-                            },
-                        ],
-                        [
+                            'hideCondition' => $this->field->get($this->modelName, 'selling_currency_id') == null,
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
+                        ],
+                        [   
+                            'hideCondition' => !$this->field->get($this->modelName, 'selling_currency_id') == null,
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::BACK,
                         ],
                     ],
                     'view' => 'set-selling_currency',
@@ -69,15 +78,6 @@ class CaController extends CrudController
                     ],
                 ],
                 'buyingCurrency' => [
-                    'buttons' => [
-                        [   
-                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'buying_currency_id') === null),
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                return $model;
-                            },
-                        ],
-                    ],
                     'view' => 'set-buying_currency',
                     'relation' => [
                         'attributes' => [
@@ -93,9 +93,9 @@ class CaController extends CrudController
                     ],
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->userLocation,
+                            'hideCondition' => !isset($this->getTelegramUser()->userLocation),
                             'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
+                            'callback' => function (CurrencyExchangeOrderVirtualCa $model) {
                                 $latitude = $this->getTelegramUser()->userLocation->location_lat;
                                 $longitude = $this->getTelegramUser()->userLocation->location_lon;
                                 if ($latitude && $longitude) {
@@ -108,12 +108,16 @@ class CaController extends CrudController
                                 return null;
                             },
                         ],
-                        [   
-                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_location_lat') === null),
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                return $model;
-                            },
+                    ],
+                    'behaviors' => [
+                        'SetAttributeValueBehavior' => [
+                            'class' => SetAttributeValueBehavior::class,
+                            'attributes' => [
+                                ActiveRecord::EVENT_BEFORE_VALIDATE => ['selling_location'],
+                                ActiveRecord::EVENT_BEFORE_INSERT => ['selling_location'],
+                            ],
+                            'attribute' => 'selling_location',
+                            'value' => ($this->getTelegramUser()->userLocation !== null) ? $this->getTelegramUser()->userLocation->getLocation() : '',
                         ],
                     ],
                 ],
@@ -121,16 +125,9 @@ class CaController extends CrudController
                     'buttons' => [
                         [
                             'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
+                            'callback' => function (CurrencyExchangeOrderVirtualCa $model) {
                                 $model->selling_delivery_radius = 0;
 
-                                return $model;
-                            },
-                        ],
-                        [   
-                            'hideCondition' => ($this->field->get('currencyexchangeorder', 'selling_delivery_radius') === null),
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
                                 return $model;
                             },
                         ],
@@ -158,71 +155,29 @@ class CaController extends CrudController
      */
     public function actionIndex()
     {
-        return $this->actionCreate();
+        $filled = true;
+        foreach ($this->searchAttributes as $attributeName) {
+            $attribute = $this->field->get($this->modelName, $attributeName);
+            if (!isset($attribute)) {
+                $filled = false;
+            }
+        }
+
+        return ($filled === true) ? $this->actionView() : $this->actionCreate();
     }
 
-    public function actionView($id = null)
+    public function actionDelete()
     {
-        return $this->actionMatches();
+        $modelName = $this->getModelName();
+        $this->state->resetByModelName($modelName);
+
+        return $this->getResponseBuilder()
+        ->build();
     }
 
-    /**
-     * @param int $page
-     *
-     * @return array
-     */
     public function actionMatches($page = 1)
-    {
-        $attributes = [
-            'selling_currency_id', 'buying_currency_id', 'selling_delivery_radius', 'selling_location_lat', 'selling_location_lon'
-        ];
-        $order_search = [];
-
-        array_map(function ($attribute) use (&$order_search) {
-            return $order_search[$attribute] = $this->field->get($this->modelName, $attribute);
-        },
-            $attributes);
-
-        $order_search = array_merge(
-        ['user_id' => $this->getUser()],
-            $order_search
-        );
-
-        $order = new CurrencyExchangeOrder($order_search);
-
-        if (!isset($order)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $buttons[] = [
-            [
-                'callback_data' => self::createRoute(),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-        ];
-
-        $query = $order->getCashMatchesOrderByRank();
-        $matchesCount = $query->count();
-
-        if (!$matchesCount) {
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('no-matches', [
-                        'model' => $order,
-                    ]),
-                    $buttons,
-                    [
-                        'disablePreview' => true,
-                    ]
-                )
-                ->build();
-        }
+    {   
+        extract($this->getQueryParams());
 
         $pagination = new Pagination([
             'totalCount' => $matchesCount,
@@ -238,19 +193,16 @@ class CaController extends CrudController
             ->limit($pagination->limit)
             ->one();
 
-        if (!$matchOrder) {
-            return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('no-matches', [
-                        'model' => $order,
-                    ]),
-                    $buttons,
-                    [
-                        'disablePreview' => true,
-                    ]
-                )
-                ->build();
-        }
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute(),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
 
         $pagination_buttons = PaginationButtons::build($pagination, function ($page) use ($order) {
             return self::createRoute('matches', [
@@ -262,8 +214,92 @@ class CaController extends CrudController
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('match', [
+                $this->render('matches', [
                     'model' => $matchOrder,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+       
+    }
+
+    private function getQueryParams(): array
+    {
+        $order_search = [];
+
+        array_map(function ($attribute) use (&$order_search) {
+            return $order_search[$attribute] = $this->field->get($this->modelName, $attribute);
+        },
+            $this->searchAttributes);
+
+        $order_search = array_merge(
+        ['user_id' => $this->getUser()],
+            $order_search
+        );
+
+        $order = new CurrencyExchangeOrderVirtualCa($order_search);
+
+        $query = $order->getCashMatchesOrderByRank();
+        $matchesCount = $query->count();
+
+        return compact('query', 'matchesCount', 'order');
+    }
+
+
+    public function actionView()
+    {
+        $rowButtons = [];
+        extract($this->getQueryParams());
+        
+        if ($matchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('matches', [
+                    'matchesCount' => $matchesCount,
+                ]),
+                'text' => Emoji::OFFERS . ' ' . $matchesCount,
+                'visible' => YII_ENV_DEV,
+            ];
+        }
+
+        $editButtons = [];
+        foreach (array_keys($this->attributes) as $attributeName) {
+            $attribute = $this->attributes[$attributeName];
+
+            $hidden = false;
+            if (isset($attribute['hidden'])) {
+                $hidden = $attribute['hidden'];
+
+                if (is_callable($hidden)) {
+                    $hidden = call_user_func($attribute['hidden'], []);
+                }
+            }
+
+            if (!$hidden) {
+                $editButtons[] =
+                    [[
+                        'text' => Yii::t('bot', $order->getAttributeLabel($attributeName)),
+                        'callback_data' => self::createRoute('e-a', [
+                            'a' => $attributeName
+                        ]),
+                    ]];
+            }
+        }
+
+        $buttons = [$rowButtons, ...$editButtons];
+        $buttons[] = [
+            [
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
+            ]
+        ];
+        
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('view', [
+                    'model' => $order,
                 ]),
                 $buttons,
                 [
