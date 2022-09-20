@@ -85,9 +85,44 @@ class UserState
         return $user->save();
     }
 
+    public function resetByModelName($modelName)
+    {
+        if (isset($this->fields['intermediate'])) {
+            $intermediate = $this->fields['intermediate'];
+            foreach ($intermediate as $k => $v) {
+                if (strpos($k, $modelName) !== false) {
+                    unset($intermediate[$k]);
+                }
+            }
+            $this->fields = [
+                'intermediate' => $intermediate
+            ];
+        }
+
+    }
+
     public function reset()
     {
-        $this->fields = [];
+        if (isset($this->fields['intermediate'])) {
+            $intermediate = $this->fields['intermediate'];
+            foreach ($intermediate as $k => $v) {
+                if (strpos($k, 'virtual') === false) { // Keep state for virtual objects. Model for virtual object must contain 'Virtual' in the name
+                    unset($intermediate[$k]);
+                }
+            }
+
+            if (!empty($intermediate)) {
+                $this->fields = [
+                    'intermediate' => $intermediate
+                ];
+            }
+            else {
+                $this->fields = [];
+            }
+        }
+        else {
+            $this->fields = [];
+        }
     }
 
     public static function fromUser(User $user)
