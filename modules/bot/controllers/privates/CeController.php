@@ -488,7 +488,6 @@ class CeController extends CrudController
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
@@ -582,7 +581,6 @@ class CeController extends CrudController
                     'id' => $order->id,
                 ]),
                 'text' => Emoji::EDIT,
-                'visible' => YII_ENV_DEV,
             ],
         ];
 

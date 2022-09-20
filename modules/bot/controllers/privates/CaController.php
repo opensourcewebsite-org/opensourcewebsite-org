@@ -274,7 +274,6 @@ class CaController extends CrudController
                     'matchesCount' => $matchesCount,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
