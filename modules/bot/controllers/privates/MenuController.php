@@ -63,14 +63,12 @@ class MenuController extends Controller
                         [
                             'callback_data' => AdController::createRoute(),
                             'text' => Yii::t('bot', 'Ads'),
-                            'visible' => $globalUser->getAdoffers()->exists() || $globalUser->getAdSearches()->exists(),
                         ],
                     ],
                     [
                         [
                             'callback_data' => JoController::createRoute(),
                             'text' => Yii::t('bot', 'Jobs'),
-                            'visible' => $globalUser->getResumes()->exists() || $globalUser->getVacancies()->exists(),
                         ],
                     ],
                     [

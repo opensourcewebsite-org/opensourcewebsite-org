@@ -199,12 +199,11 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * @param int $page
      * @param int $adSection
-     *
+     * @param int $page
      * @return array
      */
-    public function actionIndex($page = 1, $adSection = null)
+    public function actionIndex($adSection = null, $page = 1)
     {
         $this->getState()->setName(null);
 
@@ -230,13 +229,6 @@ class AdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adSection) {
-            return self::createRoute('index', [
-                'adSection' => $adSection,
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $offers = $query->offset($pagination->offset)
@@ -252,6 +244,13 @@ class AdOfferController extends CrudController
                     'text' => ($offer->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $offer->id . ' ' . $offer->title,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adSection) {
+                return self::createRoute('index', [
+                    'adSection' => $adSection,
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -282,7 +281,6 @@ class AdOfferController extends CrudController
                     'adSection' => $adSection,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
@@ -291,7 +289,6 @@ class AdOfferController extends CrudController
                 'adSection' => $adSection,
             ]),
             'text' => Emoji::ADD,
-            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -308,7 +305,6 @@ class AdOfferController extends CrudController
 
     /**
      * @param int $id AdOffer->id
-     *
      * @return array
      */
     public function actionView($id = null)
@@ -365,7 +361,6 @@ class AdOfferController extends CrudController
                     'id' => $offer->id,
                 ]),
                 'text' => Emoji::EDIT,
-                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -385,12 +380,11 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * @param int $page
      * @param int $id AdOffer->id
-     *
+     * @param int $page
      * @return array
      */
-    public function actionMatches($page = 1, $id = null)
+    public function actionMatches($id = null, $page = 1)
     {
         $globalUser = $this->getUser();
 
@@ -475,9 +469,11 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $adSection
+     * @param int $page
+     * @return array
      */
-    public function actionSectionMatches($adSection, $page = 1)
+    public function actionSectionMatches($adSection = null, $page = 1)
     {
         $user = $this->getUser();
 
@@ -507,6 +503,7 @@ class AdOfferController extends CrudController
         $adOfferMatch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+
         $adOffer = $adOfferMatch->adOffer;
         $adSearch = $adOfferMatch->adSearch;
 
@@ -556,7 +553,6 @@ class AdOfferController extends CrudController
 
     /**
      * @param int $id AdOffer->id
-     *
      * @return array
      */
     public function actionSetStatus($id = null)
@@ -612,29 +608,29 @@ class AdOfferController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id AdOffer->id
+     * @return array
      */
-    public function actionDelete($id)
+    public function actionDelete($id = null)
     {
-        $user = $this->getUser();
-
-        $adOffer = $user->getAdOffers()
+        $model = AdOffer::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
-        if (!isset($adOffer)) {
+        if (!isset($model)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $adSection = $adOffer->section;
+        $adSection = $model->section;
 
-        $adOffer->unlinkAll('photos', true);
-        $adOffer->unlinkAll('keywords', true);
-        $adOffer->delete();
+        $model->unlinkAll('photos', true);
+        $model->unlinkAll('keywords', true);
+        $model->delete();
 
         return $this->actionIndex($adSection);
     }

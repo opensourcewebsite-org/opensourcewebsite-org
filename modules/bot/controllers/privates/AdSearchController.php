@@ -177,12 +177,11 @@ class AdSearchController extends CrudController
     }
 
     /**
-     * @param int $page
      * @param int $adSection
-     *
+     * @param int $page
      * @return array
      */
-    public function actionIndex($page = 1, $adSection = null)
+    public function actionIndex($adSection = null, $page = 1)
     {
         $this->getState()->setName(null);
 
@@ -208,13 +207,6 @@ class AdSearchController extends CrudController
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adSection) {
-            return self::createRoute('index', [
-                'adSection' => $adSection,
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $searches = $query->offset($pagination->offset)
@@ -230,6 +222,13 @@ class AdSearchController extends CrudController
                     'text' => ($search->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $search->id . ' ' . $search->title,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($adSection) {
+                return self::createRoute('index', [
+                    'adSection' => $adSection,
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -260,7 +259,6 @@ class AdSearchController extends CrudController
                     'adSection' => $adSection,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
@@ -269,7 +267,6 @@ class AdSearchController extends CrudController
                 'adSection' => $adSection,
             ]),
             'text' => Emoji::ADD,
-            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -297,7 +294,6 @@ class AdSearchController extends CrudController
 
     /**
      * @param int $id AdSearch->id
-     *
      * @return array
      */
     public function actionView($id = null)
@@ -354,7 +350,6 @@ class AdSearchController extends CrudController
                     'id' => $search->id,
                 ]),
                 'text' => Emoji::EDIT,
-                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -374,57 +369,10 @@ class AdSearchController extends CrudController
 
     /**
      * @param int $id AdSearch->id
-     *
-     * @return array
-     */
-    public function actionSetStatus($id = null)
-    {
-        $model = AdSearch::find()
-            ->where([
-                'id' => $id,
-            ])
-            ->userOwner()
-            ->one();
-
-        if (!isset($model)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        switch ($model->status) {
-            case AdSearch::STATUS_ON:
-                $model->setInactive();
-                $model->save(false);
-
-                break;
-            case AdSearch::STATUS_OFF:
-                $scenario = new SetActiveScenario($model);
-
-                if ($scenario->run()) {
-                    $model->save(false);
-                } else {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery(
-                            $this->render('../alert', [
-                                'alert' => $scenario->getFirstError(),
-                            ]),
-                            true
-                        )
-                        ->build();
-                }
-        }
-
-        return $this->actionView($model->id);
-    }
-
-    /**
      * @param int $page
-     * @param int $id AdSearch->id
-     *
      * @return array
      */
-    public function actionMatches($page = 1, $id = null)
+    public function actionMatches($id = null, $page = 1)
     {
         $globalUser = $this->getUser();
 
@@ -510,9 +458,11 @@ class AdSearchController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $adSection
+     * @param int $page
+     * @return array
      */
-    public function actionSectionMatches($adSection, $page = 1)
+    public function actionSectionMatches($adSection = null, $page = 1)
     {
         $user = $this->getUser();
 
@@ -542,6 +492,7 @@ class AdSearchController extends CrudController
         $adSearchMatch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+
         $adSearch = $adSearchMatch->adSearch;
         $adOffer = $adSearchMatch->adOffer;
 
@@ -591,28 +542,73 @@ class AdSearchController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id AdSearch->id
+     * @return array
      */
-    public function actionDelete($id)
+    public function actionSetStatus($id = null)
     {
-        $user = $this->getUser();
-
-        $adSearch = $user->getAdSearches()
+        $model = AdSearch::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
-        if (!isset($adSearch)) {
+        if (!isset($model)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $adSection = $adSearch->section;
+        switch ($model->status) {
+            case AdSearch::STATUS_ON:
+                $model->setInactive();
+                $model->save(false);
 
-        $adSearch->unlinkAll('keywords', true);
-        $adSearch->delete();
+                break;
+            case AdSearch::STATUS_OFF:
+                $scenario = new SetActiveScenario($model);
+
+                if ($scenario->run()) {
+                    $model->save(false);
+                } else {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('../alert', [
+                                'alert' => $scenario->getFirstError(),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
+        }
+
+        return $this->actionView($model->id);
+    }
+
+    /**
+     * @param int $id AdSearch->id
+     * @return array
+     */
+    public function actionDelete($id = null)
+    {
+        $model = AdSearch::find()
+            ->where([
+                'id' => $id,
+            ])
+            ->userOwner()
+            ->one();
+
+        if (!isset($model)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $adSection = $model->section;
+
+        $model->unlinkAll('keywords', true);
+        $model->delete();
 
         return $this->actionIndex($adSection);
     }

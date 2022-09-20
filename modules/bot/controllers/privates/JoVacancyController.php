@@ -219,12 +219,11 @@ class JoVacancyController extends CrudController
     }
 
     /**
+     * @param int|null $companyId Company->id
      * @param int $page
-     * @param int|null $companyId
-     *
      * @return array
      */
-    public function actionIndex($page = 1, $companyId = null)
+    public function actionIndex($companyId = null, $page = 1)
     {
         $this->getState()->setName(null);
 
@@ -267,13 +266,6 @@ class JoVacancyController extends CrudController
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
-            return self::createRoute('index', [
-                'companyId' => $companyId,
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $vacancies = $query->offset($pagination->offset)
@@ -289,6 +281,13 @@ class JoVacancyController extends CrudController
                     'text' => ($vacancy->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $vacancy->id . ' ' . $vacancy->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($companyId) {
+                return self::createRoute('index', [
+                    'companyId' => $companyId,
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -325,14 +324,12 @@ class JoVacancyController extends CrudController
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
         $rowButtons[] = [
             'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
-            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -349,7 +346,6 @@ class JoVacancyController extends CrudController
 
     /**
      * @param int $id Vacancy->id
-     *
      * @return array
      */
     public function actionView($id = null)
@@ -415,7 +411,6 @@ class JoVacancyController extends CrudController
                     'id' => $vacancy->id,
                 ]),
                 'text' => Emoji::EDIT,
-                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -436,7 +431,6 @@ class JoVacancyController extends CrudController
 
     /**
      * @param ActiveRecord[] $keywords
-     *
      * @return string
      */
     private static function getKeywordsAsString($keywords)
@@ -451,12 +445,11 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * @param int $page
      * @param int $id Vacancy->id
-     *
+     * @param int $page
      * @return array
      */
-    public function actionMatches($page = 1, $id = null)
+    public function actionMatches($id = null, $page = 1)
     {
         $globalUser = $this->getUser();
 
@@ -541,7 +534,8 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     * @return array
      */
     public function actionAllMatches($page = 1)
     {
@@ -572,6 +566,7 @@ class JoVacancyController extends CrudController
         $jobVacancyMatch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+
         $vacancy = $jobVacancyMatch->vacancy;
         $resume = $jobVacancyMatch->resume;
 
@@ -617,36 +612,7 @@ class JoVacancyController extends CrudController
     }
 
     /**
-     * @param int $id
-     */
-    public function actionDelete($id)
-    {
-        $user = $this->getUser();
-
-        $vacancy = $user->getVacancies()
-            ->where([
-                'id' => $id,
-            ])
-            ->one();
-
-        if (!isset($vacancy)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        if ($company = $vacancy->company) {
-            $companyId = $vacancy->company->id;
-        }
-
-        $vacancy->delete();
-
-        return $this->actionIndex($company ? $companyId : null);
-    }
-
-    /**
      * @param int $id Vacancy->id
-     *
      * @return array
      */
     public function actionSetStatus($id = null)
@@ -690,6 +656,39 @@ class JoVacancyController extends CrudController
         return $this->actionView($model->id);
     }
 
+    /**
+     * @param int $id Vacancy->id
+     * @return array
+     */
+    public function actionDelete($id = null)
+    {
+        $user = $this->getUser();
+
+        $vacancy = $user->getVacancies()
+            ->where([
+                'id' => $id,
+            ])
+            ->one();
+
+        if (!isset($vacancy)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ($company = $vacancy->company) {
+            $companyId = $vacancy->company->id;
+        }
+
+        $vacancy->delete();
+
+        return $this->actionIndex($company ? $companyId : null);
+    }
+
+    /**
+     * @param integer $id Vacancy->id
+     * @return Vacancy|ActiveRecord
+     */
     protected function getModel($id)
     {
         return !is_null($id)

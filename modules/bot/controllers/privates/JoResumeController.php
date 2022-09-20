@@ -191,7 +191,6 @@ class JoResumeController extends CrudController
 
     /**
      * @param int $page
-     *
      * @return array
      */
     public function actionIndex($page = 1)
@@ -216,12 +215,6 @@ class JoResumeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $resumes = $query->offset($pagination->offset)
@@ -237,6 +230,12 @@ class JoResumeController extends CrudController
                     'text' => ($resume->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $resume->id . ' ' . $resume->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -264,14 +263,12 @@ class JoResumeController extends CrudController
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
-                'visible' => YII_ENV_DEV,
             ];
         }
 
         $rowButtons[] = [
             'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
-            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -286,7 +283,6 @@ class JoResumeController extends CrudController
 
     /**
      * @param ActiveRecord[] $keywords
-     *
      * @return string
      */
     private static function getKeywordsAsString($keywords)
@@ -302,7 +298,6 @@ class JoResumeController extends CrudController
 
     /**
      * @param int $id Resume->id
-     *
      * @return array
      */
     public function actionView($id = null)
@@ -357,7 +352,6 @@ class JoResumeController extends CrudController
                     'id' => $resume->id,
                 ]),
                 'text' => Emoji::EDIT,
-                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -376,12 +370,11 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * @param int $page
      * @param int $id Resume->id
-     *
+     * @param int $page
      * @return array
      */
-    public function actionMatches($page = 1, $id = null)
+    public function actionMatches($id = null, $page = 1)
     {
         $globalUser = $this->getUser();
 
@@ -467,7 +460,8 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $page
+     * @return array
      */
     public function actionAllMatches($page = 1)
     {
@@ -498,6 +492,7 @@ class JoResumeController extends CrudController
         $jobResumeMatch = $matchesQuery->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+
         $resume = $jobResumeMatch->resume;
         $vacancy = $jobResumeMatch->vacancy;
 
@@ -548,32 +543,7 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * @param int $id
-     */
-    public function actionDelete($id)
-    {
-        $user = $this->getUser();
-
-        $resume = $user->getResumes()
-            ->where([
-                'id' => $id,
-            ])
-            ->one();
-
-        if (!isset($resume)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $resume->delete();
-
-        return $this->actionIndex();
-    }
-
-    /**
      * @param int $id Resume->id
-     *
      * @return array
      */
     public function actionSetStatus($id = null)
@@ -618,8 +588,32 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * @param integer $id
-     *
+     * @param int $id Resume->id
+     * @return array
+     */
+    public function actionDelete($id = null)
+    {
+        $user = $this->getUser();
+
+        $resume = $user->getResumes()
+            ->where([
+                'id' => $id,
+            ])
+            ->one();
+
+        if (!isset($resume)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $resume->delete();
+
+        return $this->actionIndex();
+    }
+
+    /**
+     * @param integer $id Resume->id
      * @return Resume|ActiveRecord
      */
     protected function getModel($id)

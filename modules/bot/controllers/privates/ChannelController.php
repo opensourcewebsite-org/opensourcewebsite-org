@@ -41,12 +41,6 @@ class ChannelController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $chats = $query->offset($pagination->offset)
@@ -62,6 +56,12 @@ class ChannelController extends Controller
                     'text' => $chat->title,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;

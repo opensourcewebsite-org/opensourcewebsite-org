@@ -69,7 +69,6 @@ class JoCompanyController extends CrudController
 
     /**
      * @param int $page
-     *
      * @return array
      */
     public function actionIndex($page = 1)
@@ -90,12 +89,6 @@ class JoCompanyController extends CrudController
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $companies = $query->offset($pagination->offset)
@@ -111,6 +104,12 @@ class JoCompanyController extends CrudController
                     'text' => $company->name,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -129,7 +128,6 @@ class JoCompanyController extends CrudController
             [
                 'callback_data' => self::createRoute('create'),
                 'text' => Emoji::ADD,
-                'visible' => YII_ENV_DEV,
             ],
         ];
 
@@ -142,13 +140,13 @@ class JoCompanyController extends CrudController
     }
 
     /**
-     * @param int $id
-     *
+     * @param int $id Company->id
      * @return array
      */
-    public function actionView($id)
+    public function actionView($id = null)
     {
         $this->getState()->setName(null);
+
         $user = $this->getUser();
 
         $company = $user->getCompanies()
@@ -202,9 +200,9 @@ class JoCompanyController extends CrudController
     }
 
     /**
-     * @param int $id
+     * @param int $id Company->id
      */
-    public function actionDelete($id)
+    public function actionDelete($id = null)
     {
         $user = $this->getUser();
 
@@ -233,8 +231,7 @@ class JoCompanyController extends CrudController
     }
 
     /**
-     * @param array $id
-     *
+     * @param array $id Company->id
      * @return Company|ActiveRecord
      */
     protected function getModel($id)

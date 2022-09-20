@@ -31,7 +31,7 @@ use yii\db\ActiveRecord;
  * @package app\modules\bot\controllers\privates
  */
 class CeController extends CrudController
-{   
+{
     public function init()
     {
         $this->enableGlobalBackRoute = true;
@@ -196,8 +196,7 @@ class CeController extends CrudController
                     'hidden' => function () {
                         if ($this->field->get($this->modelName, 'selling_cash_on') === 1) {
                             return false;
-                        }
-                        else {
+                        } else {
                             return true;
                         }
                     },
@@ -230,8 +229,7 @@ class CeController extends CrudController
                     'hidden' => function () {
                         if ($this->field->get($this->modelName, 'selling_cash_on') === 1) {
                             return false;
-                        }
-                        else {
+                        } else {
                             return true;
                         }
                     },
@@ -300,8 +298,7 @@ class CeController extends CrudController
                     'hidden' => function () {
                         if ($this->field->get($this->modelName, 'buying_cash_on') === 1) {
                             return false;
-                        }
-                        else {
+                        } else {
                             return true;
                         }
                     },
@@ -334,8 +331,7 @@ class CeController extends CrudController
                     'hidden' => function () {
                         if ($this->field->get($this->modelName, 'buying_cash_on') === 1) {
                             return false;
-                        }
-                        else {
+                        } else {
                             return true;
                         }
                     },
@@ -384,7 +380,7 @@ class CeController extends CrudController
                         [
                             'item' => 'selling_cash_on',
                         ],
-                        [   
+                        [
                             'item' => 'selling_location',
                         ],
                         [
@@ -401,7 +397,7 @@ class CeController extends CrudController
                         [
                             'item' => 'buying_cash_on',
                         ],
-                        [   
+                        [
                             'item' => 'buying_location',
                         ],
                         [
@@ -423,7 +419,6 @@ class CeController extends CrudController
 
     /**
      * @param int $page
-     *
      * @return array
      */
     public function actionIndex($page = 1)
@@ -450,12 +445,6 @@ class CeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('index', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $orders = $query->offset($pagination->offset)
@@ -471,6 +460,12 @@ class CeController extends CrudController
                     'text' => ($order->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $order->id . ' ' . $order->getTitle(),
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
@@ -500,7 +495,6 @@ class CeController extends CrudController
         $rowButtons[] = [
             'callback_data' => self::createRoute('create'),
             'text' => Emoji::ADD,
-            'visible' => YII_ENV_DEV,
         ];
 
         $buttons[] = $rowButtons;
@@ -515,7 +509,6 @@ class CeController extends CrudController
 
     /**
      * @param int $id CurrencyExchangeOrder->id
-     *
      * @return array
      */
     public function actionView($id = null)
@@ -544,20 +537,26 @@ class CeController extends CrudController
             ],
         ];
 
-        $buttons_rate = array_map(function (string $attribute) use ($id, $order) {
-            return [
-                [
-                    'text' => Yii::t('bot', $order->getAttributeLabel($attribute)),
-                    'callback_data' => self::createRoute('e-a', [
-                        'id' => $id,
-                        'a' => $attribute,
-                    ]),
-                ],
-            ];
-        }, ['selling_rate', 'buying_rate']);
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('e-a', [
+                    'id' => $order->id,
+                    'a' => 'selling_rate',
+                ]),
+                'text' => Yii::t('bot', $order->getAttributeLabel('selling_rate')) . ($order->selling_rate ? ': ' . (float)$order->selling_rate : ''),
+            ],
+        ];
 
-        $buttons = array_merge($buttons, $buttons_rate);
-        
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('e-a', [
+                    'id' => $order->id,
+                    'a' => 'buying_rate',
+                ]),
+                'text' => Yii::t('bot', $order->getAttributeLabel('buying_rate')) . ($order->buying_rate ? ': ' . (float)$order->buying_rate : ''),
+            ],
+        ];
+
         $matchesCount = $order->getMatches()->count();
 
         if ($matchesCount) {
@@ -568,26 +567,6 @@ class CeController extends CrudController
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
             ];
         }
-
-        // $buttons[] = [
-        //     [
-        //         'text' => $order->getTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->selling_rate),
-        //         'callback_data' => self::createRoute('e-a', [
-        //             'id' => $order->id,
-        //             'a' => 'selling_rate',
-        //         ]),
-        //     ],
-        // ];
-        //
-        // $buttons[] = [
-        //     [
-        //         'text' => $order->getInverseTitle() . ': ' . ($order->cross_rate_on ? Yii::t('bot', 'Cross rate') : (float)$order->buying_rate),
-        //         'callback_data' => self::createRoute('e-a', [
-        //             'id' => $order->id,
-        //             'a' => 'buying_rate',
-        //         ]),
-        //     ],
-        // ];
 
         $buttons[] = [
             [
@@ -615,53 +594,6 @@ class CeController extends CrudController
                 $buttons,
                 [
                     'disablePreview' => true,
-                ]
-            )
-            ->build();
-    }
-
-    /**
-     * @return array
-     */
-    public function actionOrderCreate($step = 1)
-    {
-        //TODO make steps to create a order (maybe in separate actions)
-        return $this->getResponseBuilder()
-            ->editMessageTextOrSendMessage(
-                $this->render('order-create'),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-create'),
-                            'text' => 'USD',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-create'),
-                            'text' => 'THB',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('order-create'),
-                            'text' => '<',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('order-create'),
-                            'text' => '1/3',
-                        ],
-                        [
-                            'callback_data' => self::createRoute('order-create'),
-                            'text' => '>',
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute(),
-                            'text' => Emoji::BACK,
-                        ],
-                    ],
                 ]
             )
             ->build();
@@ -971,12 +903,11 @@ class CeController extends CrudController
     }
 
     /**
-     * @param int $page
      * @param int $id CurrencyExchangeOrder->id
-     *
+     * @param int $page
      * @return array
      */
-    public function actionMatches($page = 1, $id = null)
+    public function actionMatches($id = null, $page = 1)
     {
         $globalUser = $this->getUser();
 
@@ -1061,7 +992,6 @@ class CeController extends CrudController
 
     /**
      * @param int $page
-     *
      * @return array
      */
     public function actionAllMatches($page = 1)
@@ -1140,31 +1070,7 @@ class CeController extends CrudController
     }
 
     /**
-     * @param int $id
-     */
-    public function actionDelete($id)
-    {
-        $user = $this->getUser();
-
-        $order = $user->getCurrencyExchangeOrders()
-            ->where([
-                'user_id' => $user->id,
-                'id' => $id,
-            ])
-            ->one();
-
-        if (!isset($order)) {
-            return [];
-        }
-
-        $order->delete();
-
-        return $this->actionIndex();
-    }
-
-    /**
      * @param int $id CurrencyExchangeOrder->id
-     *
      * @return array
      */
     public function actionSetStatus($id = null)
@@ -1206,5 +1112,29 @@ class CeController extends CrudController
         }
 
         return $this->actionView($model->id);
+    }
+
+    /**
+     * @param int $id CurrencyExchangeOrder->id
+     * @return array
+     */
+    public function actionDelete($id = null)
+    {
+        $model = CurrencyExchangeOrder::find()
+            ->where([
+                'id' => $id,
+            ])
+            ->userOwner()
+            ->one();
+
+        if (!isset($model)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $model->delete();
+
+        return $this->actionIndex();
     }
 }
