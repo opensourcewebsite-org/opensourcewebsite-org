@@ -2,11 +2,10 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\modules\bot\components\helpers\MessageText;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
+use app\models\CashExchangeOrder;
 use app\models\Currency;
-use app\models\CurrencyExchangeOrderVirtualCa;
 use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\CurrencyExchangeOrderSellingPaymentMethod;
@@ -14,17 +13,18 @@ use app\models\matchers\CurrencyExchangeOrderMatcher;
 use app\models\PaymentMethod;
 use app\models\User;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
 use app\modules\bot\components\crud\services\IntermediateFieldService;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\validators\RadiusValidator;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
-use app\modules\bot\components\crud\CrudController;
 
 /**
  * Class CaController
@@ -33,22 +33,24 @@ use app\modules\bot\components\crud\CrudController;
  * @package app\modules\bot\controllers\privates
  */
 class CaController extends CrudController
-{   
+{
     public function init()
     {
         $this->enableGlobalBackRoute = true;
 
         parent::init();
     }
+
     protected $searchAttributes = [
         'selling_currency_id', 'buying_currency_id', 'selling_delivery_radius', 'selling_location_lat', 'selling_location_lon'
     ];
+
     protected function rules()
     {
         return [
-            'model' => CurrencyExchangeOrderVirtualCa::class,
+            'model' => CashExchangeOrder::class,
             'prepareViewParams' => function ($params) {
-                /** @var CurrencyExchangeOrderVirtualCa $model */
+                /** @var CashExchangeOrder $model */
                 $model = $params['model'] ?? null;
 
                 return [
@@ -59,12 +61,12 @@ class CaController extends CrudController
             'attributes' => [
                 'sellingCurrency' => [
                     'buttons' => [
-                        [   
+                        [
                             'hideCondition' => $this->field->get($this->modelName, 'selling_currency_id') == null,
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
-                        [   
+                        [
                             'hideCondition' => !$this->field->get($this->modelName, 'selling_currency_id') == null,
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::BACK,
@@ -95,7 +97,7 @@ class CaController extends CrudController
                         [
                             'hideCondition' => !isset($this->getTelegramUser()->userLocation),
                             'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (CurrencyExchangeOrderVirtualCa $model) {
+                            'callback' => function (CashExchangeOrder $model) {
                                 $latitude = $this->getTelegramUser()->userLocation->location_lat;
                                 $longitude = $this->getTelegramUser()->userLocation->location_lon;
                                 if ($latitude && $longitude) {
@@ -125,7 +127,7 @@ class CaController extends CrudController
                     'buttons' => [
                         [
                             'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CurrencyExchangeOrderVirtualCa $model) {
+                            'callback' => function (CashExchangeOrder $model) {
                                 $model->selling_delivery_radius = 0;
 
                                 return $model;
@@ -150,14 +152,17 @@ class CaController extends CrudController
             ],
         ];
     }
+
     /**
      * @return array
      */
     public function actionIndex()
     {
         $filled = true;
+
         foreach ($this->searchAttributes as $attributeName) {
             $attribute = $this->field->get($this->modelName, $attributeName);
+
             if (!isset($attribute)) {
                 $filled = false;
             }
@@ -166,17 +171,24 @@ class CaController extends CrudController
         return ($filled === true) ? $this->actionView() : $this->actionCreate();
     }
 
+    /**
+     * @return array
+     */
     public function actionDelete()
     {
         $modelName = $this->getModelName();
         $this->state->resetByModelName($modelName);
 
         return $this->getResponseBuilder()
-        ->build();
+            ->build();
     }
 
+    /**
+     * @param int $page
+     * @return array
+     */
     public function actionMatches($page = 1)
-    {   
+    {
         extract($this->getQueryParams());
 
         $pagination = new Pagination([
@@ -188,10 +200,20 @@ class CaController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-        
+
         $matchOrder = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
+
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('matches', [
+                'page' => $page,
+            ]);
+        });
+
+        if ($paginationButtons) {
+            $buttons[] = $paginationButtons;
+        }
 
         $buttons[] = [
             [
@@ -204,14 +226,6 @@ class CaController extends CrudController
             ],
         ];
 
-        $pagination_buttons = PaginationButtons::build($pagination, function ($page) use ($order) {
-            return self::createRoute('matches', [
-                'page' => $page,
-            ]);
-        });
-
-        $buttons = [$pagination_buttons, ...$buttons];
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('matches', [
@@ -223,24 +237,25 @@ class CaController extends CrudController
                 ]
             )
             ->build();
-       
     }
 
     private function getQueryParams(): array
     {
         $order_search = [];
 
-        array_map(function ($attribute) use (&$order_search) {
-            return $order_search[$attribute] = $this->field->get($this->modelName, $attribute);
-        },
-            $this->searchAttributes);
+        array_map(
+            function ($attribute) use (&$order_search) {
+                return $order_search[$attribute] = $this->field->get($this->modelName, $attribute);
+            },
+            $this->searchAttributes
+        );
 
         $order_search = array_merge(
-        ['user_id' => $this->getUser()],
+            ['user_id' => $this->getUser()],
             $order_search
         );
 
-        $order = new CurrencyExchangeOrderVirtualCa($order_search);
+        $order = new CashExchangeOrder($order_search);
 
         $query = $order->getCashMatchesOrderByRank();
         $matchesCount = $query->count();
@@ -248,12 +263,11 @@ class CaController extends CrudController
         return compact('query', 'matchesCount', 'order');
     }
 
-
     public function actionView()
     {
         $rowButtons = [];
         extract($this->getQueryParams());
-        
+
         if ($matchesCount) {
             $rowButtons[] = [
                 'callback_data' => self::createRoute('matches', [
@@ -265,10 +279,11 @@ class CaController extends CrudController
         }
 
         $editButtons = [];
+
         foreach (array_keys($this->attributes) as $attributeName) {
             $attribute = $this->attributes[$attributeName];
-
             $hidden = false;
+
             if (isset($attribute['hidden'])) {
                 $hidden = $attribute['hidden'];
 
@@ -295,7 +310,7 @@ class CaController extends CrudController
             'text' => Emoji::MENU,
             ]
         ];
-        
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [

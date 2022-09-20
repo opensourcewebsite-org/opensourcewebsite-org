@@ -261,8 +261,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
         return [
             'id' => 'ID',
             'user_id' => 'User ID',
-            'selling_currency_id' => Yii::t('bot', 'Selling Currency'),
-            'buying_currency_id' => Yii::t('bot', 'Buying Currency'),
+            'selling_currency_id' => Yii::t('bot', 'Selling currency'),
+            'buying_currency_id' => Yii::t('bot', 'Buying currency'),
             'selling_rate' => Yii::t('bot', 'Exchange rate'),
             'buying_rate' => Yii::t('bot', 'Inverse rate'),
             'selling_currency_min_amount' => Yii::t('bot', 'Min. amount'),
@@ -601,7 +601,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     }
 
     public function beforeSave($insert)
-    {   
+    {
         if ($this->isAttributeChanged('selling_rate')) {
             if (floatval($this->selling_rate)) {
                 $this->buying_rate = 1 / $this->selling_rate;

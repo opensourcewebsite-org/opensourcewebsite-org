@@ -1,7 +1,7 @@
 <?php
 
-use app\modules\bot\components\helpers\Emoji;
 use app\components\helpers\Html;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 
 ?>

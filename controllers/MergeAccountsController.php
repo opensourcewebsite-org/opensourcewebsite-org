@@ -7,6 +7,7 @@ use app\services\MergeAccountsService;
 use Yii;
 use yii\base\Exception;
 use yii\filters\AccessControl;
+use yii\web\Controller;
 
 class MergeAccountsController extends Controller
 {
