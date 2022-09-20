@@ -504,15 +504,15 @@ class AdOfferController extends CrudController
             ->limit($pagination->limit)
             ->one();
 
-        $adOffer = $adOfferMatch->adOffer;
-        $adSearch = $adOfferMatch->adSearch;
+        $offer = $adOfferMatch->adOffer;
+        $search = $adOfferMatch->adSearch;
 
         $buttons[] = [
             [
-                'text' => $adOffer->title,
                 'callback_data' => self::createRoute('view', [
-                    'id' => $adOffer->id,
+                    'id' => $offer->id,
                 ]),
+                'text' => '#' . $offer->id . ' ' . $offer->title,
             ]
         ];
 
@@ -539,9 +539,8 @@ class AdOfferController extends CrudController
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
-                    'model' => $adSearch,
-                    'user' => TelegramUser::findOne(['user_id' => $adSearch->user_id]),
-                    'keywords' => self::getKeywordsAsString($adSearch->getKeywords()->all()),
+                    'model' => $search,
+                    'keywords' => self::getKeywordsAsString($search->getKeywords()->all()),
                 ]),
                 $buttons,
                 [

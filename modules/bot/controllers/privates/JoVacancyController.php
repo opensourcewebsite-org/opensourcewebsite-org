@@ -572,10 +572,10 @@ class JoVacancyController extends CrudController
 
         $buttons[] = [
             [
-                'text' => $vacancy->name,
                 'callback_data' => self::createRoute('view', [
                     'id' => $vacancy->id,
                 ]),
+                'text' => '#' . $vacancy->id . ' ' . $vacancy->name,
             ]
         ];
 
@@ -601,7 +601,6 @@ class JoVacancyController extends CrudController
                 $this->render('match', [
                     'model' => $resume,
                     'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
-                    'user' => TelegramUser::findOne(['user_id' => $resume->user_id]),
                 ]),
                 $buttons,
                 [

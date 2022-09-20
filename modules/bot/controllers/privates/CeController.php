@@ -1020,7 +1020,7 @@ class CeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $mathes = $query->offset($pagination->offset)
+        $currencyExchangeOrderMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
@@ -1029,15 +1029,15 @@ class CeController extends CrudController
 
         $buttons[] = [
             [
-                'text' => $order->getTitle(),
                 'callback_data' => self::createRoute('view', [
                     'id' => $order->id,
                 ]),
+                'text' => '#' . $order->id . ' ' . $order->getTitle(),
             ]
         ];
 
         $buttons[] = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('matches', [
+            return self::createRoute('all-matches', [
                 'page' => $page,
             ]);
         });
@@ -1057,7 +1057,6 @@ class CeController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $matchOrder,
-                    'user' => TelegramUser::findOne(['user_id' => $matchOrder->user_id]),
                 ]),
                 $buttons,
                 [

@@ -493,15 +493,15 @@ class AdSearchController extends CrudController
             ->limit($pagination->limit)
             ->one();
 
-        $adSearch = $adSearchMatch->adSearch;
-        $adOffer = $adSearchMatch->adOffer;
+        $search = $adSearchMatch->adSearch;
+        $offer = $adSearchMatch->adOffer;
 
         $buttons[] = [
             [
-                'text' => $adSearch->title,
                 'callback_data' => self::createRoute('view', [
-                    'id' => $adSearch->id,
+                    'id' => $search->id,
                 ]),
+                'text' => '#' . $search->id . ' ' . $search->title,
             ]
         ];
 
@@ -527,11 +527,10 @@ class AdSearchController extends CrudController
 
         return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
-                $adOffer->getPhotos()->count() ? $adOffer->getPhotos()->one()->file_id : null,
+                $offer->getPhotos()->count() ? $offer->getPhotos()->one()->file_id : null,
                 $this->render('match', [
-                    'model' => $adOffer,
-                    'user' => TelegramUser::findOne(['user_id' => $adOffer->user_id]),
-                    'keywords' => self::getKeywordsAsString($adOffer->getKeywords()->all()),
+                    'model' => $offer,
+                    'keywords' => self::getKeywordsAsString($offer->getKeywords()->all()),
                 ]),
                 $buttons,
                 [

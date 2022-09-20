@@ -498,10 +498,10 @@ class JoResumeController extends CrudController
 
         $buttons[] = [
             [
-                'text' => $resume->name,
                 'callback_data' => self::createRoute('view', [
                     'id' => $resume->id,
                 ]),
+                'text' => '#' . $resume->id . ' ' . $resume->name,
             ]
         ];
 
@@ -528,11 +528,6 @@ class JoResumeController extends CrudController
                     'model' => $vacancy,
                     'company' => $vacancy->company,
                     'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($vacancy->location_lat, $vacancy->location_lon),
-                    'languages' => array_map(function ($vacancyLanguage) {
-                        return $vacancyLanguage->getLabel();
-                    }, $vacancy->vacancyLanguagesRelation),
-                    'user' => TelegramUser::findOne(['user_id' => $vacancy->user_id]),
                 ]),
                 $buttons,
                 [

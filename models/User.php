@@ -7,6 +7,7 @@ use app\components\helpers\Html;
 use app\models\queries\ContactQuery;
 use app\models\queries\DebtRedistributionQuery;
 use app\models\queries\UserQuery;
+use app\modules\bot\models\User as BotUser;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -1022,7 +1023,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getBotUser(): ActiveQuery
     {
-        return $this->hasOne(\app\modules\bot\models\User::class, ['user_id' => 'id']);
+        return $this->hasOne(BotUser::class, ['user_id' => 'id']);
     }
 
     /**
