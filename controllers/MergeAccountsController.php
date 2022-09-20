@@ -5,7 +5,6 @@ namespace app\controllers;
 use app\models\forms\MergeAccountsForm;
 use app\services\MergeAccountsService;
 use Yii;
-use yii\web\Controller;
 use yii\base\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
