@@ -12,6 +12,7 @@ $config = [
                 '/my_face(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-face/index',
                 '/my_cat(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-cat/index',
                 '/my_art(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-art/index',
+                '/my_horse(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-horse/index',
                 '/<controller:\w+>__<action:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],

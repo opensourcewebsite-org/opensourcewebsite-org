@@ -19,11 +19,12 @@ use yii\validators\UrlValidator;
 class GroupStellarController extends Controller
 {
     /**
+     * @param int|null $id Chat->id
      * @return array
      */
-    public function actionIndex($chatId = null)
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -42,7 +43,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => $chat->stellar_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -50,7 +51,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-mode', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Mode') . ': ' . ($isModeSigners ? Yii::t('bot', 'Signers') : Yii::t('bot', 'Holders')),
                         ],
@@ -58,7 +59,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-asset', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Asset'),
                         ],
@@ -66,7 +67,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-threshold', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Threshold for holders'),
                             'visible' => !$isModeSigners,
@@ -75,7 +76,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-invite-link', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Invite link'),
                         ],
@@ -83,7 +84,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -100,12 +101,18 @@ class GroupStellarController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    /**
+     * @param int|null $id Chat->id
+     * @return array
+     */
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->stellar_status) {
@@ -116,29 +123,35 @@ class GroupStellarController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('stellar_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('stellar_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('stellar_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('stellar_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 
-    public function actionSetMode($chatId = null)
+    /**
+     * @param int|null $id Chat->id
+     * @return array
+     */
+    public function actionSetMode($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->stellar_mode) {
@@ -152,19 +165,25 @@ class GroupStellarController extends Controller
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 
-    public function actionSetAsset($chatId = null)
+    /**
+     * @param int|null $id Chat->id
+     * @return array
+     */
+    public function actionSetAsset($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-asset', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
             ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -183,7 +202,7 @@ class GroupStellarController extends Controller
                         $this->getState()->setName(null);
 
                         return $this->runAction('index', [
-                            'chatId' => $chatId,
+                            'id' => $chat->id,
                         ]);
                     }
                 }
@@ -197,7 +216,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -207,16 +226,22 @@ class GroupStellarController extends Controller
             ->build();
     }
 
-    public function actionSetThreshold($chatId = null)
+    /**
+     * @param int|null $id Chat->id
+     * @return array
+     */
+    public function actionSetThreshold($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-threshold', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
             ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -227,7 +252,7 @@ class GroupStellarController extends Controller
                     $this->getState()->setName(null);
 
                     return $this->runAction('index', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                     ]);
                 }
             }
@@ -240,7 +265,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -250,16 +275,22 @@ class GroupStellarController extends Controller
             ->build();
     }
 
-    public function actionSetInviteLink($chatId = null)
+    /**
+     * @param int|null $id Chat->id
+     * @return array
+     */
+    public function actionSetInviteLink($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-invite-link', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
             ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -271,7 +302,7 @@ class GroupStellarController extends Controller
                     $this->getState()->setName(null);
 
                     return $this->runAction('index', [
-                        'chatId' => $chatId,
+                        'id' => $chat->id,
                     ]);
                 }
             }
@@ -284,7 +315,7 @@ class GroupStellarController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],

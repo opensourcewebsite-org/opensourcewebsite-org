@@ -74,7 +74,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'id' => $id,
+                                'id' => $chat->id,
                             ]),
                             'text' => $chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -82,7 +82,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-mode', [
-                                'id' => $id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Mode') . ': ' . $chat->getFilterModeLabel(),
                         ],
@@ -90,7 +90,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('whitelist-word-list', [
-                                'chatId' => $id,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Whitelist'),
                         ],
@@ -98,7 +98,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('blacklist-word-list', [
-                                'chatId' => $id,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Blacklist'),
                         ],
@@ -106,7 +106,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'id' => $id,
+                                'id' => $chat->id,
                                 'i' => 1,
                             ]),
                             'text' => ($chat->filter_remove_reply == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: reply'),
@@ -115,7 +115,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'id' => $id,
+                                'id' => $chat->id,
                                 'i' => 2,
                             ]),
                             'text' => ($chat->filter_remove_username == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: username'),
@@ -124,7 +124,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'id' => $id,
+                                'id' => $chat->id,
                                 'i' => 3,
                             ]),
                             'text' => ($chat->filter_remove_emoji == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: emoji'),
@@ -133,7 +133,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'id' => $id,
+                                'id' => $chat->id,
                                 'i' => 4,
                             ]),
                             'text' => ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: empty line'),
@@ -142,7 +142,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'id' => $id,
+                                'id' => $chat->id,
                                 'i' => 5,
                             ]),
                             'text' => ($chat->filter_remove_channels == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: channels'),
@@ -151,7 +151,7 @@ class GroupMessageFilterController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $id,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -180,7 +180,7 @@ class GroupMessageFilterController extends Controller
 
         $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -214,7 +214,7 @@ class GroupMessageFilterController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 
     /**
@@ -225,7 +225,7 @@ class GroupMessageFilterController extends Controller
     {
         $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -246,6 +246,6 @@ class GroupMessageFilterController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 }

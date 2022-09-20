@@ -8,25 +8,30 @@ use app\modules\bot\components\helpers\ExternalLink;
 use Yii;
 
 /**
- * Class DepositIncomeController
+ * Class MyFakeHorseController
  *
  * @package app\modules\bot\controllers\groups
  */
-class DepositIncomeController extends Controller
+class MyFakeHorseController extends Controller
 {
     /**
      * @return array
      */
     public function actionIndex()
     {
+        $user = $this->getTelegramUser();
+
         return $this->getResponseBuilder()
-            ->sendMessage(
-                $this->render('index'),
+            ->sendPhoto(
+                'https://thishorsedoesnotexist.com/?v=' . time(), //$user->getProviderUserId(),
+                $this->render('index', [
+                    'user' => $user,
+                ]),
                 [],
                 [
                     'disablePreview' => true,
                     'disableNotification' => true,
-                    'replyToMessageId' => $this->getMessage()->getMessageId(),
+                    //'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
             ->build();

@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class GroupJoinCaptchaController
@@ -16,11 +16,12 @@ use app\modules\bot\components\helpers\Emoji;
 class GroupJoinCaptchaController extends Controller
 {
     /**
-     * @return array
-     */
-    public function actionIndex($chatId = null)
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -28,24 +29,29 @@ class GroupJoinCaptchaController extends Controller
                 ->build();
         }
 
-        $telegramUser = $this->getTelegramUser();
+        $this->getState()->setName(null);
+
+        $user = $this->getTelegramUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat', 'telegramUser')),
+                $this->render('index', [
+                    'chat' => $chat,
+                    'user' => $user,
+                ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
-                            'text' => $chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isJoinCaptchaOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -59,12 +65,18 @@ class GroupJoinCaptchaController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->join_captcha_status) {
@@ -75,20 +87,20 @@ class GroupJoinCaptchaController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('join_captcha_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('join_captcha_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('join_captcha_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('join_captcha_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 }

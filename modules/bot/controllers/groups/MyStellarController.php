@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
-use app\modules\bot\components\Controller;
-use app\modules\bot\components\helpers\Emoji;
 use app\models\User;
 use app\models\UserStellar;
+use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use Yii;
 
 /**
  * Class MyStellarController

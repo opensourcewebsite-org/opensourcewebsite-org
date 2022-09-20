@@ -38,8 +38,9 @@ class GroupMarketplaceController extends Controller
     }
 
     /**
-     * @return array
-     */
+    * @param int $id Chat->id
+    * @return array
+    */
     public function actionIndex($id = null)
     {
         $chat = Chat::findOne($id);
@@ -61,7 +62,7 @@ class GroupMarketplaceController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => $chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isMarketplaceOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -159,7 +160,7 @@ class GroupMarketplaceController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 
     /**
@@ -187,7 +188,7 @@ class GroupMarketplaceController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 
     /**
@@ -292,11 +293,11 @@ class GroupMarketplaceController extends Controller
     }
 
     /**
-    * @param int $page
     * @param int $id Chat->id
+    * @param int $page
     * @return array
     */
-    public function actionMembersWithButtons($page = 1, $id = null): array
+    public function actionMembersWithButtons($id = null, $page = 1): array
     {
         $chat = Chat::findOne($id);
 
@@ -375,6 +376,7 @@ class GroupMarketplaceController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionInputMember($id = null): array
     {
@@ -422,6 +424,7 @@ class GroupMarketplaceController extends Controller
     /**
     * @param int $id ChatMember->id
     * @param int $page
+    * @return array
     */
     public function actionMember($id = null, $page = 1): array
     {
@@ -515,6 +518,7 @@ class GroupMarketplaceController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionAddLink($id = null): array
     {
@@ -550,6 +554,7 @@ class GroupMarketplaceController extends Controller
 
     /**
     * @param int $id ChatMarketplaceLink->id
+    * @return array
     */
     public function actionLink($id = null): array
     {

@@ -47,7 +47,7 @@ class GroupMembershipController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => $chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isMembershipOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -94,6 +94,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionSetStatus($id = null)
     {
@@ -127,7 +128,7 @@ class GroupMembershipController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 
     /**
@@ -178,11 +179,11 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $page
     * @param int $id Chat->id
+    * @param int $page
     * @return array
     */
-    public function actionMembers($page = 1, $id = null): array
+    public function actionMembers($id = null, $page = 1): array
     {
         $chat = Chat::findOne($id);
 
@@ -270,6 +271,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionInputMember($id = null): array
     {
@@ -321,6 +323,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionMember($id = null): array
     {
@@ -384,6 +387,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionInputMemberDate($id = null): array
     {
@@ -425,6 +429,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionDeleteMemberDate($id = null): array
     {
@@ -454,6 +459,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionSetMemberNote($id = null): array
     {
@@ -516,6 +522,7 @@ class GroupMembershipController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionDeleteMemberNote($id = null): array
     {

@@ -28,6 +28,7 @@ class GroupGuestFaqController extends Controller
                 'wordModelClass' => ChatFaqQuestion::class,
                 'options' => [
                     'actions' => [
+                        'select' => false,
                         'insert' => false,
                         'update' => false,
                         'delete' => false,

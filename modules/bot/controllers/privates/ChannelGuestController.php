@@ -27,7 +27,9 @@ class ChannelGuestController extends Controller
         $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isChannel()) {
-            return [];
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(null);
@@ -37,7 +39,7 @@ class ChannelGuestController extends Controller
         $chatMember = $chat->getChatMemberByUserId();
 
         if ($chatMember) {
-            if ($chatMember->canUseMarketplace()) {
+            if ($chat->isMarketplaceOn() && $chatMember->canUseMarketplace()) {
                 $buttons[] = [
                     [
                         'callback_data' => ChannelGuestMarketplaceController::createRoute('index', [

@@ -17,6 +17,7 @@ use Yii;
 class ChannelMarketplaceController extends Controller
 {
     /**
+     * @param int $id Chat->id
      * @return array
      */
     public function actionIndex($id = null)
@@ -40,7 +41,7 @@ class ChannelMarketplaceController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => $chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isMarketplaceOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -80,6 +81,10 @@ class ChannelMarketplaceController extends Controller
             ->build();
     }
 
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetStatus($id = null)
     {
         $chat = Chat::findOne($id);
@@ -112,9 +117,13 @@ class ChannelMarketplaceController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetLimit($id = null)
     {
         $chat = Chat::findOne($id);
@@ -158,6 +167,10 @@ class ChannelMarketplaceController extends Controller
             ->build();
     }
 
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetTextHint($id = null)
     {
         $chat = Chat::findOne($id);

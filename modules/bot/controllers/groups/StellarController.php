@@ -2,13 +2,13 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
+use app\models\StellarServer;
+use app\models\UserStellar;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\models\UserStellar;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
-use app\models\StellarServer;
+use Yii;
 
 /**
  * Class StellarController

@@ -31,7 +31,7 @@ class MessageController extends Controller
             'user_id' => $telegramUser->id,
         ]);
 
-        if (!$chatMember->isAdministrator() && ($chat->join_captcha_status == ChatSetting::STATUS_ON) && !$telegramUser->captcha_confirmed_at) {
+        if (!$chatMember->isAdministrator() && $chat->isJoinCaptchaOn() && !$telegramUser->captcha_confirmed_at) {
             if ($chatMember->role == JoinCaptchaController::ROLE_VERIFIED) {
                 $telegramUser->captcha_confirmed_at = time();
                 $telegramUser->save(false);
@@ -59,7 +59,7 @@ class MessageController extends Controller
 
         $deleteMessage = false;
 
-        if (($chat->limiter_status == ChatSetting::STATUS_ON) && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+        if ($chat->isLimiterOn() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
             if (!$chatMember->checkLimiter()) {
                 $deleteMessage = true;
 
@@ -83,7 +83,7 @@ class MessageController extends Controller
         }
 
         if (!$deleteMessage) {
-            if (($chat->membership_status == ChatSetting::STATUS_ON) && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+            if ($chat->isMembershipOn() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
                 if (!$chatMember->checkMembership()) {
                     $deleteMessage = true;
 
@@ -108,7 +108,7 @@ class MessageController extends Controller
         }
 
         if (!$deleteMessage) {
-            if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && $this->getMessage()->isNew() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
+            if ($chat->isSlowModeOn() && $this->getMessage()->isNew() && !$telegramUser->isBot() && !$chatMember->isCreator()) {
                 if (!$chatMember->checkSlowMode()) {
                     $deleteMessage = true;
 

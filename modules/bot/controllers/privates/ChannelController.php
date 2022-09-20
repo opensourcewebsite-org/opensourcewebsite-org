@@ -22,6 +22,7 @@ use yii\helpers\ArrayHelper;
 class ChannelController extends Controller
 {
     /**
+     * @param int $page
      * @return array
      */
     public function actionIndex($page = 1)
@@ -87,6 +88,7 @@ class ChannelController extends Controller
     }
 
     /**
+     * @param int $chatId Chat->id
      * @return array
      */
     public function actionView($chatId = null)
@@ -121,7 +123,7 @@ class ChannelController extends Controller
                     [
                         [
                             'callback_data' => ChannelAdministratorsController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Administrators'),
                             'visible' => $chatMember->isCreator(),
@@ -132,7 +134,7 @@ class ChannelController extends Controller
                             'callback_data' => ChannelMarketplaceController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
+                            'text' => ($chat->isMarketplaceOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
                         ],
                     ],
                     [
@@ -146,7 +148,7 @@ class ChannelController extends Controller
                         ],
                         [
                             'callback_data' => ChannelRefreshController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::REFRESH,
                         ],

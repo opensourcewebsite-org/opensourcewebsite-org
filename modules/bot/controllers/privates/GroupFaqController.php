@@ -2,16 +2,16 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use Yii;
-use app\modules\bot\components\Controller;
-use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\ChatFaqQuestion;
-use yii\data\Pagination;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatFaqQuestion;
 use app\modules\bot\models\ChatMember;
+use app\modules\bot\models\ChatSetting;
+use Yii;
+use yii\data\Pagination;
 
 /**
  * Class GroupFaqController
@@ -38,11 +38,12 @@ class GroupFaqController extends Controller
     }
 
     /**
-     * @return array
-     */
-    public function actionIndex($chatId = null)
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -54,12 +55,14 @@ class GroupFaqController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => $chat->faq_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -67,7 +70,7 @@ class GroupFaqController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('word-list', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Questions'),
                         ],
@@ -75,7 +78,7 @@ class GroupFaqController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -92,12 +95,18 @@ class GroupFaqController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->faq_status) {
@@ -108,20 +117,20 @@ class GroupFaqController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('faq_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('faq_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('faq_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('faq_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 }

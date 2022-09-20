@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\modules\bot\models;
 
 use app\components\helpers\TimeHelper;
@@ -198,6 +200,24 @@ class ChatMember extends ActiveRecord
         }
 
         return true;
+    }
+
+    /**
+    * @return bool
+    */
+    public function hasLimiter()
+    {
+        if ($chat = $this->chat) {
+            if ($this->limiter_date) {
+                $date = new DateTime($this->limiter_date);
+
+                if (($date->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -423,15 +443,11 @@ class ChatMember extends ActiveRecord
     {
         $chat = $this->chat;
 
-        if ($chat->isGroup() || $chat->isChannel()) {
-            if ($chat->marketplace_status == ChatSetting::STATUS_ON) {
-                if (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_ALL)
-                    || (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_MEMBERSHIP)
-                        && ($chat->membership_status == ChatSetting::STATUS_ON) && $this->hasMembership())
-                    || $this->isCreator()) {
-                    return true;
-                }
-            }
+        if (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_ALL)
+            || (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_MEMBERSHIP)
+                && ($chat->isMembershipOn() && $this->hasMembership()))
+            || $this->isCreator()) {
+            return true;
         }
 
         return false;
@@ -442,7 +458,7 @@ class ChatMember extends ActiveRecord
         $chat = $this->chat;
 
         if ($chat->isGroup() || $chat->isChannel()) {
-            if (($chat->membership_status == ChatSetting::STATUS_ON) && $chat->membership_tag) {
+            if ($chat->isMembershipOn() && $chat->membership_tag) {
                 if ($this->hasMembership()) {
                     return $chat->membership_tag;
                 }

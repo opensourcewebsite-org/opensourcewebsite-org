@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\modules\bot\models;
 
 use Yii;
@@ -76,5 +78,10 @@ class ChatFaqQuestion extends ActiveRecord
     public function getUpdatedBy()
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
+    }
+
+    public function getChatId()
+    {
+        return $this->chat_id;
     }
 }

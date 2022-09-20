@@ -5,9 +5,9 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\StellarOperator;
+use app\models\UserStellarDepositIncome;
 use DateTime;
 use yii\console\Controller;
-use app\models\UserStellarDepositIncome;
 
 /**
  * Class StellarOperatorController

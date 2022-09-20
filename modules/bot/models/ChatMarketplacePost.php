@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\modules\bot\models;
 
 use app\components\helpers\TimeHelper;
+use app\modules\bot\models\queries\ChatMarketplacePostQuery;
+use DateInterval;
+use DateTime;
+use DateTimeZone;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -16,6 +22,7 @@ use yii\db\ActiveRecord;
  * @property int $time minutes (time of day)
  * @property int $skip_days
  * @property int $created_at
+ * @property int|null $next_send_at
  * @property int|null $sent_at
  * @property int|null $provider_message_id
  * @property int|null $processed_at
@@ -46,7 +53,7 @@ class ChatMarketplacePost extends ActiveRecord
     {
         return [
             [['member_id', 'text'], 'required'],
-            [['member_id', 'status', 'time', 'skip_days', 'created_at', 'sent_at', 'provider_message_id', 'processed_at'], 'integer'],
+            [['member_id', 'status', 'time', 'skip_days', 'created_at', 'next_send_at', 'sent_at', 'provider_message_id', 'processed_at'], 'integer'],
             [['title'], 'string', 'max' => 255],
             [['text'], 'string', 'max' => 10000],
             [['time'], 'default', 'value' => rand(0, 1439)],
@@ -71,6 +78,7 @@ class ChatMarketplacePost extends ActiveRecord
             'time' => Yii::t('app', 'Time of day'),
             'skip_days' => Yii::t('app', 'Skip days'),
             'created_at' => Yii::t('app', 'Created At'),
+            'next_send_at' => 'Next Send At',
             'sent_at' => 'Sent At',
             'provider_message_id' => 'Provider Message ID',
             'processed_at' => Yii::t('app', 'Processed At'),
@@ -85,6 +93,11 @@ class ChatMarketplacePost extends ActiveRecord
                 'updatedAtAttribute' => false,
             ],
         ];
+    }
+
+    public static function find(): ChatMarketplacePostQuery
+    {
+        return new ChatMarketplacePostQuery(get_called_class());
     }
 
     /**
@@ -155,6 +168,11 @@ class ChatMarketplacePost extends ActiveRecord
         return $this->member_id;
     }
 
+    public function getNextSendAt()
+    {
+        return $this->next_send_at;
+    }
+
     /**
      * Gets query for [[Chat]].
      *
@@ -164,5 +182,51 @@ class ChatMarketplacePost extends ActiveRecord
     {
         return $this->hasOne(Chat::class, ['id' => 'chat_id'])
             ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
+    }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id'])
+            ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
+    }
+
+    public function updateNextSendAt($timestamp = null)
+    {
+        if (!$timestamp) {
+            $offset = $this->chat->timezone;
+            $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($offset));
+
+            if ($this->sent_at) {
+                $nextDateTime = new DateTime('@' . $this->sent_at);
+                $nextDateTime->setTimezone($dateTimeZone);
+                $nextDateTime->setTime(0, 0);
+                $nextDateTime->modify('+' . ($this->skip_days + 1) . ' days');
+            } else {
+                $nextDateTime = new DateTime('today', $dateTimeZone);
+            }
+
+            if ($this->time) {
+                $nextDateTime->modify('+' . $this->time . 'minutes');
+            }
+
+            $nowDateTime = new DateTime('now', $dateTimeZone);
+
+            if ($nowDateTime > $nextDateTime) {
+                $dateInterval = $nextDateTime->diff($nowDateTime);
+                $nextDateTime->modify('+' . ($dateInterval->format('%a') + 1) . 'days');
+            }
+
+            $timestamp = $nextDateTime->getTimestamp();
+        }
+
+        $this->next_send_at = $timestamp;
+        $this->save(false);
+
+        return $this;
     }
 }

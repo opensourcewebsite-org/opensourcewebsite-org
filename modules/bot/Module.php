@@ -154,8 +154,6 @@ class Module extends \yii\base\Module
             }
 
             $this->setChat($chat);
-
-            $this->updateNamespaceByChat($this->getChat());
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
                 $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
@@ -305,14 +303,6 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @return bool
-     */
-    public function initFromConsole()
-    {
-        return $this->updateNamespaceByChat($this->getChat());
-    }
-
-    /**
      * @param int $chatId
      *
      * @return Chat|null
@@ -351,6 +341,8 @@ class Module extends \yii\base\Module
     public function setChat(Chat $chat)
     {
         Yii::$container->setSingleton('chat', $chat);
+
+        $this->updateNamespaceByChat($chat);
 
         return $chat;
     }

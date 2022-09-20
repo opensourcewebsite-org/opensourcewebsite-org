@@ -143,7 +143,9 @@ class Controller extends \yii\web\Controller
         $controllerName = self::controllerName();
 
         // replace names of actions to short codes
-        if ($key = array_search($controllerName, $module->commandRouteResolver->controllers)) {
+        $key = array_search($controllerName, $module->commandRouteResolver->controllers);
+
+        if ($key !== false) {
             $route = "/$key";
         } else {
             $route = "/$controllerName";
@@ -152,7 +154,9 @@ class Controller extends \yii\web\Controller
         if (!empty($actionName)) {
             $actionName = str_replace('-', '_', $actionName);
             // replace names of actions to short codes
-            if ($key = array_search($actionName, $module->commandRouteResolver->actions)) {
+            $key = array_search($actionName, $module->commandRouteResolver->actions);
+
+            if ($key !== false) {
                 $route .= "__$key";
             } else {
                 $route .= "__$actionName";

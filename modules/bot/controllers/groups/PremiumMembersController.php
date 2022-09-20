@@ -25,8 +25,8 @@ class PremiumMembersController extends Controller
     {
         $chat = $this->getTelegramChat();
 
-        if ($chat->membership_status == ChatSetting::STATUS_ON) {
-            if ($chat->limiter_status == ChatSetting::STATUS_ON) {
+        if ($chat->isMembershipOn()) {
+            if ($chat->isLimiterOn()) {
                 $query = $chat->getPremiumChatMembersWithLimiter();
             } else {
                 $query = $chat->getPremiumChatMembers();

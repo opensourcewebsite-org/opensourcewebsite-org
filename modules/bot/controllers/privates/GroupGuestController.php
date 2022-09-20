@@ -60,7 +60,7 @@ class GroupGuestController extends Controller
                 ],
             ];
 
-            if ($chatMember->canUseMarketplace()) {
+            if ($chat->isMarketplaceOn() && $chatMember->canUseMarketplace()) {
                 $buttons[] = [
                     [
                         'callback_data' => GroupGuestMarketplaceController::createRoute('index', [
@@ -89,7 +89,7 @@ class GroupGuestController extends Controller
                     'id' => $chat->id,
                 ]),
                 'text' => Yii::t('bot', 'Premium members'),
-                'visible' => ($chat->membership_status == ChatSetting::STATUS_ON),
+                'visible' => $chat->isMembershipOn(),
             ],
         ];
 
@@ -146,9 +146,7 @@ class GroupGuestController extends Controller
      */
     public function actionInputIntroText($id = null)
     {
-        $chatMember = ChatMember::findOne([
-            'id' => $id,
-        ]);
+        $chatMember = ChatMember::findOne($id);
 
         if (!isset($chatMember)) {
             return $this->getResponseBuilder()
@@ -209,9 +207,7 @@ class GroupGuestController extends Controller
      */
     public function actionDeleteIntro($id = null)
     {
-        $chatMember = ChatMember::findOne([
-            'id' => $id,
-        ]);
+        $chatMember = ChatMember::findOne($id);
 
         if (!isset($chatMember)) {
             return $this->getResponseBuilder()
@@ -228,11 +224,11 @@ class GroupGuestController extends Controller
     }
 
     /**
-     * @param int $page
      * @param int $id Chat->id
+     * @param int $page
      * @return array
      */
-    public function actionPremiumMembers($page = 1, $id = null)
+    public function actionPremiumMembers($id = null, $page = 1)
     {
         $chat = Chat::findOne($id);
 
@@ -317,11 +313,11 @@ class GroupGuestController extends Controller
     }
 
     /**
-     * @param int $page
      * @param int $id Chat->id
+     * @param int $page
      * @return array
      */
-    public function actionMembersWithIntro($page = 1, $id = null)
+    public function actionMembersWithIntro($id = null, $page = 1)
     {
         $chat = Chat::findOne($id);
 
@@ -406,11 +402,11 @@ class GroupGuestController extends Controller
     }
 
     /**
-     * @param int $page
      * @param int $id Chat->id
+     * @param int $page
      * @return array
      */
-    public function actionMembersWithReviews($page = 1, $id = null)
+    public function actionMembersWithReviews($id = null, $page = 1)
     {
         $chat = Chat::findOne($id);
 

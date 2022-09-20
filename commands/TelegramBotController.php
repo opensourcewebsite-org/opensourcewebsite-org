@@ -25,9 +25,10 @@ class TelegramBotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        $this->removeCaptchaMessages();
-        //$this->removeGreetingMessages();
-        //$this->sendMarketplaceMessages();
+        $this->actionRemoveCaptchaMessages();
+        //$this->actionRemoveGreetingMessages();
+        //$this->actionUpdateMarketplacePostsNextSendAt();
+        //$this->actionSendMarketplaceMessages();
     }
 
     /**
@@ -126,7 +127,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
         return false;
     }
 
-    public function removeCaptchaMessages()
+    public function actionRemoveCaptchaMessages()
     {
         $updatesCount = 0;
 
@@ -180,7 +181,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
         return true;
     }
 
-    public function removeGreetingMessages()
+    public function actionRemoveGreetingMessages()
     {
         $updatesCount = 0;
 
@@ -228,9 +229,181 @@ class TelegramBotController extends Controller implements CronChainedInterface
         return true;
     }
 
-    // TODO
-    public function sendMarketplaceMessages()
+    public function actionUpdateMarketplacePostsNextSendAt()
     {
+        $updatedCount = 0;
+
+        $bots = Bot::findAll([
+            'status' => Bot::BOT_STATUS_ENABLED,
+        ]);
+
+        if ($bots) {
+            foreach ($bots as $bot) {
+                $models = ChatMarketplacePost::find()
+                    ->andWhere([
+                        ChatMarketplacePost::tableName() . '.status' => ChatMarketplacePost::STATUS_ON,
+                        ChatMarketplacePost::tableName() . '.next_send_at' => null,
+                    ])
+                    ->joinWith('chat')
+                    ->andWhere([
+                        Chat::tableName() . '.bot_id' => $bot->id,
+                    ])
+                    ->joinWith('chat.settings')
+                    ->andWhere([
+                        'and',
+                        [ChatSetting::tableName() . '.setting' => 'marketplace_status'],
+                        [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                    ])
+                    ->all();
+
+                if ($models) {
+                    $this->debug('Update nextSendAt');
+
+                    foreach ($models as $post) {
+                        $this->debug('Post ID: ' . $post->id);
+                        $chatMember = $post->chatMember;
+                        $chat = $chatMember->chat;
+
+                        if (!$chatMember->canUseMarketplace()
+                            || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
+                            $post->setInactive()->save();
+                        } else {
+                            $post->updateNextSendAt();
+                            $this->debug('Next Send At: ' . $post->getNextSendAt());
+
+                            $updatedCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($updatedCount) {
+            $this->output('Marketplace. Posts (nextSendAt) updated: ' . $updatedCount);
+        }
+
+        return true;
+    }
+
+    // TODO
+    // https://core.telegram.org/bots/faq#broadcasting-to-users
+    public function actionSendMarketplaceMessages()
+    {
+        $sentCount = 0;
+
+        $bots = Bot::findAll([
+            'status' => Bot::BOT_STATUS_ENABLED,
+        ]);
+
+        if ($bots) {
+            foreach ($bots as $bot) {
+                $botApi = $bot->botApi;
+
+                $this->debug('Sending');
+
+                $skipChatIds = [];
+                $module = null;
+
+                do {
+                    $post = ChatMarketplacePost::find()
+                        ->andWhere([
+                            ChatMarketplacePost::tableName() . '.status' => ChatMarketplacePost::STATUS_ON,
+                        ])
+                        ->andWhere([
+                            '<', ChatMarketplacePost::tableName() . '.next_send_at', time(),
+                        ])
+                        ->andWhere([
+                            'not', [ChatMarketplacePost::tableName() . '.next_send_at' => null],
+                        ])
+                        ->joinWith('chatMember.chat')
+                        ->andWhere([
+                            Chat::tableName() . '.bot_id' => $bot->id,
+                        ])
+                        ->andWhere([
+                            'not', [Chat::tableName() . '.id' => $skipChatIds],
+                        ])
+                        ->joinWith('chatMember.chat.settings')
+                        ->andWhere([
+                            'and',
+                            [ChatSetting::tableName() . '.setting' => 'marketplace_status'],
+                            [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                        ])
+                        ->orderByRank()
+                        ->one();
+
+                    if ($post) {
+                        $this->debug('Post ID: ' . $post->id);
+                        $chatMember = $post->chatMember;
+                        $chat = $chatMember->chat;
+
+                        if (!$chatMember->canUseMarketplace()
+                            || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
+                            $post->setInactive()->save();
+                        } else {
+                            if ($chat->isSlowModeOn() && !$chatMember->isCreator()) {
+                                if (!$chatMember->checkSlowMode()) {
+                                    $post->updateNextSendAt();
+                                    $this->debug('Next Send At: ' . $post->getNextSendAt());
+
+                                    continue;
+                                } else {
+                                    $isSlowModeOn = true;
+                                }
+                            }
+
+                            if (!isset($module)) {
+                                $module = Yii::$app->getModule('bot');
+                                $module->setBot($bot);
+                            }
+
+                            $module->setChat($chat);
+                            $module->runAction('marketplace/send-message');
+
+                            $response = false;
+
+                            if ($response) {
+                                if (isset($isSlowModeOn) && $isSlowModeOn) {
+                                    $chatMember->updateSlowMode($response->getDate());
+                                }
+
+                                $post->sent_at = $response->getDate();
+                                $post->provider_message_id = $response->getMessageId();
+                                $post->save(false);
+
+                                // ChatCaptcha::deleteAll([
+                            //     'chat_id' => $record->chat_id,
+                            //     'provider_user_id' => $record->provider_user_id,
+                                // ]);
+                            //
+                                // try {
+                            //     $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
+                                // } catch (\Exception $e) {
+                            //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
+                                // }
+                            //
+                                // try {
+                            //     $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                                // } catch (\Exception $e) {
+                            //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
+                                // }
+
+                                $skipChatIds[] = $chat->id;
+                                $sentCount++;
+                                sleep(1);
+                            }
+
+                            $post->updateNextSendAt();
+                            $this->debug('Next Send At: ' . $post->getNextSendAt());
+                        }
+                    }
+                } while ($post);
+            }
+        }
+
+        if ($sentCount) {
+            $this->output('Marketplace. Posts sent to telegram groups: ' . $sentCount);
+        }
+
         return true;
     }
 }

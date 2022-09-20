@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\ChatPhrase;
 use app\modules\bot\models\ChatFaqQuestion;
+use app\modules\bot\models\ChatPhrase;
+use app\modules\bot\models\ChatSetting;
+use Yii;
 
 /**
  * Class FaqController

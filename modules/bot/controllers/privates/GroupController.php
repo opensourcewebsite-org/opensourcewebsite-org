@@ -92,7 +92,7 @@ class GroupController extends Controller
     }
 
     /**
-     * @param int|null $chatId
+     * @param int $chatId Chat->id
      * @return array
      */
     public function actionView($chatId = null)
@@ -127,7 +127,7 @@ class GroupController extends Controller
                     [
                         [
                             'callback_data' => GroupAdministratorsController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Administrators'),
                             'visible' => $chatMember->isCreator(),
@@ -152,7 +152,7 @@ class GroupController extends Controller
                     [
                         [
                             'callback_data' => GroupBasicCommandsController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => ($chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Basic Commands'),
                         ],
@@ -162,7 +162,7 @@ class GroupController extends Controller
                             'callback_data' => GroupJoinHiderController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->join_hider_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notification Filter'),
+                            'text' => ($chat->isJoinHiderOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notification Filter'),
                         ],
                     ],
                     [
@@ -176,17 +176,17 @@ class GroupController extends Controller
                     [
                         [
                             'callback_data' => GroupJoinCaptchaController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
-                            'text' => ($chat->join_captcha_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Captcha'),
+                            'text' => ($chat->isJoinCaptchaOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Captcha'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => GroupGreetingController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
-                            'text' => ($chat->greeting_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Greeting'),
+                            'text' => ($chat->isGreetingOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Greeting'),
                         ],
                     ],
                     [
@@ -194,7 +194,7 @@ class GroupController extends Controller
                             'callback_data' => GroupSlowModeController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Slow Mode'),
+                            'text' => ($chat->isSlowModeOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Slow Mode'),
                         ],
                     ],
                     [
@@ -202,7 +202,7 @@ class GroupController extends Controller
                             'callback_data' => GroupMembershipController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->membership_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
+                            'text' => ($chat->isMembershipOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
                         ],
                     ],
                     [
@@ -210,7 +210,7 @@ class GroupController extends Controller
                             'callback_data' => GroupLimiterController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Time Limiter'),
+                            'text' => ($chat->isLimiterOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Time Limiter'),
                         ],
                     ],
                     [
@@ -218,13 +218,13 @@ class GroupController extends Controller
                             'callback_data' => GroupMarketplaceController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->marketplace_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
+                            'text' => ($chat->isMarketplaceOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => GroupFaqController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => ($chat->faq_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'FAQ'),
                         ],
@@ -232,7 +232,7 @@ class GroupController extends Controller
                     [
                         [
                             'callback_data' => GroupStellarController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => ($chat->stellar_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' Stellar',
                         ],
@@ -248,7 +248,7 @@ class GroupController extends Controller
                         ],
                         [
                             'callback_data' => GroupRefreshController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::REFRESH,
                         ],

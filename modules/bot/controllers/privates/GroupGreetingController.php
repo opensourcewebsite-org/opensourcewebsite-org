@@ -17,11 +17,12 @@ use Yii;
 class GroupGreetingController extends Controller
 {
     /**
-     * @return array
-     */
-    public function actionIndex($chatId = null)
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -31,27 +32,27 @@ class GroupGreetingController extends Controller
 
         $this->getState()->setName(null);
 
-        $telegramUser = $this->getTelegramUser();
+        $user = $this->getTelegramUser();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'chat' => $chat,
-                    'telegramUser' => $telegramUser,
+                    'user' => $user,
                 ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
-                            'text' => $chat->greeting_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isGreetingOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('set-message', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Message'),
                         ],
@@ -59,7 +60,7 @@ class GroupGreetingController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [
-                                'chatId' => $chatId,
+                                'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -76,12 +77,18 @@ class GroupGreetingController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->greeting_status) {
@@ -92,33 +99,39 @@ class GroupGreetingController extends Controller
             case ChatSetting::STATUS_OFF:
                 $chatMember = $chat->getChatMemberByUserId();
 
-                 if (!$chatMember->trySetChatSetting('greeting_status', ChatSetting::STATUS_ON)) {
-                     return $this->getResponseBuilder()
-                         ->answerCallbackQuery(
-                             $this->render('alert-status-on', [
-                                 'requiredRating' => $chatMember->getRequiredRatingForChatSetting('greeting_status', ChatSetting::STATUS_ON),
-                             ]),
-                             true
-                         )
-                         ->build();
-                 }
+                if (!$chatMember->trySetChatSetting('greeting_status', ChatSetting::STATUS_ON)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery(
+                            $this->render('alert-status-on', [
+                                'requiredRating' => $chatMember->getRequiredRatingForChatSetting('greeting_status', ChatSetting::STATUS_ON),
+                            ]),
+                            true
+                        )
+                        ->build();
+                }
 
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 
-    public function actionSetMessage($chatId = null)
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionSetMessage($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $this->getState()->setName(self::createRoute('set-message', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
             ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -127,7 +140,7 @@ class GroupGreetingController extends Controller
                     $chat->greeting_message = $text;
 
                     return $this->runAction('index', [
-                         'chatId' => $chatId,
+                         'id' => $chat->id,
                      ]);
                 }
             }
@@ -144,7 +157,7 @@ class GroupGreetingController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
+                                'id' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],

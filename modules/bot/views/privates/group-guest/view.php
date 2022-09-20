@@ -15,7 +15,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <br/>
 <?= nl2br($chatMember->intro) ?><br/>
 <?php endif; ?>
-<?php if ($chatMember->membership_date || $chatMember->limiter_date || ($chat->getUsername() && $user->getUsername())) : ?>
+<?php if ($chatMember->membership_date || $chatMember->limiter_date || $chat->isSlowModeOn() || ($chat->getUsername() && $user->getUsername())) : ?>
 ————<br/>
 <?php if ($chatMember->membership_date) : ?>
 <?= Yii::t('bot', 'Your premium membership is valid until') ?>: <?= $chatMember->membership_date; ?><br/>
@@ -23,6 +23,10 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endif; ?>
 <?php if ($chatMember->limiter_date) : ?>
 <?= Yii::t('bot', 'You can send messages until') ?>: <?= $chatMember->limiter_date; ?><br/>
+<br/>
+<?php endif; ?>
+<?php if ($chat->isSlowModeOn()) : ?>
+<?= Yii::t('bot', 'Limit of messages per day') ?>: <?= $chatMember->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit; ?><br/>
 <br/>
 <?php endif; ?>
 <?php if ($user->getUsername()) : ?>

@@ -18,13 +18,13 @@ use yii\helpers\ArrayHelper;
 class ChannelRefreshController extends Controller
 {
     /**
-     * @param string|int|null $chatId
+     * @param int $id Chat->id
      * @return array
      * @throws \yii\db\Exception
      */
-    public function actionIndex($chatId = null): array
+    public function actionIndex($id = null): array
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isChannel()) {
             return $this->run('channel/index');

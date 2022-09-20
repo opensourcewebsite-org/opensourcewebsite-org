@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\modules\bot\models;
 
 use app\models\Currency;
@@ -430,5 +432,82 @@ class Chat extends ActiveRecord
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    public function isMarketplaceOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->marketplace_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isMembershipOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->membership_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isLimiterOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->limiter_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isSlowModeOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->slow_mode_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isJoinCaptchaOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->join_captcha_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isGreetingOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->greeting_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isJoinHiderOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->join_hider_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

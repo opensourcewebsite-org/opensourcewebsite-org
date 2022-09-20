@@ -29,7 +29,7 @@ class SystemMessageController extends Controller
 
             $role = JoinCaptchaController::ROLE_VERIFIED;
 
-            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_member_joined == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
@@ -49,7 +49,7 @@ class SystemMessageController extends Controller
                     $user->save();
                 }
 
-                if ($chat->join_captcha_status == ChatSetting::STATUS_ON) {
+                if ($chat->isJoinCaptchaOn()) {
                     if (!$newChatMember->isBot()) {
                         $role = JoinCaptchaController::ROLE_UNVERIFIED;
                     }
@@ -90,7 +90,7 @@ class SystemMessageController extends Controller
                 }
 
                 // Send greeting message
-                if ($chat->greeting_status == ChatSetting::STATUS_ON) {
+                if ($chat->isGreetingOn()) {
                     if (!$newChatMember->isBot()) {
                         $this->run('greeting/show-greeting', [
                             'telegramUserId' => $user->id,
@@ -110,7 +110,7 @@ class SystemMessageController extends Controller
             $chat = $this->getTelegramChat();
             $user = $this->getTelegramUser();
 
-            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_member_left == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
@@ -179,7 +179,7 @@ class SystemMessageController extends Controller
         if ($this->getUpdate()->getMessage()->getVideoChatScheduled()) {
             $chat = $this->getTelegramChat();
 
-            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_video_chat_scheduled == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
@@ -198,7 +198,7 @@ class SystemMessageController extends Controller
         if ($this->getUpdate()->getMessage()->getVideoChatStarted()) {
             $chat = $this->getTelegramChat();
 
-            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_video_chat_started == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
@@ -217,7 +217,7 @@ class SystemMessageController extends Controller
         if ($this->getUpdate()->getMessage()->getVideoChatEnded()) {
             $chat = $this->getTelegramChat();
 
-            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_video_chat_ended == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),
@@ -236,7 +236,7 @@ class SystemMessageController extends Controller
         if ($this->getUpdate()->getMessage()->getVideoChatParticipantsInvited()) {
             $chat = $this->getTelegramChat();
 
-            if ($chat->join_hider_status == ChatSetting::STATUS_ON) {
+            if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_video_chat_invited == ChatSetting::STATUS_ON) {
                     $this->getBotApi()->deleteMessage(
                         $chat->getChatId(),

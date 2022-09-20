@@ -43,7 +43,7 @@ class GroupSlowModeController extends Controller
                             'callback_data' => self::createRoute('set-status', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => $chat->slow_mode_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isSlowModeOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -81,6 +81,7 @@ class GroupSlowModeController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionSetStatus($id = null)
     {
@@ -165,11 +166,11 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $page
     * @param int $id Chat->id
+    * @param int $page
     * @return array
     */
-    public function actionMembers($page = 1, $id = null): array
+    public function actionMembers($id = null, $page = 1): array
     {
         $chat = Chat::findOne($id);
 
@@ -254,6 +255,7 @@ class GroupSlowModeController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionInputMember($id = null): array
     {
@@ -305,6 +307,7 @@ class GroupSlowModeController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionMember($id = null): array
     {
@@ -360,6 +363,7 @@ class GroupSlowModeController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionInputMemberMessagesLimit($id = null): array
     {
@@ -400,6 +404,7 @@ class GroupSlowModeController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionDeleteMemberMessagesLimit($id = null): array
     {

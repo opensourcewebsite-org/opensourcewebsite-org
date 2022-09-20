@@ -2,14 +2,14 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
-use app\modules\bot\components\helpers\ExternalLink;
+use Yii;
 
 /**
  * Class GreetingController
@@ -27,7 +27,7 @@ class GreetingController extends Controller
     {
         $chat = $this->getTelegramChat();
 
-        if ($chat->greeting_status == ChatSetting::STATUS_ON) {
+        if ($chat->isGreetingOn()) {
             if (!empty($telegramUserId)) {
                 $telegramUser = User::findOne($telegramUserId);
             } else {

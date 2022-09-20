@@ -16,11 +16,12 @@ use Yii;
 class GroupBasicCommandsController extends Controller
 {
     /**
-     * @return array
-     */
-    public function actionIndex($chatId = null)
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
         if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
@@ -35,7 +36,7 @@ class GroupBasicCommandsController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'chatId' => $chatId,
+                                    'id' => $chat->id,
                                 ]),
                                 'text' => $chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                             ],
@@ -43,7 +44,7 @@ class GroupBasicCommandsController extends Controller
                         [
                             [
                                 'callback_data' => GroupController::createRoute('view', [
-                                    'chatId' => $chatId,
+                                    'chatId' => $chat->id,
                                 ]),
                                 'text' => Emoji::BACK,
                             ],
@@ -57,12 +58,18 @@ class GroupBasicCommandsController extends Controller
             ->build();
     }
 
-    public function actionSetStatus($chatId = null)
+    /**
+    * @param int $id Chat->id
+    * @return array
+    */
+    public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Chat::findOne($id);
 
-        if (!isset($chat)) {
-            return [];
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         switch ($chat->basic_commands_status) {
@@ -76,6 +83,6 @@ class GroupBasicCommandsController extends Controller
                 break;
         }
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
     }
 }

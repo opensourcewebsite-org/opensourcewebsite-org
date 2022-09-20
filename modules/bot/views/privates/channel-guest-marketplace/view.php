@@ -10,7 +10,7 @@ use app\modules\bot\models\ChatSetting;
 ————<br/>
 <br/>
 <?= nl2br($post->text) ?><br/>
-<?php if ($chatMember && ($chat->membership_status == ChatSetting::STATUS_ON) && $chat->membership_tag && $chatMember->hasMembership()) : ?>
+<?php if ($chatMember && $chat->isMembershipOn() && $chat->membership_tag && $chatMember->hasMembership()) : ?>
 <br/>
 #<?= $chat->membership_tag ?><br/>
 <?php endif; ?>

@@ -675,7 +675,7 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if ((!$chat = $post->chat) || !$chat->isMarketplaceOn()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -702,61 +702,7 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        $buttons = [];
-        $tags = [];
-
-        $tags = ArrayHelper::getColumn($chatMember->getPhrases(ChatPhrase::TYPE_MARKETPLACE_TAGS)->asArray()->all(), 'text');
-
-        if ($membershipTag = $chatMember->getMembershipTag()) {
-            $tags = ArrayHelper::merge([
-                $membershipTag,
-            ], $tags);
-        }
-
-        $buttons[] = [
-            [
-                'url' => $user->getLink(),
-                'text' => Yii::t('bot', 'Contact'),
-            ],
-        ];
-
-        $buttons[] = [
-            [
-                'url' => $chatMember->getReviewsLink(),
-                'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
-            ],
-        ];
-
-        if ($links = $chatMember->marketplaceLinks) {
-            foreach ($links as $link) {
-                if ($link->url && $link->title) {
-                    $buttons[] = [
-                        [
-                            'url' => $link->url,
-                            'text' => $link->title,
-                        ],
-                    ];
-                }
-            }
-        }
-
-        $response = $this->getResponseBuilder()
-            ->setChatId($chat->getChatId())
-            ->editMessage(
-                $post->getProviderMessageId(),
-                $this->render('public-view', [
-                    'chat' => $chat,
-                    'post' => $post,
-                    'chatMember' => $chatMember,
-                    'user' => $user,
-                    'tags' => $tags,
-                ]),
-                $buttons,
-                [
-                    'disablePreview' => true,
-                ]
-            )
-            ->send();
+        $response = $this->prepareResponseBuilder($post, false)->send();
 
         if ($response) {
             $post->sent_at = $response->getDate();
@@ -788,7 +734,7 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || ($chat->marketplace_status != ChatSetting::STATUS_ON)) {
+        if ((!$chat = $post->chat) || !$chat->isMarketplaceOn()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -815,17 +761,15 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if (($chat->limiter_status == ChatSetting::STATUS_ON) && !$chatMember->isCreator()) {
-            if (!$chatMember->checkLimiter()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery(
-                        $this->render('alert-limiter', [
-                            'chatMember' => $chatMember,
-                        ]),
-                        true
-                    )
-                    ->build();
-            }
+        if ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('alert-limiter', [
+                        'chatMember' => $chatMember,
+                    ]),
+                    true
+                )
+                ->build();
         }
 
         if (!$chatMember->canUseMarketplace()) {
@@ -839,7 +783,7 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        if (($chat->slow_mode_status == ChatSetting::STATUS_ON) && !$chatMember->isCreator()) {
+        if ($chat->isSlowModeOn() && !$chatMember->isCreator()) {
             if (!$chatMember->checkSlowMode()) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(
@@ -854,60 +798,7 @@ class GroupGuestMarketplaceController extends Controller
             }
         }
 
-        $buttons = [];
-        $tags = [];
-
-        $tags = ArrayHelper::getColumn($chatMember->getPhrases(ChatPhrase::TYPE_MARKETPLACE_TAGS)->asArray()->all(), 'text');
-
-        if ($membershipTag = $chatMember->getMembershipTag()) {
-            $tags = ArrayHelper::merge([
-                $membershipTag,
-            ], $tags);
-        }
-
-        $buttons[] = [
-            [
-                'url' => $user->getLink(),
-                'text' => Yii::t('bot', 'Contact'),
-            ],
-        ];
-
-        $buttons[] = [
-            [
-                'url' => $chatMember->getReviewsLink(),
-                'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
-            ],
-        ];
-
-        if ($links = $chatMember->marketplaceLinks) {
-            foreach ($links as $link) {
-                if ($link->url && $link->title) {
-                    $buttons[] = [
-                        [
-                            'url' => $link->url,
-                            'text' => $link->title,
-                        ],
-                    ];
-                }
-            }
-        }
-
-        $response = $this->getResponseBuilder()
-            ->setChatId($chat->getChatId())
-            ->sendMessage(
-                $this->render('public-view', [
-                    'chat' => $chat,
-                    'post' => $post,
-                    'chatMember' => $chatMember,
-                    'user' => $user,
-                    'tags' => $tags,
-                ]),
-                $buttons,
-                [
-                    'disablePreview' => true,
-                ]
-            )
-            ->send();
+        $response = $this->prepareResponseBuilder($post)->send();
 
         if ($response) {
             if (isset($isSlowModeOn) && $isSlowModeOn) {
@@ -960,14 +851,131 @@ class GroupGuestMarketplaceController extends Controller
 
         if ($post->getProviderMessageId()) {
             $this->getBotApi()->deleteMessage(
-                $post->chat->getChatId(),
+                $chat->getChatId(),
                 $post->getProviderMessageId()
             );
         }
 
-        $chatId = $post->chat->id;
         $post->delete();
 
-        return $this->actionIndex($chatId);
+        return $this->actionIndex($chat->id);
+    }
+
+    /**
+     * Show only accepted votings
+     * https://core.telegram.org/bots/faq#broadcasting-to-users
+     *
+     * @return array
+     */
+    // public function actionSendMessage($id = null)
+    // {
+    //     $voting = UaLawmakingVoting::find()
+    //         ->where([
+    //             'sent_at' => null,
+    //         ])
+    //         ->andWhere(['>=', 'for', UaLawmakingVoting::MIN_ACCEPTED_VOTES])
+    //         ->orderBy([
+    //             'event_id' => SORT_ASC,
+    //         ])
+    //         ->one();
+    //
+    //     if (!$voting) {
+    //         return [];
+    //     }
+    //
+    //     $response = $this->prepareResponseBuilder($voting)->send();
+    //
+    //     if ($response) {
+    //         $voting->message_id = $response->getMessageId();
+    //         $voting->sent_at = time();
+    //         $voting->save();
+    //     }
+    //
+    //     return [];
+    //}
+
+    /**
+     * @param ChatMarketplacePost $post
+     * @param int $isNewMessage
+     * @return array
+     */
+    private function prepareResponseBuilder(ChatMarketplacePost $post, bool $isNewMessage = true)
+    {
+        $chat = $post->chat;
+        $chatMember = $post->chatMember;
+        $user = $post->user;
+
+        $buttons = [];
+        $tags = [];
+
+        $tags = ArrayHelper::getColumn($chatMember->getPhrases(ChatPhrase::TYPE_MARKETPLACE_TAGS)->asArray()->all(), 'text');
+
+        if ($membershipTag = $chatMember->getMembershipTag()) {
+            $tags = ArrayHelper::merge([
+                $membershipTag,
+            ], $tags);
+        }
+
+        $buttons[] = [
+            [
+                'url' => $user->getLink(),
+                'text' => Yii::t('bot', 'Contact'),
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'url' => $chatMember->getReviewsLink(),
+                'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
+            ],
+        ];
+
+        if ($links = $chatMember->marketplaceLinks) {
+            foreach ($links as $link) {
+                if ($link->url && $link->title) {
+                    $buttons[] = [
+                        [
+                            'url' => $link->url,
+                            'text' => $link->title,
+                        ],
+                    ];
+                }
+            }
+        }
+
+        if ($isNewMessage) {
+            return $this->getResponseBuilder()
+                ->setChatId($chat->getChatId())
+                ->sendMessage(
+                    $this->render('public-view', [
+                        'chat' => $chat,
+                        'post' => $post,
+                        'chatMember' => $chatMember,
+                        'user' => $user,
+                        'tags' => $tags,
+                    ]),
+                    $buttons,
+                    [
+                        'disablePreview' => true,
+                    ]
+                );
+        } else {
+            return $this->getResponseBuilder()
+                ->setChatId($chat->getChatId())
+                ->editMessage(
+                    $post->getProviderMessageId(),
+                    $this->render('public-view', [
+                        'chat' => $chat,
+                        'post' => $post,
+                        'chatMember' => $chatMember,
+                        'user' => $user,
+                        'tags' => $tags,
+                    ]),
+                    $buttons,
+                    [
+                        'disablePreview' => true,
+                    ]
+                );
+        }
     }
 }

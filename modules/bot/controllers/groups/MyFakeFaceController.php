@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
+use Yii;
 
 /**
  * Class MyFakeFaceController

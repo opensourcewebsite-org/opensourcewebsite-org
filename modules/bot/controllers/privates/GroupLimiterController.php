@@ -39,14 +39,16 @@ class GroupLimiterController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => $chat->limiter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isLimiterOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -76,6 +78,7 @@ class GroupLimiterController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionSetStatus($id = null)
     {
@@ -109,7 +112,7 @@ class GroupLimiterController extends Controller
                 break;
         }
 
-        return $this->actionIndex($id);
+        return $this->actionIndex($chat->id);
     }
 
     /**
@@ -117,7 +120,7 @@ class GroupLimiterController extends Controller
     * @param int $page
     * @return array
     */
-    public function actionMembers($page = 1, $id = null): array
+    public function actionMembers($id = null, $page = 1): array
     {
         $chat = Chat::findOne($id);
 
@@ -205,6 +208,7 @@ class GroupLimiterController extends Controller
 
     /**
     * @param int $id Chat->id
+    * @return array
     */
     public function actionInputMember($id = null): array
     {
@@ -256,6 +260,7 @@ class GroupLimiterController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionMember($id = null): array
     {
@@ -311,6 +316,7 @@ class GroupLimiterController extends Controller
 
     /**
     * @param int $id ChatMember->id
+    * @return array
     */
     public function actionInputMemberDate($id = null): array
     {
@@ -350,6 +356,10 @@ class GroupLimiterController extends Controller
             ->build();
     }
 
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
     public function actionDeleteMemberDate($id = null): array
     {
         $member = ChatMember::findOne($id);

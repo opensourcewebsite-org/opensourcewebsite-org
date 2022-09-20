@@ -5,8 +5,8 @@ namespace app\modules\bot\controllers\groups;
 use app\modules\bot\components\Controller;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
-use yii\helpers\ArrayHelper;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * Class RefreshController

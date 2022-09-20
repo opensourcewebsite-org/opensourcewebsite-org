@@ -2,12 +2,12 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use Yii;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use Yii;
 
 /**
  * Class JoinCaptchaController
@@ -33,7 +33,7 @@ class JoinCaptchaController extends Controller
         $telegramUser = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
-        if (($chat->join_captcha_status == ChatSetting::STATUS_ON) && !$telegramUser->captcha_confirmed_at) {
+        if ($chat->isJoinCaptchaOn() && !$telegramUser->captcha_confirmed_at) {
             $chatMember = ChatMember::findOne([
                 'chat_id' => $chat->id,
                 'user_id' => $telegramUser->id,
