@@ -613,6 +613,7 @@ return [
     'Sorted by number of positive reviews and user rank' => 'Отсортировано по количеству положительных отзывов и по рангу пользователей',
     'Details' => 'Детали',
     'Member View' => 'Просмотр участника',
+    'User View' => 'Просмотр пользователя',
     'Group View' => 'Просмотр группы',
     'Channel View' => 'Просмотр канала',
     'Money' => 'Деньги',

@@ -29,7 +29,7 @@ class ExternalLink
     public static function getBotLink()
     {
         if (($module = Yii::$app->getModule('bot')) && ($bot = $module->getBot())) {
-            return 'https://t.me/' . $bot->getName();
+            return 'https://t.me/' . $bot->getUsername();
         }
 
         return 'https://t.me/opensourcewebsite_bot';

@@ -14,7 +14,6 @@ class WebHookAction extends Action
 {
     /**
      * @param string $token
-     *
      * @return bool
      */
     public function run($token = '')

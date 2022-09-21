@@ -43,15 +43,13 @@ class UserController extends Controller
      */
     public function actionId($id = null)
     {
-        if ($id) {
-            $providerUserId = $id;
-        } elseif ($text = $this->getMessage()->getText()) {
+        if (!$id && $text = $this->getMessage()->getText()) {
             if (preg_match('/(?:^(?:[0-9]+))/i', $text, $matches)) {
-                $providerUserId = $matches[0];
+                $id = $matches[0];
             }
         }
 
-        if (!isset($providerUserId)) {
+        if (!$id) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -61,12 +59,12 @@ class UserController extends Controller
 
         $user = $this->getTelegramUser();
 
-        if ($user->provider_user_id == $providerUserId) {
+        if ($user->provider_user_id == $id) {
             return $this->run('my-profile/index');
         }
 
         $viewUser = User::findOne([
-            'provider_user_id' => $providerUserId,
+            'provider_user_id' => $id,
             'is_bot' => 0,
         ]);
 

@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\groups;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\models\User;
+use app\modules\bot\components\helpers\ExternalLink;
 use Yii;
 
 /**
@@ -62,6 +63,12 @@ class IdController extends Controller
                     'user' => $viewUser,
                 ]),
                 [
+                    [
+                        [
+                            'url' => ExternalLink::getBotStartLink($id),
+                            'text' => Yii::t('bot', 'User View'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('index', [

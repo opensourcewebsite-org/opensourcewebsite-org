@@ -540,37 +540,15 @@ class ResponseBuilder
     }
 
     /**
-     * @return BotApi
+     * @return BotApi|null
      */
     public function getBotApi()
     {
-        if (Yii::$container->hasSingleton('botApi')) {
-            return Yii::$container->get('botApi');
-        } elseif ($this->getBot()) {
-            $botApi = new BotApi($this->getBot()->token);
-
-            if ($botApi) {
-                if (isset(Yii::$app->params['telegramProxy'])) {
-                    $botApi->setProxy(Yii::$app->params['telegramProxy']);
-                }
-
-                return $this->setBotApi($botApi);
-            }
+        if ($bot = $this->getBot()) {
+            return $bot->getBotApi();
         }
 
         return null;
-    }
-
-    /**
-     * @param BotApi $botApi
-     *
-     * @return BotApi
-     */
-    public function setBotApi(BotApi $botApi)
-    {
-        Yii::$container->setSingleton('botApi', $botApi);
-
-        return $botApi;
     }
 
     /**
@@ -583,7 +561,6 @@ class ResponseBuilder
 
     /**
      * @param int $chatId
-     *
      * @return ResponseBuilder
      */
     public function setChatId(int $chatId)

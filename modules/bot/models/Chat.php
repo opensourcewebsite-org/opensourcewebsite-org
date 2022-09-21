@@ -36,8 +36,8 @@ class Chat extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'type', 'bot_id'], 'required'],
-            [['chat_id', 'bot_id', 'currency_id'], 'integer'],
+            [['chat_id', 'type'], 'required'],
+            [['chat_id', 'currency_id'], 'integer'],
             [['type', 'title', 'username', 'first_name', 'last_name', 'description'], 'string'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],

@@ -4,7 +4,12 @@ return [
     'adminEmail' => 'admin@example.com',
     'securityEmail' => 'security@example.com',
     'baseUrl' => 'https://opensourcewebsite.org', // Used for /commands and Telegram webhooks
-    //'telegramProxy' => '', // Examples: 'socks5://user:password@address:port', 'socks5://address:port', 'https://address:port'
+    // TODO remove 'telegramProxy' => '', // Examples: 'socks5://user:password@address:port', 'socks5://address:port', 'https://address:port'
+    'bot' => [
+        //'proxy' => '', // Examples: 'socks5://user:password@address:port', 'socks5://address:port', 'https://address:port'
+        'username' => '',
+        'token' => '',
+    ],
     //'stellar' => [ // Used for stellar features and Telegram bot
     //    'testNet' => true, // https://developers.stellar.org/docs/glossary/testnet/
     //    'issuer_public_key' => '',

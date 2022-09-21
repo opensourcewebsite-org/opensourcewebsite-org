@@ -20,6 +20,11 @@ class GroupRouteResolver extends Component
     public $defaultRoute = 'message/index';
 
     /**
+     * @var string
+     */
+    public $voidRoute = 'void/index';
+
+    /**
      * @var array
      */
     public $rules = [];
@@ -79,6 +84,15 @@ class GroupRouteResolver extends Component
             }
 
             $isStateRoute = true;
+        }
+
+        // Check external bot
+        if (isset($params['botname'])) {
+            if (($module = Yii::$app->getModule('bot')) && ($bot = $module->getBot())) {
+                if ($params['botname'] != $bot->getUsername()) {
+                    $route = $this->voidRoute;
+                }
+            }
         }
 
         if (!isset($route)) {

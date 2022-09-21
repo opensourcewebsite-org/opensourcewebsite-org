@@ -25,7 +25,6 @@ class Module extends \yii\base\Module
     /**
      * @param string $input
      * @param string $token Bot token
-     *
      * @return bool
      */
     public function handleInput($input, $token)
@@ -39,11 +38,9 @@ class Module extends \yii\base\Module
         $this->setUpdate(Update::fromResponse($updateArray));
         // TODO refactoring
         $this->getUpdate()->__construct();
-        $bot = Bot::findOne([
-            'token' => $token,
-        ]);
+        $bot = new Bot();
 
-        if ($bot) {
+        if ($bot->token == $token) {
             $this->setBot($bot);
 
             if ($this->initFromUpdate()) {
@@ -123,7 +120,6 @@ class Module extends \yii\base\Module
 
             $chat = Chat::findOne([
                 'chat_id' => $this->getUpdate()->getChat()->getId(),
-                'bot_id' => $this->getBot()->getId(),
             ]);
 
             $isNewChat = false;
@@ -133,7 +129,6 @@ class Module extends \yii\base\Module
 
                 $chat->setAttributes([
                     'chat_id' => $this->getUpdate()->getChat()->getId(),
-                    'bot_id' => $this->getBot()->getId(),
                 ]);
 
                 $isNewChat = true;
@@ -304,14 +299,12 @@ class Module extends \yii\base\Module
 
     /**
      * @param int $chatId
-     *
      * @return Chat|null
      */
     public function setChatByChatId($chatId)
     {
         $chat = Chat::findOne([
             'chat_id' => $chatId,
-            'bot_id' => $this->getBot()->getId(),
         ]);
 
         if ($chat) {
@@ -335,7 +328,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param Chat $chat
-     *
      * @return Chat
      */
     public function setChat(Chat $chat)
@@ -361,7 +353,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param Bot $bot
-     *
      * @return Bot
      */
     public function setBot(Bot $bot)
@@ -372,37 +363,15 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @return BotApi
+     * @return BotApi|null
      */
     public function getBotApi()
     {
-        if (Yii::$container->hasSingleton('botApi')) {
-            return Yii::$container->get('botApi');
-        } elseif ($this->getBot()) {
-            $botApi = new BotApi($this->getBot()->token);
-
-            if ($botApi) {
-                if (isset(Yii::$app->params['telegramProxy'])) {
-                    $botApi->setProxy(Yii::$app->params['telegramProxy']);
-                }
-
-                return $this->setBotApi($botApi);
-            }
+        if ($bot = $this->getBot()) {
+            return $bot->getBotApi();
         }
 
         return null;
-    }
-
-    /**
-     * @param BotApi $botApi
-     *
-     * @return BotApi
-     */
-    public function setBotApi(BotApi $botApi)
-    {
-        Yii::$container->setSingleton('botApi', $botApi);
-
-        return $botApi;
     }
 
     /**
@@ -419,7 +388,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param GlobalUser $globalUser
-     *
      * @return GlobalUser
      */
     public function setGlobalUser(GlobalUser $globalUser)
@@ -443,7 +411,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param User $user
-     *
      * @return User
      */
     public function setUser(User $user)
@@ -467,7 +434,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param UserState $userState
-     *
      * @return UserState
      */
     public function setUserState(UserState $userState)
@@ -491,7 +457,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param Update $update
-     *
      * @return Update
      */
     public function setUpdate(Update $update)
@@ -503,7 +468,6 @@ class Module extends \yii\base\Module
 
     /**
      * @param Chat $chat
-     *
      * @return boolean
      */
     public function updateNamespaceByChat(Chat $chat)

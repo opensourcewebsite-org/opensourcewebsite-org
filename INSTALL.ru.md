@@ -138,24 +138,17 @@ P.S. Тестировалось только в PHPStorm.
 Также вы можете воспользоваться [Localtunnel](https://localtunnel.me) и [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/) для того, чтобы принимать Telegram webhooks с помощью вашего локального сервера.
 
 - Используйте [Telegram BotFather](https://t.me/BotFather) для создания нового бота и получения его токена.
-- Установите `baseUrl` в `config/params.php` для вашего открытого URL с HTTPS.
-- Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `telegramProxy` в `config/params.php`.
+- Установите `['baseUrl']` в `config/params.php` для вашего открытого URL с HTTPS.
+- Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `['bot']['proxy']` в `config/params.php`.
 - Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду:
+- Установите `['bot']['username']` и `['bot']['token']` в `config/params.php` для вашего бота.
+
+Активировать Telegram webhook для бота:
 ```
-php yii telegram-bot/add [ТОКЕН БОТА]
+php yii telegram-bot/enable-webhook
 ```
 
-Активировать Telegram webhooks для всех ботов с `status` = 0:
+Деактивировать Telegram webhook для бота:
 ```
-php yii telegram-bot/enable-all
-```
-
-Деактивировать Telegram webhooks для всех ботов с `status` = 1:
-```
-php yii telegram-bot/disable-all
-```
-
-Повторно активировать Telegram webhooks для всех ботов:
-```
-php yii telegram-bot/telegram-all
+php yii telegram-bot/disable-webhook
 ```

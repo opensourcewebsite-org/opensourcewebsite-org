@@ -6,83 +6,35 @@ namespace app\modules\bot\models;
 
 use app\modules\bot\components\api\BotApi;
 use Yii;
-use yii\db\ActiveRecord;
 
 /**
- * This is the model class for table "bot".
- *
- * @property int $id
- * @property string $name
- * @property string $token
- * @property integer $status
- *
- * @property Chat[] $chats
- *
  * @package app\modules\bot\models
  */
-class Bot extends ActiveRecord
+class Bot
 {
-    public const BOT_STATUS_DISABLED = 0;
-    public const BOT_STATUS_ENABLED = 1;
+    public ?string $name = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
+    public ?string $token = null;
+
+    public BotApi $botApi;
+
+    public function __construct()
     {
-        return '{{%bot}}';
-    }
+        if (isset(Yii::$app->params['bot'])
+            && isset(Yii::$app->params['bot']['username'])
+            && isset(Yii::$app->params['bot']['token'])) {
+            $this->username = Yii::$app->params['bot']['username'];
+            $this->token = Yii::$app->params['bot']['token'];
+            $this->botApi = new BotApi($this->token);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-            [['name', 'token'], 'required'],
-            [['token'], 'validateToken'],
-            [['name', 'token'], 'string', 'max' => 255],
-            [['status'], 'integer', 'min' => 0, 'max' => 1],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'title' => 'Title',
-            'token' => 'Token',
-            'status' => 'Status',
-        ];
-    }
-
-    /**
-     * Validate bot token from telegram API
-     *
-     * @param $attribute
-     * @param $params
-     * @param $validator
-     */
-    public function validateToken($attribute, $params, $validator)
-    {
-        $botApi = new BotApi($this->$attribute);
-
-        if (isset(Yii::$app->params['telegramProxy'])) {
-            $botApi->setProxy(Yii::$app->params['telegramProxy']);
-        }
-
-        try {
-            $botApi->getMe();
-        } catch (\TelegramBot\Api\Exception $e) {
-            $this->addError($attribute, 'The token is not valid. Error: ' . $e->getMessage());
+            if (isset(Yii::$app->params['bot']['proxy'])) {
+                $this->botApi->setProxy(Yii::$app->params['bot']['proxy']);
+            }
         }
     }
 
     /**
-     * set webhook for bot token using telegram API
+     * Set webhook for bot token using telegram API
      *
      * @return string
      * @throws \TelegramBot\Api\Exception
@@ -91,25 +43,16 @@ class Bot extends ActiveRecord
      */
     public function setWebhook()
     {
-        $botApi = new BotApi($this->token);
-
-        if (isset(Yii::$app->params['telegramProxy'])) {
-            $botApi->setProxy(Yii::$app->params['telegramProxy']);
-        }
-
         $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram-bot/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);
-        $response = $botApi->setWebhook($url);
-
-        if ($response) {
-            $this->status = self::BOT_STATUS_ENABLED;
-            $this->update(false, ['status']);
-        }
+        $response = $this->botApi->setWebhook($url);
 
         return $response;
     }
 
     /**
+     * Delete webhook for bot token using telegram API
+     *
      * @return mixed
      * @throws \TelegramBot\Api\Exception
      * @throws \TelegramBot\Api\HttpException
@@ -119,48 +62,23 @@ class Bot extends ActiveRecord
      */
     public function deleteWebhook()
     {
-        $botApi = new BotApi($this->token);
-
-        if (isset(Yii::$app->params['telegramProxy'])) {
-            $botApi->setProxy(Yii::$app->params['telegramProxy']);
-        }
-
-        $response = $botApi->call('deleteWebhook');
-
-        if ($response) {
-            $this->status = self::BOT_STATUS_DISABLED;
-            $this->update(false, ['status']);
-        }
+        $response = $this->botApi->deleteWebhook();
 
         return $response;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getChats()
+    public function getUsername()
     {
-        return $this->hasMany(Chat::className(), ['bot_id' => 'id']);
+        return $this->username;
     }
 
-    public function getName()
+    public function getToken()
     {
-        return $this->name;
-    }
-
-    public function getId()
-    {
-        return $this->id;
+        return $this->token;
     }
 
     public function getBotApi()
     {
-        $botApi = new BotApi($this->token);
-
-        if (isset(Yii::$app->params['telegramProxy'])) {
-            $botApi->setProxy(Yii::$app->params['telegramProxy']);
-        }
-
-        return $botApi;
+        return $this->botApi;
     }
 }

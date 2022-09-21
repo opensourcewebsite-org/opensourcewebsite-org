@@ -32,145 +32,70 @@ class TelegramBotController extends Controller implements CronChainedInterface
     }
 
     /**
-     * Restart all bots
+     * Enable webhook for telegram bot
      *
      * @throws \TelegramBot\Api\Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionRestartAll()
+    public function actionEnableWebhook()
     {
-        $this->actionDisableAll();
-        $this->actionEnableAll();
+        $bot = new Bot();
+
+        if ($bot->setWebhook()) {
+            echo 'The bot "' . $bot->username . '" has been enabled' . "\n";
+        }
     }
 
     /**
-     * Enable all inactive bots
+     * Disable webhook for telegram bot
      *
      * @throws \TelegramBot\Api\Exception
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
      */
-    public function actionEnableAll()
+    public function actionDisableWebhook()
     {
-        /** @var null|Bot[] $bots */
-        $bots = Bot::findAll([
-                'status' => Bot::BOT_STATUS_DISABLED,
-                ]);
+        $bot = new Bot();
 
-        if ($bots) {
-            foreach ($bots as $bot) {
-                if ($bot->setWebhook()) {
-                    echo 'The bot "' . $bot->name . '" has been enabled' . "\n";
-                }
-            }
-        } else {
-            echo 'No inactive bots found' ."\n";
+        if ($bot->deleteWebhook()) {
+            echo 'The bot "' . $bot->username . '" has been disabled' . "\n";
         }
-    }
-
-    /**
-     * Disable all active bots
-     *
-     * @throws \TelegramBot\Api\Exception
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
-    public function actionDisableAll()
-    {
-        /** @var null|Bot[] $bots */
-        $bots = Bot::findAll([
-                'status' => Bot::BOT_STATUS_ENABLED,
-                ]);
-
-        if ($bots) {
-            foreach ($bots as $bot) {
-                if ($bot->deleteWebhook()) {
-                    echo 'The bot "' . $bot->name . '" has been disabled' . "\n";
-                }
-            }
-        } else {
-            echo 'No active bots found' . "\n";
-        }
-    }
-
-    /**
-     * Add new bot or update exist bot
-     *
-     * @param $token
-     */
-    public function actionAdd(string $token): bool
-    {
-        if (!$bot = Bot::findOne(['token' => $token])) {
-            $bot = new Bot();
-            $botApi = $bot->botApi;
-
-            $botApiUser = $botApi->getMe();
-
-            $bot->name = $botApiUser->getUsername();
-            $bot->token = $token;
-            $bot->status = 0;
-
-            if ($bot->save()) {
-                echo 'The bot "' . $bot->name . '" has been successfully saved' . "\n";
-
-                return true;
-            } else {
-                echo current($bot->getFirstErrors()) . "\n";
-
-                return false;
-            }
-        }
-
-        echo 'Bot with the same token already exists';
-
-        return false;
     }
 
     public function actionRemoveCaptchaMessages()
     {
         $updatesCount = 0;
 
-        $bots = Bot::findAll([
-            'status' => Bot::BOT_STATUS_ENABLED,
-        ]);
+        $messagesToRemove = ChatCaptcha::find()
+            ->where([
+                '<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME,
+            ])
+            ->all();
 
-        if ($bots) {
-            foreach ($bots as $bot) {
-                $messagesToRemove = ChatCaptcha::find()
-                    ->where([
-                        '<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME,
-                    ])
-                    ->joinWith('chat')
-                    ->andWhere([
-                        Chat::tableName() . '.bot_id' => $bot->id,
-                    ])
-                    ->all();
+        if ($messagesToRemove) {
+            $bot = new Bot();
+            $botApi = $bot->botApi;
 
-                if ($messagesToRemove) {
-                    $botApi = $bot->botApi;
+            foreach ($messagesToRemove as $record) {
+                ChatCaptcha::deleteAll([
+                    'chat_id' => $record->chat_id,
+                    'provider_user_id' => $record->provider_user_id,
+                ]);
 
-                    foreach ($messagesToRemove as $record) {
-                        ChatCaptcha::deleteAll([
-                            'chat_id' => $record->chat_id,
-                            'provider_user_id' => $record->provider_user_id,
-                        ]);
-
-                        try {
-                            $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
-                        } catch (\Exception $e) {
-                            echo 'ERROR: ChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                        }
-
-                        try {
-                            $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
-                        } catch (\Exception $e) {
-                            echo 'ERROR: ChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
-                        }
-
-                        $updatesCount++;
-                    }
+                try {
+                    $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
+                } catch (\Exception $e) {
+                    echo 'ERROR: ChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                 }
+
+                try {
+                    $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                } catch (\Exception $e) {
+                    echo 'ERROR: ChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
+                }
+
+                $updatesCount++;
             }
         }
 
@@ -185,40 +110,29 @@ class TelegramBotController extends Controller implements CronChainedInterface
     {
         $updatesCount = 0;
 
-        $bots = Bot::findAll([
-            'status' => Bot::BOT_STATUS_ENABLED,
-        ]);
+        $messagesToRemove = ChatGreeting::find()
+            ->where([
+                '<', 'sent_at', time() - ChatSetting::GREETING_MESSAGE_LIFETIME,
+            ])
+            ->all();
 
-        if ($bots) {
-            foreach ($bots as $bot) {
-                $messagesToRemove = ChatGreeting::find()
-                    ->where([
-                        '<', 'sent_at', time() - ChatSetting::GREETING_MESSAGE_LIFETIME,
-                    ])
-                    ->joinWith('chat')
-                    ->andWhere([
-                        Chat::tableName() . '.bot_id' => $bot->id,
-                    ])
-                    ->all();
+        if ($messagesToRemove) {
+            $bot = new Bot();
+            $botApi = $bot->botApi;
 
-                if ($messagesToRemove) {
-                    $botApi = $bot->botApi;
+            foreach ($messagesToRemove as $record) {
+                ChatGreeting::deleteAll([
+                    'chat_id' => $record->chat_id,
+                    'provider_user_id' => $record->provider_user_id,
+                ]);
 
-                    foreach ($messagesToRemove as $record) {
-                        ChatGreeting::deleteAll([
-                            'chat_id' => $record->chat_id,
-                            'provider_user_id' => $record->provider_user_id,
-                        ]);
-
-                        try {
-                            $botApi->deleteMessage($record->chat->chat_id, $record->message_id);
-                        } catch (\Exception $e) {
-                            echo 'ERROR: ChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                        }
-
-                        $updatesCount++;
-                    }
+                try {
+                    $botApi->deleteMessage($record->chat->chat_id, $record->message_id);
+                } catch (\Exception $e) {
+                    echo 'ERROR: ChatGreeting #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
                 }
+
+                $updatesCount++;
             }
         }
 
@@ -233,47 +147,37 @@ class TelegramBotController extends Controller implements CronChainedInterface
     {
         $updatedCount = 0;
 
-        $bots = Bot::findAll([
-            'status' => Bot::BOT_STATUS_ENABLED,
-        ]);
+        $models = ChatMarketplacePost::find()
+            ->andWhere([
+                ChatMarketplacePost::tableName() . '.status' => ChatMarketplacePost::STATUS_ON,
+                ChatMarketplacePost::tableName() . '.next_send_at' => null,
+            ])
+            ->joinWith('chat.settings')
+            ->andWhere([
+                'and',
+                [ChatSetting::tableName() . '.setting' => 'marketplace_status'],
+                [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+            ])
+            ->all();
 
-        if ($bots) {
-            foreach ($bots as $bot) {
-                $models = ChatMarketplacePost::find()
-                    ->andWhere([
-                        ChatMarketplacePost::tableName() . '.status' => ChatMarketplacePost::STATUS_ON,
-                        ChatMarketplacePost::tableName() . '.next_send_at' => null,
-                    ])
-                    ->joinWith('chat')
-                    ->andWhere([
-                        Chat::tableName() . '.bot_id' => $bot->id,
-                    ])
-                    ->joinWith('chat.settings')
-                    ->andWhere([
-                        'and',
-                        [ChatSetting::tableName() . '.setting' => 'marketplace_status'],
-                        [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                    ])
-                    ->all();
+        if ($models) {
+            $this->debug('Update nextSendAt');
 
-                if ($models) {
-                    $this->debug('Update nextSendAt');
+            $bot = new Bot();
 
-                    foreach ($models as $post) {
-                        $this->debug('Post ID: ' . $post->id);
-                        $chatMember = $post->chatMember;
-                        $chat = $chatMember->chat;
+            foreach ($models as $post) {
+                $this->debug('Post ID: ' . $post->id);
+                $chatMember = $post->chatMember;
+                $chat = $chatMember->chat;
 
-                        if (!$chatMember->canUseMarketplace()
-                            || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
-                            $post->setInactive()->save();
-                        } else {
-                            $post->updateNextSendAt();
-                            $this->debug('Next Send At: ' . $post->getNextSendAt());
+                if (!$chatMember->canUseMarketplace()
+                    || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
+                    $post->setInactive()->save();
+                } else {
+                    $post->updateNextSendAt();
+                    $this->debug('Next Send At: ' . $post->getNextSendAt());
 
-                            $updatedCount++;
-                        }
-                    }
+                    $updatedCount++;
                 }
             }
         }
@@ -291,114 +195,104 @@ class TelegramBotController extends Controller implements CronChainedInterface
     {
         $sentCount = 0;
 
-        $bots = Bot::findAll([
-            'status' => Bot::BOT_STATUS_ENABLED,
-        ]);
+        $this->debug('Sending');
 
-        if ($bots) {
-            foreach ($bots as $bot) {
-                $botApi = $bot->botApi;
+        $bot = new Bot();
+        $botApi = $bot->botApi;
 
-                $this->debug('Sending');
+        $skipChatIds = [];
+        $module = null;
 
-                $skipChatIds = [];
-                $module = null;
+        do {
+            $post = ChatMarketplacePost::find()
+                ->andWhere([
+                    ChatMarketplacePost::tableName() . '.status' => ChatMarketplacePost::STATUS_ON,
+                ])
+                ->andWhere([
+                    '<', ChatMarketplacePost::tableName() . '.next_send_at', time(),
+                ])
+                ->andWhere([
+                    'not', [ChatMarketplacePost::tableName() . '.next_send_at' => null],
+                ])
+                ->joinWith('chatMember.chat')
+                ->andWhere([
+                    'not', [Chat::tableName() . '.id' => $skipChatIds],
+                ])
+                ->joinWith('chatMember.chat.settings')
+                ->andWhere([
+                    'and',
+                    [ChatSetting::tableName() . '.setting' => 'marketplace_status'],
+                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                ])
+                ->orderByRank()
+                ->one();
 
-                do {
-                    $post = ChatMarketplacePost::find()
-                        ->andWhere([
-                            ChatMarketplacePost::tableName() . '.status' => ChatMarketplacePost::STATUS_ON,
-                        ])
-                        ->andWhere([
-                            '<', ChatMarketplacePost::tableName() . '.next_send_at', time(),
-                        ])
-                        ->andWhere([
-                            'not', [ChatMarketplacePost::tableName() . '.next_send_at' => null],
-                        ])
-                        ->joinWith('chatMember.chat')
-                        ->andWhere([
-                            Chat::tableName() . '.bot_id' => $bot->id,
-                        ])
-                        ->andWhere([
-                            'not', [Chat::tableName() . '.id' => $skipChatIds],
-                        ])
-                        ->joinWith('chatMember.chat.settings')
-                        ->andWhere([
-                            'and',
-                            [ChatSetting::tableName() . '.setting' => 'marketplace_status'],
-                            [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                        ])
-                        ->orderByRank()
-                        ->one();
+            if ($post) {
+                $this->debug('Post ID: ' . $post->id);
+                $chatMember = $post->chatMember;
+                $chat = $chatMember->chat;
 
-                    if ($post) {
-                        $this->debug('Post ID: ' . $post->id);
-                        $chatMember = $post->chatMember;
-                        $chat = $chatMember->chat;
-
-                        if (!$chatMember->canUseMarketplace()
-                            || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
-                            $post->setInactive()->save();
-                        } else {
-                            if ($chat->isSlowModeOn() && !$chatMember->isCreator()) {
-                                if (!$chatMember->checkSlowMode()) {
-                                    $post->updateNextSendAt();
-                                    $this->debug('Next Send At: ' . $post->getNextSendAt());
-
-                                    continue;
-                                } else {
-                                    $isSlowModeOn = true;
-                                }
-                            }
-
-                            if (!isset($module)) {
-                                $module = Yii::$app->getModule('bot');
-                                $module->setBot($bot);
-                            }
-
-                            $module->setChat($chat);
-                            $module->runAction('marketplace/send-message');
-
-                            $response = false;
-
-                            if ($response) {
-                                if (isset($isSlowModeOn) && $isSlowModeOn) {
-                                    $chatMember->updateSlowMode($response->getDate());
-                                }
-
-                                $post->sent_at = $response->getDate();
-                                $post->provider_message_id = $response->getMessageId();
-                                $post->save(false);
-
-                                // ChatCaptcha::deleteAll([
-                            //     'chat_id' => $record->chat_id,
-                            //     'provider_user_id' => $record->provider_user_id,
-                                // ]);
-                            //
-                                // try {
-                            //     $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
-                                // } catch (\Exception $e) {
-                            //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                                // }
-                            //
-                                // try {
-                            //     $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
-                                // } catch (\Exception $e) {
-                            //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
-                                // }
-
-                                $skipChatIds[] = $chat->id;
-                                $sentCount++;
-                                sleep(1);
-                            }
-
+                if (!$chatMember->canUseMarketplace()
+                    || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
+                    $post->setInactive()->save();
+                } else {
+                    if ($chat->isSlowModeOn() && !$chatMember->isCreator()) {
+                        if (!$chatMember->checkSlowMode()) {
                             $post->updateNextSendAt();
                             $this->debug('Next Send At: ' . $post->getNextSendAt());
+
+                            continue;
+                        } else {
+                            $isSlowModeOn = true;
                         }
                     }
-                } while ($post);
+
+                    if (!isset($module)) {
+                        $module = Yii::$app->getModule('bot');
+                        $module->setBot($bot);
+                    }
+
+                    $module->setChat($chat);
+                    $module->runAction('marketplace/send-message');
+
+                    $response = false;
+
+                    if ($response) {
+                        if (isset($isSlowModeOn) && $isSlowModeOn) {
+                            $chatMember->updateSlowMode($response->getDate());
+                        }
+
+                        $post->sent_at = $response->getDate();
+                        $post->provider_message_id = $response->getMessageId();
+                        $post->save(false);
+
+                        // ChatCaptcha::deleteAll([
+                    //     'chat_id' => $record->chat_id,
+                    //     'provider_user_id' => $record->provider_user_id,
+                        // ]);
+                    //
+                        // try {
+                    //     $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
+                        // } catch (\Exception $e) {
+                    //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
+                        // }
+                    //
+                        // try {
+                    //     $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                        // } catch (\Exception $e) {
+                    //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
+                        // }
+
+                        $skipChatIds[] = $chat->id;
+                        $sentCount++;
+                        sleep(1);
+                    }
+
+                    $post->updateNextSendAt();
+                    $this->debug('Next Send At: ' . $post->getNextSendAt());
+                }
             }
-        }
+        } while ($post);
 
         if ($sentCount) {
             $this->output('Marketplace. Posts sent to telegram groups: ' . $sentCount);

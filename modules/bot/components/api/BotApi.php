@@ -2,9 +2,9 @@
 
 namespace app\modules\bot\components\api;
 
-use Yii;
 use app\modules\bot\components\api\Types\ChatMember;
 use app\modules\bot\models\Chat;
+use Yii;
 
 /**
  * Class botApi
@@ -16,10 +16,8 @@ class BotApi extends \TelegramBot\Api\BotApi
     /**
      * Use this method to get information about a member of a chat.
      *
-     * @param string|int $chatId Unique identifier for the target chat or username of the target channel
-     *                   (in the format @channelusername)
+     * @param string|int $chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int $userId
-     *
      * @return ChatMember
      */
     public function getChatMember($chatId, $userId)
@@ -39,7 +37,6 @@ class BotApi extends \TelegramBot\Api\BotApi
     /**
      * @param int $chatId
      * @param int $messageId
-     *
      * @return bool
      */
     public function deleteMessage($chatId, $messageId)
