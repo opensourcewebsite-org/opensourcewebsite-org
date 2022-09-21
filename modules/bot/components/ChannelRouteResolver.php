@@ -65,7 +65,7 @@ class ChannelRouteResolver extends Component
         }
 
         // Check external bot
-        if (isset($params['botname'])) {
+        if (isset($params['botname']) && $params['botname']) {
             if (($module = Yii::$app->getModule('bot')) && ($bot = $module->getBot())) {
                 if ($params['botname'] != $bot->getUsername()) {
                     $route = $this->voidRoute;
