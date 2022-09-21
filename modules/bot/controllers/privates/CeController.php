@@ -56,7 +56,6 @@ class CeController extends CrudController
 
                 return [
                     'model' => $model,
-                    //'locationLink' => ExternalLink::getOSMLink($model->selling_location_lat, $model->selling_location_lon),
                     /*'sellingPaymentMethods' => array_map(function ($paymentMethod) {
                         return $paymentMethod->getLabel();
                     }, $model->sellingPaymentMethods),

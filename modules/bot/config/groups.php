@@ -22,6 +22,7 @@ $config = [
                 'system_message',
                 'tip',
                 'premium_members',
+                'id',
             ],
             'actions' => [
                 'view',

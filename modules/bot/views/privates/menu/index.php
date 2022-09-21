@@ -1,6 +1,5 @@
 <?php
 
-use app\components\helpers\Html;
 use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
@@ -11,7 +10,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <b><?= Yii::t('user', 'Real confirmations') ?></b>: <?= $user->getRealConfirmations(); ?><br/>
 <?php if ($userLocation = $user->userLocation) : ?>
 <br/>
-<b><?= Yii::t('bot', 'Location') ?></b>: <?= Html::a($userLocation->location, ExternalLink::getOSMLink($userLocation->location_lat, $userLocation->location_lon)) ?><br/>
+<b><?= Yii::t('bot', 'Location') ?></b>: <?= ExternalLink::getOSMFullLink($userLocation->location_lat, $userLocation->location_lon) ?><br/>
 <?php endif; ?>
 ————<br/>
 <i><?= Yii::t('bot', 'Send any @username or Telegram ID to view information about the user or group') ?>.</i>

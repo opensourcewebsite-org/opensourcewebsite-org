@@ -61,7 +61,6 @@ class AdOfferController extends CrudController
                 return [
                     'model' => $model,
                     'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                 ];
             },
             'attributes' => [

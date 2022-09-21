@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components\helpers;
 
+use app\components\helpers\Html;
 use Yii;
 
 class ExternalLink
@@ -19,7 +20,7 @@ class ExternalLink
      */
     public static function getOSMFullLink($latitude, $longitude, $name = null)
     {
-        return '<a href="' . self::getOSMLink($latitude, $longitude) . '">' . ($name ?: $latitude . ' ' . $longitude) . '</a>';
+        return '<a href="' . self::getOSMLink($latitude, $longitude) . '">' . ($name ?: round($latitude, 4) . ',' . round($longitude, 4)) . '</a>';
     }
 
     /**

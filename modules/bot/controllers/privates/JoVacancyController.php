@@ -63,7 +63,6 @@ class JoVacancyController extends CrudController
                     'model' => $model,
                     'company' => $model->company,
                     'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
-                    'locationLink' => ExternalLink::getOSMLink($model->location_lat, $model->location_lon),
                     'languages' => array_map(function ($vacancyLanguage) {
                         return $vacancyLanguage->getLabel();
                     }, $model->vacancyLanguagesRelation),

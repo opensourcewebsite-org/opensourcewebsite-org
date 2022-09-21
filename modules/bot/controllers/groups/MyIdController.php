@@ -17,14 +17,12 @@ class MyIdController extends Controller
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
-        $user = $this->getUser();
+        $user = $this->getTelegramUser();
 
         return $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('index', [
                     'user' => $user,
-                    'telegramUser' => $telegramUser,
                 ]),
                 [],
                 [

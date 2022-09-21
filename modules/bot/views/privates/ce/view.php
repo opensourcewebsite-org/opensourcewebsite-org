@@ -22,7 +22,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <b><?= Yii::t('bot', 'Inverse rate') ?></b>: <?= $model->buying_rate ?: '∞' ?><br/>
 <br/>
 <b><?= Yii::t('ce_order', 'Limits') ?></b>: <?= $model->getFormatLimits() ?><br/>
-————<br/>
+<br/>
 <b><?= Yii::t('ce_order', 'Selling payment methods') ?></b>:<br/>
 <?php if ($model->selling_cash_on) : ?>
   • <?= Yii::t('bot', 'Cash') ?><br/>
@@ -34,7 +34,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php foreach ($model->sellingPaymentMethods as $method) : ?>
   • <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?><br/>
 <?php endforeach; ?>
-————<br/>
+<br/>
 <b><?= Yii::t('ce_order', 'Buying payment methods') ?></b>:<br/>
 <?php if ($model->buying_cash_on) : ?>
   • <?= Yii::t('bot', 'Cash') ?><br/>

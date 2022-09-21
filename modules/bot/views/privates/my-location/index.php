@@ -1,6 +1,5 @@
 <?php
 
-use app\components\helpers\Html;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 
@@ -8,7 +7,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <b><?= Yii::t('bot', 'Your Location') ?></b><br/>
 <?php if (!$userLocation->isNewRecord) : ?>
 <br/>
-<?= Html::a($userLocation->location, ExternalLink::getOSMLink($userLocation->location_lat, $userLocation->location_lon)) ?><br/>
+<?= ExternalLink::getOSMFullLink($userLocation->location_lat, $userLocation->location_lon) ?><br/>
 <?php endif; ?>
 ————<br/>
 <i><?= Yii::t('bot', 'This information is used for all services') ?>. <?= Yii::t('bot', 'Only you see this information') ?>.</i><br/>

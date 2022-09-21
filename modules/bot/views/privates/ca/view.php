@@ -13,5 +13,5 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php if ($model->selling_delivery_radius > 0) : ?>
 <b><?= Yii::t('bot', 'Search radius') ?></b>: <?= $model->selling_delivery_radius ?> <?= Yii::t('bot', 'km') ?><br/>
 <?php endif; ?>
-<br/>
+————<br/>
 <i><?= Yii::t('bot', 'Only you see this information') ?></i>.<br/>
