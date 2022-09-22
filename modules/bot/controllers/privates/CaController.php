@@ -38,7 +38,7 @@ class CaController extends CrudController
     public function init()
     {
         $this->enableGlobalBackRoute = true;
-
+        $this->layout = 'main';
         parent::init();
     }
 

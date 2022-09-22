@@ -107,7 +107,7 @@ abstract class CrudController extends Controller
             $this->field->set($this->modelName, self::FIELD_NAME_ID, null);
         } elseif (!strcmp($action->actionMethod, 'actionUpdate')) {
             $this->backRoute->make($action->id, $params);
-            $this->field->reset(null);
+            $this->field->reset();
         }
 
         $this->rule = $this->rules() ?? [];
@@ -121,7 +121,7 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        $this->field->reset($this->modelName);
+        $this->field->reset();
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -238,6 +238,7 @@ abstract class CrudController extends Controller
         }
 
         if ($errors) {
+            Yii::$app->view->params['errors'] = $errors; // Pass errors into layout
             return $this->generatePublicResponse(
                 $this->modelName,
                 $attributeName,
@@ -698,7 +699,7 @@ abstract class CrudController extends Controller
                 $this->modelClass,
                 $this->field->get($this->modelName, self::FIELD_NAME_ID, null)
             );
-            $this->field->reset($this->modelName);
+            $this->field->reset();
 
             return $response;
         }
@@ -809,7 +810,7 @@ abstract class CrudController extends Controller
                     $this->modelClass,
                     $this->field->get($this->modelName, self::FIELD_NAME_ID, null)
                 );
-                $this->field->reset($this->modelName);
+                $this->field->reset();
 
                 return $response;
             }
@@ -1406,7 +1407,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $this->field->reset($this->modelName);
+                    $this->field->reset();
                     $transaction->commit();
 
                     return $this->actionView($model->id);
@@ -2010,8 +2011,8 @@ abstract class CrudController extends Controller
         }
         $systemButtons = ArrayHelper::merge($systemButtons, $configSystemButtons);
         if ($isFirstScreen) {
-            unset($systemButtons['end']);
             unset($systemButtons['back']);
+            unset($systemButtons['end']);
         }
         if ($relationAttributeName) {
             unset($systemButtons['add']);
