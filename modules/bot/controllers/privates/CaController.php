@@ -178,7 +178,7 @@ class CaController extends CrudController
     public function actionDelete()
     {
         $modelName = $this->getModelName();
-        $this->state->resetByModelName($modelName);
+        $this->field->reset($modelName);
 
         return $this->getResponseBuilder()
             ->build();

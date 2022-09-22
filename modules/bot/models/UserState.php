@@ -85,32 +85,18 @@ class UserState
         return $user->save();
     }
 
-    public function resetByModelName($modelName)
+    public function reset($modelName = null)
     {
         if (isset($this->fields['intermediate'])) {
             $intermediate = $this->fields['intermediate'];
-            foreach ($intermediate as $k => $v) {
-                if (strpos($k, $modelName) !== false) {
-                    unset($intermediate[$k]);
+            if (isset($modelName)) {
+                foreach ($intermediate as $k => $v) {
+                    if (strpos($k, $modelName) !== false) {
+                        unset($intermediate[$k]); // Delete only fields related to the current model
+                    }
                 }
             }
-            $this->fields = [
-                'intermediate' => $intermediate
-            ];
-        }
-
-    }
-
-    public function reset()
-    {
-        if (isset($this->fields['intermediate'])) {
-            $intermediate = $this->fields['intermediate'];
-            foreach ($intermediate as $k => $v) {
-                if (strpos($k, 'virtual') === false) { // Keep state for virtual objects. Model for virtual object must contain 'Virtual' in the name
-                    unset($intermediate[$k]);
-                }
-            }
-
+            
             if (!empty($intermediate)) {
                 $this->fields = [
                     'intermediate' => $intermediate

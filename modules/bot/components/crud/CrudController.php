@@ -107,7 +107,7 @@ abstract class CrudController extends Controller
             $this->field->set($this->modelName, self::FIELD_NAME_ID, null);
         } elseif (!strcmp($action->actionMethod, 'actionUpdate')) {
             $this->backRoute->make($action->id, $params);
-            $this->field->reset();
+            $this->field->reset(null);
         }
 
         $this->rule = $this->rules() ?? [];
@@ -121,7 +121,7 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        $this->field->reset();
+        $this->field->reset($this->modelName);
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -698,7 +698,7 @@ abstract class CrudController extends Controller
                 $this->modelClass,
                 $this->field->get($this->modelName, self::FIELD_NAME_ID, null)
             );
-            $this->field->reset();
+            $this->field->reset($this->modelName);
 
             return $response;
         }
@@ -809,7 +809,7 @@ abstract class CrudController extends Controller
                     $this->modelClass,
                     $this->field->get($this->modelName, self::FIELD_NAME_ID, null)
                 );
-                $this->field->reset();
+                $this->field->reset($this->modelName);
 
                 return $response;
             }
@@ -1406,7 +1406,7 @@ abstract class CrudController extends Controller
                             }
                         }
                     }
-                    $this->field->reset();
+                    $this->field->reset($this->modelName);
                     $transaction->commit();
 
                     return $this->actionView($model->id);
