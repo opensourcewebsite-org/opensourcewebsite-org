@@ -35,13 +35,6 @@ use yii\db\ActiveRecord;
  */
 class CaController extends CrudController
 {
-    public function init()
-    {
-        $this->enableGlobalBackRoute = true;
-        $this->layout = 'main';
-        parent::init();
-    }
-
     protected $searchAttributes = [
         'selling_currency_id', 'buying_currency_id', 'selling_delivery_radius', 'selling_location_lat', 'selling_location_lon'
     ];

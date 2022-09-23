@@ -98,6 +98,12 @@ abstract class CrudController extends Controller
         parent::__construct($id, $module, $config);
     }
 
+    public function init()
+    {
+        $this->layout = 'main';
+        parent::init();
+    }
+
     /** @inheritDoc */
     public function bindActionParams($action, $params)
     {
