@@ -27,8 +27,8 @@ class TelegramBotController extends Controller implements CronChainedInterface
     {
         $this->actionRemoveCaptchaMessages();
         //$this->actionRemoveGreetingMessages();
-        //$this->actionUpdateMarketplacePostsNextSendAt();
-        //$this->actionSendMarketplaceMessages();
+        $this->actionUpdateMarketplacePostsNextSendAt();
+        $this->actionSendMarketplaceMessages();
     }
 
     /**
@@ -161,10 +161,6 @@ class TelegramBotController extends Controller implements CronChainedInterface
             ->all();
 
         if ($models) {
-            $this->debug('Update nextSendAt');
-
-            $bot = new Bot();
-
             foreach ($models as $post) {
                 $this->debug('Post ID: ' . $post->id);
                 $chatMember = $post->chatMember;
@@ -174,7 +170,9 @@ class TelegramBotController extends Controller implements CronChainedInterface
                     || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
                     $post->setInactive()->save();
                 } else {
-                    $post->updateNextSendAt();
+                    $post->setNextSendAt();
+                    $post->save(false);
+
                     $this->debug('Next Send At: ' . $post->getNextSendAt());
 
                     $updatedCount++;
@@ -189,19 +187,11 @@ class TelegramBotController extends Controller implements CronChainedInterface
         return true;
     }
 
-    // TODO
     // https://core.telegram.org/bots/faq#broadcasting-to-users
     public function actionSendMarketplaceMessages()
     {
         $sentCount = 0;
-
-        $this->debug('Sending');
-
-        $bot = new Bot();
-        $botApi = $bot->botApi;
-
         $skipChatIds = [];
-        $module = null;
 
         do {
             $post = ChatMarketplacePost::find()
@@ -231,6 +221,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                 $this->debug('Post ID: ' . $post->id);
                 $chatMember = $post->chatMember;
                 $chat = $chatMember->chat;
+                $user = $post->user;
 
                 if (!$chatMember->canUseMarketplace()
                     || ($chat->isLimiterOn() && !$chatMember->isCreator() && !$chatMember->hasLimiter())) {
@@ -238,57 +229,36 @@ class TelegramBotController extends Controller implements CronChainedInterface
                 } else {
                     if ($chat->isSlowModeOn() && !$chatMember->isCreator()) {
                         if (!$chatMember->checkSlowMode()) {
-                            $post->updateNextSendAt();
+                            $post->setNextSendAt();
+                            $post->save(false);
+
                             $this->debug('Next Send At: ' . $post->getNextSendAt());
 
                             continue;
-                        } else {
-                            $isSlowModeOn = true;
                         }
                     }
 
                     if (!isset($module)) {
                         $module = Yii::$app->getModule('bot');
+                        $bot = new Bot();
                         $module->setBot($bot);
                     }
 
                     $module->setChat($chat);
-                    $module->runAction('marketplace/send-message');
-
-                    $response = false;
+                    Yii::$app->language = $user->language->code;
+                    $response = $module->runAction('marketplace/send-message', [
+                        'id' => $post->id,
+                    ]);
 
                     if ($response) {
-                        if (isset($isSlowModeOn) && $isSlowModeOn) {
-                            $chatMember->updateSlowMode($response->getDate());
-                        }
-
-                        $post->sent_at = $response->getDate();
-                        $post->provider_message_id = $response->getMessageId();
-                        $post->save(false);
-
-                        // ChatCaptcha::deleteAll([
-                    //     'chat_id' => $record->chat_id,
-                    //     'provider_user_id' => $record->provider_user_id,
-                        // ]);
-                    //
-                        // try {
-                    //     $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
-                        // } catch (\Exception $e) {
-                    //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                        // }
-                    //
-                        // try {
-                    //     $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
-                        // } catch (\Exception $e) {
-                    //     echo 'ERROR: ChatMarketplacePost #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
-                        // }
-
                         $skipChatIds[] = $chat->id;
                         $sentCount++;
                         sleep(1);
                     }
 
-                    $post->updateNextSendAt();
+                    $post->setNextSendAt();
+                    $post->save(false);
+
                     $this->debug('Next Send At: ' . $post->getNextSendAt());
                 }
             }

@@ -23,6 +23,12 @@ class PremiumMembersController extends Controller
      */
     public function actionIndex($page = 1)
     {
+        if ($this->getUpdate() && !$this->getUpdate()->getCallbackQuery()) {
+            $this->getResponseBuilder()
+                ->deleteMessage()
+                ->send();
+        }
+
         $chat = $this->getTelegramChat();
 
         if ($chat->isMembershipOn()) {
@@ -72,7 +78,7 @@ class PremiumMembersController extends Controller
                         'disablePreview' => true,
                     ]
                 )
-                ->build();
+                ->send();
         }
 
         return [];

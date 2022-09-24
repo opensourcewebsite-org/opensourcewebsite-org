@@ -5,9 +5,12 @@ use app\modules\bot\models\ChatSetting;
 
 ?>
 <?= nl2br($post->text) ?><br/>
-<?php if ($chatMember && $chat->isMembershipOn() && $chat->membership_tag && $chatMember->hasMembership()) : ?>
+<?php if ($tags) : ?>
 <br/>
-#<?= $chat->membership_tag ?><br/>
+<?php foreach ($tags as $tag) : ?>
+#<?= $tag . ' ' ?>
+<?php endforeach; ?>
+<br/>
 <?php endif; ?>
 <br/>
 <?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?><br/>

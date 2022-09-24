@@ -315,7 +315,7 @@ class GroupGuestMarketplaceController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('update-post', [
+                            'callback_data' => self::createRoute('update-group-message', [
                                 'id' => $post->id,
                             ]),
                             'text' => Emoji::REFRESH . ' ' . Yii::t('bot', 'Update last post in the group'),
@@ -324,7 +324,7 @@ class GroupGuestMarketplaceController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('send-post', [
+                            'callback_data' => self::createRoute('send-group-message', [
                                 'id' => $post->id,
                             ]),
                             'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new post to the group'),
@@ -665,7 +665,7 @@ class GroupGuestMarketplaceController extends Controller
      * @param int $id ChatMarketplacePost->id
      * @return array
      */
-    public function actionUpdatePost($id = null)
+    public function actionUpdateGroupMessage($id = null)
     {
         $post = ChatMarketplacePost::findOne($id);
 
@@ -702,12 +702,15 @@ class GroupGuestMarketplaceController extends Controller
                 ->build();
         }
 
-        $response = $this->prepareResponseBuilder($post, false)->send();
+        $thisChat = $this->chat;
+        $module = Yii::$app->getModule('bot');
+        $module->setChat($chat);
+        $response = $module->runAction('marketplace/update-message', [
+            'id' => $post->id,
+        ]);
+        $module->setChat($thisChat);
 
         if ($response) {
-            $post->sent_at = $response->getDate();
-            $post->save(false);
-
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('../alert-ok')
@@ -724,7 +727,7 @@ class GroupGuestMarketplaceController extends Controller
      * @param int $id ChatMarketplacePost->id
      * @return array
      */
-    public function actionSendPost($id = null)
+    public function actionSendGroupMessage($id = null)
     {
         $post = ChatMarketplacePost::findOne($id);
 
@@ -793,22 +796,18 @@ class GroupGuestMarketplaceController extends Controller
                         true
                     )
                     ->build();
-            } else {
-                $isSlowModeOn = true;
             }
         }
 
-        $response = $this->prepareResponseBuilder($post)->send();
+        $thisChat = $this->chat;
+        $module = Yii::$app->getModule('bot');
+        $module->setChat($chat);
+        $response = $module->runAction('marketplace/send-message', [
+            'id' => $post->id,
+        ]);
+        $module->setChat($thisChat);
 
         if ($response) {
-            if (isset($isSlowModeOn) && $isSlowModeOn) {
-                $chatMember->updateSlowMode($response->getDate());
-            }
-
-            $post->sent_at = $response->getDate();
-            $post->provider_message_id = $response->getMessageId();
-            $post->save(false);
-
             return $this->getResponseBuilder()
                 ->answerCallbackQuery(
                     $this->render('../alert-ok')
@@ -859,123 +858,5 @@ class GroupGuestMarketplaceController extends Controller
         $post->delete();
 
         return $this->actionIndex($chat->id);
-    }
-
-    /**
-     * Show only accepted votings
-     * https://core.telegram.org/bots/faq#broadcasting-to-users
-     *
-     * @return array
-     */
-    // public function actionSendMessage($id = null)
-    // {
-    //     $voting = UaLawmakingVoting::find()
-    //         ->where([
-    //             'sent_at' => null,
-    //         ])
-    //         ->andWhere(['>=', 'for', UaLawmakingVoting::MIN_ACCEPTED_VOTES])
-    //         ->orderBy([
-    //             'event_id' => SORT_ASC,
-    //         ])
-    //         ->one();
-    //
-    //     if (!$voting) {
-    //         return [];
-    //     }
-    //
-    //     $response = $this->prepareResponseBuilder($voting)->send();
-    //
-    //     if ($response) {
-    //         $voting->message_id = $response->getMessageId();
-    //         $voting->sent_at = time();
-    //         $voting->save();
-    //     }
-    //
-    //     return [];
-    //}
-
-    /**
-     * @param ChatMarketplacePost $post
-     * @param int $isNewMessage
-     * @return array
-     */
-    private function prepareResponseBuilder(ChatMarketplacePost $post, bool $isNewMessage = true)
-    {
-        $chat = $post->chat;
-        $chatMember = $post->chatMember;
-        $user = $post->user;
-
-        $buttons = [];
-        $tags = [];
-
-        $tags = ArrayHelper::getColumn($chatMember->getPhrases(ChatPhrase::TYPE_MARKETPLACE_TAGS)->asArray()->all(), 'text');
-
-        if ($membershipTag = $chatMember->getMembershipTag()) {
-            $tags = ArrayHelper::merge([
-                $membershipTag,
-            ], $tags);
-        }
-
-        $buttons[] = [
-            [
-                'url' => $user->getLink(),
-                'text' => Yii::t('bot', 'Contact'),
-            ],
-        ];
-
-        $buttons[] = [
-            [
-                'url' => $chatMember->getReviewsLink(),
-                'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
-            ],
-        ];
-
-        if ($links = $chatMember->marketplaceLinks) {
-            foreach ($links as $link) {
-                if ($link->url && $link->title) {
-                    $buttons[] = [
-                        [
-                            'url' => $link->url,
-                            'text' => $link->title,
-                        ],
-                    ];
-                }
-            }
-        }
-
-        if ($isNewMessage) {
-            return $this->getResponseBuilder()
-                ->setChatId($chat->getChatId())
-                ->sendMessage(
-                    $this->render('public-view', [
-                        'chat' => $chat,
-                        'post' => $post,
-                        'chatMember' => $chatMember,
-                        'user' => $user,
-                        'tags' => $tags,
-                    ]),
-                    $buttons,
-                    [
-                        'disablePreview' => true,
-                    ]
-                );
-        } else {
-            return $this->getResponseBuilder()
-                ->setChatId($chat->getChatId())
-                ->editMessage(
-                    $post->getProviderMessageId(),
-                    $this->render('public-view', [
-                        'chat' => $chat,
-                        'post' => $post,
-                        'chatMember' => $chatMember,
-                        'user' => $user,
-                        'tags' => $tags,
-                    ]),
-                    $buttons,
-                    [
-                        'disablePreview' => true,
-                    ]
-                );
-        }
     }
 }

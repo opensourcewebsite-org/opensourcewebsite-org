@@ -306,7 +306,9 @@ class GroupGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('premium-members'),
+                $this->render('premium-members', [
+                    'chat' => $chat,
+                ]),
                 $buttons
             )
             ->build();

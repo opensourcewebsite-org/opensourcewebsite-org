@@ -60,13 +60,6 @@ class ChannelAdministratorsController extends Controller
             'validatePage' => true,
         ]);
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
-            return self::createRoute('index', [
-                'id' => $chat->id,
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         $administrators = $query->offset($pagination->offset)
@@ -85,6 +78,13 @@ class ChannelAdministratorsController extends Controller
                     'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $administrator->getDisplayName(),
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
+                return self::createRoute('index', [
+                    'id' => $chat->id,
+                    'page' => $page,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;

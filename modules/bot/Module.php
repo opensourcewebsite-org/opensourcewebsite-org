@@ -22,6 +22,24 @@ use yii\base\InvalidRouteException;
  */
 class Module extends \yii\base\Module
 {
+    public const NAMESPACE_PRIVATE = 'privates';
+    public const NAMESPACE_GROUP = 'groups';
+    public const NAMESPACE_CHANNEL = 'channels';
+
+    public $namespace = null;
+
+    public $defaultControllerNamespace = null;
+
+    public $defaultViewPath = null;
+
+    public function init()
+    {
+        parent::init();
+
+        $this->defaultControllerNamespace = $this->controllerNamespace;
+        $this->defaultViewPath = $this->getViewPath();
+    }
+
     /**
      * @param string $input
      * @param string $token Bot token
@@ -262,6 +280,13 @@ class Module extends \yii\base\Module
 
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
 
+        // Check botname if present
+        if ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {
+            if (isset($params['botname']) && $params['botname'] && ($params['botname'] != $this->getBot()->getUsername())) {
+                return true;
+            }
+        }
+
         if (!$isStateRoute && $this->getChat()->isPrivate()) {
             $this->getUserState()->setName($state);
         }
@@ -332,6 +357,11 @@ class Module extends \yii\base\Module
      */
     public function setChat(Chat $chat)
     {
+        // Forget the last message if there is a switch between chats
+        if ($this->getChat()) {
+            $this->getUpdate()->setCallbackQuery(false);
+        }
+
         Yii::$container->setSingleton('chat', $chat);
 
         $this->updateNamespaceByChat($chat);
@@ -474,17 +504,32 @@ class Module extends \yii\base\Module
     {
         if ($chat) {
             // Choose namespace
-            if ($chat->isPrivate()) {
-                $namespace = 'privates';
-            } elseif ($chat->isGroup()) {
-                $namespace = 'groups';
-            } elseif ($chat->isChannel()) {
-                $namespace = 'channels';
+            switch (true) {
+                case $chat->isPrivate():
+                    $namespace = self::NAMESPACE_PRIVATE;
+
+                    break;
+                case $chat->isGroup():
+                    $namespace = self::NAMESPACE_GROUP;
+
+                    break;
+                case $chat->isChannel():
+                    $namespace = self::NAMESPACE_CHANNEL;
+
+                    break;
+                default:
+                    $namespace = null;
+
+                    break;
             }
             // Set namespace
-            Yii::configure($this, require __DIR__ . "/config/$namespace.php");
-            $this->controllerNamespace = $this->controllerNamespace . '\\' . $namespace;
-            $this->setViewPath($this->getViewPath() . DIRECTORY_SEPARATOR . $namespace);
+            if ($namespace && ($this->namespace != $namespace)) {
+                $this->namespace = $namespace;
+
+                Yii::configure($this, require __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->namespace . '.php');
+                $this->controllerNamespace = $this->defaultControllerNamespace . '\\' . $this->namespace;
+                $this->setViewPath($this->defaultViewPath . DIRECTORY_SEPARATOR . $this->namespace);
+            }
 
             return true;
         } else {

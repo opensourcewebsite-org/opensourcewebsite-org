@@ -195,7 +195,7 @@ class ChatMarketplacePost extends ActiveRecord
             ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
     }
 
-    public function updateNextSendAt($timestamp = null)
+    public function setNextSendAt($timestamp = null)
     {
         if (!$timestamp) {
             $offset = $this->chat->timezone;
@@ -225,8 +225,5 @@ class ChatMarketplacePost extends ActiveRecord
         }
 
         $this->next_send_at = $timestamp;
-        $this->save(false);
-
-        return $this;
     }
 }

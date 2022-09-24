@@ -109,7 +109,7 @@ class RefreshController extends Controller
         }
 
         return $this->getResponseBuilder()
-                ->deleteMessage()
-                ->build();
+            ->deleteMessage()
+            ->build();
     }
 }

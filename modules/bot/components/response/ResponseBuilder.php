@@ -40,7 +40,6 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @param array $replyMarkup
      * @param array $optionalParams
-     *
      * @return ResponseBuilder
      */
     public function editMessageTextOrSendMessage(
@@ -137,7 +136,6 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @param array $replyMarkup
      * @param array $optionalParams
-     *
      * @return ResponseBuilder
      */
     public function sendPhotoOrSendMessage(
@@ -193,7 +191,6 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @param array $replyMarkup
      * @param array $optionalParams
-     *
      * @return ResponseBuilder
      */
     public function sendPhoto(
@@ -226,7 +223,6 @@ class ResponseBuilder
      *
      * @param  array $replyMarkup
      * @param  array $optionalParams
-     *
      * @return array
      */
     private function collectEditMessageOptionalParams(
@@ -249,7 +245,6 @@ class ResponseBuilder
      *
      * @param  array $replyMarkup
      * @param  array $optionalParams
-     *
      * @return array
      */
     private function collectSendMessageOptionalParams(
@@ -269,11 +264,9 @@ class ResponseBuilder
     }
 
     /**
-     *
      * @param  array $replyMarkup
      * @param  array $optionalParams
      * @param  array $optionalParamsFilter
-     *
      * @return array
      */
     private function filterAndMergeOptionalParams(
@@ -309,7 +302,6 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @param array $replyMarkup
      * @param  array $optionalParams
-     *
      * @return ResponseBuilder
      */
     public function sendPhotoOrEditMessageTextOrSendMessage(
@@ -368,12 +360,13 @@ class ResponseBuilder
     /**
      * @param MessageText|null $messageText
      * @param bool $showAlert
-     *
      * @return ResponseBuilder
      */
     public function answerCallbackQuery(MessageText $messageText = null, bool $showAlert = false)
     {
         if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
+            Yii::warning('ResponseBuilder->answerCallbackQuery()');
+
             $this->commands[] = new AnswerCallbackQueryCommand(
                 $callbackQuery->getId(),
                 $messageText,
@@ -388,7 +381,6 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @param array|null $replyMarkup
      * @param  array $optionalParams
-     *
      * @return ResponseBuilder
      */
     public function sendMessage(
@@ -412,7 +404,6 @@ class ResponseBuilder
      * @param MessageText $messageText
      * @param array|null $replyMarkup
      * @param  array $optionalParams
-     *
      * @return ResponseBuilder
      */
     public function editMessage(
@@ -450,7 +441,6 @@ class ResponseBuilder
     /**
      * @param int $longitude
      * @param int $latitude
-     *
      * @return ResponseBuilder
      */
     public function sendLocation(int $longitude, int $latitude)
@@ -466,7 +456,6 @@ class ResponseBuilder
 
     /**
      * @param array $commands
-     *
      * @return ResponseBuilder
      */
     public function merge(array $commands)

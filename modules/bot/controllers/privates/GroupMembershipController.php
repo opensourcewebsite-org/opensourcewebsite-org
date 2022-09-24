@@ -68,7 +68,7 @@ class GroupMembershipController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('send-message', [
+                            'callback_data' => self::createRoute('send-group-message', [
                                 'id' => $chat->id,
                             ]),
                             'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new message to the group'),
@@ -554,7 +554,7 @@ class GroupMembershipController extends Controller
      * @param int $id Chat->id
      * @return array
      */
-    public function actionSendMessage($id = null)
+    public function actionSendGroupMessage($id = null)
     {
         $chat = Chat::findOne($id);
 
@@ -564,20 +564,11 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $response = $this->getResponseBuilder()
-            ->setChatId($chat->getChatId())
-            ->sendMessage(
-                $this->render('send-message'),
-                [
-                    [
-                        [
-                            'callback_data' => PremiumMembersController::createRoute(),
-                            'text' => 'OK',
-                        ],
-                    ],
-                ]
-            )
-            ->send();
+        $thisChat = $this->chat;
+        $module = Yii::$app->getModule('bot');
+        $module->setChat($chat);
+        $response = $module->runAction('premium-members/index');
+        $module->setChat($thisChat);
 
         if ($response) {
             return $this->getResponseBuilder()
