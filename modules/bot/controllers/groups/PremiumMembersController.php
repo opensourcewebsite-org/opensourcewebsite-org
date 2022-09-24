@@ -23,7 +23,7 @@ class PremiumMembersController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        if ($this->getUpdate() && !$this->getUpdate()->getCallbackQuery()) {
+        if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
             $this->getResponseBuilder()
                 ->deleteMessage()
                 ->send();
@@ -40,20 +40,13 @@ class PremiumMembersController extends Controller
 
             $pagination = new Pagination([
                 'totalCount' => $query->count(),
-                'pageSize' => 20,
+                'pageSize' => 1,
                 'params' => [
                     'page' => $page,
                 ],
                 'pageSizeParam' => false,
                 'validatePage' => true,
             ]);
-
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
-                return self::createRoute('index', [
-                    'id' => $chat->id,
-                    'page' => $page,
-                ]);
-            });
 
             $buttons = [];
 
@@ -62,12 +55,19 @@ class PremiumMembersController extends Controller
                 ->all();
 
             if ($members) {
+                $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
+                    return self::createRoute('index', [
+                        'id' => $chat->id,
+                        'page' => $page,
+                    ]);
+                });
+
                 if ($paginationButtons) {
                     $buttons[] = $paginationButtons;
                 }
             }
 
-            return $this->getResponseBuilder()
+            $response = $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('index', [
                         'chat' => $chat,
@@ -79,6 +79,8 @@ class PremiumMembersController extends Controller
                     ]
                 )
                 ->send();
+
+            return (bool)$response;
         }
 
         return [];

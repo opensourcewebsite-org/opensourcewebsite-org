@@ -297,19 +297,22 @@ class Module extends \yii\base\Module
             $commands = $this->runAction($this->commandRouteResolver->defaultRoute);
         }
 
-        if (isset($commands) && is_array($commands)) {
+        if (isset($commands) && is_array($commands) && $commands) {
             $privateMessageIds = [];
+
             foreach ($commands as $command) {
-                try {
-                    $command->send($this->getBotApi());
-                    // Remember ids of all bot messages in private chat to delete them later
-                    if ($this->getChat()->isPrivate()) {
-                        if ($messageId = $command->getMessageId()) {
-                            $privateMessageIds []= $messageId;
+                if (!is_bool($command)) {
+                    try {
+                        $command->send($this->getBotApi());
+                        // Remember ids of all bot messages in private chat to delete them later
+                        if ($this->getChat()->isPrivate()) {
+                            if ($messageId = $command->getMessageId()) {
+                                $privateMessageIds []= $messageId;
+                            }
                         }
+                    } catch (\Exception $e) {
+                        Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
                     }
-                } catch (\Exception $e) {
-                    Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
                 }
             }
 
@@ -357,11 +360,6 @@ class Module extends \yii\base\Module
      */
     public function setChat(Chat $chat)
     {
-        // Forget the last message if there is a switch between chats
-        if ($this->getChat()) {
-            $this->getUpdate()->setCallbackQuery(false);
-        }
-
         Yii::$container->setSingleton('chat', $chat);
 
         $this->updateNamespaceByChat($chat);

@@ -55,7 +55,7 @@ class ResponseBuilder
             }
 
             if (!$this->getUpdate()->getCallbackQuery() || ($this->getUpdate()->getCallbackQuery()->getMessage()->getPhoto() === null)) {
-                if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
+                if ($callbackQuery = $this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
                     $this->answerCallbackQuery();
 
                     $commands[] = new EditMessageTextCommand(
@@ -430,10 +430,12 @@ class ResponseBuilder
      */
     public function deleteMessage(int $messageId = null)
     {
-        $this->commands[] = new DeleteMessageCommand(
-            $this->getChatId(),
-            $messageId ?: $this->getUpdate()->getRequestMessage()->getMessageId()
-        );
+        if ($this->getChatId() == $this->getUpdate()->getChat()->getId()) {
+            $this->commands[] = new DeleteMessageCommand(
+                $this->getChatId(),
+                $messageId ?: $this->getUpdate()->getRequestMessage()->getMessageId()
+            );
+        }
 
         return $this;
     }

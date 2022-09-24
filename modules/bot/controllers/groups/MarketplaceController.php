@@ -32,7 +32,7 @@ class MarketplaceController extends Controller
      */
     public function actionUpdateMessage($id = null, $message = null)
     {
-        if ($this->getUpdate() && !$this->getUpdate()->getCallbackQuery()) {
+        if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
             $this->getResponseBuilder()
                 ->deleteMessage()
                 ->send();
@@ -71,7 +71,7 @@ class MarketplaceController extends Controller
             //$post->save(false);
         }
 
-        return $response;
+        return (bool)$response;
     }
 
     /**
@@ -81,7 +81,7 @@ class MarketplaceController extends Controller
      */
     public function actionSendMessage($id = null, $message = null)
     {
-        if ($this->getUpdate() && !$this->getUpdate()->getCallbackQuery()) {
+        if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
             $this->getResponseBuilder()
                 ->deleteMessage()
                 ->send();
@@ -141,7 +141,7 @@ class MarketplaceController extends Controller
             $post->save(false);
         }
 
-        return $response;
+        return (bool)$response;
     }
 
     /**
