@@ -40,7 +40,7 @@ class PremiumMembersController extends Controller
 
             $pagination = new Pagination([
                 'totalCount' => $query->count(),
-                'pageSize' => 1,
+                'pageSize' => 20,
                 'params' => [
                     'page' => $page,
                 ],
