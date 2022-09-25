@@ -10,6 +10,7 @@ use app\models\matchers\ModelLinker;
 use app\models\queries\CurrencyExchangeOrderQuery;
 use app\models\scenarios\CurrencyExchangeOrder\UpdateScenario;
 use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
+use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\LocationParser;
 use app\modules\bot\validators\LocationLatValidator;
 use app\modules\bot\validators\LocationLonValidator;
@@ -282,8 +283,8 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             'buying_currency_label' => Yii::t('app', 'Label'),
             'sellingPaymentMethodIds' => Yii::t('app', 'Selling payment methods'),
             'buyingPaymentMethodIds' => Yii::t('app', 'Buying payment methods'),
-            'selling_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->sellingCurrency->code ?? '') . ' ' . Yii::t('app', 'parameters'),
-            'buying_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->buyingCurrency->code ?? ''). ' ' . Yii::t('app', 'parameters'),
+            'selling_currency_edit' =>  Emoji::EDIT . ' ' . ($this->sellingCurrency->code ?? ''),
+            'buying_currency_edit' =>  Emoji::EDIT . ' ' . ($this->buyingCurrency->code ?? ''),
         ];
     }
 

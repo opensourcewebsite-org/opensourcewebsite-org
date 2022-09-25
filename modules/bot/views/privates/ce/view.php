@@ -40,7 +40,7 @@ use app\modules\bot\components\helpers\ExternalLink;
   • <?= Yii::t('bot', 'Cash') ?><br/>
     <?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Location') ?>: <?= ExternalLink::getOSMFullLink($model->buying_location_lat, $model->buying_location_lon) ?></i><br/>
 <?php if ($model->buying_delivery_radius > 0) : ?>
-    <?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Delivery radius') ?>: <?= $model->buying_delivery_radius ?> <?= Yii::t('bot', 'km') ?></i><br/>
+    <?= Emoji::HIDDEN ?> <i><?= Yii::t('bot', 'Pickup radius') ?>: <?= $model->buying_delivery_radius ?> <?= Yii::t('bot', 'km') ?></i><br/>
 <?php endif; ?>
 <?php endif; ?>
 <?php foreach ($model->buyingPaymentMethods as $method) : ?>

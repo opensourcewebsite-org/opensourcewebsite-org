@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Payment methods for buying currency') ?>.</b><br/>
+<b><?= Yii::t('bot', 'Payment methods for buying currency') ?> (<?= $model->buyingCurrency->code ?>).</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>
