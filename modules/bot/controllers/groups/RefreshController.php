@@ -21,6 +21,12 @@ class RefreshController extends Controller
      */
     public function actionIndex()
     {
+        if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
+            $this->getResponseBuilder()
+                ->deleteMessage()
+                ->send();
+        }
+
         $chat = $this->getTelegramChat();
 
         $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
@@ -108,8 +114,6 @@ class RefreshController extends Controller
             }
         }
 
-        return $this->getResponseBuilder()
-            ->deleteMessage()
-            ->build();
+        return [];
     }
 }

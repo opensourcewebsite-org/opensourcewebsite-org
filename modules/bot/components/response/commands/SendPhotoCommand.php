@@ -2,11 +2,10 @@
 
 namespace app\modules\bot\components\response\commands;
 
-use Yii;
-use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\helpers\Photo;
 use TelegramBot\Api\HttpException;
+use Yii;
 
 class SendPhotoCommand extends Command
 {
@@ -27,15 +26,14 @@ class SendPhotoCommand extends Command
     }
 
     /**
-     * @param BotApi $botApi
      * @return \TelegramBot\Api\Types\Message
     */
-    public function send(BotApi $botApi)
+    public function send()
     {
         $answer = false;
 
         try {
-            $answer = $botApi->sendPhoto(
+            $answer = $this->getBotApi()->sendPhoto(
                 $this->chatId,
                 $this->photo,
                 $this->getOptionalProperty('caption', null),

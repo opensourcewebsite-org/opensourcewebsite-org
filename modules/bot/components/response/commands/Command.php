@@ -3,10 +3,12 @@
 namespace app\modules\bot\components\response\commands;
 
 use app\modules\bot\components\api\BotApi;
+use Yii;
 
 abstract class Command
 {
     private $fields = [];
+
     private $messageId;
 
     protected function __construct(array $array = [])
@@ -26,7 +28,8 @@ abstract class Command
         $this->fields[$name] = $value;
     }
 
-    abstract public function send(BotApi $botApi);
+    // TODO temporarily
+    //abstract public function send();
 
     protected function getOptionalProperty($name, $defaultValue)
     {
@@ -41,5 +44,35 @@ abstract class Command
     public function getMessageId()
     {
         return $this->messageId;
+    }
+
+    /**
+     * @return Bot|null
+     */
+    public function getBot()
+    {
+        if (Yii::$container->hasSingleton('bot')) {
+            return Yii::$container->get('bot');
+        }
+
+        return null;
+    }
+
+    /**
+     * @return BotApi|null
+     */
+    public function getBotApi()
+    {
+        if ($bot = $this->getBot()) {
+            return $bot->getBotApi();
+        }
+
+        return null;
+    }
+
+    // TODO temporarily
+    public function build()
+    {
+        $this->send();
     }
 }

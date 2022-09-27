@@ -46,7 +46,7 @@ final class CurrencyExchangeOrderMatcher
                         "ST_Distance_Sphere(
                             POINT({$this->model->selling_location_lon}, {$this->model->selling_location_lat}),
                             POINT({$this->comparingTable}.buying_location_lon, {$this->comparingTable}.buying_location_lat)
-                            ) <= 1000 * ({$this->comparingTable}.buying_delivery_radius + " . ($this->model->selling_delivery_radius ?: 0) . ')'
+                            ) <= 1000 * ({$this->comparingTable}.buying_delivery_radius + {$this->model->selling_delivery_radius})",
                     ],
                     ['in', 'spm.id', $buyingPaymentMethodsIds],
                 ]
@@ -63,7 +63,7 @@ final class CurrencyExchangeOrderMatcher
                         "ST_Distance_Sphere(
                             POINT({$this->model->buying_location_lon}, {$this->model->buying_location_lat}),
                             POINT({$this->comparingTable}.selling_location_lon, {$this->comparingTable}.selling_location_lat)
-                        ) <= 1000 * ({$this->comparingTable}.selling_delivery_radius + " . ($this->model->buying_delivery_radius ?: 0) . ')'
+                        ) <= 1000 * ({$this->comparingTable}.selling_delivery_radius + {$this->model->buying_delivery_radius})",
                     ],
                     ['in', 'bpm.id', $sellingPaymentMethodsIds],
                 ]

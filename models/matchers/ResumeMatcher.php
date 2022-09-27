@@ -66,7 +66,7 @@ final class ResumeMatcher
                     ({$this->comparingTable}.location_lon AND {$this->comparingTable}.location_lat),
                         ST_Distance_Sphere(
                             POINT({$this->model->location_lon}, {$this->model->location_lat} ),
-                            POINT({$this->comparingTable}.location_lon,  {$this->comparingTable}.location_lat)
+                            POINT({$this->comparingTable}.location_lon, {$this->comparingTable}.location_lat)
                         ),0) <= 1000 * {$this->model->search_radius}"
             );
         }

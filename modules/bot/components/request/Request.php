@@ -33,6 +33,7 @@ class Request extends Component
         $request->controller = $controller;
         $request->action = $action;
         $request->params = $params;
+
         return $request;
     }
 
@@ -40,13 +41,16 @@ class Request extends Component
     {
         list($route, $query) = explode('?', $url);
         $params = [];
+
         if ($query) {
             $paramsKeyValues = explode('&', $query);
+
             foreach ($paramsKeyValues as $keyValue) {
                 list($key, $value) = explode('=', $keyValue);
                 $params[$key] = $value;
             }
         }
+
         return self::fromRouteAndParams($route, $params);
     }
 

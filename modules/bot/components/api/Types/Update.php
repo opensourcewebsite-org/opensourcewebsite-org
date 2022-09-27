@@ -2,7 +2,6 @@
 
 namespace app\modules\bot\components\api\Types;
 
-use Yii;
 use app\modules\bot\models\UserState;
 use TelegramBot\Api\Types\Inline\ChosenInlineResult;
 use TelegramBot\Api\Types\Inline\InlineQuery;
@@ -10,6 +9,7 @@ use TelegramBot\Api\Types\Payments\Query\PreCheckoutQuery;
 use TelegramBot\Api\Types\Payments\Query\ShippingQuery;
 use TelegramBot\Api\Types\Poll;
 use TelegramBot\Api\Types\PollAnswer;
+use Yii;
 
 class Update extends \TelegramBot\Api\Types\Update
 {
@@ -48,8 +48,10 @@ class Update extends \TelegramBot\Api\Types\Update
         'poll' => Poll::class,
     ];
 
-    public function __construct()
+    public function map($data)
     {
+        parent::map($data);
+
         if ($callbackQuery = $this->getCallbackQuery()) {
             $this->chat = $callbackQuery->getMessage()->getChat();
             $this->from = $callbackQuery->getFrom();
@@ -57,10 +59,6 @@ class Update extends \TelegramBot\Api\Types\Update
         } elseif ($this->requestMessage = $this->getMessage() ?? $this->getEditedMessage()) {
             $this->chat = $this->requestMessage->getChat();
             $this->from = $this->requestMessage->getFrom();
-            // Игнорируем редактирование сообщений в приватных чатах
-            if ($this->chat->isPrivate() && $this->getEditedMessage()) {
-                $this->chat = null;
-            }
         } elseif ($this->requestMessage = $this->getChannelPost() ?? $this->getEditedChannelPost()) {
             $this->chat = $this->requestMessage->getChat();
             $this->from = $this->requestMessage->getFrom();

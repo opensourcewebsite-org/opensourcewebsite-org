@@ -2,6 +2,9 @@
 
 use app\modules\bot\components\GroupRouteResolver;
 
+$controllers = require __DIR__ . '/controllers.php';
+$actions = require __DIR__ . '/actions.php';
+
 $config = [
     'components' => [
         'commandRouteResolver' => [
@@ -16,23 +19,8 @@ $config = [
                 '/<controller:\w+>__<action:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],
-            'controllers' => [
-                'hello',
-                'message',
-                'system_message',
-                'tip',
-                'premium_members',
-                'id',
-            ],
-            'actions' => [
-                'view',
-                'index',
-                'list',
-                'create',
-                'edit',
-                'update',
-                'delete',
-            ],
+            'controllers' => $controllers,
+            'actions' => $actions,
         ],
     ],
 ];

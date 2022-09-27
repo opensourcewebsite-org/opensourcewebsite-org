@@ -111,7 +111,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 [
                                     'attribute' => 'pickup_radius',
-                                    'visible' => (bool)$model->pickup_radius,
+                                    'visible' => (bool)$model->location && (bool)$model->pickup_radius,
                                     'value' => $model->pickup_radius . ' ' . Yii::t('app', 'km'),
                                 ],
                                 [

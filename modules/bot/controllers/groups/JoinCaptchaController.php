@@ -158,11 +158,7 @@ class JoinCaptchaController extends Controller
                             );
 
                         // Remove captcha message
-                        $this->getBotApi()
-                            ->deleteMessage(
-                                $chat->chat_id,
-                                $botCaptcha->captcha_message_id
-                            );
+                        $this->getBotApi()->deleteMessage($chat->chat_id, $botCaptcha->captcha_message_id);
 
                         // Delete record about captcha
                         $botCaptcha->delete();

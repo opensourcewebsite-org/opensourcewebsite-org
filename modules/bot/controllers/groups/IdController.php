@@ -4,8 +4,8 @@ namespace app\modules\bot\controllers\groups;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\models\User;
 use app\modules\bot\components\helpers\ExternalLink;
+use app\modules\bot\models\User;
 use Yii;
 
 /**
@@ -17,26 +17,30 @@ class IdController extends Controller
 {
     /**
      * @param string|null $message
-     * @param int|null $id
+     * @param int|string|null $id User->provider_user_id|User->provider_user_name
      * @return array
      */
     public function actionIndex($message = null, $id = null)
     {
-        if (!$id && $message) {
-            if ((int)$message[0] > 0) {
-                if (preg_match('/(?:^(?:[0-9]+))/i', $message, $matches)) {
-                    $id = $matches[0];
-                }
-            } else {
-                if ($message[0] == '@') {
-                    if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $message, $matches)) {
-                        $id = ltrim($matches[0], '@');
-                    }
-                } else {
-                    if (preg_match('/(?:(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $message, $matches)) {
+        if (!$id) {
+            if ($message) {
+                if ((int)$message[0] > 0) {
+                    if (preg_match('/(?:^(?:[0-9]+))/i', $message, $matches)) {
                         $id = $matches[0];
                     }
+                } else {
+                    if ($message[0] == '@') {
+                        if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $message, $matches)) {
+                            $id = ltrim($matches[0], '@');
+                        }
+                    } else {
+                        if (preg_match('/(?:(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $message, $matches)) {
+                            $id = $matches[0];
+                        }
+                    }
                 }
+            } elseif ($this->getMessage() && ($replyMessage = $this->getMessage()->getReplyToMessage())) {
+                $id = $replyMessage->getFrom()->getId();
             }
         }
 

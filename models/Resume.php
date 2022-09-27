@@ -88,6 +88,19 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
             [['user_id', 'name'], 'required'],
             [['user_id', 'currency_id', 'status', 'created_at', 'processed_at'], 'integer'],
             ['search_radius', RadiusValidator::class],
+            [
+                'search_radius',
+                'default',
+                'value' => 0,
+            ],
+            [
+                'search_radius', 'required', 'when' => function (self $model) {
+                    return $model->location != '';
+                },
+                'whenClient' => new JsExpression("function () {
+                       return $('#".Html::getInputId($this, 'location')."').val() != '';
+                }"),
+            ],
             ['location_lat', LocationLatValidator::class],
             ['location_lon', LocationLonValidator::class],
             ['location', 'string'],

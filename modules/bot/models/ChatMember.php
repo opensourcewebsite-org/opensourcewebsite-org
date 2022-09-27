@@ -43,9 +43,6 @@ class ChatMember extends ActiveRecord
     public const ROLE_ADMINISTRATOR = 2;
     public const ROLE_MEMBER = 1;
 
-    public const ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID = 1087968824; // @GroupAnonymousBot user id in groups for anonymous admin
-    public const ANONYMOUS_CHANNEL_PROVIDER_USER_ID = 136817688; // @Channel_Bot user id in groups when message is sent on behalf of a channel
-
     private array $settings = [
         'join_hider_status' => [
             'active_bot_group_join_hider_quantity_value_per_one_rating',
@@ -131,12 +128,12 @@ class ChatMember extends ActiveRecord
 
     public function isAnonymousAdministrator()
     {
-        return $this->user->getProviderUserId() == self::ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID;
+        return $this->user->getProviderUserId() == User::ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID;
     }
 
     public function isAnonymousChannel()
     {
-        return $this->user->getProviderUserId() == self::ANONYMOUS_CHANNEL_PROVIDER_USER_ID;
+        return $this->user->getProviderUserId() == User::ANONYMOUS_CHANNEL_PROVIDER_USER_ID;
     }
 
     public function isActiveAdministrator()

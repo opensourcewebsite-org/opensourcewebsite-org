@@ -39,6 +39,14 @@ class ExternalLink
     /**
      * {@inheritdoc}
      */
+    public static function getWebsiteLink()
+    {
+        return 'https://opensourcewebsite.org';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public static function getGithubLink()
     {
         return 'https://github.com/opensourcewebsite-org/opensourcewebsite-org';
@@ -90,5 +98,13 @@ class ExternalLink
     public static function getGithubDevopsLink()
     {
         return 'https://github.com/opensourcewebsite-org/osw-devops';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getDiscordLink()
+    {
+        return 'https://discord.gg/wRehagFg2j';
     }
 }

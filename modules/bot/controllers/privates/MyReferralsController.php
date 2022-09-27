@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use Yii;
 
 /**
@@ -18,29 +19,55 @@ class MyReferralsController extends Controller
      */
     public function actionIndex()
     {
-        $user = $this->getUser();
+        $globalUser = $this->getGlobalUser();
 
-        $referralsCount = $user->getReferrals()->count();
-        $userId = $this->getUser()->id;
-        $websiteRefUrl = Yii::$app->urlManager->createAbsoluteUrl(["invite/$userId"]);
-        $botName = $this->getBot()->name;
-        $botRefUrl = "https://t.me/$botName?start=$userId";
+        $referralsCount = $globalUser->getReferrals()->count();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
                     'referralsCount' => $referralsCount,
-                ])
-            )
-            ->sendMessage(
-                $this->render('invite-template', [
-                    'websiteRefUrl' => $websiteRefUrl,
-                    'botRefUrl' => $botRefUrl,
                 ]),
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('referral-message'),
+                            'text' => Yii::t('bot', 'Referral message'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => MyAccountController::createRoute(),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->send();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionReferralMessage()
+    {
+        $globalUser = $this->getGlobalUser();
+        $user = $this->getTelegramUser();
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('referral-message', [
+                    'globalUser' => $globalUser,
+                    'user' => $user,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => MyReferralsController::createRoute(),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -53,6 +80,6 @@ class MyReferralsController extends Controller
                     'disablePreview' => true,
                 ]
             )
-            ->build();
+            ->send();
     }
 }

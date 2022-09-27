@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\components\response\commands;
 
-use Yii;
-use app\modules\bot\components\api\BotApi;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\HttpException;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use Yii;
 
 class EditMessageReplyMarkupCommand extends Command
 {
@@ -19,15 +18,14 @@ class EditMessageReplyMarkupCommand extends Command
     }
 
     /**
-     * @param BotApi $botApi
      * @return \TelegramBot\Api\Types\Message
     */
-    public function send(BotApi $botApi)
+    public function send()
     {
         $answer = false;
 
         try {
-            $answer = $botApi->editMessageReplyMarkup(
+            $answer = $this->getBotApi()->editMessageReplyMarkup(
                 $this->chatId,
                 $this->messageId,
                 $this->getOptionalProperty('replyMarkup', null),

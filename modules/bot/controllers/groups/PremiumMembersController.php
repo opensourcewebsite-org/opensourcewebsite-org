@@ -80,7 +80,7 @@ class PremiumMembersController extends Controller
                 )
                 ->send();
 
-            return (bool)$response;
+            return $response;
         }
 
         return [];

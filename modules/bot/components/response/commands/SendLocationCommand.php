@@ -2,9 +2,8 @@
 
 namespace app\modules\bot\components\response\commands;
 
-use Yii;
-use app\modules\bot\components\api\BotApi;
 use TelegramBot\Api\HttpException;
+use Yii;
 
 class SendLocationCommand extends Command
 {
@@ -18,10 +17,9 @@ class SendLocationCommand extends Command
     }
 
     /**
-     * @param BotApi $botApi
      * @return \TelegramBot\Api\Types\Message
     */
-    public function send(BotApi $botApi)
+    public function send()
     {
         $answer = false;
 

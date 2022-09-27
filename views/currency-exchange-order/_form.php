@@ -148,8 +148,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="col">
                                 <?= $form->field($model, 'selling_location')
                                     ->widget(LocationWithMapInput::class)
-                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_location'))
-                                ?>
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('selling_location')) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -158,9 +157,9 @@ $form = ActiveForm::begin(['id' => 'form']);
                                     ->textInput([
                                         'maxlength' => true,
                                         'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
+                                        'value' => ($model->selling_delivery_radius ?: ''),
                                     ])
-                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
-                                ?>
+                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional) ?>
                             </div>
                         </div>
                     </div>
@@ -183,8 +182,7 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <div class="col">
                                 <?= $form->field($model, 'buying_location')
                                     ->widget(LocationWithMapInput::class)
-                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_location'))
-                                ?>
+                                    ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('buying_location')) ?>
                             </div>
                         </div>
                         <div class="row">
@@ -193,9 +191,9 @@ $form = ActiveForm::begin(['id' => 'form']);
                                     ->textInput([
                                         'maxlength' => true,
                                         'placeholder' => 0 . ', ' . Yii::t('app', 'No delivery'),
+                                        'value' => ($model->buying_delivery_radius ?: ''),
                                     ])
-                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional)
-                                ?>
+                                    ->label(Html::icon('private') . ' ' . Yii::t('app', 'Delivery radius') . ', km' . $labelOptional) ?>
                             </div>
                         </div>
                     </div>
@@ -237,8 +235,7 @@ $form = ActiveForm::begin(['id' => 'form']);
 
                     updateVisibility();
 
-                    JS);
-                    ?>
+                    JS); ?>
 
                 </div>
                 <div class="card-footer">

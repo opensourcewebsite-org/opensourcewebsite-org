@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\components\response\commands;
 
-use Yii;
-use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\HttpException;
+use Yii;
 
 class SendMessageCommand extends MessageTextCommand
 {
@@ -17,15 +16,14 @@ class SendMessageCommand extends MessageTextCommand
     }
 
     /**
-     * @param BotApi $botApi
      * @return \TelegramBot\Api\Types\Message
     */
-    public function send(BotApi $botApi)
+    public function send()
     {
         $answer = false;
 
         try {
-            $answer = $botApi->sendMessage(
+            $answer = $this->getBotApi()->sendMessage(
                 $this->chatId,
                 $this->text,
                 $this->getOptionalProperty('parseMode', null),

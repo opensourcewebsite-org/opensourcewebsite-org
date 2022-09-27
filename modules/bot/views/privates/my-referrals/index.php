@@ -9,4 +9,4 @@
 <br/>
 <?= Yii::t('bot', 'All new users, who have joined the Bot or Website through your referral link, become your referrals'); ?>.<br/>
 <br/>
-<b><i><?= Yii::t('bot', 'Forward following message to your friends and followers, and start earning now'); ?>!</i></b>
+<b><i><?= Yii::t('bot', 'Forward referral message to your friends and followers, and start earning now'); ?>!</i></b>

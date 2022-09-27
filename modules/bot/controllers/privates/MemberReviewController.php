@@ -56,20 +56,20 @@ class MemberReviewController extends Controller
             'validatePage' => true,
         ]);
 
-        $reviews = $query->offset($pagination->offset)
+        $review = $query->offset($pagination->offset)
             ->limit($pagination->limit)
-            ->all();
-
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatMember) {
-            return self::createRoute('index', [
-                'page' => $page,
-                'id' => $chatMember->id,
-            ]);
-        });
+            ->one();
 
         $buttons = [];
 
-        if ($reviews) {
+        if ($review) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatMember) {
+                return self::createRoute('index', [
+                    'page' => $page,
+                    'id' => $chatMember->id,
+                ]);
+            });
+
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;
             }
@@ -78,8 +78,6 @@ class MemberReviewController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
-        $review = $reviews[0];
 
         $user = $this->getTelegramUser();
 

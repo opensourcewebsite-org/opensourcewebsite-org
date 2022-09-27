@@ -71,7 +71,7 @@ class MarketplaceController extends Controller
             //$post->save(false);
         }
 
-        return (bool)$response;
+        return $response;
     }
 
     /**
@@ -141,7 +141,7 @@ class MarketplaceController extends Controller
             $post->save(false);
         }
 
-        return (bool)$response;
+        return $response;
     }
 
     /**

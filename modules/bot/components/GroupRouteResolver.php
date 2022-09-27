@@ -39,7 +39,7 @@ class GroupRouteResolver extends Component
      */
     public $actions = [];
 
-    public function resolveRoute(Update $update, ?string $state)
+    public function resolveRoute(Update $update, ?string $state = null)
     {
         $commandText = null;
         $route = null;

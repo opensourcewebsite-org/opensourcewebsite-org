@@ -21,7 +21,7 @@ class DeleteMessageController extends Controller
             if ($this->getMessage()->canDelete()) {
                 return $this->getResponseBuilder()
                     ->deleteMessage()
-                    ->build();
+                    ->send();
             } else {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery(

@@ -25,10 +25,13 @@ use yii\helpers\ArrayHelper;
 class ResponseBuilder
 {
     /**
-     * @var array
+     * @var null
      */
-    private $commands = [];
+    private $command = null;
 
+    /**
+     * @var null
+     */
     protected $chatId = null;
 
     public function __construct(string $chatId = null)
@@ -51,21 +54,39 @@ class ResponseBuilder
 
         if ($this->getUpdate()) {
             if ($this->getChat()->isPrivate()) {
-                $commands = $this->deleteOutdatedMessages();
+                // Delete messages, sended earlier by bot in private chat
+                if ($messageIds = $this->getUpdate()->getPrivateMessageIds()) {
+                    // Ignore the message with callbackQuery
+                    if ($this->getUpdate()->getCallbackQuery()) {
+                        $excludeMessageId = $this->getUpdate()->getCallbackQuery()
+                            ->getMessage()
+                            ->getMessageId();
+
+                        $key = array_search($excludeMessageId, $messageIds);
+
+                        if ($key !== false) {
+                            unset($messageIds[$key]);
+                        }
+                    }
+
+                    foreach ($messageIds as $key => $messageId) {
+                        $this->deleteMessage($messageId)->send();
+                    }
+                }
             }
 
             if (!$this->getUpdate()->getCallbackQuery() || ($this->getUpdate()->getCallbackQuery()->getMessage()->getPhoto() === null)) {
                 if ($callbackQuery = $this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
-                    $this->answerCallbackQuery();
+                    $this->answerCallbackQuery()->send();
 
-                    $commands[] = new EditMessageTextCommand(
+                    $this->command = new EditMessageTextCommand(
                         $this->getChatId(),
                         $this->getUpdate()->requestMessage->getMessageId(),
                         $messageText,
                         $this->collectEditMessageOptionalParams($replyMarkup, $optionalParams)
                     );
                 } else {
-                    $commands[] = new SendMessageCommand(
+                    $this->command = new SendMessageCommand(
                         $this->getChatId(),
                         $messageText,
                         $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
@@ -73,62 +94,25 @@ class ResponseBuilder
                 }
             } else {
                 if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
-                    $this->answerCallbackQuery();
-                    $this->deleteMessage();
+                    $this->answerCallbackQuery()->send();
+                    $this->deleteMessage()->send();
                 }
 
-                $commands[] = new SendMessageCommand(
+                $this->command = new SendMessageCommand(
                     $this->getChatId(),
                     $messageText,
                     $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
                 );
             }
         } else {
-            $commands[] = new SendMessageCommand(
+            $this->command = new SendMessageCommand(
                 $this->getChatId(),
                 $messageText,
                 $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
         }
 
-        if (!empty($commands)) {
-            $this->commands = array_merge($this->commands, $commands);
-        }
-
         return $this;
-    }
-
-    /**
-     * Create array of commands for delete messages, sended earlier by bot in private chat
-     *
-     * @return array Array of delete messages commands
-     */
-    private function deleteOutdatedMessages(): array
-    {
-        $commands = [];
-
-        if (($messageIds = $this->getUpdate()->getPrivateMessageIds())) {
-            $excludeMessageDelete = 0;
-
-            if ($this->getUpdate()->getCallbackQuery()) {
-                $excludeMessageDelete = $this->getUpdate()->getCallbackQuery()
-                    ->getMessage()
-                    ->getMessageId();
-            }
-
-            $messageIds = array_filter($messageIds, function ($messageId) use ($excludeMessageDelete) {
-                return $messageId != $excludeMessageDelete;
-            });
-
-            foreach ($messageIds as $messageId) {
-                $commands[] = new DeleteMessageCommand(
-                    $this->getChatId(),
-                    $messageId
-                );
-            }
-        }
-
-        return $commands;
     }
 
     /**
@@ -151,8 +135,9 @@ class ResponseBuilder
         }
 
         if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
-            $this->answerCallbackQuery();
-            $commands[] = new SendPhotoCommand(
+            $this->answerCallbackQuery()->send();
+
+            $this->command = new SendPhotoCommand(
                 $this->getChatId(),
                 $photo,
                 $messageText,
@@ -160,27 +145,20 @@ class ResponseBuilder
             );
         } elseif (($messageIds = $this->getUpdate()->getPrivateMessageIds())) {
             foreach ($messageIds as $messageId) {
-                $commands[] = new DeleteMessageCommand(
-                    $this->getChatId(),
-                    $messageId
-                );
+                $this->deleteMessage($messageId)->send();
             }
 
-            $commands[] = new SendMessageCommand(
+            $this->command = new SendMessageCommand(
                 $this->getChatId(),
                 $messageText,
                 $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
         } else {
-            $commands[] = new SendMessageCommand(
+            $this->command = new SendMessageCommand(
                 $this->getChatId(),
                 $messageText,
                 $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
-        }
-
-        if (!empty($commands)) {
-            $this->commands = array_merge($this->commands, $commands);
         }
 
         return $this;
@@ -202,16 +180,12 @@ class ResponseBuilder
         $photo = new Photo($photoFileId);
 
         if (!$photo->isNull()) {
-            $commands[] = new SendPhotoCommand(
+            $this->command = new SendPhotoCommand(
                 $this->getChatId(),
                 $photo,
                 $messageText,
                 $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
             );
-        }
-
-        if (!empty($commands)) {
-            $this->commands = array_merge($this->commands, $commands);
         }
 
         return $this;
@@ -221,8 +195,8 @@ class ResponseBuilder
      * filter params and create array of optional params  for edit message api
      * command
      *
-     * @param  array $replyMarkup
-     * @param  array $optionalParams
+     * @param array $replyMarkup
+     * @param array $optionalParams
      * @return array
      */
     private function collectEditMessageOptionalParams(
@@ -243,8 +217,8 @@ class ResponseBuilder
      * filter params and create array of optional params  for send message api
      * command
      *
-     * @param  array $replyMarkup
-     * @param  array $optionalParams
+     * @param array $replyMarkup
+     * @param array $optionalParams
      * @return array
      */
     private function collectSendMessageOptionalParams(
@@ -264,9 +238,9 @@ class ResponseBuilder
     }
 
     /**
-     * @param  array $replyMarkup
-     * @param  array $optionalParams
-     * @param  array $optionalParamsFilter
+     * @param array $replyMarkup
+     * @param array $optionalParams
+     * @param array $optionalParamsFilter
      * @return array
      */
     private function filterAndMergeOptionalParams(
@@ -301,7 +275,7 @@ class ResponseBuilder
      * @param ?string $photoFileId
      * @param MessageText $messageText
      * @param array $replyMarkup
-     * @param  array $optionalParams
+     * @param array $optionalParams
      * @return ResponseBuilder
      */
     public function sendPhotoOrEditMessageTextOrSendMessage(
@@ -315,7 +289,7 @@ class ResponseBuilder
         if ($photo->isNull()) {
             return $this->editMessageTextOrSendMessage($messageText, $replyMarkup, $optionalParams);
         } else {
-            $this->deleteMessage();
+            $this->deleteMessage()->send();
 
             return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $optionalParams);
         }
@@ -329,8 +303,9 @@ class ResponseBuilder
         array $replyMarkup = []
     ) {
         if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
-            $this->answerCallbackQuery();
-            $this->commands[] = new EditMessageReplyMarkupCommand(
+            $this->answerCallbackQuery()->send();
+
+            $this->command = new EditMessageReplyMarkupCommand(
                 $this->getChatId(),
                 $this->getUpdate()->requestMessage->getMessageId(),
                 !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
@@ -346,8 +321,9 @@ class ResponseBuilder
     public function removeInlineKeyboardMarkup()
     {
         if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
-            $this->answerCallbackQuery();
-            $this->commands[] = new EditMessageReplyMarkupCommand(
+            $this->answerCallbackQuery()->send();
+
+            $this->command = new EditMessageReplyMarkupCommand(
                 $this->getChatId(),
                 $this->getUpdate()->requestMessage->getMessageId(),
                 null
@@ -360,14 +336,12 @@ class ResponseBuilder
     /**
      * @param MessageText|null $messageText
      * @param bool $showAlert
-     * @return ResponseBuilder
+     * @return AnswerCallbackQueryCommand
      */
     public function answerCallbackQuery(MessageText $messageText = null, bool $showAlert = false)
     {
-        if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
-            Yii::warning('ResponseBuilder->answerCallbackQuery()');
-
-            $this->commands[] = new AnswerCallbackQueryCommand(
+        if ($this->getUpdate() && ($callbackQuery = $this->getUpdate()->getCallbackQuery())) {
+            $this->command = new AnswerCallbackQueryCommand(
                 $callbackQuery->getId(),
                 $messageText,
                 $showAlert
@@ -380,7 +354,7 @@ class ResponseBuilder
     /**
      * @param MessageText $messageText
      * @param array|null $replyMarkup
-     * @param  array $optionalParams
+     * @param array $optionalParams
      * @return ResponseBuilder
      */
     public function sendMessage(
@@ -390,7 +364,7 @@ class ResponseBuilder
     ) {
         Yii::warning($replyMarkup);
 
-        $this->commands[] = new SendMessageCommand(
+        $this->command = new SendMessageCommand(
             $this->getChatId(),
             $messageText,
             $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
@@ -403,7 +377,7 @@ class ResponseBuilder
      * @param int $messageId
      * @param MessageText $messageText
      * @param array|null $replyMarkup
-     * @param  array $optionalParams
+     * @param array $optionalParams
      * @return ResponseBuilder
      */
     public function editMessage(
@@ -414,7 +388,7 @@ class ResponseBuilder
     ) {
         Yii::warning($replyMarkup);
 
-        $this->commands[] = new EditMessageTextCommand(
+        $this->command = new EditMessageTextCommand(
             $this->getChatId(),
             $messageId,
             $messageText,
@@ -426,15 +400,25 @@ class ResponseBuilder
 
     /**
      * @param int $messageId
-     * @return ResponseBuilder
+     * @param int $chatId
+     * @return DeleteMessageCommand
      */
-    public function deleteMessage(int $messageId = null)
+    public function deleteMessage(int $messageId = null, int $chatId = null)
     {
-        if ($this->getChatId() == $this->getUpdate()->getChat()->getId()) {
-            $this->commands[] = new DeleteMessageCommand(
-                $this->getChatId(),
-                $messageId ?: $this->getUpdate()->getRequestMessage()->getMessageId()
-            );
+        if ($this->getUpdate() && ($this->getChatId() != $this->getUpdate()->getChat()->getId()) && !$chatId) {
+            return $this;
+        }
+
+        if (!$chatId) {
+            $chatId = $this->getChatId();
+        }
+
+        if (!$messageId && $this->getUpdate()) {
+            $messageId = $this->getUpdate()->getRequestMessage()->getMessageId();
+        }
+
+        if ($messageId) {
+            $this->command = new DeleteMessageCommand($chatId, $messageId);
         }
 
         return $this;
@@ -447,7 +431,7 @@ class ResponseBuilder
      */
     public function sendLocation(int $longitude, int $latitude)
     {
-        $this->commands[] = new SendLocationCommand(
+        $this->command = new SendLocationCommand(
             $this->getChatId(),
             $longitude,
             $latitude
@@ -457,38 +441,40 @@ class ResponseBuilder
     }
 
     /**
-     * @param array $commands
-     * @return ResponseBuilder
-     */
-    public function merge(array $commands)
-    {
-        $this->commands = array_merge($this->commands, $commands);
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function build()
     {
-        return $this->commands;
+        return $this->send();
     }
 
     public function send()
     {
+        $privateMessageIds = [];
         $answer = false;
+        $isPrivateChat = false;
 
-        foreach ($this->commands as $command) {
+        if ($this->getUpdate() && ($this->getChatId() == $this->getUpdate()->getChat()->getId()) && $this->getChat()->isPrivate()) {
+            $isPrivateChat = true;
+        }
+
+        if ($this->command) {
             try {
-                $answer[] = $command->send($this->getBotApi());
+                $answer = $this->command->send();
+                // Remember ids of all bot messages in private chat to delete them later
+                if ($isPrivateChat && ($messageId = $this->command->getMessageId())) {
+                    $privateMessageIds []= $messageId;
+                }
+
+                $this->command = null;
             } catch (\Exception $e) {
-                Yii::error('[' . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
+                Yii::error(get_class($this->command) . ' ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
             }
         }
 
-        if ($answer && (count($answer) == 1)) {
-            $answer = current($answer);
+        if ($privateMessageIds) {
+            $this->getUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
+            $this->getUserState()->save($this->getUser());
         }
 
         return $answer;
@@ -537,6 +523,30 @@ class ResponseBuilder
     {
         if ($bot = $this->getBot()) {
             return $bot->getBotApi();
+        }
+
+        return null;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getUser()
+    {
+        if (Yii::$container->hasSingleton('user')) {
+            return Yii::$container->get('user');
+        }
+
+        return null;
+    }
+
+    /**
+     * @return UserState|null
+     */
+    public function getUserState()
+    {
+        if (Yii::$container->hasSingleton('userState')) {
+            return Yii::$container->get('userState');
         }
 
         return null;

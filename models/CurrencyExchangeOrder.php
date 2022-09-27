@@ -106,6 +106,14 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             [['user_id', 'selling_currency_id', 'buying_currency_id', 'status', 'selling_delivery_radius', 'buying_delivery_radius', 'created_at', 'processed_at'], 'integer'],
             [['selling_cash_on', 'buying_cash_on'], 'boolean'],
             [['selling_delivery_radius', 'buying_delivery_radius'], RadiusValidator::class],
+            [
+                [
+                    'selling_delivery_radius',
+                    'buying_delivery_radius',
+                ],
+                'default',
+                'value' => 0,
+            ],
             [['selling_location_lat', 'buying_location_lat'], LocationLatValidator::class],
             [['selling_location_lon', 'buying_location_lon'], LocationLonValidator::class],
             ['selling_location', 'required', 'when' => function ($model) {
@@ -210,15 +218,6 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 [
                     'selling_cash_on',
                     'buying_cash_on',
-                ],
-                'filter', 'filter' => function ($value) {
-                    return ($value ? intval($value) : 0);
-                },
-            ],
-            [
-                [
-                    'selling_delivery_radius',
-                    'buying_delivery_radius',
                 ],
                 'filter', 'filter' => function ($value) {
                     return ($value ? intval($value) : 0);

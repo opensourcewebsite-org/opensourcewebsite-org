@@ -5,7 +5,7 @@ namespace app\modules\bot\components\helpers;
 use app\components\helpers\Html;
 use Yii;
 
-class ExternalLink
+class ExternalLink extends \app\components\helpers\ExternalLink
 {
     /**
      * {@inheritdoc}

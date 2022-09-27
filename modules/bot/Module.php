@@ -38,6 +38,7 @@ class Module extends \yii\base\Module
 
         $this->defaultControllerNamespace = $this->controllerNamespace;
         $this->defaultViewPath = $this->getViewPath();
+        $this->setBot(new Bot());
     }
 
     /**
@@ -45,22 +46,17 @@ class Module extends \yii\base\Module
      * @param string $token Bot token
      * @return bool
      */
-    public function handleInput($input, $token)
+    public function handleInput($input, $token = null)
     {
         $updateArray = json_decode($input, true);
 
-        if (empty($updateArray)) {
+        if (empty($updateArray) || !$token) {
             return false;
         }
 
         $this->setUpdate(Update::fromResponse($updateArray));
-        // TODO refactoring
-        $this->getUpdate()->__construct();
-        $bot = new Bot();
 
-        if ($bot->token == $token) {
-            $this->setBot($bot);
-
+        if ($this->getBot()->token == $token) {
             if ($this->initFromUpdate()) {
                 $this->dispatchRoute();
             }
@@ -258,68 +254,44 @@ class Module extends \yii\base\Module
      */
     private function dispatchRoute()
     {
+        $state = null;
+
         if ($this->getChat()->isPrivate()) {
             $state = $this->getUserState()->getName();
-            // Delete all user messages in private chat
+            // Delete the user message in private chat
             if ($this->getUpdate()->getMessage()) {
                 $this->getBotApi()->deleteMessage(
                     $this->getChat()->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
+            // Ignore editing the user message in private chat
+            } elseif ($this->getUpdate()->getEditedMessage()) {
+                return true;
             }
-        } else {
-            $state = null;
-        }
-
-        if ($this->getChat()->isGroup()) {
-            // Telegram service user id, that also acts as sender of channel posts forwarded to discussion groups
-            if ($this->getUpdate()->getFrom()->getId() == 777000) {
+        } elseif ($this->getChat()->isGroup()) {
+            // Ignore service user id, that also acts as sender of channel posts forwarded to discussion groups
+            if ($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID) {
                 return true;
             }
         }
 
         list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
 
-        // Check botname if present
-        if ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {
+        if ($this->getChat()->isPrivate()) {
+            if (!$isStateRoute) {
+                $this->getUserState()->setName($state);
+            }
+        // Ignore other botname if present
+        } elseif ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {
             if (isset($params['botname']) && $params['botname'] && ($params['botname'] != $this->getBot()->getUsername())) {
                 return true;
             }
         }
 
-        if (!$isStateRoute && $this->getChat()->isPrivate()) {
-            $this->getUserState()->setName($state);
-        }
-
         try {
-            $commands = $this->runAction($route, $params);
+            $response = $this->runAction($route, $params);
         } catch (InvalidRouteException $e) {
-            $commands = $this->runAction($this->commandRouteResolver->defaultRoute);
-        }
-
-        if (isset($commands) && is_array($commands) && $commands) {
-            $privateMessageIds = [];
-
-            foreach ($commands as $command) {
-                if (!is_bool($command)) {
-                    try {
-                        $command->send($this->getBotApi());
-                        // Remember ids of all bot messages in private chat to delete them later
-                        if ($this->getChat()->isPrivate()) {
-                            if ($messageId = $command->getMessageId()) {
-                                $privateMessageIds []= $messageId;
-                            }
-                        }
-                    } catch (\Exception $e) {
-                        Yii::error("[$route] [" . get_class($command) . '] ' . $e->getCode() . ' ' . $e->getMessage(), 'bot');
-                    }
-                }
-            }
-
-            if ($this->getChat()->isPrivate()) {
-                $this->getUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
-                $this->getUserState()->save($this->getUser());
-            }
+            $response = $this->runAction($this->commandRouteResolver->defaultRoute);
         }
 
         return true;
@@ -327,7 +299,7 @@ class Module extends \yii\base\Module
 
     /**
      * @param int $chatId
-     * @return Chat|null
+     * @return Chat|bool
      */
     public function setChatByChatId($chatId)
     {

@@ -3,25 +3,23 @@
 namespace app\modules\bot\components\response\commands;
 
 use Yii;
-use app\modules\bot\components\api\BotApi;
 
 class DeleteMessageCommand extends Command
 {
     public function __construct($chatId, $messageId)
     {
-        parent::__construct([]);
+        parent::__construct();
 
         $this->chatId = $chatId;
         $this->messageId = $messageId;
     }
 
     /**
-     * @param BotApi $botApi
      * @return \TelegramBot\Api\Types\Message
     */
-    public function send(BotApi $botApi)
+    public function send()
     {
-        return $botApi->deleteMessage(
+        return $this->getBotApi()->deleteMessage(
             $this->chatId,
             $this->messageId
         );

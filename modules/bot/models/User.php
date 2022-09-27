@@ -38,6 +38,13 @@ use yii\db\ActiveRecord;
  */
 class User extends ActiveRecord
 {
+    // @GroupAnonymousBot user id in groups for anonymous admin
+    public const ANONYMOUS_ADMINISTRATOR_PROVIDER_USER_ID = 1087968824;
+    // @Channel_Bot user id in groups when message is sent on behalf of a channel
+    public const ANONYMOUS_CHANNEL_PROVIDER_USER_ID = 136817688;
+    // Service user id, that also acts as sender of channel posts forwarded to discussion groups
+    public const ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID = 777000;
+
     private $stateObject;
 
     /**
@@ -366,7 +373,7 @@ class User extends ActiveRecord
     /**
      * @param MessageText $messageText
      * @param array|null $replyMarkup
-     * @param  array $optionalParams
+     * @param array $optionalParams
      *
      * @return
      */

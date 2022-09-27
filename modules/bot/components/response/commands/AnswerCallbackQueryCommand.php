@@ -2,10 +2,9 @@
 
 namespace app\modules\bot\components\response\commands;
 
-use Yii;
-use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\HttpException;
+use Yii;
 
 class AnswerCallbackQueryCommand extends MessageTextCommand
 {
@@ -18,23 +17,14 @@ class AnswerCallbackQueryCommand extends MessageTextCommand
     }
 
     /**
-     * @param BotApi $botApi
      * @return \TelegramBot\Api\Types\Message
     */
-    public function send(BotApi $botApi)
+    public function send()
     {
-        $answer = false;
-
-        try {
-            $answer = $botApi->answerCallbackQuery(
-                $this->callbackQueryId,
-                $this->getOptionalProperty('text', null),
-                $this->getOptionalProperty('showAlert', false)
-            );
-        } catch (HttpException $e) {
-            Yii::warning($e);
-        }
-
-        return $answer;
+        return $this->getBotApi()->answerCallbackQuery(
+            $this->callbackQueryId,
+            $this->getOptionalProperty('text', null),
+            $this->getOptionalProperty('showAlert', false)
+        );
     }
 }

@@ -109,7 +109,7 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 [
                                     'attribute' => 'search_radius',
-                                    'visible' => (bool)$model->location,
+                                    'visible' => (bool)$model->search_radius,
                                     'value' => $model->search_radius ? $model->search_radius . ' ' . Yii::t('app', 'km') : '',
                                 ],
                                 [

@@ -91,16 +91,17 @@ $form = ActiveForm::begin(['id' => 'form']);
                         <div class="col">
                             <?= $form->field($model, 'location')
                                 ->widget(LocationWithMapInput::class)
-                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location'))
-                            ?>
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location')) ?>
                         </div>
                     </div>
                     <div class="row location-row <?= !$showLocation ? 'd-none' : '' ?>" >
                         <div class="col">
                             <?= $form->field($model, 'search_radius')
-                                ->textInput(['maxlength' => true])
-                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('search_radius') . ', km')
-                            ?>
+                                ->textInput([
+                                    'maxlength' => true,
+                                    'value' => ($model->search_radius ?: ''),
+                                ])
+                                ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('search_radius') . ', km') ?>
                         </div>
                     </div>
                 </div>

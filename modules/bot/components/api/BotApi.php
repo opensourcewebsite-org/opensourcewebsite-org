@@ -4,7 +4,9 @@ namespace app\modules\bot\components\api;
 
 use app\modules\bot\components\api\Types\ChatMember;
 use app\modules\bot\models\Chat;
+use TelegramBot\Api\HttpException;
 use Yii;
+use app\modules\bot\components\helpers\MessageText;
 
 /**
  * Class botApi
@@ -41,9 +43,34 @@ class BotApi extends \TelegramBot\Api\BotApi
      */
     public function deleteMessage($chatId, $messageId)
     {
+        Yii::warning('BotApi->deleteMessage()');
+
         try {
             return parent::deleteMessage($chatId, $messageId);
         } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+
+        return false;
+    }
+
+    /**
+    * @param $callbackQueryId
+    * @param string|null $text
+    * @param bool $showAlert
+    * @return bool
+     */
+    public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false)
+    {
+        Yii::warning('BotApi->answerCallbackQuery()');
+
+        try {
+            return parent::answerCallbackQuery(
+                $callbackQueryId,
+                $text,
+                $showAlert
+            );
+        } catch (HttpException $e) {
             Yii::warning($e);
         }
 
