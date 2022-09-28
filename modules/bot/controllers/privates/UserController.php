@@ -39,6 +39,7 @@ class UserController extends Controller
     }
 
     /**
+     * @param int|null $id User->provider_user_id
      * @return array
      */
     public function actionId($id = null)
@@ -194,6 +195,7 @@ class UserController extends Controller
     }
 
     /**
+     * @param int|null $id User->provider_user_id
      * @return array
      */
     public function actionRefresh($id = null)
@@ -242,6 +244,7 @@ class UserController extends Controller
     }
 
     /**
+     * @param int|null $id User->provider_user_id
      * @return array
      */
     public function actionInputName($id = null)
@@ -310,6 +313,7 @@ class UserController extends Controller
     }
 
     /**
+     * @param int|null $id User->provider_user_id
      * @return array
      */
     public function actionDeleteName($id = null)
@@ -348,6 +352,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param int|null $id User->provider_user_id
+     * @param int $v
      * @return array
      */
     public function actionSelectIsReal($id = null, $v = null)
@@ -376,6 +382,31 @@ class UserController extends Controller
             if ($contact->validate('is_real')) {
                 if ($contact->isAttributeChanged('is_real', false)) {
                     $contact->save(false);
+
+                    if ($contact->is_real == 1) {
+                        $user = $this->getTelegramUser();
+
+                        $viewUser->useLanguage();
+
+                        $viewUser->sendMessage(
+                            $this->render('notify-is-real', [
+                                'authorUser' => $user,
+                                'contact' => $contact,
+                            ]),
+                            [
+                                [
+                                    [
+                                        'callback_data' => self::createRoute('id', [
+                                            'id' => $user->getProviderUserId(),
+                                        ]),
+                                        'text' => Yii::t('bot', 'User View'),
+                                    ],
+                                ],
+                            ]
+                        );
+
+                        $user->useLanguage();
+                    }
                 }
 
                 return $this->actionId([
@@ -414,6 +445,8 @@ class UserController extends Controller
     }
 
     /**
+     * @param int|null $id User->provider_user_id
+     * @param int $v
      * @return array
      */
     public function actionSelectRelation($id = null, $v = null)
@@ -442,6 +475,31 @@ class UserController extends Controller
             if ($contact->validate('relation')) {
                 if ($contact->isAttributeChanged('relation', false)) {
                     $contact->save(false);
+
+                    if ($contact->relation == 1) {
+                        $user = $this->getTelegramUser();
+
+                        $viewUser->useLanguage();
+
+                        $viewUser->sendMessage(
+                            $this->render('notify-relation', [
+                                'authorUser' => $user,
+                                'contact' => $contact,
+                            ]),
+                            [
+                                [
+                                    [
+                                        'callback_data' => self::createRoute('id', [
+                                            'id' => $user->getProviderUserId(),
+                                        ]),
+                                        'text' => Yii::t('bot', 'User View'),
+                                    ],
+                                ],
+                            ]
+                        );
+
+                        $user->useLanguage();
+                    }
                 }
 
                 return $this->actionId([
@@ -480,11 +538,11 @@ class UserController extends Controller
     }
 
     /**
-     * @param int $page
      * @param int|null $id User->provider_user_id
+     * @param int $page
      * @return array
      */
-    public function actionPublicGroups($page = 1, $id = null)
+    public function actionPublicGroups($id = null, $page = 1)
     {
         if (!$id) {
             return $this->getResponseBuilder()

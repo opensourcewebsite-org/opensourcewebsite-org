@@ -86,14 +86,14 @@ class Module extends \yii\base\Module
                 }
                 // Update telegram user information
                 $user->updateInfo($this->getUpdate()->getFrom());
-                // Set user language for bot answers
-                Yii::$app->language = $user->language->code;
 
                 if (!$user->save()) {
                     Yii::warning($user->getErrors());
 
                     return false;
                 }
+                // Set user language for bot answers
+                Yii::$app->language = $user->language->code;
             }
             // create a user for new forward from
             if ($this->getUpdate()->getRequestMessage() && ($providerForwardFrom = $this->getUpdate()->getRequestMessage()->getForwardFrom())) {

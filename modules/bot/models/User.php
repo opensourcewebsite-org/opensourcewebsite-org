@@ -403,6 +403,14 @@ class User extends ActiveRecord
         return false;
     }
 
+    public function useLanguage()
+    {
+        // Switch to user language
+        if (Yii::$app->language != $this->language->code) {
+            Yii::$app->language = $this->language->code;
+        }
+    }
+
     /**
      * Gets query for [[Contact]].
      *

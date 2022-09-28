@@ -49,4 +49,5 @@ return [
     'my_stellar',
     'my_website_account',
     'my_rating',
+    'delete_message',
 ];

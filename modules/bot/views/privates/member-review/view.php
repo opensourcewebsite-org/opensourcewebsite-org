@@ -7,7 +7,7 @@
 <?php endif; ?>
 <?php if ($globalUser = $user->globalUser) : ?>
 <br/>
-<b>ID</b>: #<?= $globalUser->getIdFullLink() ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
+<b>OSW ID</b>: #<?= $globalUser->getIdFullLink() ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
 <b><?= Yii::t('user', 'Rank') ?></b>: <?= $globalUser->getRank() ?><br/>
 <?php endif; ?>
 ————<br/>
@@ -35,7 +35,7 @@
 <?php endif; ?>
 <?php if ($globalAuthorUser = $authorUser->globalUser) : ?>
 <br/>
-<b>ID</b>: #<?= $globalAuthorUser->getIdFullLink() ?><?= ($globalAuthorUser->username ? ' @' . $globalAuthorUser->username : '') ?><br/>
+<b>OSW ID</b>: #<?= $globalAuthorUser->getIdFullLink() ?><?= ($globalAuthorUser->username ? ' @' . $globalAuthorUser->username : '') ?><br/>
 <b><?= Yii::t('user', 'Rank') ?></b>: <?= $globalAuthorUser->getRank() ?><br/>
 <?php endif; ?>
 <?php endif; ?>

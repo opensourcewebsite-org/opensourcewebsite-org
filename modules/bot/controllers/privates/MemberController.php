@@ -290,31 +290,38 @@ class MemberController extends Controller
 
         $chatMemberReview->status = $v;
 
-        if ($chatMemberReview->validate($v)) {
-            $chatMemberReview->save(false);
-            // if the review has received an active status, then notify the counter user
-            if ($chatMemberReview->isActive()) {
-                $buttons = [];
-                // when the creator of the review is a member of the group
-                if ($chatMember = $chatMemberReview->chatMember) {
-                    $buttons[] = [
-                        [
-                            'callback_data' => self::createRoute('id', [
-                                'id' => $chatMember->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Member View'),
-                        ],
-                    ];
-                }
+        if ($chatMemberReview->validate('status')) {
+            if ($chatMemberReview->isAttributeChanged('status', false)) {
+                $chatMemberReview->save(false);
+                // if the review has received an active status, then notify the counter user
+                if ($chatMemberReview->isActive()) {
+                    $buttons = [];
 
-                $chatMemberReview->counterUser->sendMessage(
-                    $this->render('notify-review', [
-                        'authorUser' => $chatMemberReview->user,
-                        'chat' => $chatMemberReview->chat,
-                        'review' => $chatMemberReview,
-                    ]),
-                    $buttons
-                );
+                    $viewUser = $chatMemberReview->counterUser;
+                    $viewUser->useLanguage();
+                    // when the author of the review is a member of the group
+                    if ($chatMember = $chatMemberReview->chatMember) {
+                        $buttons[] = [
+                            [
+                                'callback_data' => self::createRoute('id', [
+                                    'id' => $chatMember->id,
+                                ]),
+                                'text' => Yii::t('bot', 'Member View'),
+                            ],
+                        ];
+                    }
+
+                    $chatMemberReview->counterUser->sendMessage(
+                        $this->render('notify-review', [
+                            'authorUser' => $user,
+                            'chat' => $chatMemberReview->chat,
+                            'review' => $chatMemberReview,
+                        ]),
+                        $buttons
+                    );
+
+                    $user->useLanguage();
+                }
             }
 
             return $this->runAction('my-review', [
