@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\behaviors\SetAttributeValueBehavior;
-use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\CashExchangeOrder;
 use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
@@ -54,16 +53,18 @@ class CaController extends CrudController
             'isVirtual' => true,
             'attributes' => [
                 'sellingCurrency' => [
-                    'buttons' => [
+                    'systemButtons' => [
                         [
-                            'hideCondition' => $this->field->get($this->modelName, 'selling_currency_id') == null,
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::MENU,
-                        ],
-                        [
-                            'hideCondition' => !$this->field->get($this->modelName, 'selling_currency_id') == null,
-                            'callback_data' => MenuController::createRoute(),
-                            'text' => Emoji::BACK,
+                            [
+                                'editMode' => false,
+                                'route' => MenuController::createRoute(),
+                                'text' => Emoji::BACK,
+                            ],
+                            [
+                                'createMode' => false,
+                                'route' => self::createRoute('view'),
+                                'text' => Emoji::BACK,
+                            ],
                         ],
                     ],
                     'view' => 'set-selling_currency',
@@ -74,6 +75,21 @@ class CaController extends CrudController
                     ],
                 ],
                 'buyingCurrency' => [
+                    'systemButtons' => [
+                        [
+                            [
+                                'editMode' => false,
+                                'route' => $this->backRoute->get(),
+                                'text' => Emoji::BACK,
+                            ],
+                        
+                            [
+                                'editMode' => false,
+                                'route' => MenuController::createRoute(),
+                                'text' => Emoji::END,
+                            ]
+                        ],
+                    ],
                     'view' => 'set-buying_currency',
                     'relation' => [
                         'attributes' => [
@@ -89,20 +105,37 @@ class CaController extends CrudController
                     ],
                     'buttons' => [
                         [
-                            'hideCondition' => !isset($this->getTelegramUser()->userLocation),
-                            'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (CashExchangeOrder $model) {
-                                $latitude = $this->getTelegramUser()->userLocation->location_lat;
-                                $longitude = $this->getTelegramUser()->userLocation->location_lon;
-                                if ($latitude && $longitude) {
-                                    $model->selling_location_lat = $latitude;
-                                    $model->selling_location_lon = $longitude;
+                            [
+                                'hideCondition' => !isset($this->getTelegramUser()->userLocation),
+                                'text' => Yii::t('bot', 'MY LOCATION'),
+                                'callback' => function (CashExchangeOrder $model) {
+                                    $latitude = $this->getTelegramUser()->userLocation->location_lat;
+                                    $longitude = $this->getTelegramUser()->userLocation->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->selling_location_lat = $latitude;
+                                        $model->selling_location_lon = $longitude;
 
-                                    return $model;
-                                }
+                                        return $model;
+                                    }
 
-                                return null;
-                            },
+                                    return null;
+                                },
+                            ],
+                        ]
+                    ],
+                    'systemButtons' => [
+                        [
+                            [
+                                'editMode' => false,
+                                'route' => $this->backRoute->get(),
+                                'text' => Emoji::BACK,
+                            ],
+                        
+                            [
+                                'editMode' => false,
+                                'route' => MenuController::createRoute(),
+                                'text' => Emoji::END,
+                            ]
                         ],
                     ],
                     'behaviors' => [
@@ -120,12 +153,29 @@ class CaController extends CrudController
                 'selling_delivery_radius' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CashExchangeOrder $model) {
-                                $model->selling_delivery_radius = 0;
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CashExchangeOrder $model) {
+                                    $model->selling_delivery_radius = 0;
 
-                                return $model;
-                            },
+                                    return $model;
+                                },
+                            ],
+                        ]
+                    ],
+                    'systemButtons' => [
+                        [
+                            [
+                                'editMode' => false,
+                                'route' => $this->backRoute->get(),
+                                'text' => Emoji::BACK,
+                            ],
+                        
+                            [
+                                'editMode' => false,
+                                'route' => MenuController::createRoute(),
+                                'text' => Emoji::END,
+                            ]
                         ],
                     ],
                 ],

@@ -185,18 +185,18 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
                 ],
-                'filter', 'filter' => function ($value) {
-                    return ($value != 0 ? $value : null);
-                },
+                'double',
+                'min' => 0,
+                'max' => 9999999999.99999999,
             ],
             [
                 [
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
                 ],
-                'double',
-                'min' => 0,
-                'max' => 9999999999.99999999,
+                'filter', 'filter' => function ($value) {
+                    return ($value != 0 ? $value : null);
+                },
             ],
             [
                 [
@@ -593,7 +593,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 $this->selling_rate = null;
                 $this->buying_rate = null;
             }
-        }
+        } 
 
         if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;

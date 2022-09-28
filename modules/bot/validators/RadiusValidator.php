@@ -1,5 +1,6 @@
 <?php
 
+
 namespace app\modules\bot\validators;
 
 use yii\validators\Validator;
@@ -16,12 +17,12 @@ class RadiusValidator extends Validator
     /** @inheritDoc */
     public function validateAttribute($model, $attribute)
     {
-        if ($model->$attribute < 0 || $model->$attribute > self::MAX_RADIUS) {
-            $this->addError($model, $attribute, 'Input value must be between {min} and {max}', [
-                'min' => 0,
+        if ($model->$attribute < 0) {
+            $this->addError($model, $attribute, 'The radius must be either more then 0 and less then {max}.', [
                 'max' => self::MAX_RADIUS,
             ]);
+        } elseif ($model->$attribute > self::MAX_RADIUS) {
+            $model->$attribute = self::MAX_RADIUS;
         }
     }
-    
 }

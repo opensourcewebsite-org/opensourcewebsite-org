@@ -33,12 +33,6 @@ use yii\db\ActiveRecord;
  */
 class CeController extends CrudController
 {
-    public function init()
-    {
-        $this->enableGlobalBackRoute = true;
-
-        parent::init();
-    }
     protected $updateAttributes = [
         'selling_currency_edit',
         'buying_currency_edit'
@@ -65,53 +59,18 @@ class CeController extends CrudController
                     }, $model->buyingPaymentMethods),*/
                 ];
             },
-            /*'create' => [
-                'sellingCurrency',
-                'buyingCurrency',
-                'selling_rate',
-                'selling_currency_min_amount',
-                'selling_currency_max_amount',
-                'selling_cash_on',
-                'selling_location',
-                'selling_delivery_radius',
-                'sellingPaymentMethods',
-                'buying_cash_on',
-                'buying_location',
-                'buying_delivery_radius',
-                'buyingPaymentMethods',
-                'user_id',
-            ],*/
-            /*'edit' => [
-                [
-                    'text' => function (CurrencyExchangeOrder $model) {
-                        return $model->sellingCurrency->code;
-                    },
-                    'buttons' => [
-                        'selling_currency_min_amount',
-                        'selling_currency_max_amount',
-                        'selling_cash_on',
-                        'sellingPaymentMethods',
-                    ],
-                ],
-                [
-                    'text' => function (CurrencyExchangeOrder $model) {
-                        return $model->buyingCurrency->code;
-                    },
-                    'buttons' => [
-                        'buying_cash_on',
-                        'buyingPaymentMethods',
-                    ],
-                ],
-                'location' => [
-                    //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
-                ],
-                'delivery_radius' => [
-                    //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
-                ],
-            ],*/
             'attributes' => [
                 'sellingCurrency' => [
                     'view' => 'set-selling_currency',
+                    'systemButtons' => [
+                        [
+                            [
+                                'editMode' => false,
+                                'route' => $this->backRoute->get(),
+                                'text' => Emoji::BACK,
+                            ],
+                        ],
+                    ],
                     'relation' => [
                         'attributes' => [
                             'selling_currency_id' => [Currency::class, 'id', 'code'],
@@ -128,9 +87,41 @@ class CeController extends CrudController
                 ],
                 'selling_rate' => [
                     'isRequired' => false,
+                    'buttons' => [
+                        [
+                            [   
+                                'hideCondition' => function () {
+                                    $selling_rate = $this->field->get($this->modelName, 'selling_rate');
+                                    return !isset($selling_rate);
+                                },
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->selling_rate = null;
+
+                                    return $model;
+                                },
+                            ],
+                        ]
+                    ],
                 ],
                 'buying_rate' => [
                     'isRequired' => false,
+                    'buttons' => [
+                        [
+                            [   
+                                'hideCondition' => function () {
+                                    $buying_rate = $this->field->get($this->modelName, 'buying_rate');
+                                    return !isset($buying_rate);
+                                },
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->buying_rate = null;
+
+                                    return $model;
+                                },
+                            ],
+                        ]
+                    ],
                     'hidden' => function () {
                         $selling_rate = $this->field->get($this->modelName, 'selling_rate');
                         return isset($selling_rate);
@@ -154,44 +145,6 @@ class CeController extends CrudController
                         ],
                         'removeOldRows' => true,
                     ],
-                    'buttons' => [
-                        [
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                return $model;
-                            },
-                        ],
-                    ],
-                    'buttonSkip' => [
-                        'callback_data' => self::createRoute('en-a', [
-                            'a' => 'selling_cash_on',
-                            'text' => self::VALUE_NO,
-                        ]),
-                    ],
-                ],
-                'sellingPaymentMethods' => [
-                    'isRequired' => false,
-                    'view' => 'set-selling_payment_methods',
-                    'samePageAfterAdd' => true,
-                    'enableAddButton' => true,
-                    'showRowsList' => true,
-                    'createRelationIfEmpty' => true,
-                    'relation' => [
-                        'model' => CurrencyExchangeOrderSellingPaymentMethod::class,
-                        'attributes' => [
-                            'order_id' => [CurrencyExchangeOrder::class, 'id'],
-                            'payment_method_id' => [PaymentMethodCurrencyByCurrency::class, 'payment_method_id'],
-                        ],
-                        'removeOldRows' => true,
-                    ],
-                    'buttons' => [
-                        [
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                return $model;
-                            },
-                        ],
-                    ],
                     'buttonSkip' => [
                         'callback_data' => self::createRoute('en-a', [
                             'a' => 'selling_cash_on',
@@ -202,21 +155,23 @@ class CeController extends CrudController
                 'selling_cash_on' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'YES'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->selling_cash_on = CurrencyExchangeOrder::CASH_ON;
+                            [
+                                'text' => Yii::t('bot', 'YES'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->selling_cash_on = CurrencyExchangeOrder::CASH_ON;
 
-                                return $model;
-                            },
-                        ],
-                        [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->selling_cash_on = CurrencyExchangeOrder::CASH_OFF;
+                                    return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->selling_cash_on = CurrencyExchangeOrder::CASH_OFF;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'selling_location' => [
@@ -235,21 +190,23 @@ class CeController extends CrudController
                     ],
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->userLocation,
-                            'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $latitude = $this->getTelegramUser()->userLocation->location_lat;
-                                $longitude = $this->getTelegramUser()->userLocation->location_lon;
-                                if ($latitude && $longitude) {
-                                    $model->selling_location_lat = $latitude;
-                                    $model->selling_location_lon = $longitude;
+                            [
+                                'hideCondition' => !$this->getTelegramUser()->userLocation,
+                                'text' => Yii::t('bot', 'MY LOCATION'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $latitude = $this->getTelegramUser()->userLocation->location_lat;
+                                    $longitude = $this->getTelegramUser()->userLocation->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->selling_location_lat = $latitude;
+                                        $model->selling_location_lon = $longitude;
 
-                                    return $model;
-                                }
+                                        return $model;
+                                    }
 
-                                return null;
-                            },
-                        ],
+                                    return null;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'selling_delivery_radius' => [
@@ -262,13 +219,15 @@ class CeController extends CrudController
                     },
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->selling_delivery_radius = 0;
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->selling_delivery_radius = 0;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'buyingPaymentMethods' => [
@@ -286,14 +245,6 @@ class CeController extends CrudController
                         ],
                         'removeOldRows' => true,
                     ],
-                    'buttons' => [
-                            [
-                                'text' => Yii::t('bot', 'NEXT'),
-                                'callback' => function (CurrencyExchangeOrder $model) {
-                                    return $model;
-                                },
-                            ],
-                    ],
                     'buttonSkip' => [
                         'callback_data' => self::createRoute('en-a', [
                             'a' => 'buying_cash_on',
@@ -304,21 +255,23 @@ class CeController extends CrudController
                 'buying_cash_on' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'YES'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->buying_cash_on = CurrencyExchangeOrder::CASH_ON;
+                            [
+                                'text' => Yii::t('bot', 'YES'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->buying_cash_on = CurrencyExchangeOrder::CASH_ON;
 
-                                return $model;
-                            },
-                        ],
-                        [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->buying_cash_on = CurrencyExchangeOrder::CASH_OFF;
+                                    return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->buying_cash_on = CurrencyExchangeOrder::CASH_OFF;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'buying_location' => [
@@ -337,21 +290,23 @@ class CeController extends CrudController
                     ],
                     'buttons' => [
                         [
-                            'hideCondition' => !$this->getTelegramUser()->userLocation,
-                            'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $latitude = $this->getTelegramUser()->userLocation->location_lat;
-                                $longitude = $this->getTelegramUser()->userLocation->location_lon;
-                                if ($latitude && $longitude) {
-                                    $model->buying_location_lat = $latitude;
-                                    $model->buying_location_lon = $longitude;
+                            [
+                                'hideCondition' => !$this->getTelegramUser()->userLocation,
+                                'text' => Yii::t('bot', 'MY LOCATION'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $latitude = $this->getTelegramUser()->userLocation->location_lat;
+                                    $longitude = $this->getTelegramUser()->userLocation->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->buying_location_lat = $latitude;
+                                        $model->buying_location_lon = $longitude;
 
-                                    return $model;
-                                }
+                                        return $model;
+                                    }
 
-                                return null;
-                            },
-                        ],
+                                    return null;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'buying_delivery_radius' => [
@@ -364,19 +319,17 @@ class CeController extends CrudController
                     },
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (CurrencyExchangeOrder $model) {
-                                $model->buying_delivery_radius = 0;
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (CurrencyExchangeOrder $model) {
+                                    $model->buying_delivery_radius = 0;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
-                /*'cross_rate_on' => [
-                    'isRequired' => false,
-                    'hidden' => true,
-                ],*/
                 'user_id' => [
                     'behaviors' => [
                         'SetAttributeValueBehavior' => [
@@ -395,41 +348,41 @@ class CeController extends CrudController
                 'selling_currency_edit' => [
                     'hidden' => true,
                     'buttons' => [
-                        [
+                        [[
                             'item' => 'selling_currency_label',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'selling_currency_min_amount',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'selling_currency_max_amount',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'selling_cash_on',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'selling_location',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'selling_delivery_radius',
-                        ],
+                        ]],
                     ],
                  ],
                  'buying_currency_edit' => [
                     'hidden' => true,
                     'buttons' => [
-                        [
+                        [[
                             'item' => 'buying_currency_label',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'buying_cash_on',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'buying_location',
-                        ],
-                        [
+                        ]],
+                        [[
                             'item' => 'buying_delivery_radius',
-                        ],
+                        ]],
                     ],
                 ],
                 'selling_currency_label' => [
