@@ -280,7 +280,6 @@ class MergeAccountsService
                     'user_id' => $userToMerge->id,
                     'amount' => 0,
                 ]);
-
                 // delete WalletTransactions between this users
                 WalletTransaction::deleteAll([
                     'from_user_id' => [

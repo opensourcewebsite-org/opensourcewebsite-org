@@ -627,4 +627,5 @@ return [
     'Send' => 'Отправить',
     'Transactions' => 'Транзакции',
     'Send any @username or Telegram ID to view information about the user or group' => 'Отправьте любой @username или Телеграм ID для просмотра информации о пользователе или группе',
+    'If you select «{0}» then this user will receive a notification' => 'Если вы выберете «{0}», то этот пользователь получит уведомление',
 ];

@@ -183,7 +183,7 @@ class GroupMembershipController extends Controller
     * @param int $page
     * @return array
     */
-    public function actionMembers($id = null, $page = 1): array
+    public function actionMembers($id = null, $page = 1)
     {
         $chat = Chat::findOne($id);
 
@@ -273,7 +273,7 @@ class GroupMembershipController extends Controller
     * @param int $id Chat->id
     * @return array
     */
-    public function actionInputMember($id = null): array
+    public function actionInputMember($id = null)
     {
         $chat = Chat::findOne($id);
 
@@ -325,7 +325,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionMember($id = null): array
+    public function actionMember($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -389,7 +389,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionInputMemberDate($id = null): array
+    public function actionInputMemberDate($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -431,7 +431,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionDeleteMemberDate($id = null): array
+    public function actionDeleteMemberDate($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -461,7 +461,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionSetMemberNote($id = null): array
+    public function actionSetMemberNote($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -524,7 +524,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionDeleteMemberNote($id = null): array
+    public function actionDeleteMemberNote($id = null)
     {
         $member = ChatMember::findOne($id);
 

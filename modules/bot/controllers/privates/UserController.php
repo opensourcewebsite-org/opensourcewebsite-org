@@ -374,7 +374,9 @@ class UserController extends Controller
             $contact->is_real = $v;
 
             if ($contact->validate('is_real')) {
-                $contact->save(false);
+                if ($contact->isAttributeChanged('is_real', false)) {
+                    $contact->save(false);
+                }
 
                 return $this->actionId([
                     'id' => $id,
@@ -438,7 +440,9 @@ class UserController extends Controller
             $contact->relation = $v;
 
             if ($contact->validate('relation')) {
-                $contact->save(false);
+                if ($contact->isAttributeChanged('relation', false)) {
+                    $contact->save(false);
+                }
 
                 return $this->actionId([
                      'id' => $id,
@@ -518,12 +522,6 @@ class UserController extends Controller
             ->limit($pagination->limit)
             ->all();
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-            return self::createRoute('public-groups', [
-                'page' => $page,
-            ]);
-        });
-
         $buttons = [];
 
         if ($chats) {
@@ -536,6 +534,13 @@ class UserController extends Controller
                     'text' => $chat->title,
                 ];
             }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($id) {
+                return self::createRoute('public-groups', [
+                    'page' => $page,
+                    'id' => $id,
+                ]);
+            });
 
             if ($paginationButtons) {
                 $buttons[] = $paginationButtons;

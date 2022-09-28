@@ -276,9 +276,9 @@ class Debt extends ActiveRecord implements ByDebtInterface
 
         if ($this->isStatusConfirm()
             && ($this->isNewRecord
-                || ($this->isAttributeChanged('status') && ($this->getOldAttribute('status') != (int)$this->status))
-                || ($this->isAttributeChanged('from_user_id') && ($this->getOldAttribute('from_user_id') != (int)$this->from_user_id))
-                || ($this->isAttributeChanged('to_user_id') && ($this->getOldAttribute('to_user_id') != (int)$this->to_user_id)))) {
+                || $this->isAttributeChanged('status', false)
+                || $this->isAttributeChanged('from_user_id', false)
+                || $this->isAttributeChanged('to_user_id', false))) {
             $transaction = Yii::$app->db->beginTransaction();
 
             if (!$this->isNewRecord) {

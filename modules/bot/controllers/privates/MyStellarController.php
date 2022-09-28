@@ -21,7 +21,7 @@ class MyStellarController extends Controller
     /**
      * @return array
      */
-    public function actionIndex(): array
+    public function actionIndex()
     {
         if (!($userStellar = $this->globalUser->userStellar)) {
             return $this->actionSetPublicKey();
@@ -100,7 +100,7 @@ class MyStellarController extends Controller
             ->build();
     }
 
-    public function actionSetPublicKey(): array
+    public function actionSetPublicKey()
     {
         $this->getState()->setName(self::createRoute('set-public-key'));
 
@@ -138,7 +138,7 @@ class MyStellarController extends Controller
             ->build();
     }
 
-    public function actionDelete(): array
+    public function actionDelete()
     {
         if ($userStellar = $this->globalUser->userStellar) {
             $userStellar->delete();
@@ -148,7 +148,7 @@ class MyStellarController extends Controller
         return $this->actionIndex();
     }
 
-    public function actionConfirm(): array
+    public function actionConfirm()
     {
         if (!($userStellar = $this->globalUser->userStellar) || $userStellar->isConfirmed()) {
             return $this->actionIndex();
@@ -187,7 +187,7 @@ class MyStellarController extends Controller
         return $this->actionIndex();
     }
 
-    public function actionGroups(): array
+    public function actionGroups()
     {
         if (!($userStellar = $this->globalUser->userStellar) || !$userStellar->isConfirmed()) {
             return $this->actionIndex();
@@ -288,7 +288,7 @@ class MyStellarController extends Controller
         return $this->actionIndex();
     }
 
-    public function actionBasicIncome(): array
+    public function actionBasicIncome()
     {
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -339,7 +339,7 @@ class MyStellarController extends Controller
         return $this->actionBasicIncome();
     }
 
-    public function actionDepositIncome(): array
+    public function actionDepositIncome()
     {
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -369,7 +369,7 @@ class MyStellarController extends Controller
             ->build();
     }
 
-    public function actionFortuneGame(): array
+    public function actionFortuneGame()
     {
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

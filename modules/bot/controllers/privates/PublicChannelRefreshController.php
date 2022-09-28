@@ -23,7 +23,7 @@ class PublicChannelRefreshController extends Controller
      * @return array
      * @throws \yii\db\Exception
      */
-    public function actionIndex($chatId = null, $page = 1): array
+    public function actionIndex($chatId = null, $page = 1)
     {
         $chat = Chat::findOne($chatId);
 

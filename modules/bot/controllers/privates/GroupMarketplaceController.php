@@ -297,7 +297,7 @@ class GroupMarketplaceController extends Controller
     * @param int $page
     * @return array
     */
-    public function actionMembersWithButtons($id = null, $page = 1): array
+    public function actionMembersWithButtons($id = null, $page = 1)
     {
         $chat = Chat::findOne($id);
 
@@ -378,7 +378,7 @@ class GroupMarketplaceController extends Controller
     * @param int $id Chat->id
     * @return array
     */
-    public function actionInputMember($id = null): array
+    public function actionInputMember($id = null)
     {
         $chat = Chat::findOne($id);
 
@@ -426,7 +426,7 @@ class GroupMarketplaceController extends Controller
     * @param int $page
     * @return array
     */
-    public function actionMember($id = null, $page = 1): array
+    public function actionMember($id = null, $page = 1)
     {
         $member = ChatMember::findOne($id);
 
@@ -520,7 +520,7 @@ class GroupMarketplaceController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionAddLink($id = null): array
+    public function actionAddLink($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -556,7 +556,7 @@ class GroupMarketplaceController extends Controller
     * @param int $id ChatMarketplaceLink->id
     * @return array
     */
-    public function actionLink($id = null): array
+    public function actionLink($id = null)
     {
         $link = ChatMarketplaceLink::findOne($id);
 

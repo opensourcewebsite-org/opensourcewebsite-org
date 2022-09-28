@@ -68,7 +68,7 @@ class MyLocationController extends Controller
             ->build();
     }
 
-    public function actionDelete(): array
+    public function actionDelete()
     {
         if ($userLocation = $this->globalUser->userLocation) {
             $userLocation->delete();

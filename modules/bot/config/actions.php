@@ -54,4 +54,9 @@ return [
     'my_review',
     'input_text',
     'referral_message',
+    'input_name',
+    'select_is_real',
+    'select_relation',
+    'refresh',
+    'members',
 ];

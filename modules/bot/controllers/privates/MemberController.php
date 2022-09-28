@@ -294,9 +294,8 @@ class MemberController extends Controller
             $chatMemberReview->save(false);
             // if the review has received an active status, then notify the counter user
             if ($chatMemberReview->isActive()) {
-                // when the creator of the review is a member of the group
                 $buttons = [];
-
+                // when the creator of the review is a member of the group
                 if ($chatMember = $chatMemberReview->chatMember) {
                     $buttons[] = [
                         [
