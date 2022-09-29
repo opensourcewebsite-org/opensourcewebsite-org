@@ -78,11 +78,18 @@ class CurrencyExchangeOrderController extends Controller
      */
     public function actionView(int $id)
     {
-        $order = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
-        return $this->render('view', [
-            'model' => $order,
-        ]);
+        return $this->render('view', ['model' => $model]);
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
+
+        $model->delete();
+
+        return $this->redirect('/currency-exchange-order/index');
     }
 
     /**
@@ -208,13 +215,6 @@ class CurrencyExchangeOrderController extends Controller
         return true;
     }
 
-    public function actionDelete(int $id): Response
-    {
-        $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
     public function actionViewOrderSellingLocation(int $id): string
     {
         return $this->renderAjax(
@@ -257,7 +257,6 @@ class CurrencyExchangeOrderController extends Controller
 
     public function actionViewMatch(int $order_id, int $match_order_id): string
     {
-
         /** @var CurrencyExchangeOrderMatch $matchModel */
         $matchModel = CurrencyExchangeOrderMatch::find()
             ->where(['order_id' => $order_id, 'match_order_id' => $match_order_id])

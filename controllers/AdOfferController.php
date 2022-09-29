@@ -135,9 +135,18 @@ class AdOfferController extends Controller
 
     public function actionView(int $id): string
     {
-        return $this->render('view', [
-            'model' => $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id)
-        ]);
+        $model = $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id);
+
+        return $this->render('view', ['model' => $model]);
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $model = $this->adOfferRepository->findAdOfferByIdAndCurrentUser($id);
+
+        $model->delete();
+
+        return $this->redirect('/ad-offer/index');
     }
 
     public function actionViewLocation(int $id): string

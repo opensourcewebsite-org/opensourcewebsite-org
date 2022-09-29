@@ -97,7 +97,18 @@ class AdSearchController extends Controller
 
     public function actionView(int $id): string
     {
-        return $this->render('view', ['model' => $this->adSearchRepository->findAdSearchByIdAndCurrentUser($id)]);
+        $model = $this->adSearchRepository->findAdSearchByIdAndCurrentUser($id);
+
+        return $this->render('view', ['model' => $model]);
+    }
+
+    public function actionDelete(int $id): Response
+    {
+        $model = $this->adSearchRepository->findAdSearchByIdAndCurrentUser($id);
+
+        $model->delete();
+
+        return $this->redirect('/ad-search/index');
     }
 
     /**

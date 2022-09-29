@@ -99,22 +99,23 @@ $form = ActiveForm::begin(['id' => 'form']);
                             <?= $form->field($model, 'location')
                                 ->widget(LocationWithMapInput::class)
                                 ->label(Html::icon('private') . ' ' . $model->getAttributeLabel('location'))
-                            ?>
+?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'gender_id')->dropDownList(
-                                ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
-                                ['prompt' => Yii::t('app', 'All')]
-                            ) ?>
+    ArrayHelper::map(Gender::find()->all(), 'id', 'name'),
+    ['prompt' => Yii::t('app', 'All')]
+) ?>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <?= $form->field($model, 'company_id')->widget(CompanySelectCreatable::class, [
                                 'companies' => ArrayHelper::map($companies, 'id', 'name'),
-                            ]) ?>
+                            ])
+                            ->label($model->getAttributeLabel('company_id') . $labelOptional); ?>
                         </div>
                     </div>
                 </div>
