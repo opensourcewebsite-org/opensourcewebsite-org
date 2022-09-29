@@ -5,9 +5,9 @@ use app\modules\bot\components\helpers\Emoji;
 
 ?>
 <?= Emoji::JO_RESUME ?> <b><?= Yii::t('bot', 'Resume') ?>: #<?= $model->id ?> <?= $model->name ?></b><br/>
-<?php if ($keywords != '') : ?>
+<?php if ($keywords = $model->getKeywordsAsArray()) : ?>
 <br/>
-# <i><?= $keywords ?></i><br/>
+<i>#<?= implode(' #', $keywords); ?></i><br/>
 <?php endif; ?>
 <?php if ($model->skills) : ?>
 <br/>

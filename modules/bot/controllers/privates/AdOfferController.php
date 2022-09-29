@@ -60,7 +60,6 @@ class AdOfferController extends CrudController
 
                 return [
                     'model' => $model,
-                    'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                 ];
             },
             'attributes' => [
@@ -368,7 +367,6 @@ class AdOfferController extends CrudController
                 $offer->getPhotos()->count() ? $offer->getPhotos()->one()->file_id : null,
                 $this->render('view', [
                     'model' => $offer,
-                    'keywords' => self::getKeywordsAsString($offer->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -457,7 +455,6 @@ class AdOfferController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $search,
-                    'keywords' => self::getKeywordsAsString($search->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -539,7 +536,6 @@ class AdOfferController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $search,
-                    'keywords' => self::getKeywordsAsString($search->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -592,17 +588,6 @@ class AdOfferController extends CrudController
         }
 
         return $this->actionView($model->id);
-    }
-
-    private static function getKeywordsAsString($adKeywords)
-    {
-        $keywords = [];
-
-        foreach ($adKeywords as $adKeyword) {
-            $keywords[] = $adKeyword->keyword;
-        }
-
-        return implode(', ', $keywords);
     }
 
     /**

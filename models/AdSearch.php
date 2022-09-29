@@ -204,7 +204,13 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInt
     public function getKeywords(): ActiveQuery
     {
         return $this->hasMany(AdKeyword::class, ['id' => 'ad_keyword_id'])
-            ->viaTable('{{%ad_search_keyword}}', ['ad_search_id' => 'id']);
+            ->viaTable(AdSearchKeyword::tableName(), ['ad_search_id' => 'id'])
+            ->orderBy(['keyword' => SORT_ASC]);
+    }
+
+    public function getKeywordsAsArray(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'keyword');
     }
 
     public function getUser(): ActiveQuery

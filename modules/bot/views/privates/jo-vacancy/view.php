@@ -23,9 +23,9 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endif; ?>
 ————
 <?php endif; ?>
-<?php if ($keywords != '') : ?>
+<?php if ($keywords = $model->getKeywordsAsArray()) : ?>
 <br/>
-# <i><?= $keywords ?></i><br/>
+<i>#<?= implode(' #', $keywords); ?></i><br/>
 <?php endif; ?>
 <?php if ($model->responsibilities) : ?>
 <br/>

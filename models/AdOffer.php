@@ -208,7 +208,13 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
     public function getKeywords(): ActiveQuery
     {
         return $this->hasMany(AdKeyword::class, ['id' => 'ad_keyword_id'])
-            ->viaTable('{{%ad_offer_keyword}}', ['ad_offer_id' => 'id']);
+            ->viaTable(AdOfferKeyword::tableName(), ['ad_offer_id' => 'id'])
+            ->orderBy(['keyword' => SORT_ASC]);
+    }
+
+    public function getKeywordsAsArray(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'keyword');
     }
 
     public function getPhotos(): ActiveQuery

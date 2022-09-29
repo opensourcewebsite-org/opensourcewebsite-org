@@ -57,7 +57,6 @@ class JoResumeController extends CrudController
 
                 return [
                     'model' => $model,
-                    'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
                 ];
             },
             'attributes' => [
@@ -281,21 +280,6 @@ class JoResumeController extends CrudController
     }
 
     /**
-     * @param ActiveRecord[] $keywords
-     * @return string
-     */
-    private static function getKeywordsAsString($keywords)
-    {
-        $resultKeywords = [];
-
-        foreach ($keywords as $keyword) {
-            $resultKeywords[] = $keyword->keyword;
-        }
-
-        return implode(', ', $resultKeywords);
-    }
-
-    /**
      * @param int $id Resume->id
      * @return array
      */
@@ -358,7 +342,6 @@ class JoResumeController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'model' => $resume,
-                    'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -448,7 +431,6 @@ class JoResumeController extends CrudController
                 $this->render('match', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
-                    'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -526,7 +508,6 @@ class JoResumeController extends CrudController
                 $this->render('match', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
-                    'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
                 ]),
                 $buttons,
                 [

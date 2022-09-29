@@ -230,8 +230,13 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
     public function getKeywords(): ActiveQuery
     {
         return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_resume_keyword}}', ['resume_id' => 'id'])
+            ->viaTable(JobResumeKeyword::tableName(), ['resume_id' => 'id'])
             ->orderBy(['keyword' => SORT_ASC]);
+    }
+
+    public function getKeywordsAsArray(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'keyword');
     }
 
     public function getCurrency(): ActiveQuery

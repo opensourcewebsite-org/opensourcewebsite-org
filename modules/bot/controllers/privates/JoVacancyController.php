@@ -62,10 +62,6 @@ class JoVacancyController extends CrudController
                 return [
                     'model' => $model,
                     'company' => $model->company,
-                    'keywords' => self::getKeywordsAsString($model->getKeywords()->all()),
-                    'languages' => array_map(function ($vacancyLanguage) {
-                        return $vacancyLanguage->getLabel();
-                    }, $model->vacancyLanguagesRelation),
                 ];
             },
             'attributes' => [
@@ -418,7 +414,6 @@ class JoVacancyController extends CrudController
                 $this->render('view', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
-                    'keywords' => self::getKeywordsAsString($vacancy->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -426,21 +421,6 @@ class JoVacancyController extends CrudController
                 ]
             )
             ->build();
-    }
-
-    /**
-     * @param ActiveRecord[] $keywords
-     * @return string
-     */
-    private static function getKeywordsAsString($keywords)
-    {
-        $resultKeywords = [];
-
-        foreach ($keywords as $keyword) {
-            $resultKeywords[] = $keyword->keyword;
-        }
-
-        return implode(', ', $resultKeywords);
     }
 
     /**
@@ -522,7 +502,6 @@ class JoVacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $resume,
-                    'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
                 ]),
                 $buttons,
                 [
@@ -599,7 +578,6 @@ class JoVacancyController extends CrudController
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $resume,
-                    'keywords' => self::getKeywordsAsString($resume->getKeywords()->all()),
                 ]),
                 $buttons,
                 [

@@ -246,6 +246,18 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'id');
     }
 
+    public function getKeywords(): ActiveQuery
+    {
+        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
+            ->viaTable(JobVacancyKeyword::tableName(), ['vacancy_id' => 'id'])
+            ->orderBy(['keyword' => SORT_ASC]);
+    }
+
+    public function getKeywordsAsArray(): array
+    {
+        return ArrayHelper::getColumn($this->getKeywords()->asArray()->all(), 'keyword');
+    }
+
     public function getMatches(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['id' => 'resume_id'])
@@ -329,13 +341,6 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
     public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
-
-    public function getKeywords(): ActiveQuery
-    {
-        return $this->hasMany(JobKeyword::class, ['id' => 'job_keyword_id'])
-            ->viaTable('{{%job_vacancy_keyword}}', ['vacancy_id' => 'id'])
-            ->orderBy(['keyword' => SORT_ASC]);
     }
 
     public function clearMatches()
