@@ -19,7 +19,7 @@ class AdPhoto extends ActiveRecord
 {
     public static function tableName(): string
     {
-        return 'ad_photo';
+        return '{{%ad_offer_photo}}';
     }
 
     public function rules(): array
