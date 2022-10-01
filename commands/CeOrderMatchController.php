@@ -14,11 +14,11 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Class CurrencyExchangeOrderMatchController
+ * Class CeOrderMatchController
  *
  * @package app\commands
  */
-class CurrencyExchangeOrderMatchController extends Controller implements CronChainedInterface
+class CeOrderMatchController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 

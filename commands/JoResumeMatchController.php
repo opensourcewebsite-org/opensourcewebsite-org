@@ -13,11 +13,11 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Class ResumeMatchController
+ * Class JoResumeMatchController
  *
  * @package app\commands
  */
-class ResumeMatchController extends Controller implements CronChainedInterface
+class JoResumeMatchController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 

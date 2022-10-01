@@ -13,11 +13,11 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
- * Class VacancyMatchController
+ * Class JoVacancyMatchController
  *
  * @package app\commands
  */
-class VacancyMatchController extends Controller implements CronChainedInterface
+class JoVacancyMatchController extends Controller implements CronChainedInterface
 {
     use ControllerLogTrait;
 
