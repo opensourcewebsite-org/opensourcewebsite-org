@@ -107,4 +107,20 @@ class ExternalLink
     {
         return 'https://discord.gg/wRehagFg2j';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getTelegramGroupLink()
+    {
+        return 'https://t.me/+2ZrW2NKBBKU2YmY9';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getTelegramChannelLink()
+    {
+        return 'https://t.me/opensourcewebsite';
+    }
 }

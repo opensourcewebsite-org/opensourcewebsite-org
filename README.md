@@ -1,6 +1,8 @@
 [![Website](https://img.shields.io/badge/Website-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
 [![Telegram Bot](https://img.shields.io/badge/Telegram_bot-opensourcewebsite__bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
 [![Discord](https://img.shields.io/badge/Discord-opensourcewebsite-blue.svg?style=flat-square&logo=discord)](https://discord.gg/wRehagFg2j)
+[![Telegram](https://img.shields.io/badge/Telegram_group-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/+2ZrW2NKBBKU2YmY9)
+[![Telegram](https://img.shields.io/badge/Telegram_channel-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite)
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
@@ -51,7 +53,7 @@ Please read through our [API Documentation](https://github.com/opensourcewebsite
 
 ## Feedback
 
-Join our [Discord](https://discord.gg/wRehagFg2j).
+Join our [Discord](https://discord.gg/wRehagFg2j), [Telegram group](https://t.me/+2ZrW2NKBBKU2YmY9), [Telegram channel](https://t.me/opensourcewebsite).
 
 To request a new feature, submit a bug report, give us feedback, start a design discussion or have an idea to make this code better feel free to [open an issue](https://github.com/opensourcewebsite-org/opensourcewebsite-org/issues), or [create a pull request](https://github.com/opensourcewebsite-org/opensourcewebsite-org/pulls).
 
