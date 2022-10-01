@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use app\models\Currency;
-use app\widgets\buttons\AddButton;
 use app\components\helpers\Html;
-use yii\grid\GridView;
-use yii\grid\ActionColumn;
+use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
+use app\widgets\buttons\AddButton;
+use yii\grid\ActionColumn;
+use yii\grid\GridView;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */

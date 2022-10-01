@@ -4,7 +4,6 @@ namespace app\models;
 
 use app\components\helpers\Html;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\interfaces\MatchesInterface;
 use app\models\matchers\ModelLinker;
 use app\models\queries\CurrencyExchangeOrderQuery;
@@ -50,9 +49,11 @@ use yii\web\JsExpression;
  *
  * @property User $user
  * @property CurrencyExchangeOrderBuyingPaymentMethod[] $currencyExchangeOrderBuyingPaymentMethods
- * @property CurrencyExchangeOrderMatch[] $currencyExchangeOrderMatches
- * @property CurrencyExchangeOrderMatch[] $currencyExchangeOrderMatches0
  * @property CurrencyExchangeOrderSellingPaymentMethod[] $currencyExchangeOrderSellingPaymentMethods
+ * @property CurrencyExchangeOrderMatch[] $matches
+ * @property CurrencyExchangeOrder[] $matchModels
+ * @property CurrencyExchangeOrderMatch[] $counterMatches
+ * @property CurrencyExchangeOrder[] $counterMatchModels
  * @property string $selling_location
  * @property string $buying_location
  */
@@ -76,14 +77,13 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     {
         $this->on(self::EVENT_SELLING_PAYMENT_METHODS_UPDATED, [$this, 'clearMatches']);
         $this->on(self::EVENT_BUYING_PAYMENT_METHODS_UPDATED, [$this, 'clearMatches']);
-        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
 
         parent::init();
     }
 
-    public function markViewedByUser(ViewedByUserEvent $event)
+    public function markViewedByUserId(int $userId)
     {
-        $response = CurrencyExchangeOrderResponse::findOrNewResponse($event->user->id, $this->id);
+        $response = CurrencyExchangeOrderResponse::findOrNewResponse($userId, $this->id);
         $response->viewed_at = time();
         $response->save();
     }
@@ -93,7 +93,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public static function tableName()
     {
-        return 'currency_exchange_order';
+        return '{{%currency_exchange_order}}';
     }
 
     /**
@@ -392,48 +392,38 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
      */
     public function getMatches(): ActiveQuery
     {
-        return $this->hasMany(self::class, ['id' => 'match_order_id'])
-            ->viaTable('{{%currency_exchange_order_match}}', ['order_id' => 'id']);
+        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id']);
     }
 
-    public function getMatchesCount()
+    public function getMatchModels(): ActiveQuery
     {
-        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
-            ->count();
+        return $this->hasMany(self::class, ['id' => 'match_order_id'])
+            ->viaTable('{{%currency_exchange_order_match}}', ['order_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    // TODO new matches
     public function getNewMatches(): ActiveQuery
     {
-        return $this->hasMany(self::class, ['id' => 'match_order_id'])
-            ->viaTable('{{%currency_exchange_order_match}}', ['order_id' => 'id']);
-    }
-
-    public function getNewMatchesCount()
-    {
-        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
+        return $this->getMatches()
             ->andWhere([
                 'not in',
-                'match_order_id',
+                CurrencyExchangeOrderMatch::tableName() . '.match_order_id',
                 CurrencyExchangeOrderResponse::find()
                     ->select('order_id')
                     ->andWhere([
-                        'user_id' => Yii::$app->user->id,
+                        'user_id' => $this->user_id,
                     ])
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     public function isNewMatch()
     {
-        return !(bool)CurrencyExchangeOrderResponse::find()
+        return !CurrencyExchangeOrderResponse::find()
             ->andWhere([
                 'user_id' => Yii::$app->user->id,
                 'order_id' => $this->id,
@@ -441,27 +431,10 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ->andWhere([
                 'is not', 'viewed_at', null,
             ])
-            ->one();
+            ->exists();
     }
 
     /**
-     * @return ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMatchesOrderByRank(): ActiveQuery
-    {
-        return $this
-            ->getMatches()
-            ->joinWith('user')
-            ->orderBy([
-                'buying_rate' => SORT_DESC,
-                User::tableName() . '.rating' => SORT_DESC,
-                User::tableName() . '.created_at' => SORT_ASC,
-            ]);
-    }
-
-    /**
-     * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
     public function getCashMatchesOrderByRank(): ActiveQuery
@@ -489,11 +462,15 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
             ]);
     }
 
+    public function getCounterMatches(): ActiveQuery
+    {
+        return $this->hasMany(CurrencyExchangeOrderMatch::class, ['match_order_id' => 'id']);
+    }
+
     /**
-     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getCounterMatches(): ActiveQuery
+    public function getCounterMatchModels(): ActiveQuery
     {
         return $this->hasMany(self::class, ['id' => 'order_id'])
             ->viaTable('{{%currency_exchange_order_match}}', ['match_order_id' => 'id']);

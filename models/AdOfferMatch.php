@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\AdOfferMatchQuery;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -18,7 +19,7 @@ class AdOfferMatch extends ActiveRecord
 {
     public static function tableName(): string
     {
-        return 'ad_offer_match';
+        return '{{%ad_offer_match}}';
     }
 
     public function rules(): array
@@ -52,6 +53,11 @@ class AdOfferMatch extends ActiveRecord
         ];
     }
 
+    public static function find(): AdOfferMatchQuery
+    {
+        return new AdOfferMatchQuery(get_called_class());
+    }
+
     public function getAdOffer(): ActiveQuery
     {
         return $this->hasOne(AdOffer::class, ['id' => 'ad_offer_id']);
@@ -60,5 +66,18 @@ class AdOfferMatch extends ActiveRecord
     public function getAdSearch(): ActiveQuery
     {
         return $this->hasOne(AdSearch::class, ['id' => 'ad_search_id']);
+    }
+
+    public function isNew()
+    {
+        return !AdSearchResponse::find()
+            ->andWhere([
+                'user_id' => $this->adOffer->user_id,
+                'ad_search_id' => $this->ad_search_id,
+            ])
+            ->andWhere([
+                'is not', 'viewed_at', null,
+            ])
+            ->exists();
     }
 }

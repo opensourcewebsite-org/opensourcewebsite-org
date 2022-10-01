@@ -4,7 +4,7 @@ use app\models\Resume;
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<?= Emoji::JO_RESUME ?> <b><?= Yii::t('bot', 'Resume') ?>: #<?= $model->id ?> <?= $model->name ?></b><br/>
+<?= $isNewMatch ? Emoji::NEW1 . ' ' : '' ?><?= Emoji::JO_RESUME ?> <b><?= Yii::t('bot', 'Resume') ?>: #<?= $model->id ?> <?= $model->name ?></b><br/>
 <?php if ($keywords = $model->getKeywordsAsArray()) : ?>
 <br/>
 <i>#<?= implode(' #', $keywords); ?></i><br/>
@@ -39,7 +39,13 @@ use app\modules\bot\components\helpers\Emoji;
 <?php else : ?>
 <b><?= Yii::t('jo', 'Offline work') ?></b>: <?= Yii::t('bot', 'No') ?><br/>
 <?php endif; ?>
-<?php if ($user = $model->user->botUser) : ?>
+<?php if ($globalUser = $model->user) : ?>
 ————<br/>
-<?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?>
+<?php if ($user = $globalUser->botUser) : ?>
+<?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?><br/>
+<br/>
+<?php endif; ?>
+<b>OSW ID</b>: #<?= $globalUser->getIdFullLink() ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
+<b><?= Yii::t('user', 'Rank') ?></b>: <?= $globalUser->getRank() ?><br/>
+<b><?= Yii::t('user', 'Real confirmations') ?></b>: <?= $globalUser->getRealConfirmations() ?><br/>
 <?php endif; ?>

@@ -4,6 +4,7 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
+use app\models\JobVacancyMatch;
 use app\models\matchers\VacancyMatcher;
 use app\models\Vacancy;
 use Yii;
@@ -73,11 +74,11 @@ class VacancyMatchController extends Controller implements CronChainedInterface
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%job_vacancy_match}}')
+            ->truncateTable(JobVacancyMatch::tableName())
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update('{{%vacancy}}', [
+            ->update(Vacancy::tableName(), [
                 'processed_at' => null,
             ])
             ->execute();

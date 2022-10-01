@@ -282,7 +282,7 @@ class DebtController extends Controller
 
     public function actionAjaxUsers($q = null)
     {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
         $out = ['results'=>[]];
 

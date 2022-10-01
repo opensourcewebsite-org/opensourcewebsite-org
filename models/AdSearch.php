@@ -4,7 +4,6 @@ namespace app\models;
 
 use app\components\helpers\ArrayHelper;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\interfaces\MatchesInterface;
 use app\models\matchers\ModelLinker;
 use app\models\queries\AdSearchQuery;
@@ -42,8 +41,10 @@ use yii\web\JsExpression;
  * @property Currency $currency
  * @property string $sectionName
  * @property AdKeyword[] $keywords
- * @property AdOffer[] $matches
- * @property AdOffer[] $counterMatches
+ * @property AdSearchMatch[] $matches
+ * @property AdOffer[] $matchModels
+ * @property AdOfferMatch[] $counterMatches
+ * @property AdOffer[] $counterMatchModels
  */
 class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInterface
 {
@@ -59,7 +60,6 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInt
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
-        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
 
         parent::init();
     }
@@ -69,9 +69,9 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInt
         return '{{%ad_search}}';
     }
 
-    public function markViewedByUser(ViewedByUserEvent $event)
+    public function markViewedByUserId(int $userId)
     {
-        $response = AdSearchResponse::findOrNewResponse($event->user->id, $this->id);
+        $response = AdSearchResponse::findOrNewResponse($userId, $this->id);
         $response->viewed_at = time();
         $response->save();
     }
@@ -230,48 +230,38 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInt
 
     public function getMatches(): ActiveQuery
     {
-        return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
-            ->viaTable('{{%ad_search_match}}', ['ad_search_id' => 'id']);
+        return $this->hasMany(AdSearchMatch::class, ['ad_search_id' => 'id']);
     }
 
-    public function getMatchesCount()
+    public function getMatchModels(): ActiveQuery
     {
-        return $this->hasMany(AdSearchMatch::class, ['ad_search_id' => 'id'])
-            ->count();
+        return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
+            ->viaTable('{{%ad_search_match}}', ['ad_search_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    // TODO new matches
     public function getNewMatches(): ActiveQuery
     {
-        return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
-            ->viaTable('{{%ad_search_match}}', ['ad_search_id' => 'id']);
-    }
-
-    public function getNewMatchesCount()
-    {
-        return $this->hasMany(AdSearchMatch::class, ['ad_search_id' => 'id'])
+        return $this->getMatches()
             ->andWhere([
                 'not in',
-                'ad_offer_id',
+                AdSearchMatch::tableName() . '.ad_offer_id',
                 AdOfferResponse::find()
                     ->select('ad_offer_id')
                     ->andWhere([
-                        'user_id' => Yii::$app->user->id,
+                        'user_id' => $this->user_id,
                     ])
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     public function isNewMatch()
     {
-        return !(bool)AdSearchResponse::find()
+        return !AdSearchResponse::find()
             ->andWhere([
                 'user_id' => Yii::$app->user->id,
                 'ad_search_id' => $this->id,
@@ -279,25 +269,15 @@ class AdSearch extends ActiveRecord implements ViewedByUserInterface, MatchesInt
             ->andWhere([
                 'is not', 'viewed_at', null,
             ])
-            ->one();
-    }
-
-    /**
-     * @return ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMatchesOrderByRank(): ActiveQuery
-    {
-        return $this
-            ->getMatches()
-            ->joinWith('user')
-            ->orderBy([
-                'user.rating' => SORT_DESC,
-                'user.created_at' => SORT_ASC,
-            ]);
+            ->exists();
     }
 
     public function getCounterMatches(): ActiveQuery
+    {
+        return $this->hasMany(AdOfferMatch::class, ['ad_search_id' => 'id']);
+    }
+
+    public function getCounterMatchModels(): ActiveQuery
     {
         return $this->hasMany(AdOffer::class, ['id' => 'ad_offer_id'])
             ->viaTable('{{%ad_offer_match}}', ['ad_search_id' => 'id']);

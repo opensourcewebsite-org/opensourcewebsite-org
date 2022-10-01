@@ -26,36 +26,33 @@ class ModelLinker
 
     public function unlinkMatches()
     {
-        $this->model->unlinkAll('matches', true);
-        $this->model->unlinkAll('counterMatches', true);
+        $this->model->unlinkAll('matchModels', true);
+        $this->model->unlinkAll('counterMatchModels', true);
     }
 
     /**
-     * @template T
-     * @param array<T> $matches
+     * @param array $matches
      */
     public function linkMatches(array $matches)
     {
         foreach ($matches as $model) {
-            $this->model->link('matches', $model);
+            $this->model->link('matchModels', $model);
         }
     }
 
     /**
-     * @template T
-     * @param array<T> $matches
+     * @param array $matches
      */
     public function linkCounterMatches(array $matches)
     {
         foreach ($matches as $model) {
-            $this->model->link('counterMatches', $model);
+            $this->model->link('counterMatchModels', $model);
         }
     }
 
     /**
-     * @template T
      * @param string $linkName
-     * @param array<T> $models
+     * @param array $models
      */
     public function linkAll(string $linkName, array $models)
     {

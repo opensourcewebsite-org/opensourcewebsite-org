@@ -5,6 +5,7 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\AdOffer;
+use app\models\AdOfferMatch;
 use app\models\matchers\AdOfferMatcher;
 use Yii;
 use yii\console\Controller;
@@ -74,11 +75,11 @@ class AdOfferMatchController extends Controller implements CronChainedInterface
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%ad_offer_match}}')
+            ->truncateTable(AdOfferMatch::tableName())
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update('{{%ad_offer}}', [
+            ->update(AdOffer::tableName(), [
                 'processed_at' => null,
             ])
             ->execute();

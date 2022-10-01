@@ -8,7 +8,6 @@ use app\components\Controller;
 use app\models\AdSearch;
 use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\scenarios\AdSearch\SetActiveScenario;
 use app\models\scenarios\AdSearch\UpdateKeywordsByIdsScenario;
 use app\models\search\AdSearchSearch;
@@ -126,6 +125,7 @@ class AdSearchController extends Controller
 
         if ($scenario->run()) {
             $model->save();
+
             return true;
         }
 
@@ -148,13 +148,14 @@ class AdSearchController extends Controller
         return $this->renderAjax('modals/view-location', ['model' => AdSearch::findOne($id)]);
     }
 
-    public function actionShowMatches(int $adOfferId): string
+    public function actionMatches(int $adOfferId): string
     {
         $model = $this->adOfferRepository->findAdOfferByIdAndCurrentUser($adOfferId);
 
-        if ($model->getMatchesOrderByRank()->exists()) {
+        if ($model->getMatchModels()->exists()) {
             $dataProvider = new ActiveDataProvider([
-                'query' => $model->getMatchesOrderByRank(),
+                'query' => $model->getMatchModels()
+                    ->orderByRank(),
             ]);
 
             return $this->render('matches', [
@@ -168,16 +169,13 @@ class AdSearchController extends Controller
 
     public function actionViewMatch(int $adSearchId, int $adOfferId): string
     {
-        $matchedOffer = $this->adSearchRepository->findMatchedAdSearchByIdAndAdOrder(
+        $matchedSearch = $this->adSearchRepository->findMatchedAdSearchByIdAndAdOrder(
             $adSearchId,
             $this->adOfferRepository->findAdOfferByIdAndCurrentUser($adOfferId)
         );
 
-        $matchedOffer->trigger(
-            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
-            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
-        );
+        $matchedSearch->markViewedByUserId(Yii::$app->user->id);
 
-        return $this->render('view-match', ['model' => $matchedOffer, 'adOfferId' => $adOfferId]);
+        return $this->render('view-match', ['model' => $matchedSearch, 'adOfferId' => $adOfferId]);
     }
 }

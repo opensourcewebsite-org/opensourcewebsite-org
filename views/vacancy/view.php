@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
-use app\models\Vacancy;
 use app\components\helpers\Html;
+use app\models\Language;
+use app\models\LanguageLevel;
+use app\models\Vacancy;
+use app\widgets\buttons\EditButton;
+use app\widgets\ModalAjax;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
-use app\widgets\buttons\EditButton;
-use app\models\Language;
-use app\models\LanguageLevel;
-use app\widgets\ModalAjax;
 
 /* @var $this View */
 /* @var $model Vacancy */
@@ -117,13 +117,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Offers'),
-                                    'visible' => $model->getMatchesCount(),
+                                    'visible' => $model->getMatches()->exists(),
                                     'format' => 'raw',
                                     'value' => function () use ($model) {
-                                        return $model->getMatchesCount() ?
+                                        return ($matchesCount = $model->getMatches()->count()) ?
                                             Html::a(
-                                                $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
-                                                Url::to(['/resume/show-matches', 'vacancyId' => $model->id]),
+                                                $model->getNewMatches()->exists() ? Html::badge('info', 'new') : $matchesCount,
+                                                Url::to(['/resume/matches', 'vacancyId' => $model->id]),
                                             ) : '';
                                     },
                                 ],

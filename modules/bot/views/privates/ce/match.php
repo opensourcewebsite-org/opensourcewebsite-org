@@ -4,7 +4,7 @@ use app\modules\bot\components\helpers\Emoji;
 use app\components\helpers\Html;
 
 ?>
-<?= Emoji::CE_ORDER ?> <b><?= Yii::t('bot', 'Order') ?>: #<?= $model->id ?> <?= $model->getTitle() ?></b><br/>
+<?= $isNewMatch ? Emoji::NEW1 . ' ' : '' ?><?= Emoji::CE_ORDER ?> <b><?= Yii::t('bot', 'Order') ?>: #<?= $model->id ?> <?= $model->getTitle() ?></b><br/>
 <br/>
 <b><?= Yii::t('bot', 'Sell') ?></b>: <?= $model->sellingCurrency->code ?><br/>
 <br/>
@@ -31,7 +31,13 @@ use app\components\helpers\Html;
 <?php foreach ($model->buyingPaymentMethods as $method) : ?>
   • <?= $method->url ? Html::a($method->name, $method->url) : $method->name; ?><br/>
 <?php endforeach; ?>
-<?php if ($user = $model->user->botUser) : ?>
+<?php if ($globalUser = $model->user) : ?>
 ————<br/>
-<?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?>
+<?php if ($user = $globalUser->botUser) : ?>
+<?= Emoji::RIGHT ?> <?= $user->getFullLink(); ?><br/>
+<br/>
+<?php endif; ?>
+<b>OSW ID</b>: #<?= $globalUser->getIdFullLink() ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
+<b><?= Yii::t('user', 'Rank') ?></b>: <?= $globalUser->getRank() ?><br/>
+<b><?= Yii::t('user', 'Real confirmations') ?></b>: <?= $globalUser->getRealConfirmations() ?><br/>
 <?php endif; ?>

@@ -14,7 +14,7 @@ use yii\console\Exception;
 /**
  * CronController is a cron manager.
  * It runs other commands, that chained in single thread (should be run one by one).
- * Instance https://github.com/opensourcewebsite-org/osw-devops/blob/master/pillar/prod/supervisor.sls#L22
+ * Instance https://github.com/opensourcewebsite-org/osw-devops/blob/master/pillar/prod/supervisor.sls#L29
  *
  * @property array $map
  * @property bool $log use param --log to show logs

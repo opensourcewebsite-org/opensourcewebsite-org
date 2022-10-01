@@ -6,7 +6,6 @@ use app\components\Controller;
 use app\models\CurrencyExchangeOrder;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
 use app\models\scenarios\CurrencyExchangeOrder\UpdateBuyingPaymentMethodsByIdsScenario;
 use app\models\scenarios\CurrencyExchangeOrder\UpdateSellingPaymentMethodsByIdsScenario;
@@ -198,6 +197,7 @@ class CurrencyExchangeOrderController extends Controller
 
         if ($scenario->run()) {
             $model->save();
+
             return true;
         }
 
@@ -237,13 +237,14 @@ class CurrencyExchangeOrderController extends Controller
         );
     }
 
-    public function actionShowMatches(int $id): string
+    public function actionMatches(int $id): string
     {
         $model = $this->currencyExchangeOrderRepository->findCurrencyExchangeOrderByIdAndCurrentUser($id);
 
-        if ($model->getMatchesOrderByRank()->exists()) {
+        if ($model->getMatchModels()->exists()) {
             $dataProvider = new ActiveDataProvider([
-                'query' => $model->getMatchesOrderByRank(),
+                'query' => $model->getMatchModels()
+                    ->orderByRank(),
             ]);
 
             return $this->render('matches', [
@@ -262,10 +263,7 @@ class CurrencyExchangeOrderController extends Controller
             ->where(['order_id' => $order_id, 'match_order_id' => $match_order_id])
             ->one();
 
-        $matchModel->matchOrder->trigger(
-            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
-            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
-        );
+        $matchModel->matchOrder->markViewedByUserId(Yii::$app->user->id);
 
         if ($matchModel) {
             return $this->render('view-match', [

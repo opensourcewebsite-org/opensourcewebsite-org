@@ -50,4 +50,8 @@ return [
     'my_website_account',
     'my_rating',
     'delete_message',
+    'jo_resume',
+    'jo_vacancy',
+    'ad_offer',
+    'ad_search',
 ];

@@ -5,12 +5,13 @@ namespace app\modules\bot\controllers\privates;
 use app\behaviors\SetAttributeValueBehavior;
 use app\behaviors\SetDefaultCurrencyBehavior;
 use app\models\Currency;
+use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\JobKeyword;
 use app\models\JobResumeKeyword;
 use app\models\JobResumeMatch;
 use app\models\Resume;
 use app\models\scenarios\Resume\SetActiveScenario;
-use app\models\User;
+use app\models\User as GlobalUser;
 use app\modules\bot\components\crud\CrudController;
 use app\modules\bot\components\crud\rules\ExplodeStringFieldComponent;
 use app\modules\bot\components\crud\rules\LocationToArrayFieldComponent;
@@ -18,7 +19,7 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\ListButtons;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\models\User as TelegramUser;
+use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
@@ -250,17 +251,21 @@ class JoResumeController extends CrudController
             'text' => Emoji::MENU,
         ];
 
-        $matchesCount = JobResumeMatch::find()
-            ->joinWith('resume')
-            ->andWhere([
-                Resume::tableName() . '.user_id' => $globalUser->id,
-            ])
-            ->count();
+        $matchesCount = $globalUser->getResumeMatches()->count();
 
         if ($matchesCount) {
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+            ];
+        }
+
+        $newMatchesCount = $globalUser->getResumeNewMatches()->count();
+
+        if ($newMatchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('all-new-matches'),
+                'text' => Emoji::OFFERS . ' ' . Emoji::NEW1,
             ];
         }
 
@@ -285,12 +290,11 @@ class JoResumeController extends CrudController
      */
     public function actionView($id = null)
     {
-        $globalUser = $this->getUser();
-
-        $resume = $globalUser->getResumes()
+        $resume = Resume::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($resume)) {
@@ -310,10 +314,20 @@ class JoResumeController extends CrudController
             ],
         ];
 
+        $rowButtons[] = [
+            'callback_data' => self::createRoute(),
+            'text' => Emoji::BACK,
+        ];
+
+        $rowButtons[] = [
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
+        ];
+
         $matchesCount = $resume->getMatches()->count();
 
         if ($matchesCount) {
-            $buttons[][] = [
+            $rowButtons[] = [
                 'callback_data' => self::createRoute('matches', [
                     'id' => $resume->id,
                 ]),
@@ -321,22 +335,25 @@ class JoResumeController extends CrudController
             ];
         }
 
-        $buttons[] = [
-            [
-                'callback_data' => self::createRoute('index'),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-            [
-                'callback_data' => self::createRoute('update', [
+        $newMatchesCount = $resume->getNewMatches()->count();
+
+        if ($newMatchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('new-matches', [
                     'id' => $resume->id,
                 ]),
-                'text' => Emoji::EDIT,
-            ],
+                'text' => Emoji::OFFERS . ' ' . Emoji::NEW1,
+            ];
+        }
+
+        $rowButtons[] = [
+            'callback_data' => self::createRoute('update', [
+                'id' => $resume->id,
+            ]),
+            'text' => Emoji::EDIT,
         ];
+
+        $buttons[] = $rowButtons;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -358,12 +375,11 @@ class JoResumeController extends CrudController
      */
     public function actionMatches($id = null, $page = 1)
     {
-        $globalUser = $this->getUser();
-
-        $resume = $globalUser->getResumes()
+        $resume = Resume::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($resume)) {
@@ -372,15 +388,11 @@ class JoResumeController extends CrudController
                 ->build();
         }
 
-        $query = $resume->getMatchesOrderByRank();
-        $matchesCount = $query->count();
-
-        if (!$matchesCount) {
-            return $this->actionView($resume->id);
-        }
+        $query = $resume->getMatches()
+            ->orderByRank();
 
         $pagination = new Pagination([
-            'totalCount' => $matchesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -389,13 +401,17 @@ class JoResumeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $vacancy = $query->offset($pagination->offset)
+        $resumeMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
-        if (!$vacancy) {
+        if (!$resumeMatch) {
             return $this->actionView($resume->id);
         }
+
+        $this->getState()->setName(null);
+
+        $vacancy = $resumeMatch->vacancy;
 
         $buttons[] = [
             [
@@ -426,11 +442,105 @@ class JoResumeController extends CrudController
             ],
         ];
 
+        $isNewMatch = false;
+
+        if ($resumeMatch->isNew()) {
+            $isNewMatch = true;
+
+            $vacancy->markViewedByUserId($this->globalUser->id);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
+                    'isNewMatch' => $isNewMatch,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id Resume->id
+     * @return array
+     */
+    public function actionNewMatches($id = null)
+    {
+        $resume = Resume::find()
+            ->where([
+                'id' => $id,
+            ])
+            ->userOwner()
+            ->one();
+
+        if (!isset($resume)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $resumeMatch = $resume->getNewMatches()
+            ->orderByRank()
+            ->one();
+
+        if (!$resumeMatch) {
+            return $this->actionMatches($resume->id);
+        }
+
+        $this->getState()->setName(null);
+
+        $vacancy = $resumeMatch->vacancy;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $resume->id,
+                ]),
+                'text' => '#' . $resume->id . ' ' . $resume->name,
+            ]
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('new-matches', [
+                    'id' => $resume->id,
+                ]),
+                'text' => '>',
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $resume->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $isNewMatch = false;
+
+        if ($resumeMatch->isNew()) {
+            $isNewMatch = true;
+
+            $vacancy->markViewedByUserId($this->globalUser->id);
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'model' => $vacancy,
+                    'company' => $vacancy->company,
+                    'isNewMatch' => $isNewMatch,
                 ]),
                 $buttons,
                 [
@@ -446,22 +556,11 @@ class JoResumeController extends CrudController
      */
     public function actionAllMatches($page = 1)
     {
-        $user = $this->getUser();
-
-        $matchesQuery = JobResumeMatch::find()
-            ->joinWith('resume')
-            ->andWhere([
-                Resume::tableName() . '.user_id' => $user->id,
-            ]);
-
-        $matchesCount = $matchesQuery->count();
-
-        if (!$matchesCount) {
-            return $this->actionIndex();
-        }
+        $query = $this->globalUser->getResumeMatches()
+            ->orderByRank();
 
         $pagination = new Pagination([
-            'totalCount' => $matchesQuery->count(),
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -470,12 +569,18 @@ class JoResumeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $jobResumeMatch = $matchesQuery->offset($pagination->offset)
+        $resumeMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
-        $resume = $jobResumeMatch->resume;
-        $vacancy = $jobResumeMatch->vacancy;
+        if (!$resumeMatch) {
+            return $this->actionIndex();
+        }
+
+        $this->getState()->setName(null);
+
+        $resume = $resumeMatch->resume;
+        $vacancy = $resumeMatch->vacancy;
 
         $buttons[] = [
             [
@@ -503,11 +608,88 @@ class JoResumeController extends CrudController
             ],
         ];
 
+        $isNewMatch = false;
+
+        if ($resumeMatch->isNew()) {
+            $isNewMatch = true;
+
+            $vacancy->markViewedByUserId($this->globalUser->id);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $vacancy,
                     'company' => $vacancy->company,
+                    'isNewMatch' => $isNewMatch,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionAllNewMatches()
+    {
+        $resumeMatch = $this->globalUser->getResumeNewMatches()
+            ->orderByRank()
+            ->one();
+
+        if (!$resumeMatch) {
+            return $this->actionAllMatches();
+        }
+
+        $this->getState()->setName(null);
+
+        $resume = $resumeMatch->resume;
+        $vacancy = $resumeMatch->vacancy;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $resume->id,
+                ]),
+                'text' => '#' . $resume->id . ' ' . $resume->name,
+            ]
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('all-new-matches'),
+                'text' => '>',
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index'),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $isNewMatch = false;
+
+        if ($resumeMatch->isNew()) {
+            $isNewMatch = true;
+
+            $vacancy->markViewedByUserId($this->globalUser->id);
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'model' => $vacancy,
+                    'company' => $vacancy->company,
+                    'isNewMatch' => $isNewMatch,
                 ]),
                 $buttons,
                 [

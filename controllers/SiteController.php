@@ -10,6 +10,7 @@ use app\models\forms\RequestResetPasswordForm;
 use app\models\forms\ResetPasswordForm;
 use app\models\forms\SignupForm;
 use app\models\Gender;
+use app\models\Language;
 use app\models\Rating;
 use app\models\Sexuality;
 use app\models\User;
@@ -257,10 +258,13 @@ class SiteController extends Controller
      */
     public function actionChangeLanguage($lang)
     {
-        $language = \app\models\Language::find($lang)
-            ->one();
+        $language = Language::find()
+        ->where([
+            'code' => $lang,
+        ])
+        ->one();
 
-        if ($language != null) {
+        if ($language) {
             $cookies = Yii::$app->response->cookies;
 
             $langCookie = new \yii\web\Cookie([

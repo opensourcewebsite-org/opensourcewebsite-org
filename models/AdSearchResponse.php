@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -23,12 +24,13 @@ class AdSearchResponse extends ActiveRecord
         if (!($response = self::findOne(['user_id' => $userId, 'ad_search_id' => $modelId]))) {
             $response = new self(['user_id' => $userId, 'ad_search_id' => $modelId]);
         }
+
         return $response;
     }
 
     public static function tableName(): string
     {
-        return "ad_search_response";
+        return '{{%ad_search_response}}';
     }
 
     public function behaviors(): array
@@ -45,14 +47,8 @@ class AdSearchResponse extends ActiveRecord
     public function rules(): array
     {
         return [
-            [
-                ['user_id','ad_search_id'],
-                'required'
-            ],
-            [
-                ['user_id','ad_search_id', 'viewed_at', 'archived_at'],
-                'integer'
-            ]
+            [['user_id', 'ad_search_id'], 'required'],
+            [['user_id', 'ad_search_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
     }
 }

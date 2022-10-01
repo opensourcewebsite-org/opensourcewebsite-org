@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -20,12 +21,13 @@ class JobVacancyResponse extends ActiveRecord
         if (!($response = self::findOne(['user_id' => $userId, 'vacancy_id' => $modelId]))) {
             $response = new self(['user_id' => $userId, 'vacancy_id' => $modelId]);
         }
+
         return $response;
     }
 
     public static function tableName(): string
     {
-        return "job_vacancy_response";
+        return '{{%job_vacancy_response}}';
     }
 
     public function behaviors(): array
@@ -42,14 +44,8 @@ class JobVacancyResponse extends ActiveRecord
     public function rules(): array
     {
         return [
-            [
-                ['user_id','vacancy_id'],
-                'required'
-            ],
-            [
-                ['user_id','vacancy_id', 'viewed_at', 'archived_at'],
-                'integer'
-            ]
+            [['user_id', 'vacancy_id'], 'required'],
+            [['user_id', 'vacancy_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
     }
 }

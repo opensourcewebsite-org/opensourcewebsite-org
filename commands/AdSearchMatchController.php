@@ -5,6 +5,7 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\AdSearch;
+use app\models\AdSearchMatch;
 use app\models\matchers\AdSearchMatcher;
 use Yii;
 use yii\console\Controller;
@@ -74,11 +75,11 @@ class AdSearchMatchController extends Controller implements CronChainedInterface
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%ad_search_match}}')
+            ->truncateTable(AdSearchMatch::tableName())
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update('{{%ad_search}}', [
+            ->update(AdSearch::tableName(), [
                 'processed_at' => null,
             ])
             ->execute();

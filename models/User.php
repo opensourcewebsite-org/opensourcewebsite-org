@@ -167,6 +167,11 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    public static function find(): UserQuery
+    {
+        return new UserQuery(get_called_class());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -830,7 +835,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSettingValueVotes()
+    public function getSettingValueVotes(): ActiveQuery
     {
         return $this->hasMany(SettingValueVote::class, ['user_id' => 'id']);
     }
@@ -856,7 +861,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getGender()
+    public function getGender(): ActiveQuery
     {
         return $this->hasOne(Gender::class, ['id' => 'gender_id']);
     }
@@ -864,7 +869,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getSexuality()
+    public function getSexuality(): ActiveQuery
     {
         return $this->hasOne(Sexuality::class, ['id' => 'sexuality_id']);
     }
@@ -872,7 +877,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCurrency()
+    public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
     }
@@ -880,7 +885,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getLanguages()
+    public function getLanguages(): ActiveQuery
     {
         return $this->hasMany(UserLanguage::class, ['user_id' => 'id']);
     }
@@ -888,7 +893,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCitizenships()
+    public function getCitizenships(): ActiveQuery
     {
         return $this->hasMany(UserCitizenship::class, ['user_id' => 'id']);
     }
@@ -896,7 +901,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCompanies()
+    public function getCompanies(): ActiveQuery
     {
         return $this->hasMany(Company::class, ['id' => 'company_id'])
             ->viaTable('company_user', ['user_id' => 'id']);
@@ -905,15 +910,26 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getVacancies()
+    public function getVacancies(): ActiveQuery
     {
         return $this->hasMany(Vacancy::class, ['user_id' => 'id']);
     }
 
-    public function getVacancyMatchesCount()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVacancyMatches(): ActiveQuery
     {
         return $this->hasMany(JobVacancyMatch::class, ['vacancy_id' => 'id'])
-            ->viaTable(Vacancy::tableName(), ['user_id' => 'id'])
+            ->viaTable(Vacancy::tableName(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVacancyNewMatches(): ActiveQuery
+    {
+        return $this->getVacancyMatches()
             ->andWhere([
                 'not in',
                 JobVacancyMatch::tableName() . '.resume_id',
@@ -925,22 +941,32 @@ class User extends ActiveRecord implements IdentityInterface
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getResumes()
+    public function getResumes(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['user_id' => 'id']);
     }
 
-    public function getResumeMatchesCount()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResumeMatches(): ActiveQuery
     {
         return $this->hasMany(JobResumeMatch::class, ['resume_id' => 'id'])
-            ->viaTable(Resume::tableName(), ['user_id' => 'id'])
+            ->viaTable(Resume::tableName(), ['user_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResumeNewMatches(): ActiveQuery
+    {
+        return $this->getResumeMatches()
             ->andWhere([
                 'not in',
                 JobResumeMatch::tableName() . '.vacancy_id',
@@ -952,22 +978,42 @@ class User extends ActiveRecord implements IdentityInterface
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAdSearches()
+    public function getAdSearches(): ActiveQuery
     {
         return $this->hasMany(AdSearch::class, ['user_id' => 'id']);
     }
 
-    public function getAdSearchMatchesCount()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdSearchMatches($adSection = null): ActiveQuery
     {
+        if ($adSection) {
+            $subWhere = [
+                AdSearch::tableName() . '.section' => $adSection,
+            ];
+        } else {
+            $subWhere = [];
+        }
+
         return $this->hasMany(AdSearchMatch::class, ['ad_search_id' => 'id'])
             ->viaTable(AdSearch::tableName(), ['user_id' => 'id'])
+            ->joinWith('adSearch')
+            ->andWhere($subWhere);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdSearchNewMatches($adSection = null): ActiveQuery
+    {
+        return $this->getAdSearchMatches($adSection)
             ->andWhere([
                 'not in',
                 AdSearchMatch::tableName() . '.ad_offer_id',
@@ -979,22 +1025,42 @@ class User extends ActiveRecord implements IdentityInterface
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAdOffers()
+    public function getAdOffers(): ActiveQuery
     {
         return $this->hasMany(AdOffer::class, ['user_id' => 'id']);
     }
 
-    public function getAdOfferMatchesCount()
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdOfferMatches($adSection = null): ActiveQuery
     {
+        if ($adSection) {
+            $subWhere = [
+                AdOffer::tableName() . '.section' => $adSection,
+            ];
+        } else {
+            $subWhere = [];
+        }
+
         return $this->hasMany(AdOfferMatch::class, ['ad_offer_id' => 'id'])
             ->viaTable(AdOffer::tableName(), ['user_id' => 'id'])
+            ->joinWith('adOffer')
+            ->andWhere($subWhere);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAdOfferNewMatches($adSection = null): ActiveQuery
+    {
+        return $this->getAdOfferMatches($adSection)
             ->andWhere([
                 'not in',
                 AdOfferMatch::tableName() . '.ad_search_id',
@@ -1006,33 +1072,24 @@ class User extends ActiveRecord implements IdentityInterface
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     /**
      * @return \yii\db\ActiveQuery
-     *
-     * Get user's contact groups
      */
-    public function getContactGroups()
+    public function getContactGroups(): ActiveQuery
     {
         return $this->hasMany(ContactGroup::className(), ['user_id' => 'id'])
             ->orderBy('name');
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getBotUser(): ActiveQuery
     {
         return $this->hasOne(BotUser::class, ['user_id' => 'id']);
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return UserQuery the active query used by this AR class.
-     */
-    public static function find()
-    {
-        return new UserQuery(get_called_class());
     }
 
     /**
@@ -1076,10 +1133,15 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(CurrencyExchangeOrder::class, ['user_id' => 'id']);
     }
 
-    public function getCurrencyExchangeOrderMatchesCount()
+    public function getCurrencyExchangeOrderMatches()
     {
         return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
-            ->viaTable(CurrencyExchangeOrder::tableName(), ['user_id' => 'id'])
+            ->viaTable(CurrencyExchangeOrder::tableName(), ['user_id' => 'id']);
+    }
+
+    public function getCurrencyExchangeOrderNewMatches()
+    {
+        return $this->getCurrencyExchangeOrderMatches()
             ->andWhere([
                 'not in',
                 CurrencyExchangeOrderMatch::tableName() . '.match_order_id',
@@ -1091,8 +1153,7 @@ class User extends ActiveRecord implements IdentityInterface
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     /**

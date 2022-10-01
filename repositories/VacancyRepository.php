@@ -11,7 +11,7 @@ use yii\web\NotFoundHttpException;
 
 class VacancyRepository
 {
-    public function findVacancyByIdAndCurrentUser(int $id): Vacancy
+    public function findVacancyByIdAndCurrentUser(int $id): WebVacancy
     {
         if (
             $model = WebVacancy::find()
@@ -25,17 +25,9 @@ class VacancyRepository
         throw new NotFoundHttpException('Requested Page Not Found');
     }
 
-    public function findVacancy(int $id): Vacancy
-    {
-        if ($model = Vacancy::findOne($id)) {
-            return $model;
-        }
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
     public function findMatchedVacancyByIdAndResume(int $id, Resume $resume): Vacancy
     {
-        if ($vacancy = $resume->getMatches()->where(['id' => $id])->one()) {
+        if ($vacancy = $resume->getMatchModels()->where(['id' => $id])->one()) {
             return $vacancy;
         }
         throw new NotFoundHttpException('Requested Page Not Found');

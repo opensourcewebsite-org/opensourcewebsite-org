@@ -7,7 +7,6 @@ namespace app\controllers;
 use app\components\Controller;
 use app\models\Currency;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\Resume;
@@ -142,6 +141,7 @@ class VacancyController extends Controller
         $scenario = new SetActiveScenario($model);
         if ($scenario->run()) {
             $model->save();
+
             return true;
         }
 
@@ -294,13 +294,14 @@ class VacancyController extends Controller
         return $this->redirect('/vacancy');
     }
 
-    public function actionShowMatches(int $resumeId): string
+    public function actionMatches(int $resumeId): string
     {
         $model = $this->resumeRepository->findResumeByIdAndCurrentUser($resumeId);
 
-        if ($model->getMatchesOrderByRank()->exists()) {
+        if ($model->getMatchModels()->exists()) {
             $dataProvider = new ActiveDataProvider([
-                'query' => $model->getMatchesOrderByRank(),
+                'query' => $model->getMatchModels()
+                    ->orderByRank(),
             ]);
 
             return $this->render('matches', [
@@ -319,10 +320,7 @@ class VacancyController extends Controller
             $this->resumeRepository->findResumeByIdAndCurrentUser($resumeId)
         );
 
-        $matchedVacancy->trigger(
-            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
-            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
-        );
+        $matchedVacancy->markViewedByUserId(Yii::$app->user->id);
 
         return $this->render('view-match', ['model' => $matchedVacancy, 'resumeId' => $resumeId]);
     }

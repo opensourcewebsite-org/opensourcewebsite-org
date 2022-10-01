@@ -18,7 +18,7 @@ use app\components\helpers\Html;
 $this->title = Yii::t('app', 'Order') . ' #' . $matchOrderModel->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $orderModel->id, 'url' => ['view', 'id' => $orderModel->id]];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['show-matches', 'id' => $orderModel->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['matches', 'id' => $orderModel->id]];
 $this->params['breadcrumbs'][] = '#' . $matchOrderModel->id;
 
 $buyingDistance = '';

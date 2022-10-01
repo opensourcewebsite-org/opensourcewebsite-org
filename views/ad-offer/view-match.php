@@ -20,7 +20,7 @@ use app\widgets\ContactWidget\ContactWidget;
 $this->title = Yii::t('app', 'Offer') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Searches'), 'url' => ['/ad-search/index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $adSearchId, 'url' => ['/ad-search/view', 'id' => $adSearchId]];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['/ad-offer/show-matches', 'adSearchId' => $adSearchId]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Offers'), 'url' => ['/ad-offer/matches', 'adSearchId' => $adSearchId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 ?>
 <div class="index">

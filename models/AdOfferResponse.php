@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -23,12 +24,13 @@ class AdOfferResponse extends ActiveRecord
         if (!($response = self::findOne(['user_id' => $userId, 'ad_offer_id' => $modelId]))) {
             $response = new self(['user_id' => $userId, 'ad_offer_id' => $modelId]);
         }
+
         return $response;
     }
 
     public static function tableName(): string
     {
-        return "ad_offer_response";
+        return '{{%ad_offer_response}}';
     }
 
     public function behaviors(): array
@@ -45,14 +47,8 @@ class AdOfferResponse extends ActiveRecord
     public function rules(): array
     {
         return [
-            [
-                ['user_id','ad_offer_id'],
-                'required'
-            ],
-            [
-                ['user_id','ad_offer_id', 'viewed_at', 'archived_at'],
-                'integer'
-            ]
+            [['user_id', 'ad_offer_id'], 'required'],
+            [['user_id', 'ad_offer_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
     }
 }

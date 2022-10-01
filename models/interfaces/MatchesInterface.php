@@ -16,5 +16,17 @@ interface MatchesInterface
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMatchModels(): ActiveQuery;
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getCounterMatches(): ActiveQuery;
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCounterMatchModels(): ActiveQuery;
+
+    public function clearMatches();
 }

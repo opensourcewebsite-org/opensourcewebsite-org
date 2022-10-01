@@ -45,4 +45,5 @@ class Emoji
     public const SEND = '↗️';
     public const RIGHT = '➡️';
     public const SOON = '🔜';
+    public const NEW1 = '🆕';
 }

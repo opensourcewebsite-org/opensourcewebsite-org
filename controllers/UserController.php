@@ -128,7 +128,7 @@ class UserController extends Controller
 
     public function actionProfile()
     {
-        $userId = \Yii::$app->request->get('id');
+        $userId = Yii::$app->request->get('id');
         if (!$userId) {
             throw new NotFoundHttpException();
         }

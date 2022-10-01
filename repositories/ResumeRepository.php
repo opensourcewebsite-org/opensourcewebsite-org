@@ -11,24 +11,24 @@ use yii\web\NotFoundHttpException;
 
 class ResumeRepository
 {
-    public function findMatchedResumeByIdAndVacancy(int $id, Vacancy $vacancy): Resume
-    {
-        if ($resume = $vacancy->getMatches()->where(['id' => $id])->one()) {
-            return $resume;
-        }
-
-        throw new NotFoundHttpException('Requested Page Not Found');
-    }
-
-    public function findResumeByIdAndCurrentUser(int $id): Resume
+    public function findResumeByIdAndCurrentUser(int $id): WebResume
     {
         if (
-            $model = Resume::find()
+            $model = WebResume::find()
             ->where(['id' => $id])
             ->userOwner()
             ->one()
         ) {
             return $model;
+        }
+
+        throw new NotFoundHttpException('Requested Page Not Found');
+    }
+
+    public function findMatchedResumeByIdAndVacancy(int $id, Vacancy $vacancy): Resume
+    {
+        if ($resume = $vacancy->getMatchModels()->where(['id' => $id])->one()) {
+            return $resume;
         }
 
         throw new NotFoundHttpException('Requested Page Not Found');

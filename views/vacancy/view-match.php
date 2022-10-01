@@ -19,7 +19,7 @@ use yii\widgets\DetailView;
 $this->title = Yii::t('app', 'Vacancy') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Resumes'), 'url' => ['/resume/index']];
 $this->params['breadcrumbs'][] = ['label' => '#' . $resumeId, 'url' =>['/resume/view', 'id' => $resumeId]];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Vacancies'), 'url' => ['/vacancy/show-matches', 'resumeId' => $resumeId]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Matched Vacancies'), 'url' => ['/vacancy/matches', 'resumeId' => $resumeId]];
 $this->params['breadcrumbs'][] = '#' . $model->id;
 ?>
 <div class="index">

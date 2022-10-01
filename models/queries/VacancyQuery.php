@@ -32,10 +32,11 @@ class VacancyQuery extends ActiveQuery
      */
     public function orderByRank(): self
     {
-        return $this->orderBy([
-            User::tableName() . '.rating' => SORT_DESC,
-            User::tableName() . '.created_at' => SORT_ASC,
-        ]);
+        return $this->joinWith('user')
+            ->orderBy([
+                User::tableName() . '.rating' => SORT_DESC,
+                User::tableName() . '.created_at' => SORT_ASC,
+            ]);
     }
 
     /**

@@ -1,19 +1,22 @@
 <?php
 
+use Yii;
 use yii\db\Migration;
 
 /**
  * Class m180822_115426_update_setting_table
  */
-class m180822_115426_update_setting_table extends Migration {
-
+class m180822_115426_update_setting_table extends Migration
+{
     /**
      * {@inheritdoc}
      */
-    public function safeUp() {
-        $formatter = \Yii::$app->formatter;
+    public function safeUp()
+    {
+        $formatter = Yii::$app->formatter;
         $now = $formatter->asDateTime('now');
         $now = strtotime($now);
+
         $this->execute("INSERT INTO `setting` (`id`, `key`, `value`, `updated_at`) VALUES
         (1, 'moqup_entries_limit', '20', " . $now . "),
         (2, 'moqup_bytes_limit', '100000', " . $now . ")
@@ -23,7 +26,8 @@ class m180822_115426_update_setting_table extends Migration {
     /**
      * {@inheritdoc}
      */
-    public function safeDown() {
+    public function safeDown()
+    {
         echo "m180822_115426_update_setting_table cannot be reverted.\n";
 
         return false;

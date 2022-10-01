@@ -6,7 +6,6 @@ namespace app\models;
 
 use app\components\helpers\ArrayHelper;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\interfaces\MatchesInterface;
 use app\models\interfaces\ModelWithLocationInterface;
 use app\models\matchers\ModelLinker;
@@ -48,9 +47,10 @@ use yii\web\JsExpression;
  * @property Company $company
  * @property Currency $currency
  * @property Gender $gender
- * @property Resume[] $matches
- * @property Resume[] $matchedResumes
- * @property Resume[] $counterMatches
+ * @property JobVacancyMatch[] $matches
+ * @property Resume[] $matchModels
+ * @property JobResumeMatch[] $counterMatches
+ * @property Resume[] $counterMatchModels
  * @property VacancyLanguage[] $languages
  * @property User $user
  * @property JobKeyword[] $keywords
@@ -75,14 +75,13 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
         $this->on(self::EVENT_LANGUAGES_UPDATED, [$this, 'clearMatches']);
-        $this->on(self::EVENT_VIEWED_BY_USER, [$this, 'markViewedByUser']);
 
         parent::init();
     }
 
-    public function markViewedByUser(ViewedByUserEvent $event)
+    public function markViewedByUserId(int $userId)
     {
-        $response = JobVacancyResponse::findOrNewResponse($event->user->id, $this->id);
+        $response = JobVacancyResponse::findOrNewResponse($userId, $this->id);
         $response->viewed_at = time();
         $response->save();
     }
@@ -260,48 +259,38 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
 
     public function getMatches(): ActiveQuery
     {
-        return $this->hasMany(Resume::class, ['id' => 'resume_id'])
-            ->viaTable('{{%job_vacancy_match}}', ['vacancy_id' => 'id']);
+        return $this->hasMany(JobVacancyMatch::class, ['vacancy_id' => 'id']);
     }
 
-    public function getMatchesCount()
+    public function getMatchModels(): ActiveQuery
     {
-        return $this->hasMany(JobVacancyMatch::class, ['vacancy_id' => 'id'])
-            ->count();
+        return $this->hasMany(Resume::class, ['id' => 'resume_id'])
+            ->viaTable('{{%job_vacancy_match}}', ['vacancy_id' => 'id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    // TODO new matches
     public function getNewMatches(): ActiveQuery
     {
-        return $this->hasMany(Resume::class, ['id' => 'resume_id'])
-            ->viaTable('{{%job_vacancy_match}}', ['vacancy_id' => 'id']);
-    }
-
-    public function getNewMatchesCount()
-    {
-        return $this->hasMany(JobVacancyMatch::class, ['vacancy_id' => 'id'])
+        return $this->getMatches()
             ->andWhere([
                 'not in',
-                'resume_id',
+                JobVacancyMatch::tableName() . '.resume_id',
                 JobResumeResponse::find()
                     ->select('resume_id')
                     ->andWhere([
-                        'user_id' => Yii::$app->user->id,
+                        'user_id' => $this->user_id,
                     ])
                     ->andWhere([
                         'is not', 'viewed_at', null,
                     ]),
-            ])
-            ->count();
+            ]);
     }
 
     public function isNewMatch()
     {
-        return !(bool)JobVacancyResponse::find()
+        return !JobVacancyResponse::find()
             ->andWhere([
                 'user_id' => Yii::$app->user->id,
                 'vacancy_id' => $this->id,
@@ -309,25 +298,15 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
             ->andWhere([
                 'is not', 'viewed_at', null,
             ])
-            ->one();
-    }
-
-    /**
-     * @return ActiveQuery
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getMatchesOrderByRank(): ActiveQuery
-    {
-        return $this
-            ->getMatches()
-            ->joinWith('user')
-            ->orderBy([
-                'user.rating' => SORT_DESC,
-                'user.created_at' => SORT_ASC,
-            ]);
+            ->exists();
     }
 
     public function getCounterMatches(): ActiveQuery
+    {
+        return $this->hasMany(JobResumeMatch::class, ['vacancy_id' => 'id']);
+    }
+
+    public function getCounterMatchModels(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['id' => 'resume_id'])
             ->viaTable('{{%job_resume_match}}', ['vacancy_id' => 'id']);

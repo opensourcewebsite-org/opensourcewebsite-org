@@ -5,6 +5,7 @@
 
 namespace app\helpers;
 
+use Yii;
 use yii\web\BadRequestHttpException;
 use yii\web\Request;
 
@@ -137,7 +138,7 @@ class RequestFetcher
 
     private function fetchValue()
     {
-        $request = \Yii::$app->request;
+        $request = Yii::$app->request;
 
         if (!($request instanceof Request)) {
             throw new \LogicException('Unsupported request object type');

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\queries\CurrencyExchangeOrderMatchQuery;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -22,7 +23,7 @@ class CurrencyExchangeOrderMatch extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'currency_exchange_order_match';
+        return '{{%currency_exchange_order_match}}';
     }
 
     /**
@@ -50,6 +51,11 @@ class CurrencyExchangeOrderMatch extends ActiveRecord
         ];
     }
 
+    public static function find(): CurrencyExchangeOrderMatchQuery
+    {
+        return new CurrencyExchangeOrderMatchQuery(get_called_class());
+    }
+
     public function getOrder(): ActiveQuery
     {
         return $this->hasOne(CurrencyExchangeOrder::class, ['id' => 'order_id']);
@@ -58,5 +64,18 @@ class CurrencyExchangeOrderMatch extends ActiveRecord
     public function getMatchOrder(): ActiveQuery
     {
         return $this->hasOne(CurrencyExchangeOrder::class, ['id' => 'match_order_id']);
+    }
+
+    public function isNew()
+    {
+        return !CurrencyExchangeOrderResponse::find()
+            ->andWhere([
+                'user_id' => $this->order->user_id,
+                'order_id' => $this->match_order_id,
+            ])
+            ->andWhere([
+                'is not', 'viewed_at', null,
+            ])
+            ->exists();
     }
 }

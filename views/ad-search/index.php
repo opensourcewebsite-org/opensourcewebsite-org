@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
+use app\components\helpers\Html;
+use app\models\AdOffer;
 use app\models\AdSearch;
 use app\models\search\AdSearchSearch;
+use app\widgets\buttons\AddButton;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use app\components\helpers\Html;
+use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\web\View;
-use app\widgets\buttons\AddButton;
-use yii\grid\GridView;
-use app\models\AdOffer;
 
 /**
  * @var View $this
@@ -35,21 +35,15 @@ $displayActiveTab = (int)$searchModel->status === AdSearch::STATUS_ON;
                                 <?= Html::a(
     Yii::t('app', 'Active'),
     ['/ad-search/index', 'AdSearchSearch[status]' => AdSearch::STATUS_ON],
-    [
-                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')
-                                    ]
-);
-                                ?>
+    ['class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')]
+); ?>
                             </li>
                             <li class="nav-item">
                                 <?= Html::a(
                                     Yii::t('app', 'Inactive'),
                                     ['/ad-search/index', 'AdSearchSearch[status]' => AdSearch::STATUS_OFF],
-                                    [
-                                        'class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : ''),
-                                    ]
-                                );
-                                ?>
+                                    ['class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : '')]
+                                ); ?>
                             </li>
                         </ul>
                     </div>
@@ -97,10 +91,10 @@ $displayActiveTab = (int)$searchModel->status === AdSearch::STATUS_ON;
                             [
                                 'label' => 'Offers',
                                 'value' => function (AdSearch $model) {
-                                    return $model->getMatchesCount() ?
+                                    return ($matchesCount = $model->getMatches()->count()) ?
                                         Html::a(
-                                            $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
-                                            Url::to(['/ad-offer/show-matches', 'adSearchId' => $model->id])
+                                            $model->getNewMatches()->exists() ? Html::badge('info', 'new') : $matchesCount,
+                                            Url::to(['/ad-offer/matches', 'adSearchId' => $model->id])
                                         ) : '';
                                 },
                                 'format' => 'raw',
@@ -118,7 +112,6 @@ $displayActiveTab = (int)$searchModel->status === AdSearch::STATUS_ON;
                                 ],
                             ],
                         ],
-
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
                         'pager' => [
                             'options' => [

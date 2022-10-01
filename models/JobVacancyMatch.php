@@ -2,7 +2,9 @@
 
 namespace app\models;
 
-use Yii;
+use app\models\queries\JobVacancyMatchQuery;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "job_vacancy_match".
@@ -14,14 +16,14 @@ use Yii;
  * @property Resume $resume
  * @property Vacancy $vacancy
  */
-class JobVacancyMatch extends \yii\db\ActiveRecord
+class JobVacancyMatch extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'job_vacancy_match';
+        return '{{%job_vacancy_match}}';
     }
 
     /**
@@ -49,23 +51,31 @@ class JobVacancyMatch extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Resume]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getResume()
+    public static function find(): JobVacancyMatchQuery
+    {
+        return new JobVacancyMatchQuery(get_called_class());
+    }
+
+    public function getVacancy(): ActiveQuery
+    {
+        return $this->hasOne(Vacancy::className(), ['id' => 'vacancy_id']);
+    }
+
+    public function getResume(): ActiveQuery
     {
         return $this->hasOne(Resume::className(), ['id' => 'resume_id']);
     }
 
-    /**
-     * Gets query for [[Vacancy]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getVacancy()
+    public function isNew()
     {
-        return $this->hasOne(Vacancy::className(), ['id' => 'vacancy_id']);
+        return !JobResumeResponse::find()
+            ->andWhere([
+                'user_id' => $this->vacancy->user_id,
+                'resume_id' => $this->resume_id,
+            ])
+            ->andWhere([
+                'is not', 'viewed_at', null,
+            ])
+            ->exists();
     }
 }

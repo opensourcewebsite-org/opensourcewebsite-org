@@ -5,6 +5,7 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\models\CurrencyExchangeOrder;
+use app\models\CurrencyExchangeOrderMatch;
 use app\models\matchers\CurrencyExchangeOrderMatcher;
 use Yii;
 use yii\console\Controller;
@@ -76,11 +77,11 @@ class CurrencyExchangeOrderMatchController extends Controller implements CronCha
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%currency_exchange_order_match}}')
+            ->truncateTable(CurrencyExchangeOrderMatch::tableName())
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update('{{%currency_exchange_order}}', [
+            ->update(CurrencyExchangeOrder::tableName(), [
                 'processed_at' => null,
             ])
             ->execute();

@@ -59,4 +59,10 @@ return [
     'select_relation',
     'refresh',
     'members',
+    'matches',
+    'new_matches',
+    'all_matches',
+    'all_new_matches',
+    'section_matches',
+    'section_new_matches',
 ];

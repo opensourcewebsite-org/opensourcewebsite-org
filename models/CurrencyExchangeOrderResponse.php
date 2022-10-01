@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace app\models;
@@ -21,12 +22,13 @@ class CurrencyExchangeOrderResponse extends ActiveRecord
         if (!($response = self::findOne(['user_id' => $userId, 'order_id' => $modelId]))) {
             $response = new self(['user_id' => $userId, 'order_id' => $modelId]);
         }
+
         return $response;
     }
 
     public static function tableName(): string
     {
-        return "currency_exchange_order_response";
+        return '{{%currency_exchange_order_response}}';
     }
 
     public function behaviors(): array
@@ -43,14 +45,8 @@ class CurrencyExchangeOrderResponse extends ActiveRecord
     public function rules(): array
     {
         return [
-            [
-                ['user_id','order_id'],
-                'required'
-            ],
-            [
-                ['user_id','order_id', 'viewed_at', 'archived_at'],
-                'integer'
-            ]
+            [['user_id', 'order_id'], 'required'],
+            [['user_id', 'order_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
     }
 }

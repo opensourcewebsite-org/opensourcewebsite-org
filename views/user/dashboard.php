@@ -1,26 +1,26 @@
 <?php
 
+use app\components\helpers\ExternalLink;
+use app\components\helpers\Html;
 use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
+use app\models\User;
+use app\widgets\buttons\EditButton;
 use app\widgets\buttons\TrashButton;
 use app\widgets\ModalAjax;
 use yii\helpers\Url;
-use app\widgets\buttons\EditButton;
-use app\components\helpers\Html;
-use app\components\helpers\ExternalLink;
-use app\models\User;
 
 /* @var $this yii\web\View */
 
 $this->title = Yii::t('app', 'Dashboard');
 
-$currencyExchangeOrderMatchesCount = $model->getCurrencyExchangeOrderMatchesCount();
-$adOfferMatchesCount = $model->getAdOfferMatchesCount();
-$adSearchMatchesCount = $model->getAdSearchMatchesCount();
-$vacancyMatchesCount = $model->getVacancyMatchesCount();
-$resumeMatchesCount = $model->getResumeMatchesCount();
+$currencyExchangeOrderMatchesCount = $model->getCurrencyExchangeOrderNewMatches()->count();
+$adOfferMatchesCount = $model->getAdOfferNewMatches()->count();
+$adSearchMatchesCount = $model->getAdSearchNewMatches()->count();
+$vacancyMatchesCount = $model->getVacancyNewMatches()->count();
+$resumeMatchesCount = $model->getResumeNewMatches()->count();
 
 $pendingDebtsCount = $model->getPendingDebts()->count();
 ?>

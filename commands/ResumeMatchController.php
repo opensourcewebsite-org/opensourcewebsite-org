@@ -4,6 +4,7 @@ namespace app\commands;
 
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
+use app\models\JobResumeMatch;
 use app\models\matchers\ResumeMatcher;
 use app\models\Resume;
 use Yii;
@@ -73,11 +74,11 @@ class ResumeMatchController extends Controller implements CronChainedInterface
     public function actionClearMatches()
     {
         Yii::$app->db->createCommand()
-            ->truncateTable('{{%job_resume_match}}')
+            ->truncateTable(JobResumeMatch::tableName())
             ->execute();
 
         Yii::$app->db->createCommand()
-            ->update('{{%resume}}', [
+            ->update(Resume::tableName(), [
                 'processed_at' => null,
             ])
             ->execute();

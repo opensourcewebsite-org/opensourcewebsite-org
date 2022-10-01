@@ -7,7 +7,6 @@ namespace app\controllers;
 use app\components\Controller;
 use app\models\AdOffer;
 use app\models\events\interfaces\ViewedByUserInterface;
-use app\models\events\ViewedByUserEvent;
 use app\models\scenarios\AdOffer\SetActiveScenario;
 use app\models\scenarios\AdOffer\UpdateKeywordsByIdsScenario;
 use app\models\search\AdOfferSearch;
@@ -114,8 +113,10 @@ class AdOfferController extends Controller
         $this->response->format = Response::FORMAT_JSON;
 
         $scenario = new SetActiveScenario($model);
+
         if ($scenario->run()) {
             $model->save();
+
             return true;
         }
 
@@ -154,13 +155,14 @@ class AdOfferController extends Controller
         return $this->renderAjax('modals/view-location', ['model' => AdOffer::findOne($id)]);
     }
 
-    public function actionShowMatches(int $adSearchId): string
+    public function actionMatches(int $adSearchId): string
     {
         $model = $this->adSearchRepository->findAdSearchByIdAndCurrentUser($adSearchId);
 
-        if ($model->getMatchesOrderByRank()->exists()) {
+        if ($model->getMatchModels()->exists()) {
             $dataProvider = new ActiveDataProvider([
-                'query' => $model->getMatchesOrderByRank(),
+                'query' => $model->getMatchModels()
+                    ->orderByRank(),
             ]);
 
             return $this->render('matches', [
@@ -179,10 +181,7 @@ class AdOfferController extends Controller
             $this->adSearchRepository->findAdSearchByIdAndCurrentUser($adSearchId)
         );
 
-        $matchedOffer->trigger(
-            ViewedByUserInterface::EVENT_VIEWED_BY_USER,
-            new ViewedByUserEvent(['user' => Yii::$app->user->identity])
-        );
+        $matchedOffer->markViewedByUserId(Yii::$app->user->id);
 
         return $this->render('view-match', ['model' => $matchedOffer, 'adSearchId' => $adSearchId]);
     }

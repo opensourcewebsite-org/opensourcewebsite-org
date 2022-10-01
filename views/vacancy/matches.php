@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
+use app\components\helpers\Html;
 use app\models\Currency;
 use app\models\search\VacancySearch;
 use app\models\Vacancy;
+use app\widgets\buttons\AddButton;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use app\components\helpers\Html;
+use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\web\View;
-use app\widgets\buttons\AddButton;
-use yii\grid\GridView;
 
 /**
  * @var View $this

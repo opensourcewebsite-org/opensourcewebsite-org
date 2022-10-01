@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
+use app\components\helpers\Html;
 use app\models\CurrencyExchangeOrder;
 use app\models\PaymentMethod;
 use app\widgets\buttons\EditButton;
+use app\widgets\ModalAjax;
 use yii\helpers\ArrayHelper;
-use app\components\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
-use app\widgets\ModalAjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CurrencyExchangeOrder */
@@ -17,7 +17,6 @@ use app\widgets\ModalAjax;
 $this->title = Yii::t('app', 'Order') . ' #' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Currency Exchange'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = '#' . $model->id;
-
 ?>
 <div class="index">
     <div class="row">
@@ -100,13 +99,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Offers'),
-                                    'visible' => $model->getMatchesCount(),
+                                    'visible' => $model->getMatches()->exists(),
                                     'format' => 'raw',
                                     'value' => function () use ($model) {
-                                        return $model->getMatchesCount() ?
+                                        return ($matchesCount = $model->getMatches()->count()) ?
                                             Html::a(
-                                                $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
-                                                Url::to(['show-matches', 'id' => $model->id]),
+                                                $model->getNewMatches()->exists() ? Html::badge('info', 'new') : $matchesCount,
+                                                Url::to(['matches', 'id' => $model->id]),
                                             ) : '';
                                     },
                                 ],

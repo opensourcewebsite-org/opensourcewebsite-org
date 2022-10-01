@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
-use app\models\AdSearch;
 use app\components\helpers\Html;
+use app\models\AdSearch;
+use app\widgets\buttons\EditButton;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
-use app\widgets\buttons\EditButton;
 
 /**
  * @var View $this
@@ -116,13 +116,13 @@ $this->params['breadcrumbs'][] = '#' . $model->id;
                                 ],
                                 [
                                     'label' => Yii::t('app', 'Offers'),
-                                    'visible' => $model->getMatchesCount(),
+                                    'visible' => $model->getMatches()->exists(),
                                     'format' => 'raw',
                                     'value' => function () use ($model) {
-                                        return $model->getMatchesCount() ?
+                                        return ($matchesCount = $model->getMatches()->count()) ?
                                             Html::a(
-                                                $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
-                                                Url::to(['/ad-offer/show-matches', 'adSearchId' => $model->id]),
+                                                $model->getNewMatches()->exists() ? Html::badge('info', 'new') : $matchesCount,
+                                                Url::to(['/ad-offer/matches', 'adSearchId' => $model->id]),
                                             ) : '';
                                     },
                                 ],

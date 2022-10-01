@@ -9,6 +9,7 @@ use app\models\CurrencyExchangeOrder;
 use app\models\CurrencyExchangeOrderBuyingPaymentMethod;
 use app\models\CurrencyExchangeOrderMatch;
 use app\models\CurrencyExchangeOrderSellingPaymentMethod;
+use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\PaymentMethodCurrencyByCurrency;
 use app\models\scenarios\CurrencyExchangeOrder\SetActiveScenario;
 use app\models\User;
@@ -476,17 +477,21 @@ class CeController extends CrudController
             'text' => Emoji::MENU,
         ];
 
-        $matchesCount = CurrencyExchangeOrderMatch::find()
-            ->joinWith('order')
-            ->andWhere([
-                CurrencyExchangeOrder::tableName() . '.user_id' => $globalUser->id,
-            ])
-            ->count();
+        $matchesCount = $globalUser->getCurrencyExchangeOrderMatches()->count();
 
         if ($matchesCount) {
             $rowButtons[] = [
                 'callback_data' => self::createRoute('all-matches'),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+            ];
+        }
+
+        $newMatchesCount = $globalUser->getCurrencyExchangeOrderNewMatches()->count();
+
+        if ($newMatchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('all-new-matches'),
+                'text' => Emoji::OFFERS . ' ' . Emoji::NEW1,
             ];
         }
 
@@ -555,10 +560,20 @@ class CeController extends CrudController
             ],
         ];
 
+        $rowButtons[] = [
+            'callback_data' => self::createRoute(),
+            'text' => Emoji::BACK,
+        ];
+
+        $rowButtons[] = [
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
+        ];
+
         $matchesCount = $order->getMatches()->count();
 
         if ($matchesCount) {
-            $buttons[][] = [
+            $rowButtons[] = [
                 'callback_data' => self::createRoute('matches', [
                     'id' => $order->id,
                 ]),
@@ -566,22 +581,25 @@ class CeController extends CrudController
             ];
         }
 
-        $buttons[] = [
-            [
-                'callback_data' => self::createRoute('index'),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-            [
-                'callback_data' => self::createRoute('update', [
+        $newMatchesCount = $order->getNewMatches()->count();
+
+        if ($newMatchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('new-matches', [
                     'id' => $order->id,
                 ]),
-                'text' => Emoji::EDIT,
-            ],
+                'text' => Emoji::OFFERS . ' ' . Emoji::NEW1,
+            ];
+        }
+
+        $rowButtons[] = [
+            'callback_data' => self::createRoute('update', [
+                'id' => $order->id,
+            ]),
+            'text' => Emoji::EDIT,
         ];
+
+        $buttons[] = $rowButtons;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -745,12 +763,11 @@ class CeController extends CrudController
      */
     public function actionMatches($id = null, $page = 1)
     {
-        $globalUser = $this->getUser();
-
-        $order = $globalUser->getCurrencyExchangeOrders()
+        $order = CurrencyExchangeOrder::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($order)) {
@@ -759,15 +776,11 @@ class CeController extends CrudController
                 ->build();
         }
 
-        $query = $order->getMatchesOrderByRank();
-        $matchesCount = $query->count();
-
-        if (!$matchesCount) {
-            return $this->actionView($order->id);
-        }
+        $query = $order->getMatches()
+            ->orderByRank();
 
         $pagination = new Pagination([
-            'totalCount' => $matchesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -776,13 +789,17 @@ class CeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $matchOrder = $query->offset($pagination->offset)
+        $orderMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
-        if (!$matchOrder) {
+        if (!$orderMatch) {
             return $this->actionView($order->id);
         }
+
+        $this->getState()->setName(null);
+
+        $matchOrder = $orderMatch->matchOrder;
 
         $buttons[] = [
             [
@@ -813,10 +830,103 @@ class CeController extends CrudController
             ],
         ];
 
+        $isNewMatch = false;
+
+        if ($orderMatch->isNew()) {
+            $isNewMatch = true;
+
+            $matchOrder->markViewedByUserId($this->globalUser->id);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $matchOrder,
+                    'isNewMatch' => $isNewMatch,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id CurrencyExchangeOrder->id
+     * @return array
+     */
+    public function actionNewMatches($id = null)
+    {
+        $order = CurrencyExchangeOrder::find()
+            ->where([
+                'id' => $id,
+            ])
+            ->userOwner()
+            ->one();
+
+        if (!isset($order)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $orderMatch = $order->getNewMatches()
+            ->orderByRank()
+            ->one();
+
+        if (!$orderMatch) {
+            return $this->actionMatches($order->id);
+        }
+
+        $this->getState()->setName(null);
+
+        $matchOrder = $orderMatch->matchOrder;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $order->id,
+                ]),
+                'text' => '#' . $order->id . ' ' . $order->getTitle(),
+            ]
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('new-matches', [
+                    'id' => $order->id,
+                ]),
+                'text' => '>',
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $order->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $isNewMatch = false;
+
+        if ($orderMatch->isNew()) {
+            $isNewMatch = true;
+
+            $matchOrder->markViewedByUserId($this->globalUser->id);
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'model' => $matchOrder,
+                    'isNewMatch' => $isNewMatch,
                 ]),
                 $buttons,
                 [
@@ -832,24 +942,11 @@ class CeController extends CrudController
      */
     public function actionAllMatches($page = 1)
     {
-        $user = $this->getUser();
-
-        $query = CurrencyExchangeOrderMatch::find()
-            ->joinWith('order')
-            ->andWhere([
-                CurrencyExchangeOrder::tableName() . '.user_id' => $user->id,
-            ]);
-
-        $matchesCount = $query->count();
-
-        if (!$matchesCount) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $query = $this->globalUser->getCurrencyExchangeOrderMatches()
+            ->orderByRank();
 
         $pagination = new Pagination([
-            'totalCount' => $matchesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -858,12 +955,18 @@ class CeController extends CrudController
             'validatePage' => true,
         ]);
 
-        $currencyExchangeOrderMatch = $query->offset($pagination->offset)
+        $orderMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
-        $order = $currencyExchangeOrderMatch->order;
-        $matchOrder = $currencyExchangeOrderMatch->matchOrder;
+        if (!$orderMatch) {
+            return $this->actionIndex();
+        }
+
+        $this->getState()->setName(null);
+
+        $order = $orderMatch->order;
+        $matchOrder = $orderMatch->matchOrder;
 
         $buttons[] = [
             [
@@ -891,10 +994,86 @@ class CeController extends CrudController
             ],
         ];
 
+        $isNewMatch = false;
+
+        if ($orderMatch->isNew()) {
+            $isNewMatch = true;
+
+            $matchOrder->markViewedByUserId($this->globalUser->id);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $matchOrder,
+                    'isNewMatch' => $isNewMatch,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionAllNewMatches()
+    {
+        $orderMatch = $this->globalUser->getCurrencyExchangeOrderNewMatches()
+            ->orderByRank()
+            ->one();
+
+        if (!$orderMatch) {
+            return $this->actionAllMatches();
+        }
+
+        $this->getState()->setName(null);
+
+        $order = $orderMatch->order;
+        $matchOrder = $orderMatch->matchOrder;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $order->id,
+                ]),
+                'text' => '#' . $order->id . ' ' . $order->getTitle(),
+            ]
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('all-new-matches'),
+                'text' => '>',
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index'),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $isNewMatch = false;
+
+        if ($orderMatch->isNew()) {
+            $isNewMatch = true;
+
+            $matchOrder->markViewedByUserId($this->globalUser->id);
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'model' => $matchOrder,
+                    'isNewMatch' => $isNewMatch,
                 ]),
                 $buttons,
                 [

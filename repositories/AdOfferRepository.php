@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\repositories;
 
 use app\models\AdOffer;
+use app\models\AdSearch;
 use yii\web\NotFoundHttpException;
 
 class AdOfferRepository
@@ -25,7 +26,7 @@ class AdOfferRepository
 
     public function findMatchedAdOfferByIdAndAdSearch(int $id, AdSearch $adSearch): AdOffer
     {
-        if ($adOffer = $adSearch->getMatches()->where(['id' => $id])->one()) {
+        if ($adOffer = $adSearch->getMatchModels()->where(['id' => $id])->one()) {
             return $adOffer;
         }
 

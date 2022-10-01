@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use app\models\Currency;
-use app\widgets\buttons\AddButton;
 use app\components\helpers\Html;
-use yii\grid\GridView;
-use yii\grid\ActionColumn;
+use app\models\Currency;
 use app\models\CurrencyExchangeOrder;
 use app\models\search\CurrencyExchangeOrderSearch;
+use app\widgets\buttons\AddButton;
+use yii\grid\ActionColumn;
+use yii\grid\GridView;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -31,21 +31,15 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                                 <?= Html::a(
     Yii::t('app', 'Active'),
     ['/currency-exchange-order', 'CurrencyExchangeOrderSearch[status]' => CurrencyExchangeOrderSearch::STATUS_ON],
-    [
-                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')
-                                    ]
-);
-                                ?>
+    ['class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')]
+); ?>
                             </li>
                             <li class="nav-item">
                                 <?= Html::a(
                                     Yii::t('app', 'Inactive'),
                                     ['/currency-exchange-order', 'CurrencyExchangeOrderSearch[status]' => CurrencyExchangeOrderSearch::STATUS_OFF],
-                                    [
-                                        'class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : ''),
-                                    ]
-                                );
-                                ?>
+                                    ['class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : '')]
+                                ); ?>
                             </li>
                         </ul>
                     </div>
@@ -57,7 +51,7 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                                 'style' => [
                                     'float' => 'right',
                                 ],
-                            ]
+                            ],
                         ]); ?>
                     </div>
                 </div>
@@ -113,10 +107,10 @@ $displayActiveTab = $searchModel->status === CurrencyExchangeOrderSearch::STATUS
                             [
                                 'label' => Yii::t('app', 'Offers'),
                                 'value' => function ($model) {
-                                    return $model->getMatchesCount() ?
+                                    return ($matchesCount = $model->getMatches()->count()) ?
                                         Html::a(
-                                            $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
-                                            Url::to(['show-matches', 'id' => $model->id])
+                                            $model->getNewMatches()->exists() ? Html::badge('info', 'new') : $matchesCount,
+                                            Url::to(['matches', 'id' => $model->id])
                                         ) : '';
                                 },
                                 'format' => 'raw',

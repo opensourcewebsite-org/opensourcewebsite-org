@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 use app\components\helpers\ArrayHelper;
+use app\components\helpers\Html;
 use app\models\Currency;
 use app\models\search\VacancySearch;
 use app\models\Vacancy;
+use app\widgets\buttons\AddButton;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
-use app\components\helpers\Html;
+use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\web\View;
-use app\widgets\buttons\AddButton;
-use yii\grid\GridView;
 
 /**
  * @var View $this
@@ -36,21 +36,15 @@ $displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
                                 <?= Html::a(
     Yii::t('app', 'Active'),
     ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_ON],
-    [
-                                        'class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')
-                                    ]
-);
-                                ?>
+    ['class' => 'nav-link show ' . ($displayActiveTab ? 'active' : '')]
+); ?>
                             </li>
                             <li class="nav-item">
                                 <?= Html::a(
                                     Yii::t('app', 'Inactive'),
                                     ['/vacancy/index', 'VacancySearch[status]' => VacancySearch::STATUS_OFF],
-                                    [
-                                        'class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : ''),
-                                    ]
-                                );
-                                ?>
+                                    ['class' => 'nav-link show ' . (!$displayActiveTab ? 'active' : '')]
+                                ); ?>
                             </li>
                         </ul>
                     </div>
@@ -97,10 +91,10 @@ $displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
                             [
                                 'label' => Yii::t('app', 'Offers'),
                                 'content' => function (Vacancy $model) {
-                                    return $model->getMatchesCount() ?
+                                    return ($matchesCount = $model->getMatches()->count()) ?
                                         Html::a(
-                                            $model->getNewMatchesCount() ? Html::badge('info', 'new') : $model->getMatchesCount(),
-                                            Url::to(['/resume/show-matches', 'vacancyId' => $model->id])
+                                            $model->getNewMatches()->exists() ? Html::badge('info', 'new') : $matchesCount,
+                                            Url::to(['/resume/matches', 'vacancyId' => $model->id])
                                         ) : '';
                                 },
                                 'format' => 'raw',
@@ -117,7 +111,6 @@ $displayActiveTab = $searchModel->status === VacancySearch::STATUS_ON;
                                 ],
                             ],
                         ],
-
                         'layout' => "{summary}\n{items}\n<div class='card-footer clearfix'>{pager}</div>",
                         'pager' => [
                             'options' => [

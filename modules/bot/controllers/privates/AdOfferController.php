@@ -12,6 +12,7 @@ use app\models\AdPhoto;
 use app\models\AdSearch;
 use app\models\AdSection;
 use app\models\Currency;
+use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\scenarios\AdOffer\SetActiveScenario;
 use app\models\User;
 use app\modules\bot\components\crud\CrudController;
@@ -265,13 +266,7 @@ class AdOfferController extends CrudController
             'text' => Emoji::MENU,
         ];
 
-        $matchesCount = AdOfferMatch::find()
-            ->joinWith('adOffer')
-            ->andWhere([
-                AdOffer::tableName() . '.user_id' => $globalUser->id,
-                AdOffer::tableName() . '.section' => $adSection,
-            ])
-            ->count();
+        $matchesCount = $globalUser->getAdOfferMatches($adSection)->count();
 
         if ($matchesCount) {
             $rowButtons[] = [
@@ -279,6 +274,17 @@ class AdOfferController extends CrudController
                     'adSection' => $adSection,
                 ]),
                 'text' => Emoji::OFFERS . ' ' . $matchesCount,
+            ];
+        }
+
+        $newMatchesCount = $globalUser->getAdOfferNewMatches($adSection)->count();
+
+        if ($newMatchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('section-new-matches', [
+                    'adSection' => $adSection,
+                ]),
+                'text' => Emoji::OFFERS . ' ' . Emoji::NEW1,
             ];
         }
 
@@ -294,7 +300,7 @@ class AdOfferController extends CrudController
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'sectionName' => AdSection::getAdOfferName($adSection),
+                    'sectionName' => $adSection ? AdSection::getAdOfferName($adSection) : '',
                 ]),
                 $buttons
             )
@@ -307,12 +313,11 @@ class AdOfferController extends CrudController
      */
     public function actionView($id = null)
     {
-        $globalUser = $this->getUser();
-
-        $offer = $globalUser->getAdOffers()
+        $offer = AdOffer::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($offer)) {
@@ -332,10 +337,22 @@ class AdOfferController extends CrudController
             ]
         ];
 
+        $rowButtons[] = [
+            'callback_data' => self::createRoute('index', [
+                'adSection' => $offer->section,
+            ]),
+            'text' => Emoji::BACK,
+        ];
+
+        $rowButtons[] = [
+            'callback_data' => MenuController::createRoute(),
+            'text' => Emoji::MENU,
+        ];
+
         $matchesCount = $offer->getMatches()->count();
 
         if ($matchesCount) {
-            $buttons[][] = [
+            $rowButtons[] = [
                 'callback_data' => self::createRoute('matches', [
                     'id' => $offer->id,
                 ]),
@@ -343,24 +360,25 @@ class AdOfferController extends CrudController
             ];
         }
 
-        $buttons[] = [
-            [
-                'callback_data' => self::createRoute('index', [
-                    'adSection' => $offer->section,
-                ]),
-                'text' => Emoji::BACK,
-            ],
-            [
-                'callback_data' => MenuController::createRoute(),
-                'text' => Emoji::MENU,
-            ],
-            [
-                'callback_data' => self::createRoute('update', [
+        $newMatchesCount = $offer->getNewMatches()->count();
+
+        if ($newMatchesCount) {
+            $rowButtons[] = [
+                'callback_data' => self::createRoute('new-matches', [
                     'id' => $offer->id,
                 ]),
-                'text' => Emoji::EDIT,
-            ],
+                'text' => Emoji::OFFERS . ' ' . Emoji::NEW1,
+            ];
+        }
+
+        $rowButtons[] = [
+            'callback_data' => self::createRoute('update', [
+                'id' => $offer->id,
+            ]),
+            'text' => Emoji::EDIT,
         ];
+
+        $buttons[] = $rowButtons;
 
         return $this->getResponseBuilder()
             ->sendPhotoOrEditMessageTextOrSendMessage(
@@ -383,12 +401,11 @@ class AdOfferController extends CrudController
      */
     public function actionMatches($id = null, $page = 1)
     {
-        $globalUser = $this->getUser();
-
-        $offer = $globalUser->getAdOffers()
+        $offer = AdOffer::find()
             ->where([
                 'id' => $id,
             ])
+            ->userOwner()
             ->one();
 
         if (!isset($offer)) {
@@ -397,15 +414,11 @@ class AdOfferController extends CrudController
                 ->build();
         }
 
-        $query = $offer->getMatchesOrderByRank();
-        $matchesCount = $query->count();
-
-        if (!$matchesCount) {
-            return $this->actionView($offer->id);
-        }
+        $query = $offer->getMatches()
+            ->orderByRank();
 
         $pagination = new Pagination([
-            'totalCount' => $matchesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -414,13 +427,17 @@ class AdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        $search = $query->offset($pagination->offset)
+        $offerMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
-        if (!$search) {
+        if (!$offerMatch) {
             return $this->actionView($offer->id);
         }
+
+        $this->getState()->setName(null);
+
+        $search = $offerMatch->adSearch;
 
         $buttons[] = [
             [
@@ -451,10 +468,103 @@ class AdOfferController extends CrudController
             ],
         ];
 
+        $isNewMatch = false;
+
+        if ($offerMatch->isNew()) {
+            $isNewMatch = true;
+
+            $search->markViewedByUserId($this->globalUser->id);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $search,
+                    'isNewMatch' => $isNewMatch,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id AdOffer->id
+     * @return array
+     */
+    public function actionNewMatches($id = null)
+    {
+        $offer = AdOffer::find()
+            ->where([
+                'id' => $id,
+            ])
+            ->userOwner()
+            ->one();
+
+        if (!isset($offer)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $offerMatch = $offer->getNewMatches()
+            ->orderByRank()
+            ->one();
+
+        if (!$offerMatch) {
+            return $this->actionMatches($offer->id);
+        }
+
+        $this->getState()->setName(null);
+
+        $search = $offerMatch->adSearch;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $offer->id,
+                ]),
+                'text' => '#' . $offer->id . ' ' . $offer->title,
+            ]
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('new-matches', [
+                    'id' => $offer->id,
+                ]),
+                'text' => '>',
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $offer->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $isNewMatch = false;
+
+        if ($offerMatch->isNew()) {
+            $isNewMatch = true;
+
+            $search->markViewedByUserId($this->globalUser->id);
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'model' => $search,
+                    'isNewMatch' => $isNewMatch,
                 ]),
                 $buttons,
                 [
@@ -471,23 +581,11 @@ class AdOfferController extends CrudController
      */
     public function actionSectionMatches($adSection = null, $page = 1)
     {
-        $user = $this->getUser();
-
-        $matchesQuery = AdOfferMatch::find()
-            ->joinWith('adOffer')
-            ->andWhere([
-                AdOffer::tableName() . '.user_id' => $user->id,
-                AdOffer::tableName() . '.section' => $adSection,
-            ]);
-
-        $matchesCount = $matchesQuery->count();
-
-        if (!$matchesCount) {
-            return $this->actionIndex($adSection);
-        }
+        $query = $this->globalUser->getAdOfferMatches($adSection)
+            ->orderByRank();
 
         $pagination = new Pagination([
-            'totalCount' => $matchesCount,
+            'totalCount' => $query->count(),
             'pageSize' => 1,
             'params' => [
                 'page' => $page,
@@ -496,12 +594,18 @@ class AdOfferController extends CrudController
             'validatePage' => true,
         ]);
 
-        $adOfferMatch = $matchesQuery->offset($pagination->offset)
+        $offerMatch = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
 
-        $offer = $adOfferMatch->adOffer;
-        $search = $adOfferMatch->adSearch;
+        if (!$offerMatch) {
+            return $this->actionIndex($adSection);
+        }
+
+        $this->getState()->setName(null);
+
+        $offer = $offerMatch->adOffer;
+        $search = $offerMatch->adSearch;
 
         $buttons[] = [
             [
@@ -532,10 +636,91 @@ class AdOfferController extends CrudController
             ],
         ];
 
+        $isNewMatch = false;
+
+        if ($offerMatch->isNew()) {
+            $isNewMatch = true;
+
+            $search->markViewedByUserId($this->globalUser->id);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('match', [
                     'model' => $search,
+                    'isNewMatch' => $isNewMatch,
+                ]),
+                $buttons,
+                [
+                    'disablePreview' => true,
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $adSection
+     * @return array
+     */
+    public function actionSectionNewMatches($adSection = null)
+    {
+        $offerMatch = $this->globalUser->getAdOfferNewMatches($adSection)
+            ->orderByRank()
+            ->one();
+
+        if (!$offerMatch) {
+            return $this->actionSectionMatches($adSection);
+        }
+
+        $this->getState()->setName(null);
+
+        $offer = $offerMatch->adOffer;
+        $search = $offerMatch->adSearch;
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $offer->id,
+                ]),
+                'text' => '#' . $offer->id . ' ' . $offer->title,
+            ]
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('section-new-matches', [
+                    'adSection' => $adSection,
+                ]),
+                'text' => '>',
+            ],
+        ];
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', [
+                    'adSection' => $adSection,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        $isNewMatch = false;
+
+        if ($offerMatch->isNew()) {
+            $isNewMatch = true;
+
+            $search->markViewedByUserId($this->globalUser->id);
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('match', [
+                    'model' => $search,
+                    'isNewMatch' => $isNewMatch,
                 ]),
                 $buttons,
                 [
