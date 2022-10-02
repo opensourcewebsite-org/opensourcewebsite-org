@@ -74,42 +74,27 @@ class ResponseBuilder
                 }
             }
 
-            if (!$this->getUpdate()->getCallbackQuery() || ($this->getUpdate()->getCallbackQuery()->getMessage()->getPhoto() === null)) {
-                if ($callbackQuery = $this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
-                    $this->answerCallbackQuery()->send();
-
+            if ($this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
+                if (!$this->getUpdate()->getRequestMessage()->getPhoto()) {
                     $this->command = new EditMessageTextCommand(
                         $this->getChatId(),
                         $this->getUpdate()->getRequestMessage()->getMessageId(),
                         $messageText,
                         $this->collectEditMessageOptionalParams($replyMarkup, $optionalParams)
                     );
+
+                    return $this;
                 } else {
-                    $this->command = new SendMessageCommand(
-                        $this->getChatId(),
-                        $messageText,
-                        $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
-                    );
-                }
-            } else {
-                if ($callbackQuery = $this->getUpdate()->getCallbackQuery()) {
-                    $this->answerCallbackQuery()->send();
                     $this->deleteMessage()->send();
                 }
-
-                $this->command = new SendMessageCommand(
-                    $this->getChatId(),
-                    $messageText,
-                    $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
-                );
             }
-        } else {
-            $this->command = new SendMessageCommand(
-                $this->getChatId(),
-                $messageText,
-                $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
-            );
         }
+
+        $this->command = new SendMessageCommand(
+            $this->getChatId(),
+            $messageText,
+            $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
+        );
 
         return $this;
     }
@@ -207,21 +192,21 @@ class ResponseBuilder
 
         if (!$photo->isNull()) {
             if ($this->getUpdate()) {
-                if ($callbackQuery = $this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
-                    $this->command = new EditPhotoCommand(
-                        $this->getChatId(),
-                        $this->getUpdate()->getRequestMessage()->getMessageId(),
-                        $photo,
-                        $messageText,
-                        $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
-                    );
+                if ($this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
+                    if ($this->getUpdate()->getRequestMessage()->getPhoto()) {
+                        $this->command = new EditPhotoCommand(
+                            $this->getChatId(),
+                            $this->getUpdate()->getRequestMessage()->getMessageId(),
+                            $photo,
+                            $messageText,
+                            $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
+                        );
 
-                    return $this;
+                        return $this;
+                    } else {
+                        $this->deleteMessage()->send();
+                    }
                 }
-
-                // $this->deleteMessage()->send();
-                //
-                // return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $optionalParams);
             }
 
             $this->command = new SendPhotoCommand(

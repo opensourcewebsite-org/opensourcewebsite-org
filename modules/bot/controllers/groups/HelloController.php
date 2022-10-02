@@ -29,10 +29,10 @@ class HelloController extends Controller
                 '/my_id',
                 '/my_rank',
                 '/my_stellar',
-                '/my_fake_face',
-                '/my_fake_cat',
-                '/my_fake_art',
-                '/my_fake_horse',
+                '/fake_face',
+                '/fake_cat',
+                '/fake_art',
+                '/fake_horse',
                 '/chat_id',
                 '/id',
             ];
@@ -70,11 +70,11 @@ class HelloController extends Controller
                     ],
                     [
                         [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'url' => ExternalLink::getGithubDonationLink(),
                             'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'url' => ExternalLink::getGithubContributionLink(),
                             'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],

@@ -270,7 +270,8 @@ class Module extends \yii\base\Module
             }
         } elseif ($this->getChat()->isGroup()) {
             // Ignore service user id, that also acts as sender of channel posts forwarded to discussion groups
-            if ($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID) {
+            if (($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID)
+                || $this->getUpdate()->getRequestMessage()->isAutomaticForward()) {
                 return true;
             }
         }

@@ -43,6 +43,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'forward_from_chat' => Chat::class,
         'forward_from_message_id' => true,
         'forward_date' => true,
+        'is_automatic_forward' => true,
         'forward_signature' => true,
         'forward_sender_name' => true,
         'reply_to_message' => Message::class,

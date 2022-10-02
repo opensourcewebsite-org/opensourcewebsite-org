@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use Yii;
 
 /**
@@ -38,11 +39,11 @@ class ServicesController extends Controller
                     ],
                     [
                         [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/DONATE.md',
+                            'url' => ExternalLink::getGithubDonationLink(),
                             'text' => Emoji::DONATE . ' ' . Yii::t('bot', 'Donate'),
                         ],
                         [
-                            'url' => 'https://github.com/opensourcewebsite-org/opensourcewebsite-org/blob/master/CONTRIBUTING.md',
+                            'url' => ExternalLink::getGithubContributionLink(),
                             'text' => Emoji::CONTRIBUTE . ' ' . Yii::t('bot', 'Contribute'),
                         ],
                     ],
