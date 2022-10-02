@@ -222,6 +222,7 @@ class MarketplaceController extends Controller
                     $buttons,
                     [
                         'disablePreview' => true,
+                        'disableNotification' => true,
                     ]
                 );
         }

@@ -19,7 +19,6 @@ class MessageText
     private $parseMode;
 
     /**
-     * MessageText constructor.
      * @param string $text
      * @param string|null $parseMode
      */

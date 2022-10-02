@@ -19,19 +19,27 @@ class MyFakeCatController extends Controller
      */
     public function actionIndex()
     {
-        $user = $this->getTelegramUser();
+        $domain = 'thiscatdoesnotexist.com';
+        $url = 'https://' . $domain . '/?v=' . time();
 
         return $this->getResponseBuilder()
-            ->sendPhoto(
-                'https://thiscatdoesnotexist.com/?v=' . time(), //$user->getProviderUserId(),
+            ->editPhotoOrSendPhoto(
+                $url,
                 $this->render('index', [
-                    'user' => $user,
+                    'domain' => $domain,
                 ]),
-                [],
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ],
+                ],
                 [
                     'disablePreview' => true,
                     'disableNotification' => true,
-                    //'replyToMessageId' => $this->getMessage()->getMessageId(),
+                    'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
             ->build();

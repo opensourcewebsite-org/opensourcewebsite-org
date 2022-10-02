@@ -4,6 +4,7 @@ namespace app\modules\bot\components\helpers;
 
 /**
  * Class Photo
+ *
  * @package app\modules\bot\components
  */
 class Photo
@@ -14,7 +15,6 @@ class Photo
     private $fileId;
 
     /**
-     * MessageText constructor.
      * @param string|null $fileId
      */
     public function __construct(?string $fileId)

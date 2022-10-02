@@ -1,1 +1,1 @@
-<?= Yii::t('bot', 'Fake Cat from') ?> <?= $user->getFullLink();
+<?= Yii::t('bot', 'Fake Cat from') ?> <?= $domain ?>

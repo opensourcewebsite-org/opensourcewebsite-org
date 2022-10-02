@@ -76,6 +76,7 @@ class PremiumMembersController extends Controller
                     $buttons,
                     [
                         'disablePreview' => true,
+                        'disableNotification' => true,
                     ]
                 )
                 ->send();

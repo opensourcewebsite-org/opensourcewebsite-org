@@ -10,6 +10,7 @@ use app\modules\bot\components\response\commands\AnswerCallbackQueryCommand;
 use app\modules\bot\components\response\commands\DeleteMessageCommand;
 use app\modules\bot\components\response\commands\EditMessageReplyMarkupCommand;
 use app\modules\bot\components\response\commands\EditMessageTextCommand;
+use app\modules\bot\components\response\commands\EditPhotoCommand;
 use app\modules\bot\components\response\commands\ReplaceMessageTextCommand;
 use app\modules\bot\components\response\commands\SendLocationCommand;
 use app\modules\bot\components\response\commands\SendMessageCommand;
@@ -50,8 +51,6 @@ class ResponseBuilder
         array $replyMarkup = [],
         array $optionalParams = []
     ) {
-        Yii::warning($replyMarkup);
-
         if ($this->getUpdate()) {
             if ($this->getChat()->isPrivate()) {
                 // Delete messages, sended earlier by bot in private chat
@@ -81,7 +80,7 @@ class ResponseBuilder
 
                     $this->command = new EditMessageTextCommand(
                         $this->getChatId(),
-                        $this->getUpdate()->requestMessage->getMessageId(),
+                        $this->getUpdate()->getRequestMessage()->getMessageId(),
                         $messageText,
                         $this->collectEditMessageOptionalParams($replyMarkup, $optionalParams)
                     );
@@ -192,6 +191,51 @@ class ResponseBuilder
     }
 
     /**
+     * @param ?string $photoFileId
+     * @param MessageText $messageText
+     * @param array $replyMarkup
+     * @param array $optionalParams
+     * @return ResponseBuilder
+     */
+    public function editPhotoOrSendPhoto(
+        ?string $photoFileId,
+        MessageText $messageText,
+        array $replyMarkup = [],
+        array $optionalParams = []
+    ) {
+        $photo = new Photo($photoFileId);
+
+        if (!$photo->isNull()) {
+            if ($this->getUpdate()) {
+                if ($callbackQuery = $this->getUpdate()->getCallbackQuery() && ($this->getChatId() == $this->getUpdate()->getChat()->getId())) {
+                    $this->command = new EditPhotoCommand(
+                        $this->getChatId(),
+                        $this->getUpdate()->getRequestMessage()->getMessageId(),
+                        $photo,
+                        $messageText,
+                        $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
+                    );
+
+                    return $this;
+                }
+
+                // $this->deleteMessage()->send();
+                //
+                // return $this->sendPhotoOrSendMessage($photoFileId, $messageText, $replyMarkup, $optionalParams);
+            }
+
+            $this->command = new SendPhotoCommand(
+                $this->getChatId(),
+                $photo,
+                $messageText,
+                $this->collectSendMessageOptionalParams($replyMarkup, $optionalParams)
+            );
+        }
+
+        return $this;
+    }
+
+    /**
      * filter params and create array of optional params  for edit message api
      * command
      *
@@ -203,6 +247,8 @@ class ResponseBuilder
         array $replyMarkup,
         array $optionalParams = []
     ): array {
+        Yii::warning($replyMarkup);
+
         return $this->filterAndMergeOptionalParams(
             $replyMarkup,
             $optionalParams,
@@ -225,6 +271,8 @@ class ResponseBuilder
         array $replyMarkup,
         array $optionalParams = []
     ): array {
+        Yii::warning($replyMarkup);
+
         return $this->filterAndMergeOptionalParams(
             $replyMarkup,
             $optionalParams,
@@ -307,7 +355,7 @@ class ResponseBuilder
 
             $this->command = new EditMessageReplyMarkupCommand(
                 $this->getChatId(),
-                $this->getUpdate()->requestMessage->getMessageId(),
+                $this->getUpdate()->getRequestMessage()->getMessageId(),
                 !empty($replyMarkup) ? new InlineKeyboardMarkup($replyMarkup) : null
             );
         }
@@ -325,7 +373,7 @@ class ResponseBuilder
 
             $this->command = new EditMessageReplyMarkupCommand(
                 $this->getChatId(),
-                $this->getUpdate()->requestMessage->getMessageId(),
+                $this->getUpdate()->getRequestMessage()->getMessageId(),
                 null
             );
         }
@@ -362,8 +410,6 @@ class ResponseBuilder
         array $replyMarkup = [],
         array $optionalParams = []
     ) {
-        Yii::warning($replyMarkup);
-
         $this->command = new SendMessageCommand(
             $this->getChatId(),
             $messageText,
@@ -386,8 +432,6 @@ class ResponseBuilder
         array $replyMarkup = [],
         array $optionalParams = []
     ) {
-        Yii::warning($replyMarkup);
-
         $this->command = new EditMessageTextCommand(
             $this->getChatId(),
             $messageId,

@@ -19,19 +19,27 @@ class MyFakeHorseController extends Controller
      */
     public function actionIndex()
     {
-        $user = $this->getTelegramUser();
+        $domain = 'thishorsedoesnotexist.com';
+        $url = 'https://' . $domain . '/?v=' . time();
 
         return $this->getResponseBuilder()
-            ->sendPhoto(
-                'https://thishorsedoesnotexist.com/?v=' . time(), //$user->getProviderUserId(),
+            ->editPhotoOrSendPhoto(
+                $url,
                 $this->render('index', [
-                    'user' => $user,
+                    'domain' => $domain,
                 ]),
-                [],
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ],
+                ],
                 [
                     'disablePreview' => true,
                     'disableNotification' => true,
-                    //'replyToMessageId' => $this->getMessage()->getMessageId(),
+                    'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
             ->build();

@@ -16,7 +16,9 @@ namespace app\modules\bot\components\helpers;
 class LocationParser
 {
     private const MAIN_DELIMITER = '|';
+
     private array $delimiters;
+
     private string $locationStr;
 
     public function __construct(string $locationStr, array $delimiters = [',', ' ', ';', "\n"])

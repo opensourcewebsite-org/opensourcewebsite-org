@@ -19,19 +19,27 @@ class MyFakeFaceController extends Controller
      */
     public function actionIndex()
     {
-        $user = $this->getTelegramUser();
+        $domain = 'thispersondoesnotexist.com';
+        $url = 'https://' . $domain . '/image?v=' . time();
 
         return $this->getResponseBuilder()
-            ->sendPhoto(
-                'https://thispersondoesnotexist.com/image?v=' . time(), //$user->getProviderUserId(),
+            ->editPhotoOrSendPhoto(
+                $url,
                 $this->render('index', [
-                    'user' => $user,
+                    'domain' => $domain,
                 ]),
-                [],
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ],
+                ],
                 [
                     'disablePreview' => true,
                     'disableNotification' => true,
-                    //'replyToMessageId' => $this->getMessage()->getMessageId(),
+                    'replyToMessageId' => $this->getMessage()->getMessageId(),
                 ]
             )
             ->build();
