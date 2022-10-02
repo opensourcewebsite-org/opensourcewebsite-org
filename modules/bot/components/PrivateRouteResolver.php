@@ -43,9 +43,15 @@ class PrivateRouteResolver extends Component
         if ($callbackQuery = $update->getCallbackQuery()) {
             $commandText = $callbackQuery->getData();
         } elseif ($requestMessage = $update->getRequestMessage()) {
-            if ($forwardFromUser = $requestMessage->getForwardFrom()) {
+            if ($forwardFrom = $requestMessage->getForwardFrom()) {
                 // show user by forward message
                 $route = 'user/message';
+            } elseif ($contact = $requestMessage->getContact()) {
+                if ($userId = $contact->getUserId()) {
+                    // show user by contact
+                    $route = 'user/id';
+                    $params['id'] = $userId;
+                }
             } else {
                 $commandText = $requestMessage->getText();
 
