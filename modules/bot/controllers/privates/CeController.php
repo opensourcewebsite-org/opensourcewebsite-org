@@ -130,10 +130,13 @@ class CeController extends CrudController
                 'selling_currency_min_amount' => [
                     'isRequired' => false,
                 ],
+                'selling_currency_max_amount' => [
+                    'isRequired' => false,
+                ],
                 'sellingPaymentMethods' => [
                     'isRequired' => false,
-                    'view' => 'set-selling_payment_methods',
-                    'samePageAfterAdd' => true,
+                    'view' => 'choose-selling_payment_methods',
+                    'viewAfterAdd' => 'set-selling_payment_methods',
                     'enableAddButton' => true,
                     'showRowsList' => true,
                     'createRelationIfEmpty' => true,
@@ -144,12 +147,6 @@ class CeController extends CrudController
                             'payment_method_id' => [PaymentMethodCurrencyByCurrency::class, 'payment_method_id'],
                         ],
                         'removeOldRows' => true,
-                    ],
-                    'buttonSkip' => [
-                        'callback_data' => self::createRoute('en-a', [
-                            'a' => 'selling_cash_on',
-                            'text' => self::VALUE_NO,
-                        ]),
                     ],
                 ],
                 'selling_cash_on' => [
@@ -232,8 +229,8 @@ class CeController extends CrudController
                 ],
                 'buyingPaymentMethods' => [
                     'isRequired' => false,
-                    'view' => 'set-buying_payment_methods',
-                    'samePageAfterAdd' => true,
+                    'view' => 'choose-buying_payment_methods',
+                    'viewAfterAdd' => 'set-buying_payment_methods',
                     'enableAddButton' => true,
                     'showRowsList' => true,
                     'createRelationIfEmpty' => true,
@@ -244,12 +241,6 @@ class CeController extends CrudController
                             'payment_method_id' => [PaymentMethodCurrencyByCurrency::class, 'payment_method_id'],
                         ],
                         'removeOldRows' => true,
-                    ],
-                    'buttonSkip' => [
-                        'callback_data' => self::createRoute('en-a', [
-                            'a' => 'buying_cash_on',
-                            'text' => self::VALUE_NO,
-                        ]),
                     ],
                 ],
                 'buying_cash_on' => [
@@ -511,33 +502,27 @@ class CeController extends CrudController
 
         $this->getState()->setName(null);
 
-        $buttons[] = [
-            [
+        $buttons = [
+            [[
                 'callback_data' => self::createRoute('set-status', [
                     'id' => $order->id,
                 ]),
                 'text' => $order->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
-            ],
-        ];
-
-        $buttons[] = [
-            [
+            ]],
+            [[
                 'callback_data' => self::createRoute('e-a', [
                     'id' => $order->id,
                     'a' => 'selling_rate',
                 ]),
-                'text' => Yii::t('bot', $order->getAttributeLabel('selling_rate')) . ($order->selling_rate ? ': ' . (float)$order->selling_rate : ''),
-            ],
-        ];
-
-        $buttons[] = [
-            [
+                'text' => Yii::t('bot', $order->getAttributeLabel('selling_rate')) . ($order->selling_rate ? ': ' . ($order->selling_rate > 1 ? (float) $order->selling_rate : $order->selling_rate) : ''),
+            ]],
+            [[
                 'callback_data' => self::createRoute('e-a', [
                     'id' => $order->id,
                     'a' => 'buying_rate',
                 ]),
-                'text' => Yii::t('bot', $order->getAttributeLabel('buying_rate')) . ($order->buying_rate ? ': ' . (float)$order->buying_rate : ''),
-            ],
+                'text' => Yii::t('bot', $order->getAttributeLabel('buying_rate')) . ($order->buying_rate ? ': ' . ($order->buying_rate > 1 ? (float) $order->buying_rate : $order->buying_rate) : ''),
+            ]],
         ];
 
         $rowButtons[] = [

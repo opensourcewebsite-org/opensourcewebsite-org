@@ -119,42 +119,48 @@ class AdSearchController extends CrudController
                     'isRequired' => false,
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'Edit currency'),
-                            'item' => 'currency',
-                        ],
+                            [
+                                'text' => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ]
                     ],
                 ],
                 'location' => [
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
-                            'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (AdSearch $model) {
-                                $latitude = 0;//$this->getTelegramUser()->location_lat;
-                                $longitude = 0;//$this->getTelegramUser()->location_lon;
-                                if ($latitude && $longitude) {
-                                    $model->location_lat = $latitude;
-                                    $model->location_lon = $longitude;
+                            [
+                                'hideCondition' => !isset($this->getTelegramUser()->userLocation),
+                                'text' => Yii::t('bot', 'MY LOCATION'),
+                                'callback' => function (AdSearch $model) {
+                                    $latitude = $this->getTelegramUser()->userLocation->location_lat;
+                                    $longitude = $this->getTelegramUser()->userLocation->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
 
-                                    return $model;
-                                }
+                                        return $model;
+                                    }
 
-                                return null;
-                            },
-                        ],
+                                    return null;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'pickup_radius' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (AdSearch $model) {
-                                $model->pickup_radius = 0;
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (AdSearch $model) {
+                                    $model->pickup_radius = 0;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'user_id' => [
@@ -183,6 +189,7 @@ class AdSearchController extends CrudController
     public function actionIndex($adSection = null, $page = 1)
     {
         $this->getState()->setName(null);
+        $this->state->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
 
         $globalUser = $this->getUser();
 

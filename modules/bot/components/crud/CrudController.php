@@ -63,6 +63,8 @@ abstract class CrudController extends Controller
     protected $enableGlobalBackRoute = true;
     /** @var boolean */
     protected $enableEndRoute = true;
+    public $afterAdd = false;
+    public $actionParams;
     
     /** @inheritDoc */
     public function __construct($id, $module, $config = [])
@@ -94,7 +96,7 @@ abstract class CrudController extends Controller
             'state' => $module->getUserState(),
             'controller' => $this,
         ]);
-
+        
         parent::__construct($id, $module, $config);
     }
 
@@ -108,18 +110,30 @@ abstract class CrudController extends Controller
     public function bindActionParams($action, $params)
     {
         if (!method_exists(self::class, $action->actionMethod)) {
-            $this->backRoute->make($action->id, $params);
+           // $this->backRoute->make($action->id, $params);
             $this->endRoute->make($action->id, $params);
             $this->field->set($this->modelName, self::FIELD_NAME_ID, null);
         } elseif (!strcmp($action->actionMethod, 'actionUpdate')) {
-            $this->backRoute->make($action->id, $params);
+            //$this->backRoute->make($action->id, $params);
             $this->field->reset(null);
         }
 
         $this->rule = $this->rules() ?? [];
         $this->attributes = $this->rule['attributes'] ?? [];
 
+        $this->actionParams = $params;
+
         return parent::bindActionParams($action, $params);
+    }
+
+    public function afterAction($action, $result)
+    {
+        $result = parent::afterAction($action, $result);
+
+        $this->backRoute->make($action->id, $this->actionParams);
+        $this->getState()->save($this->getTelegramUser());
+
+        return $result;
     }
 
     /**
@@ -127,7 +141,7 @@ abstract class CrudController extends Controller
      */
     public function actionCreate()
     {
-        $this->field->reset(null);
+        $this->field->reset($this->modelName);
         $attribute = array_keys($this->attributes)[0];
 
         return $this->generateResponse($this->modelName, $attribute, [
@@ -443,8 +457,9 @@ abstract class CrudController extends Controller
                 $isEdit = true;
             }
 
-            if ($config['samePageAfterAdd'] ?? false) {
+            if ((isset($config['viewAfterAdd'])) && ($editableRelationId !== null)) {
                 $nextAttribute = $attributeName;
+                $this->afterAdd = true;
             } else {
                 $nextAttribute = $this->getNextKey($this->attributes, $attributeName);
             }
@@ -1421,6 +1436,9 @@ abstract class CrudController extends Controller
                 $transaction->rollBack();
             }
         }
+        else {
+            Yii::warning('Validation errors: ' . json_encode($model->errors));
+        }
 
         return $this->getResponseBuilder()
             ->answerCallbackQuery()
@@ -2202,6 +2220,10 @@ abstract class CrudController extends Controller
     {
         $relationAttributeName = ArrayHelper::getValue($options, 'relationAttributeName', null);
         $config = $this->getAttributeRule($attributeName);
+
+        if ($this->afterAdd && isset($config['viewAfterAdd'])) {
+            return $config['viewAfterAdd'];
+        }
 
         if (isset($config['view'])) {
             return $config['view'];
