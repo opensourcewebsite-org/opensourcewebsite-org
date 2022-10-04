@@ -89,7 +89,7 @@ class CeController extends CrudController
                     'isRequired' => false,
                     'buttons' => [
                         [
-                            [   
+                            [
                                 'hideCondition' => function () {
                                     $selling_rate = $this->field->get($this->modelName, 'selling_rate');
                                     return !isset($selling_rate);
@@ -108,7 +108,7 @@ class CeController extends CrudController
                     'isRequired' => false,
                     'buttons' => [
                         [
-                            [   
+                            [
                                 'hideCondition' => function () {
                                     $buying_rate = $this->field->get($this->modelName, 'buying_rate');
                                     return !isset($buying_rate);

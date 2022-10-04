@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\modules\bot\validators;
 
 use yii\validators\Validator;

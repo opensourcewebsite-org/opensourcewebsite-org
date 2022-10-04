@@ -578,7 +578,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     }
 
     public function beforeSave($insert)
-    {   
+    {
         if ($this->isAttributeChanged('selling_rate')) {
             if (floatval($this->selling_rate)) {
                 $this->buying_rate = 1 / $this->selling_rate;
@@ -593,7 +593,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                 $this->selling_rate = null;
                 $this->buying_rate = null;
             }
-        } 
+        }
 
         if (!$insert && (new UpdateScenario($this))->run()) {
             $this->processed_at = null;

@@ -112,7 +112,7 @@ class AttributeButtonsService
         $isEdit = ArrayHelper::getValue($options, 'isEdit', null);
         $rule = ArrayHelper::getValue($options, 'rule', []);
 
-        $buttonRows = [];
+        $rowButtons = [];
         foreach ($configButtonRows as $configButtons) {
             $buttons = [];
             foreach ($configButtons as $key => $configButton) {
@@ -139,16 +139,14 @@ class AttributeButtonsService
                 );
                 if (is_numeric($key)) {
                     $buttons[] = $configButton; // Fix order for hidden buttons
-                }
-                else {
+                } else {
                     $buttons[$key] = $configButton;
                 }
-
             }
-            $buttonRows[] = $buttons;
+            $rowButtons[] = $buttons;
         }
 
-        return $buttonRows;
+        return $rowButtons;
     }
 
     /**

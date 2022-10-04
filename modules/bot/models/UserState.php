@@ -96,17 +96,15 @@ class UserState
                     }
                 }
             }
-            
+
             if (!empty($intermediate)) {
                 $this->fields = [
                     'intermediate' => $intermediate
                 ];
-            }
-            else {
+            } else {
                 $this->fields = [];
             }
-        }
-        else {
+        } else {
             $this->fields = [];
         }
     }

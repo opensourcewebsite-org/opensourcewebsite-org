@@ -82,7 +82,7 @@ class CaController extends CrudController
                                 'route' => $this->backRoute->get(),
                                 'text' => Emoji::BACK,
                             ],
-                        
+
                             [
                                 'editMode' => false,
                                 'route' => MenuController::createRoute(),
@@ -130,7 +130,7 @@ class CaController extends CrudController
                                 'route' => $this->backRoute->get(),
                                 'text' => Emoji::BACK,
                             ],
-                        
+
                             [
                                 'editMode' => false,
                                 'route' => MenuController::createRoute(),
@@ -170,7 +170,7 @@ class CaController extends CrudController
                                 'route' => $this->backRoute->get(),
                                 'text' => Emoji::BACK,
                             ],
-                        
+
                             [
                                 'editMode' => false,
                                 'route' => MenuController::createRoute(),
@@ -244,7 +244,7 @@ class CaController extends CrudController
             'pageSizeParam' => false,
             'validatePage' => true,
         ]);
-        
+
         $matchOrder = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->one();
@@ -353,7 +353,7 @@ class CaController extends CrudController
             'text' => Emoji::MENU,
             ]
         ];
-        
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [

@@ -2,26 +2,26 @@
 
 namespace app\modules\bot\components\crud;
 
-use Yii;
-use app\modules\bot\components\Controller;
 use app\components\helpers\ArrayHelper;
-use app\modules\bot\components\crud\services\IntermediateFieldService;
-use app\modules\bot\components\crud\services\ModelRelationService;
-use app\modules\bot\components\helpers\Emoji;
-use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\components\request\Request;
-use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\components\Controller;
 use app\modules\bot\components\crud\rules\FieldInterface;
 use app\modules\bot\components\crud\services\AttributeButtonsService;
 use app\modules\bot\components\crud\services\BackRouteService;
 use app\modules\bot\components\crud\services\EndRouteService;
+use app\modules\bot\components\crud\services\IntermediateFieldService;
+use app\modules\bot\components\crud\services\ModelRelationService;
 use app\modules\bot\components\crud\services\ViewFileService;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\components\request\Request;
+use app\modules\bot\components\response\ResponseBuilder;
+use app\modules\bot\controllers\privates\MenuController;
+use Yii;
 use yii\base\DynamicModel;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\BadRequestHttpException;
-use app\modules\bot\controllers\privates\MenuController;
 
 /**
  * Class CrudController
@@ -65,7 +65,7 @@ abstract class CrudController extends Controller
     protected $enableEndRoute = true;
     public $afterAdd = false;
     public $actionParams;
-    
+
     /** @inheritDoc */
     public function __construct($id, $module, $config = [])
     {
@@ -96,7 +96,7 @@ abstract class CrudController extends Controller
             'state' => $module->getUserState(),
             'controller' => $this,
         ]);
-        
+
         parent::__construct($id, $module, $config);
     }
 
@@ -110,7 +110,7 @@ abstract class CrudController extends Controller
     public function bindActionParams($action, $params)
     {
         if (!method_exists(self::class, $action->actionMethod)) {
-           // $this->backRoute->make($action->id, $params);
+            // $this->backRoute->make($action->id, $params);
             $this->endRoute->make($action->id, $params);
             $this->field->set($this->modelName, self::FIELD_NAME_ID, null);
         } elseif (!strcmp($action->actionMethod, 'actionUpdate')) {
@@ -545,9 +545,8 @@ abstract class CrudController extends Controller
 
         if (array_key_exists($attributeName, $this->attributes)) {
             if (isset($this->rule['isVirtual'])) {
-                $model = new $this->rule['model'];
-            }
-            else {
+                $model = new $this->rule['model']();
+            } else {
                 $model = $this->getRuleModel($this->rule, $id);
             }
             if (isset($model)) {
@@ -1435,8 +1434,7 @@ abstract class CrudController extends Controller
                 Yii::warning($e);
                 $transaction->rollBack();
             }
-        }
-        else {
+        } else {
             Yii::warning('Validation errors: ' . json_encode($model->errors));
         }
 
@@ -1477,7 +1475,7 @@ abstract class CrudController extends Controller
     {
         $keys = array_keys($assocArray);
         $nextKey = $keys[array_search($element, $keys) + 1] ?? null;
-        
+
         if (isset($assocArray[$nextKey]['hidden'])) {
             $hidden = $assocArray[$nextKey]['hidden'];
             if (is_callable($hidden)) {
@@ -1921,7 +1919,7 @@ abstract class CrudController extends Controller
      */
     private function getDefaultSystemButtons($isEdit)
     {
-        if ($isEdit && $this->enableGlobalBackRoute ) {
+        if ($isEdit && $this->enableGlobalBackRoute) {
             $backRoute = $this->backRoute->get();
         } else {
             $backRoute = self::createRoute('p-a');
@@ -1978,7 +1976,7 @@ abstract class CrudController extends Controller
         $isEmpty = ArrayHelper::getValue($options, 'isEmpty', false);
         $modelId = ArrayHelper::getValue($options, 'modelId', null);
         $editableRelationId = ArrayHelper::getValue($options, 'editableRelationId', null);
-        
+
         $isEdit = !is_null($modelId);
         if (isset($this->rule['isVirtual']) && !empty($this->getEditingAttributes())) {
             $isEdit = true;
@@ -2052,7 +2050,7 @@ abstract class CrudController extends Controller
         if (!empty($configSystemButtons)) {
             $systemButtons = $configSystemButtons;
         }
-        
+
         return array_values($systemButtons);
     }
 

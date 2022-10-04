@@ -12,8 +12,8 @@ use app\modules\bot\models\UserState;
  */
 class IntermediateFieldService
 {
-    const SAFE_ATTRIBUTE = 'safeAttribute';
-    const SAFE_ATTRIBUTE_FLAG = 'safeAttributeFlag';
+    public const SAFE_ATTRIBUTE = 'safeAttribute';
+    public const SAFE_ATTRIBUTE_FLAG = 'safeAttributeFlag';
 
     /** @var Controller */
     public $controller;
