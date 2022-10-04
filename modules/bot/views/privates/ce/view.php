@@ -17,9 +17,9 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?= Emoji::HIDDEN ?> <i><?= $model->buying_currency_label ?></i><br/>
 <?php endif; ?>
 <br/>
-<b><?= Yii::t('bot', 'Exchange rate') ?></b>: <?= $model->selling_rate ?: '∞' ?><br/>
+<b><?= Yii::t('bot', 'Exchange rate') ?></b>: <?= ($model->selling_rate > 1 ? (float) $model->selling_rate : $model->selling_rate) ?: '∞' ?><br/>
 <br/>
-<b><?= Yii::t('bot', 'Inverse rate') ?></b>: <?= $model->buying_rate ?: '∞' ?><br/>
+<b><?= Yii::t('bot', 'Inverse rate') ?></b>: <?= ($model->buying_rate > 1 ? (float) $model->buying_rate : $model->buying_rate) ?: '∞' ?><br/>
 <br/>
 <b><?= Yii::t('ce_order', 'Limits') ?></b>: <?= $model->getFormatLimits() ?><br/>
 <br/>

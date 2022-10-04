@@ -103,7 +103,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     {
         return [
             [['user_id', 'selling_currency_id', 'buying_currency_id'], 'required'],
-            [['user_id', 'selling_currency_id', 'buying_currency_id', 'status', 'selling_delivery_radius', 'buying_delivery_radius', 'created_at', 'processed_at'], 'integer'],
+            [['user_id', 'selling_currency_id', 'buying_currency_id', 'status', 'selling_delivery_radius', 'buying_delivery_radius', 'created_at', 'processed_at',], 'integer'],
             [['selling_cash_on', 'buying_cash_on'], 'boolean'],
             [['selling_delivery_radius', 'buying_delivery_radius'], RadiusValidator::class],
             [
@@ -185,18 +185,18 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
                 ],
-                'filter', 'filter' => function ($value) {
-                    return ($value != 0 ? $value : null);
-                },
+                'double',
+                'min' => 0,
+                'max' => 9999999999.99999999,
             ],
             [
                 [
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
                 ],
-                'double',
-                'min' => 0,
-                'max' => 9999999999.99999999,
+                'filter', 'filter' => function ($value) {
+                    return ($value != 0 ? $value : null);
+                },
             ],
             [
                 [
