@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\models\forms;
 
-use app\components\helpers\ReferrerHelper;
 use app\models\User;
 use Yii;
 use yii\base\Model;
@@ -79,13 +78,6 @@ class SignupForm extends Model
         }
 
         $user = $this->factoryUser();
-
-        // If referrer exists then add referrer id in user table
-        $referrerID = ReferrerHelper::getReferrerIdFromCookie();
-
-        if ($referrerID != null) {
-            $user->referrer_id = $referrerID;
-        }
 
         return $user->save() ? Yii::$app->user->login($user, 30 * 24 * 60 * 60) : null;
     }

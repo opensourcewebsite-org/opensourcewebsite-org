@@ -38,12 +38,6 @@ class MyAccountController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyReferralsController::createRoute(),
-                            'text' => Yii::t('bot', 'Referrals')
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MyStellarController::createRoute(),
                             'text' => Yii::t('bot', 'Stellar account'),
                         ],

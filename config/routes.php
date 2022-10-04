@@ -13,7 +13,6 @@ return [
     'data/currency/<id>' => 'data/currency-view',
     'cron-job' => 'cron-job/index',
     'cron-job/view/<id:[\d]+>' => 'cron-job/view',
-    'referrals' => 'referrals/index',
     'webhook/telegram/<token>' => 'webhook/telegram',
     'webhook/telegram-bot/<token>' => 'webhook/telegram-bot',
     'support-groups/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',

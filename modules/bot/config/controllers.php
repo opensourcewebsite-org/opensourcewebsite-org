@@ -45,7 +45,6 @@ return [
     'contact',
     'public_group',
     'public_channel',
-    'my_referrals',
     'my_stellar',
     'my_website_account',
     'my_rating',

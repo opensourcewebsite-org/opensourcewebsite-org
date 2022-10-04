@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use app\components\Controller;
 use app\components\Converter;
-use app\components\helpers\ReferrerHelper;
 use app\models\Contact;
 use app\models\Country;
 use app\models\Currency;

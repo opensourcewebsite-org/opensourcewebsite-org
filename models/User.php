@@ -32,7 +32,6 @@ use yii\web\IdentityInterface;
  * @property string $name
  * @property string $birthday
  * @property integer $timezone
- * @property integer $referrer_id
  * @property integer $gender_id
  * @property integer $currency_id
  * @property integer $sexuality_id
@@ -775,26 +774,6 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         return true;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReferrals(int $level = 1)
-    {
-        // TODO level
-        return User::find()
-            ->where([
-                'referrer_id' => $this->id,
-            ]);
-    }
-
-    /**
-     * @return UserQuery
-     */
-    public function getReferrer()
-    {
-        return $this->hasOne(User::class, ['id' => 'referrer_id']);
     }
 
     public function getContact(): ContactQuery

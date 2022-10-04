@@ -116,7 +116,7 @@ use app\components\helpers\ExternalLink;
   <div class="container">
     <div class="row">
       <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Membership & Loyalty Program') ?></h2>
+        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'Membership') ?></h2>
       </div>
     </div>
       <div class="row">
@@ -129,19 +129,6 @@ use app\components\helpers\ExternalLink;
               <li><?= Yii::t('bot', 'More possibilities and less limits when using of the Bot and Website') ?>.</li>
               <li><?= Yii::t('bot', 'Passive income, such as dividends from the profits of the Bot and Website, which is distributed proportionally among all users in accordance with the value of their Ratings') ?>.</li>
           </ul>
-        </div>
-        <div class="col-md-12">
-          <p class="text-muted"><?= Yii::t('bot', 'All new users, who have joined the Bot or Website through your referral link, become your referrals') ?>.</p>
-        </div>
-        <div class="col-md-12">
-          <ul>
-              <li><?= Yii::t('bot', 'You get rewards from your referrals for their purchases on the Website and websites of our partner companies, and from offline partners using a discount card') ?>.</li>
-              <li><?= Yii::t('bot', 'Multi-level loyalty program, you get rewards from multiple referral levels, not only from first level') ?>.</li>
-              <li><?= Yii::t('bot', 'User community decides what conditions will be in loyalty program') ?>. <?= Yii::t('bot', 'You can participate in discuss process and vote for the conditions') ?>.</li>
-          </ul>
-        </div>
-        <div class="col-md-12">
-          <p class="text-muted"><?= Yii::t('app', 'Soon the loyalty program will be significantly increased and new bonuses will be added') ?>.</p>
         </div>
       </div>
   </div>

@@ -46,31 +46,31 @@ AdminLteUserAsset::register($this);
         'titleOptions' => ['class' => 'card-header'],
         'bodyOptions' => ['id' => 'main-modal-body'],
     ]);
-    Modal::end(); ?>
+Modal::end(); ?>
 
     <?php Modal::begin([
-        'id' => 'main-modal-xl',
-        'size' => Modal::SIZE_EXTRA_LARGE,
-        'options' => ['class' => 'card-primary', 'tabindex' => false],
-        'bodyOptions' => ['id' => 'main-modal-xl-body'],
-    ]);
-    Modal::end(); ?>
+    'id' => 'main-modal-xl',
+    'size' => Modal::SIZE_EXTRA_LARGE,
+    'options' => ['class' => 'card-primary', 'tabindex' => false],
+    'bodyOptions' => ['id' => 'main-modal-xl-body'],
+]);
+Modal::end(); ?>
     <div class="wrapper">
         <?php
-        NavBar::begin([
-            'renderInnerContainer' => false,
-            'options' => [
-                'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
-            ],
-        ]);
+    NavBar::begin([
+        'renderInnerContainer' => false,
+        'options' => [
+            'class' => 'main-header navbar navbar-expand bg-white navbar-light border-bottom',
+        ],
+    ]);
 
-        $menuItemsLeft[] = ['label' => '<i class="fa fa-bars"></i>', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link'], 'encode' => false];
+$menuItemsLeft[] = ['label' => '<i class="fa fa-bars"></i>', 'url' => '#', 'options' => ['class' => 'nav-item', 'data-widget' => 'pushmenu'], 'linkOptions' => ['class' => 'nav-link'], 'encode' => false];
 
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav'],
-            'items' => $menuItemsLeft,
-            'activateParents' => true,
-        ]); ?>
+echo Nav::widget([
+    'options' => ['class' => 'navbar-nav'],
+    'items' => $menuItemsLeft,
+    'activateParents' => true,
+]); ?>
 
         <div class="dropdown dropdown-inner ml-auto">
             <a class="nav-link dropdown-toggle dropbtn dropbtn-inner" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -85,21 +85,21 @@ AdminLteUserAsset::register($this);
 
                 <div class="dropdown-container">
                 <?php
-                $languages = Language::find()
-                    ->orderBy(['name_ascii' => SORT_ASC])
-                    ->all();
+        $languages = Language::find()
+            ->orderBy(['name_ascii' => SORT_ASC])
+            ->all();
 
-                if (!empty($languages)) {
-                    /** @var Language $language */
-                    foreach ($languages as $language) {
-                        $active = ($language->code == Yii::$app->language) ? 'active' : null;
-                        echo Html::a(
-                            $language->name_ascii,
-                            Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]),
-                            ['class' => ['dropdown-item', $active]]
-                        );
-                    }
-                } ?>
+if (!empty($languages)) {
+    /** @var Language $language */
+    foreach ($languages as $language) {
+        $active = ($language->code == Yii::$app->language) ? 'active' : null;
+        echo Html::a(
+            $language->name_ascii,
+            Yii::$app->urlManager->createUrl(['site/change-language', 'lang' => $language->code]),
+            ['class' => ['dropdown-item', $active]]
+        );
+    }
+} ?>
                 </div>
             </div>
         </div>
@@ -107,67 +107,59 @@ AdminLteUserAsset::register($this);
         <?php echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => [
-                [
-                    'label' => ($userEmail = Yii::$app->user->identity->email) ? Gravatar::widget([
-                        'email' => $userEmail->email,
-                        'secure' => true,
-                        'options' => [
-                            'alt' => 'Profile Gravatar',
-                            'class' => 'img-circle',
-                        ],
-                        'size' => 20,
-                    ]) : '<i class="fas fa-user"></i>',
-                    'items' => [
-                        [
-                            'label' => Yii::t('app', 'Dashboard'),
-                            'url' => ['/dashboard'],
-                            'linkOptions' => [
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/dashboard') ? 'active' : ''),
-                            ]
-                        ],
-                        [
-                            'label' => Yii::t('app', 'Account'),
-                            'url' => ['/account'],
-                            'linkOptions' => [
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/account') ? 'active' : ''),
-                            ]
-                        ],
-                        [
-                            'label' => Yii::t('app', 'Loyalty program'),
-                            'url' => ['/referrals'],
-                            'linkOptions' => [
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'referrals/index') ? 'active' : ''),
-                            ]
-                        ],
-                        [
-                            'label' => Yii::t('app', 'Merge accounts'),
-                            'url' => ['/merge-accounts'],
-                            'linkOptions' => [
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'merge-accounts/index') ? 'active' : ''),
-                            ]
-                        ],
-                        [
-                            'label' => Yii::t('app', 'Logout'),
-                            'url' => ['site/logout'],
-                            'linkOptions' => [
-                                'data-method' => 'post',
-                                'tabindex' => -1,
-                                'class' => 'dropdown-item'
-                            ]
-                        ],
-                    ],
-                    'encode' => false,
-                    'options' => ['class' => 'nav-item'],
-                    'linkOptions' => ['class' => 'nav-link'],
-                ]
+[
+    'label' => ($userEmail = Yii::$app->user->identity->email) ? Gravatar::widget([
+        'email' => $userEmail->email,
+        'secure' => true,
+        'options' => [
+            'alt' => 'Profile Gravatar',
+            'class' => 'img-circle',
+        ],
+        'size' => 20,
+    ]) : '<i class="fas fa-user"></i>',
+    'items' => [
+        [
+            'label' => Yii::t('app', 'Dashboard'),
+            'url' => ['/dashboard'],
+            'linkOptions' => [
+                'tabindex' => -1,
+                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/dashboard') ? 'active' : ''),
+            ]
+        ],
+        [
+            'label' => Yii::t('app', 'Account'),
+            'url' => ['/account'],
+            'linkOptions' => [
+                'tabindex' => -1,
+                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/account') ? 'active' : ''),
+            ]
+        ],
+        [
+            'label' => Yii::t('app', 'Merge accounts'),
+            'url' => ['/merge-accounts'],
+            'linkOptions' => [
+                'tabindex' => -1,
+                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'merge-accounts/index') ? 'active' : ''),
+            ]
+        ],
+        [
+            'label' => Yii::t('app', 'Logout'),
+            'url' => ['site/logout'],
+            'linkOptions' => [
+                'data-method' => 'post',
+                'tabindex' => -1,
+                'class' => 'dropdown-item'
+            ]
+        ],
+    ],
+    'encode' => false,
+    'options' => ['class' => 'nav-item'],
+    'linkOptions' => ['class' => 'nav-link'],
+]
             ]
         ]);
-        NavBar::end();
-        ?>
+NavBar::end();
+?>
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
@@ -178,388 +170,388 @@ AdminLteUserAsset::register($this);
 <?php
 $leftMenuItems = [
     [
-        'title' => 'SERVICES',
-        'icon' => 'fas fa-cloud',
+'title' => 'SERVICES',
+'icon' => 'fas fa-cloud',
     ],
     [
-        'title' => 'Contacts',
-        'url' => 'contact',
-        'route' => '/contact',
+'title' => 'Contacts',
+'url' => 'contact',
+'route' => '/contact',
     ],
     [
-        'title' => 'Debts',
-        'url' => 'debt',
-        'route' => '/debt',
+'title' => 'Debts',
+'url' => 'debt',
+'route' => '/debt',
     ],
     [
-        'title' => 'Support groups',
-        'url' => 'support-groups',
-        'route' => '/support-groups',
+'title' => 'Support groups',
+'url' => 'support-groups',
+'route' => '/support-groups',
     ],
     [
-        'title' => Yii::t('app', 'Currency Exchange'),
-        'url' => 'currency-exchange-order',
-        'route' => '/currency-exchange-order',
+'title' => Yii::t('app', 'Currency Exchange'),
+'url' => 'currency-exchange-order',
+'route' => '/currency-exchange-order',
     ],
     [
-        'title' => Yii::t('app', 'Ads'),
+'title' => Yii::t('app', 'Ads'),
+'urls' => [
+    'ad-offer',
+    'ad-search'
+],
+'items' => [
+    [
+        'title' => Yii::t('app', 'Offers'),
+        'url' => 'ad-offer',
+        'route' => '/ad-offer'
+    ],
+    [
+        'title' => Yii::t('app', 'Searches'),
+        'url' => 'ad-search',
+        'route' => '/ad-search',
+    ],
+],
+    ],
+    [
+'title' => Yii::t('app', 'Jobs'),
+'urls' => [
+    'company-user',
+    'resume',
+    'vacancy',
+],
+'items' => [
+    [
+        'title' => Yii::t('app', 'Vacancies'),
+        'url' => 'vacancy',
+        'route' => '/vacancy'
+    ],
+    [
+        'title' => Yii::t('app', 'Resumes'),
+        'url' => 'resume',
+        'route' => '/resume'
+    ],
+    [
+        'title' => Yii::t('app', 'Companies'),
+        'url' => 'company-user',
+        'route' => '/company-user'
+    ],
+],
+    ],
+    [
+'title' => 'Dating',
+'url' => 'dating',
+'route' => '/dating',
+    ],
+    [
+'title' => 'Stellar',
+'urls' => [
+    'stellar/basic-income',
+    'stellar/deposit-income',
+    'stellar/fortune-game',
+],
+'items' => [
+    [
+        'title' => Yii::t('bot', 'Basic Income'),
+        'url' => 'stellar-basic-income',
+        'route' => '/stellar-basic-income'
+    ],
+    [
+        'title' => Yii::t('bot', 'Deposit Income'),
+        'url' => 'stellar/deposit-income',
+        'route' => '/stellar/deposit-income'
+    ],
+    [
+        'title' => Yii::t('bot', 'Fortune Game'),
+        'url' => 'stellar/fortune-game',
+        'route' => '/stellar/fortune-game'
+    ],
+],
+    ],
+    [
+'title' => Yii::t('app', 'Telegram Bot'),
+'icon' => 'fab fa-telegram',
+'href' => ExternalLink::getBotLink(),
+    ],
+    [
+'title' => 'COMMUNITY',
+'icon' => 'fas fa-users',
+    ],
+    [
+'title' => Yii::t('app', 'Settings'),
+'url' => 'setting',
+'route' => '/setting',
+    ],
+    [
+'title' => Yii::t('app', 'Issues'),
+'url' => 'issue',
+'route' => '/issue',
+    ],
+    [
+'title' => 'METRICS',
+'icon' => 'far fa-chart-bar',
+    ],
+    [
+'title' => Yii::t('app', 'Users'),
+'url' => 'users',
+'route' => '/users',
+    ],
+    [
+'title' => Yii::t('app', 'Statistics'),
+'url' => 'statistics',
+'route' => '/statistics',
+    ],
+    [
+'title' => 'SYSTEM REPORTS',
+'icon' => 'far fa-list-alt',
+    ],
+    [
+'title' => 'Cron Log',
+'url' => 'cron-job',
+'route' => '/cron-job/index',
+    ],
+    [
+'title' => 'PHP Info',
+'url' => 'examples/php-info',
+'route' => '/examples/php-info',
+    ],
+    [
+'title' => 'MySQL Info',
+'url' => 'examples/mysql-info',
+'route' => '/examples/mysql-info',
+    ],
+    [
+'title' => Yii::t('app', 'Migrations'),
+'url' => 'examples/migrations',
+'route' => '/examples/migrations',
+    ],
+    [
+'title' => 'CONTRIBUTION',
+'icon' => 'fas fa-tools',
+    ],
+    [
+'title' => Yii::t('app', 'Getting started'),
+'icon' => 'fab fa-github',
+'href' => ExternalLink::getGithubContributionLink(),
+    ],
+    [
+'title' => Yii::t('app', 'Source code'),
+'icon' => 'fab fa-github',
+'href' => ExternalLink::getGithubLink(),
+    ],
+    [
+'title' => 'DevOps',
+'icon' => 'fab fa-github',
+'href' => ExternalLink::getGithubDevopsLink(),
+    ],
+    [
+'title' => 'Moqups',
+'url' => 'moqup/design-list',
+'route' => '/moqup/design-list',
+    ],
+    [
+'title' => Yii::t('app', 'Models'),
+'urls' => [
+    'data/country',
+    'data/currency',
+    'data/language',
+    'data/payment-method',
+    'data/gender',
+    'data/sexuality',
+],
+'items' => [
+    [
+        'title' => Yii::t('app', 'Countries'),
+        'url' => 'data/country',
+        'route' => '/data/country',
+    ],
+    [
+        'title' => Yii::t('app', 'Currencies'),
+        'url' => 'data/currency',
+        'route' => '/data/currency',
+    ],
+    [
+        'title' => Yii::t('app', 'Genders'),
+        'url' => 'data/gender',
+        'route' => 'data/gender',
+    ],
+    [
+        'title' => Yii::t('app', 'Languages'),
+        'url' => 'data/language',
+        'route' => '/data/language',
+    ],
+    [
+        'title' => Yii::t('app', 'Payment methods'),
+        'url' => 'data/payment-method',
+        'route' => '/data/payment-method',
+    ],
+    [
+        'title' => Yii::t('app', 'Genders'),
+        'url' => 'data/gender',
+        'route' => '/data/gender',
+    ],
+    [
+        'title' => Yii::t('app', 'Sexualities'),
+        'url' => 'data/sexuality',
+        'route' => '/data/sexuality',
+    ],
+],
+    ],
+    [
+'title' => Yii::t('app', 'Design System'),
+'urls' => [
+    'examples/dashboard',
+    'examples/widgets',
+    'examples/charts',
+    'examples/ui-elements',
+    'examples/forms',
+    'examples/tables',
+    'examples/calendar',
+    'examples/gallery',
+],
+'items' => [
+    [
+        'title' => 'Dashboard',
+        'url' => 'examples/dashboard',
+        'route' => '/examples/dashboard',
+    ],
+    [
+        'title' => 'Widgets',
+        'url' => 'examples/widgets',
+        'route' => '/examples/widgets',
+    ],
+    [
+        'title' => 'Charts',
         'urls' => [
-            'ad-offer',
-            'ad-search'
-        ],
-        'items' => [
-            [
-                'title' => Yii::t('app', 'Offers'),
-                'url' => 'ad-offer',
-                'route' => '/ad-offer'
-            ],
-            [
-                'title' => Yii::t('app', 'Searches'),
-                'url' => 'ad-search',
-                'route' => '/ad-search',
-            ],
-        ],
-    ],
-    [
-        'title' => Yii::t('app', 'Jobs'),
-        'urls' => [
-            'company-user',
-            'resume',
-            'vacancy',
-        ],
-        'items' => [
-            [
-                'title' => Yii::t('app', 'Vacancies'),
-                'url' => 'vacancy',
-                'route' => '/vacancy'
-            ],
-            [
-                'title' => Yii::t('app', 'Resumes'),
-                'url' => 'resume',
-                'route' => '/resume'
-            ],
-            [
-                'title' => Yii::t('app', 'Companies'),
-                'url' => 'company-user',
-                'route' => '/company-user'
-            ],
-        ],
-    ],
-    [
-        'title' => 'Dating',
-        'url' => 'dating',
-        'route' => '/dating',
-    ],
-    [
-        'title' => 'Stellar',
-        'urls' => [
-            'stellar/basic-income',
-            'stellar/deposit-income',
-            'stellar/fortune-game',
-        ],
-        'items' => [
-            [
-                'title' => Yii::t('bot', 'Basic Income'),
-                'url' => 'stellar-basic-income',
-                'route' => '/stellar-basic-income'
-            ],
-            [
-                'title' => Yii::t('bot', 'Deposit Income'),
-                'url' => 'stellar/deposit-income',
-                'route' => '/stellar/deposit-income'
-            ],
-            [
-                'title' => Yii::t('bot', 'Fortune Game'),
-                'url' => 'stellar/fortune-game',
-                'route' => '/stellar/fortune-game'
-            ],
-        ],
-    ],
-    [
-        'title' => Yii::t('app', 'Telegram Bot'),
-        'icon' => 'fab fa-telegram',
-        'href' => ExternalLink::getBotLink(),
-    ],
-    [
-        'title' => 'COMMUNITY',
-        'icon' => 'fas fa-users',
-    ],
-    [
-        'title' => Yii::t('app', 'Settings'),
-        'url' => 'setting',
-        'route' => '/setting',
-    ],
-    [
-        'title' => Yii::t('app', 'Issues'),
-        'url' => 'issue',
-        'route' => '/issue',
-    ],
-    [
-        'title' => 'METRICS',
-        'icon' => 'far fa-chart-bar',
-    ],
-    [
-        'title' => Yii::t('app', 'Users'),
-        'url' => 'users',
-        'route' => '/users',
-    ],
-    [
-        'title' => Yii::t('app', 'Statistics'),
-        'url' => 'statistics',
-        'route' => '/statistics',
-    ],
-    [
-        'title' => 'SYSTEM REPORTS',
-        'icon' => 'far fa-list-alt',
-    ],
-    [
-        'title' => 'Cron Log',
-        'url' => 'cron-job',
-        'route' => '/cron-job/index',
-    ],
-    [
-        'title' => 'PHP Info',
-        'url' => 'examples/php-info',
-        'route' => '/examples/php-info',
-    ],
-    [
-        'title' => 'MySQL Info',
-        'url' => 'examples/mysql-info',
-        'route' => '/examples/mysql-info',
-    ],
-    [
-        'title' => Yii::t('app', 'Migrations'),
-        'url' => 'examples/migrations',
-        'route' => '/examples/migrations',
-    ],
-    [
-        'title' => 'CONTRIBUTION',
-        'icon' => 'fas fa-tools',
-    ],
-    [
-        'title' => Yii::t('app', 'Getting started'),
-        'icon' => 'fab fa-github',
-        'href' => ExternalLink::getGithubContributionLink(),
-    ],
-    [
-        'title' => Yii::t('app', 'Source code'),
-        'icon' => 'fab fa-github',
-        'href' => ExternalLink::getGithubLink(),
-    ],
-    [
-        'title' => 'DevOps',
-        'icon' => 'fab fa-github',
-        'href' => ExternalLink::getGithubDevopsLink(),
-    ],
-    [
-        'title' => 'Moqups',
-        'url' => 'moqup/design-list',
-        'route' => '/moqup/design-list',
-    ],
-    [
-        'title' => Yii::t('app', 'Models'),
-        'urls' => [
-            'data/country',
-            'data/currency',
-            'data/language',
-            'data/payment-method',
-            'data/gender',
-            'data/sexuality',
-        ],
-        'items' => [
-            [
-                'title' => Yii::t('app', 'Countries'),
-                'url' => 'data/country',
-                'route' => '/data/country',
-            ],
-            [
-                'title' => Yii::t('app', 'Currencies'),
-                'url' => 'data/currency',
-                'route' => '/data/currency',
-            ],
-            [
-                'title' => Yii::t('app', 'Genders'),
-                'url' => 'data/gender',
-                'route' => 'data/gender',
-            ],
-            [
-                'title' => Yii::t('app', 'Languages'),
-                'url' => 'data/language',
-                'route' => '/data/language',
-            ],
-            [
-                'title' => Yii::t('app', 'Payment methods'),
-                'url' => 'data/payment-method',
-                'route' => '/data/payment-method',
-            ],
-            [
-                'title' => Yii::t('app', 'Genders'),
-                'url' => 'data/gender',
-                'route' => '/data/gender',
-            ],
-            [
-                'title' => Yii::t('app', 'Sexualities'),
-                'url' => 'data/sexuality',
-                'route' => '/data/sexuality',
-            ],
-        ],
-    ],
-    [
-        'title' => Yii::t('app', 'Design System'),
-        'urls' => [
-            'examples/dashboard',
-            'examples/widgets',
             'examples/charts',
-            'examples/ui-elements',
-            'examples/forms',
-            'examples/tables',
-            'examples/calendar',
-            'examples/gallery',
         ],
         'items' => [
             [
-                'title' => 'Dashboard',
-                'url' => 'examples/dashboard',
-                'route' => '/examples/dashboard',
+                'title' => 'ChartJS',
+                'url' => 'examples/charts/chartjs',
+                'route' => '/examples/charts/chartjs',
             ],
             [
-                'title' => 'Widgets',
-                'url' => 'examples/widgets',
-                'route' => '/examples/widgets',
+                'title' => 'Flot',
+                'url' => 'examples/charts/flot',
+                'route' => '/examples/charts/flot',
             ],
             [
-                'title' => 'Charts',
-                'urls' => [
-                    'examples/charts',
-                ],
-                'items' => [
-                    [
-                        'title' => 'ChartJS',
-                        'url' => 'examples/charts/chartjs',
-                        'route' => '/examples/charts/chartjs',
-                    ],
-                    [
-                        'title' => 'Flot',
-                        'url' => 'examples/charts/flot',
-                        'route' => '/examples/charts/flot',
-                    ],
-                    [
-                        'title' => 'Inline',
-                        'url' => 'examples/charts/inline',
-                        'route' => '/examples/charts/inline',
-                    ],
-                ],
-            ],
-            [
-                'title' => 'UI Elements',
-                'urls' => [
-                    'examples/ui-elements',
-                ],
-                'items' => [
-                    [
-                        'title' => 'General',
-                        'url' => 'examples/ui-elements/general',
-                        'route' => '/examples/ui-elements/general',
-                    ],
-                    [
-                        'title' => 'Icons',
-                        'url' => 'examples/ui-elements/icons',
-                        'route' => '/examples/ui-elements/icons',
-                    ],
-                    [
-                        'title' => 'Buttons',
-                        'url' => 'examples/ui-elements/buttons',
-                        'route' => '/examples/ui-elements/buttons',
-                    ],
-                    [
-                        'title' => 'Sliders',
-                        'url' => 'examples/ui-elements/sliders',
-                        'route' => '/examples/ui-elements/sliders',
-                    ],
-                    [
-                        'title' => 'Modals & Alerts',
-                        'url' => 'examples/ui-elements/modals-alerts',
-                        'route' => '/examples/ui-elements/modals-alerts',
-                    ],
-                    [
-                        'title' => 'Tabs',
-                        'url' => 'examples/ui-elements/tabs',
-                        'route' => '/examples/ui-elements/tabs',
-                    ],
-                    [
-                        'title' => 'Timeline',
-                        'url' => 'examples/ui-elements/timeline',
-                        'route' => '/examples/ui-elements/timeline',
-                    ],
-                    [
-                        'title' => 'Ribbons',
-                        'url' => 'examples/ui-elements/ribbons',
-                        'route' => '/examples/ui-elements/ribbons',
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Forms',
-                'urls' => ['examples/forms'],
-                'items' => [
-                    [
-                        'title' => 'General Elements',
-                        'url' => 'examples/forms/general-elements',
-                        'route' => '/examples/forms/general-elements',
-                    ],
-                    [
-                        'title' => 'Advenced Elements',
-                        'url' => 'examples/forms/advanced-elements',
-                        'route' => '/examples/forms/advanced-elements',
-                    ],
-                    [
-                        'title' => 'Editors',
-                        'url' => 'examples/forms/editors',
-                        'route' => '/examples/forms/editors',
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Tables',
-                'urls' => ['examples/tables'],
-                'items' => [
-                    [
-                        'title' => 'Simple Tables',
-                        'url' => 'examples/tables/simple-tables',
-                        'route' => '/examples/tables/simple-tables',
-                    ],
-                    [
-                        'title' => 'DataTables',
-                        'url' => 'examples/tables/data-tables',
-                        'route' => '/examples/tables/data-tables',
-                    ],
-                    [
-                        'title' => 'jsGrid',
-                        'url' => 'examples/tables/js-grid',
-                        'route' => '/examples/tables/js-grid',
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Calendar',
-                'url' => 'examples/calendar',
-                'route' => '/examples/calendar',
-            ],
-            [
-                'title' => 'Gallery',
-                'url' => 'examples/gallery',
-                'route' => '/examples/gallery',
+                'title' => 'Inline',
+                'url' => 'examples/charts/inline',
+                'route' => '/examples/charts/inline',
             ],
         ],
     ],
     [
-        'title' => 'DONATION',
-        'icon' => 'fas fa-donate',
+        'title' => 'UI Elements',
+        'urls' => [
+            'examples/ui-elements',
+        ],
+        'items' => [
+            [
+                'title' => 'General',
+                'url' => 'examples/ui-elements/general',
+                'route' => '/examples/ui-elements/general',
+            ],
+            [
+                'title' => 'Icons',
+                'url' => 'examples/ui-elements/icons',
+                'route' => '/examples/ui-elements/icons',
+            ],
+            [
+                'title' => 'Buttons',
+                'url' => 'examples/ui-elements/buttons',
+                'route' => '/examples/ui-elements/buttons',
+            ],
+            [
+                'title' => 'Sliders',
+                'url' => 'examples/ui-elements/sliders',
+                'route' => '/examples/ui-elements/sliders',
+            ],
+            [
+                'title' => 'Modals & Alerts',
+                'url' => 'examples/ui-elements/modals-alerts',
+                'route' => '/examples/ui-elements/modals-alerts',
+            ],
+            [
+                'title' => 'Tabs',
+                'url' => 'examples/ui-elements/tabs',
+                'route' => '/examples/ui-elements/tabs',
+            ],
+            [
+                'title' => 'Timeline',
+                'url' => 'examples/ui-elements/timeline',
+                'route' => '/examples/ui-elements/timeline',
+            ],
+            [
+                'title' => 'Ribbons',
+                'url' => 'examples/ui-elements/ribbons',
+                'route' => '/examples/ui-elements/ribbons',
+            ],
+        ]
     ],
     [
-        'title' => Yii::t('app', 'Getting started'),
-        'icon' => 'fab fa-github',
-        'href' => ExternalLink::getGithubDonationLink(),
+        'title' => 'Forms',
+        'urls' => ['examples/forms'],
+        'items' => [
+            [
+                'title' => 'General Elements',
+                'url' => 'examples/forms/general-elements',
+                'route' => '/examples/forms/general-elements',
+            ],
+            [
+                'title' => 'Advenced Elements',
+                'url' => 'examples/forms/advanced-elements',
+                'route' => '/examples/forms/advanced-elements',
+            ],
+            [
+                'title' => 'Editors',
+                'url' => 'examples/forms/editors',
+                'route' => '/examples/forms/editors',
+            ],
+        ]
+    ],
+    [
+        'title' => 'Tables',
+        'urls' => ['examples/tables'],
+        'items' => [
+            [
+                'title' => 'Simple Tables',
+                'url' => 'examples/tables/simple-tables',
+                'route' => '/examples/tables/simple-tables',
+            ],
+            [
+                'title' => 'DataTables',
+                'url' => 'examples/tables/data-tables',
+                'route' => '/examples/tables/data-tables',
+            ],
+            [
+                'title' => 'jsGrid',
+                'url' => 'examples/tables/js-grid',
+                'route' => '/examples/tables/js-grid',
+            ],
+        ],
+    ],
+    [
+        'title' => 'Calendar',
+        'url' => 'examples/calendar',
+        'route' => '/examples/calendar',
+    ],
+    [
+        'title' => 'Gallery',
+        'url' => 'examples/gallery',
+        'route' => '/examples/gallery',
+    ],
+],
+    ],
+    [
+'title' => 'DONATION',
+'icon' => 'fas fa-donate',
+    ],
+    [
+'title' => Yii::t('app', 'Getting started'),
+'icon' => 'fab fa-github',
+'href' => ExternalLink::getGithubDonationLink(),
     ],
 ];
 ?>
@@ -642,7 +634,7 @@ $leftMenuItems = [
                                     'activeItemTemplate' => '<li class="breadcrumb-item active">{link}</li>',
                                     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                                 ])
-                                ?>
+                        ?>
                             </div>
                         </div>
                     <?php endif; ?>

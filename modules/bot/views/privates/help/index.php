@@ -13,7 +13,6 @@
 <br/>
 /my_account - <?= Yii::t('bot', 'Account') ?><br/>
   • /my_rating - <?= Yii::t('bot', 'Rating') ?><br/>
-  • /my_referrals - <?= Yii::t('bot', 'Referrals') ?><br/>
   • /my_stellar - <?= Yii::t('bot', 'Stellar account') ?><br/>
   • /my_website_account - <?= Yii::t('bot', 'Website account') ?><br/>
   • /my_profile - <?= Yii::t('bot', 'Profile') ?><br/>

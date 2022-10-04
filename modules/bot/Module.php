@@ -210,16 +210,6 @@ class Module extends \yii\base\Module
                         $globalUser->name = null;
                     }
 
-                    if ($isNewUser) {
-                        if ($chat->isPrivate() && $this->getUpdate()->getRequestMessage()) {
-                            $matches = [];
-
-                            if (preg_match('/\/start (\d+)/', $this->getUpdate()->getRequestMessage()->getText(), $matches)) {
-                                $globalUser->referrer_id = $matches[1];
-                            }
-                        }
-                    }
-
                     if (!$globalUser->save()) {
                         Yii::warning($globalUser->getErrors());
 

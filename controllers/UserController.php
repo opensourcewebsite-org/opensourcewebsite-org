@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use app\components\Controller;
 use app\components\Converter;
-use app\components\helpers\ReferrerHelper;
 use app\models\Contact;
 use app\models\Gender;
 use app\models\Language;
@@ -142,19 +141,14 @@ class UserController extends Controller
         $currentUser = Yii::$app->getUser();
 
         if ($currentUser->getIsGuest()) {
-            $referrer = ReferrerHelper::getReferrerFromCookie();
-            if ($referrer === null) {
-                ReferrerHelper::addReferrer($user);
-            } elseif ($referrer->value != $user->id) {
-                ReferrerHelper::changeReferrer($user);
-            }
-
             $currentUser->loginRequired();
+
             return;
         }
 
         if ($userId == $user->id && $user->username) {
             $this->redirect(['user/profile', 'id' => $user->username]);
+
             return;
         }
 

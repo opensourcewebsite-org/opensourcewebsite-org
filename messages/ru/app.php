@@ -28,7 +28,7 @@ return [
     'Our Mission & Vision' => 'Наша миссия и видение',
     'Our Principles & Values' => 'Наши принципы и ценности',
     'Features & Plans' => 'Возможности и планы',
-    'Membership & Loyalty Program' => 'Членство и программа лояльности',
+    'Membership' => 'Членство',
     'Donation & Crowdfunding' => 'Пожертвования и краудфандинг',
     'Contribution' => 'Участие в разработке и помощь сообществу',
     'Technologies We Use' => 'Используемые технологии',
