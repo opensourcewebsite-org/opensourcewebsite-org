@@ -100,8 +100,8 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
                 'default',
                 'value' => 0,
             ],
-            ['location_lat', LocationLatValidator::class],
-            ['location_lon', LocationLonValidator::class],
+            ['location_lat', LocationLatValidator::class, 'skipOnEmpty' => false],
+            ['location_lon', LocationLonValidator::class, 'skipOnEmpty' => false],
             ['location', 'string'],
             [
                 'price',

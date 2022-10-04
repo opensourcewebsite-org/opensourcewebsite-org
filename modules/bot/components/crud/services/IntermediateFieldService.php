@@ -57,12 +57,12 @@ class IntermediateFieldService
         $this->state->setIntermediateFields($this->createName($modelName, $values));
     }
 
-    public function reset()
+    public function reset($modelName = null)
     {
         $backRoute = $this->controller->backRoute->get();
         $endRoute = $this->controller->endRoute->get();
         $safeAttribute = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE);
-        $this->state->reset();
+        $this->state->reset($modelName);
         $this->controller->backRoute->set($backRoute);
         $this->controller->endRoute->set($endRoute);
         $this->state->setIntermediateField(self::SAFE_ATTRIBUTE, $safeAttribute);

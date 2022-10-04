@@ -12,7 +12,7 @@ class CurrentUserFieldComponent extends BaseFieldComponent implements FieldInter
     /** @inheritDoc */
     public function prepare($text)
     {
-        return $this->user->id;
+        return $this->controller->getUser()->getId();
     }
 
     /** @inheritDoc */
