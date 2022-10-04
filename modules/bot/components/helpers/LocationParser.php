@@ -54,6 +54,14 @@ class LocationParser
                 $latitude = $coords[0];
                 $longitude = $coords[1];
             }
+            else {
+                $latitude = $this->locationStr;
+                $longitude = $this->locationStr;
+            }
+        }
+        else {
+            $latitude = $this->locationStr;
+            $longitude = $this->locationStr;
         }
 
         return [$latitude, $longitude];
