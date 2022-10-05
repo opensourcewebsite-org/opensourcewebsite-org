@@ -146,7 +146,7 @@ class AdOfferController extends CrudController
                                 'item' => 'currency',
                             ],
                         ],
-                    ]
+                    ],
                 ],
                 'location' => [
                     'component' => LocationToArrayFieldComponent::class,
@@ -168,7 +168,7 @@ class AdOfferController extends CrudController
                                     return null;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'delivery_radius' => [
@@ -182,7 +182,7 @@ class AdOfferController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'user_id' => [

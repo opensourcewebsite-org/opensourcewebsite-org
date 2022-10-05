@@ -121,7 +121,7 @@ class CaController extends CrudController
                                     return null;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                     'systemButtons' => [
                         [
@@ -130,12 +130,11 @@ class CaController extends CrudController
                                 'route' => $this->backRoute->get(),
                                 'text' => Emoji::BACK,
                             ],
-
                             [
                                 'editMode' => false,
                                 'route' => MenuController::createRoute(),
                                 'text' => Emoji::END,
-                            ]
+                            ],
                         ],
                     ],
                     'behaviors' => [
@@ -161,7 +160,7 @@ class CaController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                     'systemButtons' => [
                         [
@@ -170,12 +169,11 @@ class CaController extends CrudController
                                 'route' => $this->backRoute->get(),
                                 'text' => Emoji::BACK,
                             ],
-
                             [
                                 'editMode' => false,
                                 'route' => MenuController::createRoute(),
                                 'text' => Emoji::END,
-                            ]
+                            ],
                         ],
                     ],
                 ],

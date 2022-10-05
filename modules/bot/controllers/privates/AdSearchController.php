@@ -123,7 +123,7 @@ class AdSearchController extends CrudController
                                 'text' => Yii::t('bot', 'Edit currency'),
                                 'item' => 'currency',
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'location' => [
@@ -146,7 +146,7 @@ class AdSearchController extends CrudController
                                     return null;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'pickup_radius' => [
@@ -160,7 +160,7 @@ class AdSearchController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'user_id' => [

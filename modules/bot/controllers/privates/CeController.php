@@ -101,7 +101,7 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'buying_rate' => [
@@ -120,7 +120,7 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                     'hidden' => function () {
                         $selling_rate = $this->field->get($this->modelName, 'selling_rate');
@@ -160,6 +160,8 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
+                        ],
+                        [
                             [
                                 'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (CurrencyExchangeOrder $model) {
@@ -168,7 +170,7 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'selling_location' => [
@@ -203,7 +205,7 @@ class CeController extends CrudController
                                     return null;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'selling_delivery_radius' => [
@@ -224,7 +226,7 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'buyingPaymentMethods' => [
@@ -254,6 +256,8 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
+                        ],
+                        [
                             [
                                 'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (CurrencyExchangeOrder $model) {
@@ -262,7 +266,7 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'buying_location' => [
@@ -297,7 +301,7 @@ class CeController extends CrudController
                                     return null;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'buying_delivery_radius' => [
@@ -318,7 +322,7 @@ class CeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'user_id' => [

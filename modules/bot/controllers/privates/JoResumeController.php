@@ -115,7 +115,7 @@ class JoResumeController extends CrudController
                                 'text' => Yii::t('bot', 'Edit currency'),
                                 'item' => 'currency',
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'remote_on' => [
@@ -129,6 +129,8 @@ class JoResumeController extends CrudController
                                     return $model;
                                 },
                             ],
+                        ],
+                        [
                             [
                                 'text' => Yii::t('bot', 'NO'),
                                 'callback' => function (Resume $model) {
@@ -137,7 +139,7 @@ class JoResumeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'location' => [
@@ -161,7 +163,19 @@ class JoResumeController extends CrudController
                                     return null;
                                 },
                             ],
-                        ]
+                        ],
+                        [
+                            [
+                                'createMode' => false,
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (Resume $model) {
+                                    $model->location_lat = null;
+                                    $model->location_lon = null;
+
+                                    return $model;
+                                },
+                            ],
+                        ],
                     ],
                 ],
                 'search_radius' => [
@@ -175,7 +189,7 @@ class JoResumeController extends CrudController
                                     return $model;
                                 },
                             ],
-                        ]
+                        ],
                     ],
                 ],
                 'user_id' => [

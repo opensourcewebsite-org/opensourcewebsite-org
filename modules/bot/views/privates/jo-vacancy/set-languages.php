@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Required languages') ?>.</b><br/>
+<b><?= Yii::t('jo', 'Required languages') ?>.</b><br/>
 <br/>
 <i><?= Yii::t('bot', 'This information is used to find matches with offers from other users') ?>.<br/>
 <br/>
