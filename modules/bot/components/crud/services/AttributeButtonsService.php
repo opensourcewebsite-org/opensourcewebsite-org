@@ -39,13 +39,13 @@ class AttributeButtonsService
      * @param array $rule
      * @param string $attributeName
      * @param integer|null $modelId
-     *
      * @return array
      */
     public function get($rule, $attributeName, $modelId)
     {
         $buttons = [];
         $config = $rule['attributes'][$attributeName];
+
         if ($configButtons = $config['buttons'] ?? []) {
             $buttons = $this->fillButtonsCallbackData(
                 $configButtons,
@@ -81,13 +81,13 @@ class AttributeButtonsService
      * @param array $rule
      * @param string $attributeName
      * @param integer|null $modelId
-     *
      * @return array
      */
     public function getSystems($rule, $attributeName, $modelId, $isEdit)
     {
         $buttons = [];
         $config = $rule['attributes'][$attributeName];
+
         if ($configButtons = $config['systemButtons'] ?? []) {
             $buttons = $this->fillButtonsCallbackData(
                 $configButtons,
@@ -103,7 +103,6 @@ class AttributeButtonsService
      * @param $configButtons
      * @param $attributeName
      * @param array $options
-     *
      * @return array
      */
     private function fillButtonsCallbackData(&$configButtonRows, $attributeName, $options)
@@ -113,9 +112,16 @@ class AttributeButtonsService
         $rule = ArrayHelper::getValue($options, 'rule', []);
 
         $rowButtons = [];
+
         foreach ($configButtonRows as $configButtons) {
             $buttons = [];
+
             foreach ($configButtons as $key => $configButton) {
+                if (($isEdit && !($configButton['editMode'] ?? true))
+                || (!$isEdit && !($configButton['createMode'] ?? true))) {
+                    continue;
+                }
+
                 $hideCondition = $configButton['hideCondition'] ?? null;
 
                 if (isset($hideCondition)) {
@@ -128,21 +134,19 @@ class AttributeButtonsService
                     }
                 }
 
-                if (($isEdit && !($configButton['editMode'] ?? true))
-                || (!$isEdit && !($configButton['createMode'] ?? true))) {
-                    continue;
-                }
                 $configButton['callback_data'] = $this->getButtonRoute(
                     $configButton,
                     $key,
                     compact('attributeName', 'modelId', 'rule')
                 );
+
                 if (is_numeric($key)) {
                     $buttons[] = $configButton; // Fix order for hidden buttons
                 } else {
                     $buttons[$key] = $configButton;
                 }
             }
+
             $rowButtons[] = $buttons;
         }
 
@@ -152,7 +156,6 @@ class AttributeButtonsService
     /**
      * @param string $attributeName
      * @param array $rule
-     *
      * @return bool
      */
     public function isPrivateAttribute(string $attributeName, array $rule)
@@ -166,7 +169,6 @@ class AttributeButtonsService
      * @param array $configButton
      * @param integer $buttonKey
      * @param array $options
-     *
      * @return string
      */
     private function getButtonRoute(&$configButton, $buttonKey, $options = [])
@@ -174,6 +176,7 @@ class AttributeButtonsService
         $attributeName = ArrayHelper::getValue($options, 'attributeName', null);
         $id = ArrayHelper::getValue($options, 'modelId', null);
         $rule = ArrayHelper::getValue($options, 'rule', []);
+
         if (isset($configButton['item'])) {
             $route = $this->createAttributeRoute(
                 $this->controller->getModelName($rule['model']),
@@ -206,7 +209,6 @@ class AttributeButtonsService
      * @param $modelName
      * @param $attribute
      * @param $id
-     *
      * @return string
      */
     public function createAttributeRoute($modelName, $attribute, $id = null)

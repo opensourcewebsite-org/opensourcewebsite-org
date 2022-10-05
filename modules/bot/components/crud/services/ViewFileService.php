@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\modules\bot\components\crud\services;
 
 use app\modules\bot\components\Controller;
@@ -17,7 +16,6 @@ class ViewFileService
 
     /**
      * @param string $viewFilename
-     *
      * @return bool
      */
     public function isViewFileExists($viewFilename)
@@ -31,7 +29,6 @@ class ViewFileService
 
     /**
      * @param string $viewPath
-     *
      * @return string
      */
     public function search($viewPath)
@@ -39,7 +36,9 @@ class ViewFileService
         if ($this->isViewFileExists($viewPath)) {
             return $viewPath;
         }
+
         $tmpUrl = str_replace('_', '-', $viewPath);
+
         if ($this->isViewFileExists($tmpUrl)) {
             return $tmpUrl;
         }

@@ -15,7 +15,6 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
     /** @var string[] */
     public $delimiters = [' ', ', ', ',', ';', "\n"];
 
-    /** @inheritDoc */
     public function prepare($text)
     {
         $latitude = null;
@@ -37,8 +36,7 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
                 $this->config['fieldNames'][0] => $latitude,
                 $this->config['fieldNames'][1] => $longitude,
             ];
-        }
-        else {
+        } else {
             return [
                 'location_lat' => $latitude,
                 'location_lon' => $longitude,
@@ -46,13 +44,11 @@ class LocationToArrayFieldComponent extends BaseFieldComponent implements FieldI
         }
     }
 
-    /** @inheritDoc */
     public function getFields()
     {
         if (isset($this->config['fieldNames'])) {
             return $this->config['fieldNames'];
-        }
-        else {
+        } else {
             return [
                 'location_lat',
                 'location_lon',

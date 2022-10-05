@@ -38,8 +38,6 @@ class CashExchangeOrder extends CurrencyExchangeOrder
             'buying_currency_label' => Yii::t('app', 'Label'),
             'sellingPaymentMethodIds' => Yii::t('app', 'Selling payment methods'),
             'buyingPaymentMethodIds' => Yii::t('app', 'Buying payment methods'),
-            'selling_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->sellingCurrency->code ?? '') . ' ' . Yii::t('app', 'parameters'),
-            'buying_currency_edit' =>  Yii::t('app', 'Edit') . ' ' . ($this->buyingCurrency->code ?? ''). ' ' . Yii::t('app', 'parameters'),
         ];
     }
 }

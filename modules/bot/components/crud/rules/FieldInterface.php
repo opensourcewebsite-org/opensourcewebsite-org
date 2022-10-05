@@ -11,7 +11,6 @@ interface FieldInterface
 {
     /**
      * @param string|null $text
-     *
      * @return string
      */
     public function prepare($text);

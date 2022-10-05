@@ -71,13 +71,13 @@ class IntermediateFieldService
     /**
      * @param string $modelName
      * @param string|array $fieldName
-     *
      * @return string|array
      */
     public function createName($modelName, $fieldName)
     {
         if (is_array($fieldName)) {
             $names = [];
+
             foreach ($fieldName as $key => $item) {
                 $names[$this->createName($modelName, $key)] = $item;
             }

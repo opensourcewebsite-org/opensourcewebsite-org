@@ -63,7 +63,9 @@ abstract class CrudController extends Controller
     protected $enableGlobalBackRoute = true;
     /** @var boolean */
     protected $enableEndRoute = true;
+
     public $afterAdd = false;
+
     public $actionParams;
 
     /** @inheritDoc */

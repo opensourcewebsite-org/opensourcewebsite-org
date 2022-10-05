@@ -35,7 +35,7 @@ class CeController extends CrudController
 {
     protected $updateAttributes = [
         'selling_currency_edit',
-        'buying_currency_edit'
+        'buying_currency_edit',
     ];
 
     /**

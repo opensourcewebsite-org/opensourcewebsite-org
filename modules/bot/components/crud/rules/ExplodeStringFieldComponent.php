@@ -9,14 +9,13 @@ namespace app\modules\bot\components\crud\rules;
  */
 class ExplodeStringFieldComponent extends BaseFieldComponent implements FieldInterface
 {
-    const MAIN_DELIMITER = '|';
+    public const MAIN_DELIMITER = '|';
 
     /** @var string[] */
     public $delimiters = [',', '.', "\n"];
     /** @var bool */
     public $shouldTrim = true;
 
-    /** @inheritDoc */
     public function prepare($text)
     {
         if (!$text) {
@@ -40,7 +39,6 @@ class ExplodeStringFieldComponent extends BaseFieldComponent implements FieldInt
         return $array;
     }
 
-    /** @inheritDoc */
     public function getFields()
     {
         return [];
