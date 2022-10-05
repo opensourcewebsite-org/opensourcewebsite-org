@@ -5,7 +5,7 @@
 [![Telegram](https://img.shields.io/badge/Telegram_channel-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite)
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 
-[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![PHP Version](https://img.shields.io/badge/PHP-7.4-blue.svg?style=flat-square&logo=php)](https://www.php.net)
 [![MySQL Version](https://img.shields.io/badge/MySQL-8-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
 [![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
