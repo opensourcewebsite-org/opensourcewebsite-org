@@ -185,18 +185,18 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
                 ],
-                'filter', 'filter' => function ($value) {
-                    return ($value != 0 ? $value : null);
-                },
+                'double',
+                'min' => 0,
+                'max' => 9999999999.99999999,
             ],
             [
                 [
                     'selling_currency_min_amount',
                     'selling_currency_max_amount',
                 ],
-                'double',
-                'min' => 0,
-                'max' => 9999999999.99999999,
+                'filter', 'filter' => function ($value) {
+                    return ($value != 0 ? $value : null);
+                },
             ],
             [
                 [
