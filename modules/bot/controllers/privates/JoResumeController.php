@@ -111,29 +111,33 @@ class JoResumeController extends CrudController
                     'isRequired' => false,
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'Edit currency'),
-                            'item' => 'currency',
-                        ],
+                            [
+                                'text' => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ]
                     ],
                 ],
                 'remote_on' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'YES'),
-                            'callback' => function (Resume $model) {
-                                $model->remote_on = Resume::REMOTE_ON;
+                            [
+                                'text' => Yii::t('bot', 'YES'),
+                                'callback' => function (Resume $model) {
+                                    $model->remote_on = Resume::REMOTE_ON;
 
-                                return $model;
-                            },
-                        ],
-                        [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (Resume $model) {
-                                $model->remote_on = Resume::REMOTE_OFF;
+                                    return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (Resume $model) {
+                                    $model->remote_on = Resume::REMOTE_OFF;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'location' => [
@@ -141,33 +145,37 @@ class JoResumeController extends CrudController
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
-                            'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (Resume $model) {
-                                $latitude = 0;//$this->getTelegramUser()->location_lat;
-                                $longitude = 0;//$this->getTelegramUser()->location_lon;
-                                if ($latitude && $longitude) {
-                                    $model->location_lat = $latitude;
-                                    $model->location_lon = $longitude;
+                            [
+                                'hideCondition' => !isset($this->getTelegramUser()->userLocation),
+                                'text' => Yii::t('bot', 'MY LOCATION'),
+                                'callback' => function (Resume $model) {
+                                    $latitude = $this->getTelegramUser()->userLocation->location_lat;
+                                    $longitude = $this->getTelegramUser()->userLocation->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
 
-                                    return $model;
-                                }
+                                        return $model;
+                                    }
 
-                                return null;
-                            },
-                        ],
+                                    return null;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'search_radius' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (Resume $model) {
-                                $model->search_radius = 0;
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (Resume $model) {
+                                    $model->search_radius = 0;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'user_id' => [
