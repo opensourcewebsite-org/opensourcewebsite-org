@@ -89,7 +89,7 @@ class JoVacancyController extends CrudController
                     ],
                 ],
                 'languages' => [
-                    'samePageAfterAdd' => true,
+                    'viewAfterAdd' => 'set-languages',
                     'enableAddButton' => true,
                     'showRowsList' => true,
                     'createRelationIfEmpty' => true,
@@ -104,12 +104,14 @@ class JoVacancyController extends CrudController
                     ],
                     'buttons' => [
                         [
-                            'editMode' => false,
-                            'text' => Yii::t('bot', 'NEXT'),
-                            'callback' => function (Vacancy $model) {
-                                return $model;
-                            },
-                        ],
+                            [
+                                'editMode' => false,
+                                'text' => Yii::t('bot', 'NEXT'),
+                                'callback' => function (Vacancy $model) {
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'currency' => [
@@ -134,29 +136,33 @@ class JoVacancyController extends CrudController
                     'isRequired' => false,
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'Edit currency'),
-                            'item' => 'currency',
-                        ],
+                            [
+                                'text' => Yii::t('bot', 'Edit currency'),
+                                'item' => 'currency',
+                            ],
+                        ]
                     ],
                 ],
                 'remote_on' => [
                     'buttons' => [
                         [
-                            'text' => Yii::t('bot', 'YES'),
-                            'callback' => function (Vacancy $model) {
-                                $model->remote_on = Vacancy::REMOTE_ON;
+                            [
+                                'text' => Yii::t('bot', 'YES'),
+                                'callback' => function (Vacancy $model) {
+                                    $model->remote_on = Vacancy::REMOTE_ON;
 
-                                return $model;
-                            },
-                        ],
-                        [
-                            'text' => Yii::t('bot', 'NO'),
-                            'callback' => function (Vacancy $model) {
-                                $model->remote_on = Vacancy::REMOTE_OFF;
+                                    return $model;
+                                },
+                            ],
+                            [
+                                'text' => Yii::t('bot', 'NO'),
+                                'callback' => function (Vacancy $model) {
+                                    $model->remote_on = Vacancy::REMOTE_OFF;
 
-                                return $model;
-                            },
-                        ],
+                                    return $model;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'location' => [
@@ -164,21 +170,23 @@ class JoVacancyController extends CrudController
                     'component' => LocationToArrayFieldComponent::class,
                     'buttons' => [
                         [
-                            //'hideCondition' => !$this->getTelegramUser()->location_lat || !$this->getTelegramUser()->location_lon,
-                            'text' => Yii::t('bot', 'MY LOCATION'),
-                            'callback' => function (Vacancy $model) {
-                                $latitude = 0;//$this->getTelegramUser()->location_lat;
-                                $longitude = 0;//$this->getTelegramUser()->location_lon;
-                                if ($latitude && $longitude) {
-                                    $model->location_lat = $latitude;
-                                    $model->location_lon = $longitude;
+                            [
+                                'hideCondition' => !isset($this->getTelegramUser()->userLocation),
+                                'text' => Yii::t('bot', 'MY LOCATION'),
+                                'callback' => function (Vacancy $model) {
+                                    $latitude = $this->getTelegramUser()->userLocation->location_lat;
+                                    $longitude = $this->getTelegramUser()->userLocation->location_lon;
+                                    if ($latitude && $longitude) {
+                                        $model->location_lat = $latitude;
+                                        $model->location_lon = $longitude;
 
-                                    return $model;
-                                }
+                                        return $model;
+                                    }
 
-                                return null;
-                            },
-                        ],
+                                    return null;
+                                },
+                            ],
+                        ]
                     ],
                 ],
                 'company_id' => [
@@ -222,6 +230,7 @@ class JoVacancyController extends CrudController
     public function actionIndex($companyId = null, $page = 1)
     {
         $this->getState()->setName(null);
+        $this->state->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
 
         $globalUser = $this->getUser();
 

@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\validators;
 
+use Yii;
 use yii\validators\Validator;
 
 /**
@@ -15,10 +16,11 @@ class LocationLatValidator extends Validator
     public function validateAttribute($model, $attribute)
     {
         if (!$this->validateLat($model->$attribute)) {
-            $this->addError($model, $attribute, 'Input value must be between {min} and {max}', [
+            $this->addError($model, $attribute, Yii::t('bot', 'Input value for {attribute} must be between {min} and {max}'), [
+                'attribute' => $model->getAttributeLabel($attribute),
                 'min' => -90,
                 'max' => 90,
-            ]);
+                ]);
         }
     }
 
