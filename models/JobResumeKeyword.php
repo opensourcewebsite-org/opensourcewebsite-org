@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -11,14 +12,18 @@ use yii\db\ActiveRecord;
  */
 class JobResumeKeyword extends ActiveRecord
 {
-    /** @inheritDoc */
-    public static function tableName()
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName(): string
     {
         return '{{%job_resume_keyword}}';
     }
 
-    /** @inheritDoc */
-    public function rules()
+    /**
+     * {@inheritdoc}
+     */
+    public function rules(): array
     {
         return [
             [['resume_id', 'job_keyword_id'], 'required'],
@@ -26,10 +31,7 @@ class JobResumeKeyword extends ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getKeyword()
+    public function getKeyword(): ActiveQuery
     {
         return $this->hasOne(JobKeyword::class, ['id' => 'job_keyword_id']);
     }

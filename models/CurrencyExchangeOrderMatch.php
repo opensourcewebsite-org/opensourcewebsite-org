@@ -21,7 +21,7 @@ class CurrencyExchangeOrderMatch extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%currency_exchange_order_match}}';
     }
@@ -29,7 +29,7 @@ class CurrencyExchangeOrderMatch extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['order_id', 'match_order_id'], 'required'],

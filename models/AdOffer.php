@@ -60,6 +60,9 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
 
     public $keywordsFromForm = [];
 
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
@@ -67,6 +70,9 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
         parent::init();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%ad_offer}}';
@@ -79,6 +85,9 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
         $response->save();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
@@ -129,6 +138,9 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels(): array
     {
         return [
@@ -149,6 +161,9 @@ class AdOffer extends ActiveRecord implements ViewedByUserInterface, MatchesInte
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [

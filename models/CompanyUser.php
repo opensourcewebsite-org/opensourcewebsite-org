@@ -32,11 +32,17 @@ class CompanyUser extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%company_user}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [

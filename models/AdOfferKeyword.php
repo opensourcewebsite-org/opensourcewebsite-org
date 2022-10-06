@@ -17,11 +17,17 @@ use yii\db\ActiveRecord;
  */
 class AdOfferKeyword extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
-        return 'ad_offer_keyword';
+        return '{{%ad_offer_keyword}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [

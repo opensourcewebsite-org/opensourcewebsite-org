@@ -21,7 +21,7 @@ class JobVacancyMatch extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%job_vacancy_match}}';
     }
@@ -29,7 +29,7 @@ class JobVacancyMatch extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['vacancy_id', 'resume_id'], 'required'],
@@ -42,7 +42,7 @@ class JobVacancyMatch extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',

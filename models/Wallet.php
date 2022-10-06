@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\models\queries\WalletQuery;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -24,7 +25,7 @@ class Wallet extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wallet}}';
     }
@@ -32,7 +33,7 @@ class Wallet extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['currency_id', 'user_id'], 'required'],
@@ -48,7 +49,7 @@ class Wallet extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'currency_id' => 'Currency ID',
@@ -67,12 +68,7 @@ class Wallet extends ActiveRecord
         return $this->currency_id;
     }
 
-    /**
-     * Gets query for [[Currency]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrency()
+    public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
@@ -82,20 +78,12 @@ class Wallet extends ActiveRecord
         return $this->user_id;
     }
 
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTransactions()
+    public function getTransactions(): ActiveQuery
     {
         return $this->hasMany(WalletTransaction::class, ['currency_id' => 'currency_id'])
             ->andWhere([
@@ -105,18 +93,12 @@ class Wallet extends ActiveRecord
             ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOutTransactions()
+    public function getOutTransactions(): ActiveQuery
     {
         return $this->hasMany(WalletTransaction::class, ['currency_id' => 'currency_id', 'from_user_id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getInTransactions()
+    public function getInTransactions(): ActiveQuery
     {
         return $this->hasMany(WalletTransaction::class, ['currency_id' => 'currency_id', 'to_user_id' => 'user_id']);
     }

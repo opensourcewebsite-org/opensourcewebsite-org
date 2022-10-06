@@ -6,9 +6,9 @@ namespace app\models;
 
 use app\helpers\UrlTrimmer;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
 
 /**
  * Class Company
@@ -29,11 +29,17 @@ use yii\behaviors\TimestampBehavior;
  */
 class Company extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%company}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -41,6 +47,9 @@ class Company extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
@@ -68,6 +77,9 @@ class Company extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels(): array
     {
         return [

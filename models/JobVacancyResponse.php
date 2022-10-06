@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\models;
 
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -25,11 +26,17 @@ class JobVacancyResponse extends ActiveRecord
         return $response;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%job_vacancy_response}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -41,11 +48,24 @@ class JobVacancyResponse extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
             [['user_id', 'vacancy_id'], 'required'],
             [['user_id', 'vacancy_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
+    }
+
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    public function getVacancy(): ActiveQuery
+    {
+        return $this->hasOne(Vacancy::className(), ['id' => 'vacancy_id']);
     }
 }

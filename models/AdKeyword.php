@@ -14,11 +14,17 @@ use yii\db\ActiveRecord;
  */
 class AdKeyword extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return 'ad_keyword';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [

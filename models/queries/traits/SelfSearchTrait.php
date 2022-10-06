@@ -11,7 +11,6 @@ trait SelfSearchTrait
      * @param ActiveRecord[] $models
      * @param string $operand
      * @param array $attributes  default - ActiveRecord::primaryKey()
-     *
      * @return ActiveQuery|self
      */
     public function models(array $models, string $operand = 'IN', $attributes = []): ActiveQuery
@@ -26,15 +25,18 @@ trait SelfSearchTrait
 
         $params = [];
         $paramsNull = [];
+
         foreach ($models as $model) {
             $modelCondition = [];
             $isNull = false;
 
             foreach ($attributes as $attribute) {
                 $value = $model->getAttribute($attribute);
+
                 if ($value === null) {
                     $isNull = true;
                 }
+
                 $modelCondition["$table.$attribute"] = $value;
             }
 
@@ -46,6 +48,7 @@ trait SelfSearchTrait
         }
 
         $columns = [];
+
         foreach ($attributes as $attribute) {
             $columns[] = "$table.$attribute";
         }
@@ -57,8 +60,10 @@ trait SelfSearchTrait
         }
 
         $conditionOr = ['OR'];
+
         foreach ($paramsNull as $modelCondition) {
             $conditionAnd = ['AND'];
+
             foreach ($modelCondition as $attribute => $value) {
                 $conditionAnd[] = ($value === null) ? "$attribute IS NULL" : [$attribute => $value];
             }

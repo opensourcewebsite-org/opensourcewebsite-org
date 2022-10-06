@@ -65,11 +65,17 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
 
     public $keywordsFromForm = [];
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%resume}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
@@ -84,6 +90,9 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
         $response->save();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
@@ -154,6 +163,9 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
         return new ResumeQuery(get_called_class());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels(): array
     {
         return [
@@ -176,6 +188,9 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -222,6 +237,11 @@ class Resume extends ActiveRecord implements ViewedByUserInterface, MatchesInter
     public function isRemote(): bool
     {
         return (bool)$this->remote_on;
+    }
+
+    public function isOffline(): bool
+    {
+        return (bool)$this->search_radius && !is_null($this->location_lat) && !is_null($this->location_lon);
     }
 
     public function getKeywordsFromForm(): array

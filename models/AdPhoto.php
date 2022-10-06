@@ -17,11 +17,17 @@ use yii\db\ActiveRecord;
  */
 class AdPhoto extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%ad_offer_photo}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [

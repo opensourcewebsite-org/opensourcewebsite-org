@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\models;
 
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -28,11 +29,17 @@ class AdOfferResponse extends ActiveRecord
         return $response;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%ad_offer_response}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -44,11 +51,24 @@ class AdOfferResponse extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
             [['user_id', 'ad_offer_id'], 'required'],
             [['user_id', 'ad_offer_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
+    }
+
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    public function getAdOffer(): ActiveQuery
+    {
+        return $this->hasOne(AdOffer::class, ['id' => 'ad_offer_id']);
     }
 }

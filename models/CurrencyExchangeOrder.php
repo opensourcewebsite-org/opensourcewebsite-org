@@ -91,7 +91,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%currency_exchange_order}}';
     }
@@ -256,7 +256,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -290,7 +290,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     /**
      * {@inheritdoc}
      */
-    public function attributeHints()
+    public function attributeHints(): array
     {
         return [
             'selling_currency_label' => Yii::t('app', 'Used to privately display additional information in your order list') .  '.',
@@ -305,7 +305,7 @@ class CurrencyExchangeOrder extends ActiveRecord implements ViewedByUserInterfac
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'timestamp' => [

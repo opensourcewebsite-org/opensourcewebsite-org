@@ -7,7 +7,6 @@ namespace app\models;
 use app\components\helpers\ArrayHelper;
 use app\models\events\interfaces\ViewedByUserInterface;
 use app\models\interfaces\MatchesInterface;
-use app\models\interfaces\ModelWithLocationInterface;
 use app\models\matchers\ModelLinker;
 use app\models\queries\VacancyQuery;
 use app\models\scenarios\Vacancy\UpdateScenario;
@@ -56,7 +55,7 @@ use yii\web\JsExpression;
  * @property JobKeyword[] $keywords
  *
  */
-class Vacancy extends ActiveRecord implements ModelWithLocationInterface, ViewedByUserInterface, MatchesInterface
+class Vacancy extends ActiveRecord implements ViewedByUserInterface, MatchesInterface
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
@@ -71,6 +70,9 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
 
     public $keywordsFromForm = [];
 
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $this->on(self::EVENT_KEYWORDS_UPDATED, [$this, 'clearMatches']);
@@ -86,16 +88,17 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         $response->save();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%vacancy}}';
     }
 
-    public function getTableName(): string
-    {
-        return static::tableName();
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
@@ -152,6 +155,9 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         return new VacancyQuery(get_called_class());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels(): array
     {
         return [
@@ -175,6 +181,9 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -238,6 +247,11 @@ class Vacancy extends ActiveRecord implements ModelWithLocationInterface, Viewed
     public function isRemote(): bool
     {
         return $this->remote_on == static::REMOTE_ON;
+    }
+
+    public function isOffline(): bool
+    {
+        return !is_null($this->location_lat) && !is_null($this->location_lon);
     }
 
     public function getKeywordsFromForm(): array

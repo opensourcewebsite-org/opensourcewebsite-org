@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace app\models\matchers;
 
+use app\components\helpers\ArrayHelper;
+use app\models\AdKeyword;
 use app\models\AdOffer;
 use app\models\AdOfferKeyword;
 use app\models\AdSearch;
+use app\models\matchers\interfaces\MatcherInterface;
 use yii\db\ActiveQuery;
 
-class AdSearchMatcher
+class AdSearchMatcher implements MatcherInterface
 {
     private AdSearch $model;
 
@@ -24,49 +27,46 @@ class AdSearchMatcher
         $this->comparingTable = AdOffer::tableName();
     }
 
-    public function match(): int
+    public function match()
     {
         $this->linker->unlinkMatches();
         $matchesQuery = $this->prepareMainQuery();
-
+        // Check a location
+        $matchesQuery->andWhere(
+            "ST_Distance_Sphere(
+                POINT({$this->model->location_lon}, {$this->model->location_lat}),
+                POINT({$this->comparingTable}.location_lon, {$this->comparingTable}.location_lat)
+            ) <= (1000 * ({$this->comparingTable}.delivery_radius + {$this->model->pickup_radius}))"
+        );
+        // Check keywords
+        $matchesQueryKeywords = clone $matchesQuery;
         $matchesQueryNoKeywords = clone $matchesQuery;
-
+        // TODO improve
         $matchesQueryNoKeywords = $matchesQueryNoKeywords
             ->andWhere(['not in', $this->comparingTable . '.id', AdOfferKeyword::find()->select('ad_offer_id')]);
 
-        $matchesQueryKeywords = clone $matchesQuery;
+        if ($keywords = $this->model->keywords) {
+            $keywordsIds = ArrayHelper::getColumn($keywords, 'id');
+            $matchesQueryKeywords->joinWith('keywords');
+            $matchesQueryKeywords->andWhere(['in', AdKeyword::tableName() . '.id', $keywordsIds]);
 
-        $matchesQueryKeywords = $matchesQueryKeywords
-            ->joinWith(
-                [
-                    'keywords' => function ($query) {
-                        $query
-                            ->joinWith('adSearches')
-                            ->andWhere([AdSearch::tableName() . '.id' => $this->model->id]);
-                    },
-                ]
-            )
-            ->groupBy($this->comparingTable . '.id');
-
-        if ($this->model->getKeywords()->count() > 0) {
             $keywordsMatches = $matchesQueryKeywords->all();
             $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
-            $matchesCount = count($keywordsMatches);
-
-            $this->linker->linkMatches($keywordsMatches);
-            $this->linker->linkCounterMatches($keywordsMatches);
-            $this->linker->linkMatches($noKeywordsMatches);
+            $matches = $keywordsMatches;
+            // TODO fix to only unique values
+            $counterMatches = ArrayHelper::merge($keywordsMatches, $noKeywordsMatches);
         } else {
-            $keywordsMatches = $matchesQueryKeywords->all();
+            $matches = $matchesQuery->all();
             $noKeywordsMatches = $matchesQueryNoKeywords->all();
 
-            $matchesCount = count($noKeywordsMatches);
-
-            $this->linker->linkCounterMatches($keywordsMatches);
-            $this->linker->linkMatches($noKeywordsMatches);
-            $this->linker->linkCounterMatches($noKeywordsMatches);
+            $counterMatches = $noKeywordsMatches;
         }
+
+        $matchesCount = count($matches);
+
+        $this->linker->linkMatches($matches);
+        $this->linker->linkCounterMatches($counterMatches);
 
         return $matchesCount;
     }
@@ -76,12 +76,6 @@ class AdSearchMatcher
         return AdOffer::find()
             ->excludeUserId($this->model->user_id)
             ->live()
-            ->andWhere([$this->comparingTable . '.section' => $this->model->section])
-            ->andWhere(
-                "ST_Distance_Sphere(
-                    POINT({$this->model->location_lon}, {$this->model->location_lat}),
-                    POINT({$this->comparingTable}.location_lon, {$this->comparingTable}.location_lat)
-                ) <= 1000 * ({$this->comparingTable}.delivery_radius + {$this->model->pickup_radius})"
-            );
+            ->andWhere([$this->comparingTable . '.section' => $this->model->section]);
     }
 }

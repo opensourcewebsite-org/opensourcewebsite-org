@@ -16,11 +16,17 @@ use yii\db\ActiveRecord;
  */
 class JobKeyword extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%job_keyword}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
@@ -41,14 +47,14 @@ class JobKeyword extends ActiveRecord
             ->viaTable('{{%job_vacancy_keyword}}', ['job_keyword_id' => 'id']);
     }
 
-    public function getLabel(): string
-    {
-        return $this->keyword;
-    }
-
     public function getResumes(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['id' => 'resume_id'])
             ->viaTable('{{%job_resume_keyword}}', ['job_keyword_id' => 'id']);
+    }
+
+    public function getLabel(): string
+    {
+        return $this->keyword;
     }
 }

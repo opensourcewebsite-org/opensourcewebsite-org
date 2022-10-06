@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\models;
 
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -26,11 +27,17 @@ class CurrencyExchangeOrderResponse extends ActiveRecord
         return $response;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%currency_exchange_order_response}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -42,11 +49,24 @@ class CurrencyExchangeOrderResponse extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
             [['user_id', 'order_id'], 'required'],
             [['user_id', 'order_id', 'viewed_at', 'archived_at'], 'integer'],
         ];
+    }
+
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    public function getOrder(): ActiveQuery
+    {
+        return $this->hasOne(CurrencyExchangeOrder::class, ['id' => 'order_id']);
     }
 }

@@ -19,7 +19,6 @@ trait RandomTrait
      * * <b>Disadvantage:</b> This method’s speed is directly related to how long it takes to generate a random value for each row you query. The more random rows you want, the longer it takes.
      *
      * @param int $limit
-     *
      * @return ActiveQuery
      * @link https://www.warpconduit.net/2011/03/23/selecting-a-random-record-using-mysql-benchmark-results/
      */

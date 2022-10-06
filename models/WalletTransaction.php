@@ -25,7 +25,7 @@ class WalletTransaction extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wallet_transaction}}';
     }
@@ -33,7 +33,7 @@ class WalletTransaction extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'created_at'], 'required'],
@@ -48,7 +48,7 @@ class WalletTransaction extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -61,32 +61,17 @@ class WalletTransaction extends ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Currency]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrency()
+    public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
-    /**
-     * Gets query for [[FromUser]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFromUser()
+    public function getFromUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'from_user_id']);
     }
 
-    /**
-     * Gets query for [[ToUser]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getToUser()
+    public function getToUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'to_user_id']);
     }

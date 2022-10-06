@@ -59,7 +59,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%user}}';
     }
@@ -67,7 +67,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             TimestampBehavior::className(),
@@ -77,7 +77,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['gender_id', 'sexuality_id', 'currency_id', 'rating'], 'integer'],
@@ -155,7 +155,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -253,7 +253,6 @@ class User extends ActiveRecord implements IdentityInterface
      * Finds user by ID
      *
      * @param string $id
-     *
      * @return static|null
      */
     public static function findById($id): ?User
@@ -268,7 +267,6 @@ class User extends ActiveRecord implements IdentityInterface
      * Finds user by username
      *
      * @param string $username
-     *
      * @return static|null
      */
     public static function findByUsername($username): ?User
@@ -283,7 +281,6 @@ class User extends ActiveRecord implements IdentityInterface
      * Finds user by email
      *
      * @param string $email
-     *
      * @return static|null
      */
     public static function findByEmail($email): ?User
@@ -309,7 +306,6 @@ class User extends ActiveRecord implements IdentityInterface
      * Validates password
      *
      * @param string $password password to validate
-     *
      * @return bool if password provided is valid for current user
      */
     public function validatePassword($password)
@@ -379,7 +375,6 @@ class User extends ActiveRecord implements IdentityInterface
      * @param int $id user id
      * @param int $time
      * @param string $hash
-     *
      * @return boolean
      */
     public function confirmEmail(int $id, int $time, string $hash)
@@ -408,10 +403,7 @@ class User extends ActiveRecord implements IdentityInterface
         return false;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMoqups()
+    public function getMoqups(): ActiveQuery
     {
         return $this->hasMany(Moqup::className(), ['user_id' => 'id']);
     }
@@ -424,10 +416,7 @@ class User extends ActiveRecord implements IdentityInterface
         return count($this->moqups);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getIssues()
+    public function getIssues(): ActiveQuery
     {
         return $this->hasMany(Issue::className(), ['user_id' => 'id']);
     }
@@ -440,10 +429,7 @@ class User extends ActiveRecord implements IdentityInterface
         return count($this->issues);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSupportGroup()
+    public function getSupportGroup(): ActiveQuery
     {
         return $this->hasMany(SupportGroup::className(), ['user_id' => 'id']);
     }
@@ -456,26 +442,17 @@ class User extends ActiveRecord implements IdentityInterface
         return count($this->supportGroup);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSupportGroupMember()
+    public function getSupportGroupMember(): ActiveQuery
     {
         return $this->hasMany(SupportGroupMember::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSupportGroupCommand()
+    public function getSupportGroupCommand(): ActiveQuery
     {
         return $this->hasMany(SupportGroupCommand::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSupportGroupBot()
+    public function getSupportGroupBot(): ActiveQuery
     {
         return $this->hasMany(SupportGroupBot::className(), ['support_group_id' => 'id'])->viaTable('support_group', ['user_id' => 'id']);
     }
@@ -496,16 +473,14 @@ class User extends ActiveRecord implements IdentityInterface
         return count($this->supportGroupBot);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getFollowedMoqups()
+    public function getFollowedMoqups(): ActiveQuery
     {
         return $this->hasMany(Moqup::className(), ['id' => 'moqup_id'])->viaTable('user_moqup_follow', ['user_id' => 'id']);
     }
 
     /**
      * Get a list of id of the moqups beign followed by the user
+     *
      * @return array the list of moqups id
      */
     public function getFollowedMoqupsId()
@@ -625,10 +600,7 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->totalMoqupsSize >= $this->maxMoqupsSize;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRatings()
+    public function getRatings(): ActiveQuery
     {
         return $this->hasMany(Rating::className(), ['user_id' => 'id']);
     }
@@ -758,7 +730,6 @@ class User extends ActiveRecord implements IdentityInterface
      *
      * @param int $type integer value for rating type constants defined in Rating model
      * @param int $amount rating amount to be added
-     *
      * @return bool true|false
      */
     public function addRating($type, $amount = 1)
@@ -796,24 +767,21 @@ class User extends ActiveRecord implements IdentityInterface
         return $model;
     }
 
-    public function getContacts(): ContactQuery
+    public function getContacts(): ActiveQuery
     {
         return $this->hasMany(Contact::class, ['user_id' => 'id']);
     }
 
-    public function getCounterContacts(): ContactQuery
+    public function getCounterContacts(): ActiveQuery
     {
         return $this->hasMany(Contact::class, ['link_user_id' => 'id']);
     }
 
-    public function getDebtRedistributions(): DebtRedistributionQuery
+    public function getDebtRedistributions(): ActiveQuery
     {
         return $this->hasMany(DebtRedistribution::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getSettingValueVotes(): ActiveQuery
     {
         return $this->hasMany(SettingValueVote::class, ['user_id' => 'id']);
@@ -837,75 +805,48 @@ class User extends ActiveRecord implements IdentityInterface
         }
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getGender(): ActiveQuery
     {
         return $this->hasOne(Gender::class, ['id' => 'gender_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getSexuality(): ActiveQuery
     {
         return $this->hasOne(Sexuality::class, ['id' => 'sexuality_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getLanguages(): ActiveQuery
     {
         return $this->hasMany(UserLanguage::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getCitizenships(): ActiveQuery
     {
         return $this->hasMany(UserCitizenship::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getCompanies(): ActiveQuery
     {
         return $this->hasMany(Company::class, ['id' => 'company_id'])
             ->viaTable('company_user', ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getVacancies(): ActiveQuery
     {
         return $this->hasMany(Vacancy::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getVacancyMatches(): ActiveQuery
     {
         return $this->hasMany(JobVacancyMatch::class, ['vacancy_id' => 'id'])
             ->viaTable(Vacancy::tableName(), ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getVacancyNewMatches(): ActiveQuery
     {
         return $this->getVacancyMatches()
@@ -923,26 +864,17 @@ class User extends ActiveRecord implements IdentityInterface
             ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getResumes(): ActiveQuery
     {
         return $this->hasMany(Resume::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getResumeMatches(): ActiveQuery
     {
         return $this->hasMany(JobResumeMatch::class, ['resume_id' => 'id'])
             ->viaTable(Resume::tableName(), ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getResumeNewMatches(): ActiveQuery
     {
         return $this->getResumeMatches()
@@ -960,17 +892,11 @@ class User extends ActiveRecord implements IdentityInterface
             ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAdSearches(): ActiveQuery
     {
         return $this->hasMany(AdSearch::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAdSearchMatches($adSection = null): ActiveQuery
     {
         if ($adSection) {
@@ -987,9 +913,6 @@ class User extends ActiveRecord implements IdentityInterface
             ->andWhere($subWhere);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAdSearchNewMatches($adSection = null): ActiveQuery
     {
         return $this->getAdSearchMatches($adSection)
@@ -1007,17 +930,11 @@ class User extends ActiveRecord implements IdentityInterface
             ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAdOffers(): ActiveQuery
     {
         return $this->hasMany(AdOffer::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAdOfferMatches($adSection = null): ActiveQuery
     {
         if ($adSection) {
@@ -1034,9 +951,6 @@ class User extends ActiveRecord implements IdentityInterface
             ->andWhere($subWhere);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAdOfferNewMatches($adSection = null): ActiveQuery
     {
         return $this->getAdOfferMatches($adSection)
@@ -1054,18 +968,12 @@ class User extends ActiveRecord implements IdentityInterface
             ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getContactGroups(): ActiveQuery
     {
         return $this->hasMany(ContactGroup::className(), ['user_id' => 'id'])
             ->orderBy('name');
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getBotUser(): ActiveQuery
     {
         return $this->hasOne(BotUser::class, ['user_id' => 'id']);
@@ -1104,21 +1012,18 @@ class User extends ActiveRecord implements IdentityInterface
         $this->save(false);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCurrencyExchangeOrders()
+    public function getCurrencyExchangeOrders(): ActiveQuery
     {
         return $this->hasMany(CurrencyExchangeOrder::class, ['user_id' => 'id']);
     }
 
-    public function getCurrencyExchangeOrderMatches()
+    public function getCurrencyExchangeOrderMatches(): ActiveQuery
     {
         return $this->hasMany(CurrencyExchangeOrderMatch::class, ['order_id' => 'id'])
             ->viaTable(CurrencyExchangeOrder::tableName(), ['user_id' => 'id']);
     }
 
-    public function getCurrencyExchangeOrderNewMatches()
+    public function getCurrencyExchangeOrderNewMatches(): ActiveQuery
     {
         return $this->getCurrencyExchangeOrderMatches()
             ->andWhere([
@@ -1135,19 +1040,13 @@ class User extends ActiveRecord implements IdentityInterface
             ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     // TODO remove old
-    public function getStellar()
+    public function getStellar(): ActiveQuery
     {
         return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserStellar()
+    public function getUserStellar(): ActiveQuery
     {
         return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
     }
@@ -1180,12 +1079,12 @@ class User extends ActiveRecord implements IdentityInterface
         return $query;
     }
 
-    public function getDepositDebts()
+    public function getDepositDebts(): ActiveQuery
     {
         return $this->hasMany(Debt::class, ['to_user_id' => 'id']);
     }
 
-    public function getCreditDebts()
+    public function getCreditDebts(): ActiveQuery
     {
         return $this->hasMany(Debt::class, ['from_user_id' => 'id']);
     }
@@ -1234,10 +1133,7 @@ class User extends ActiveRecord implements IdentityInterface
         return $amount;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserLocation()
+    public function getUserLocation(): ActiveQuery
     {
         return $this->hasOne(UserLocation::class, ['user_id' => 'id']);
     }
@@ -1271,7 +1167,6 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * @param int|null $userId
-     *
      * @return bool
      */
     public function getBasicIncomeVoteByUserId($userId = null)
@@ -1328,12 +1223,7 @@ class User extends ActiveRecord implements IdentityInterface
         );
     }
 
-    /**
-     * Gets query for [[Wallet]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getWallets()
+    public function getWallets(): ActiveQuery
     {
         return $this->hasMany(Wallet::class, ['user_id' => 'id']);
     }

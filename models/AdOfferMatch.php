@@ -17,11 +17,17 @@ use yii\db\ActiveRecord;
  */
 class AdOfferMatch extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%ad_offer_match}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
@@ -44,6 +50,9 @@ class AdOfferMatch extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels(): array
     {
         return [

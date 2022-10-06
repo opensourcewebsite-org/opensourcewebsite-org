@@ -21,7 +21,7 @@ class ModelLinker
         $this->unlinkMatches();
 
         $this->model->processed_at = null;
-        $this->model->save();
+        $this->model->save(false);
     }
 
     public function unlinkMatches()

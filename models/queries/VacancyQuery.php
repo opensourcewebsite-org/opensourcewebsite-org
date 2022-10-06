@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\models\queries;
 
-use app\models\queries\builders\ConditionExpressionBuilderInterface;
 use app\models\User;
 use app\models\Vacancy;
 use Yii;
@@ -37,17 +36,6 @@ class VacancyQuery extends ActiveQuery
                 User::tableName() . '.rating' => SORT_DESC,
                 User::tableName() . '.created_at' => SORT_ASC,
             ]);
-    }
-
-    /**
-     * @return self
-     */
-    public function applyBuilder(ConditionExpressionBuilderInterface $builder): self
-    {
-        $ret = $builder->build();
-        $new = clone $this;
-
-        return $new->andWhere($ret);
     }
 
     /**

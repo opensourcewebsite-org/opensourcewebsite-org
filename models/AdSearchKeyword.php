@@ -17,11 +17,17 @@ use yii\db\ActiveRecord;
  */
 class AdSearchKeyword extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
-        return 'ad_search_keyword';
+        return '{{%ad_search_keyword}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
