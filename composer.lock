@@ -118,7 +118,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/Inputmask.git",
+                "url": "git@github.com:RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -190,16 +190,16 @@
         },
         {
             "name": "bower-asset/leaflet",
-            "version": "v1.8.0",
+            "version": "v1.9.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Leaflet/Leaflet.git",
-                "reference": "8a1ccbe3c821ec501911d7d7b698af4b1636216c"
+                "url": "git@github.com:Leaflet/Leaflet.git",
+                "reference": "f45c06a13f49a60089af799ce215dfc0b7460ef5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Leaflet/Leaflet/zipball/8a1ccbe3c821ec501911d7d7b698af4b1636216c",
-                "reference": "8a1ccbe3c821ec501911d7d7b698af4b1636216c"
+                "url": "https://api.github.com/repos/Leaflet/Leaflet/zipball/f45c06a13f49a60089af799ce215dfc0b7460ef5",
+                "reference": "f45c06a13f49a60089af799ce215dfc0b7460ef5"
             },
             "type": "bower-asset"
         },
@@ -1470,12 +1470,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-stellar-sdk.git",
-                "reference": "4ffa55b8e65200db370ac4f7e203882644bde438"
+                "reference": "8a08c0999ca3393f39e242742d8635d5b64b10f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-stellar-sdk/zipball/4ffa55b8e65200db370ac4f7e203882644bde438",
-                "reference": "4ffa55b8e65200db370ac4f7e203882644bde438",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-stellar-sdk/zipball/8a08c0999ca3393f39e242742d8635d5b64b10f0",
+                "reference": "8a08c0999ca3393f39e242742d8635d5b64b10f0",
                 "shasum": ""
             },
             "require": {
@@ -1525,7 +1525,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-stellar-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-stellar-sdk"
             },
-            "time": "2022-07-15T12:11:16+00:00"
+            "time": "2022-10-05T05:17:12+00:00"
         },
         {
             "name": "opensourcewebsite-org/php-telegram-sdk",
@@ -1533,12 +1533,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-telegram-sdk.git",
-                "reference": "6cee7c43dc4a981634da0c96cf34c7679c48e574"
+                "reference": "083d3ab077b7825839566f92e96f7a5aac9e1db1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/6cee7c43dc4a981634da0c96cf34c7679c48e574",
-                "reference": "6cee7c43dc4a981634da0c96cf34c7679c48e574",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/083d3ab077b7825839566f92e96f7a5aac9e1db1",
+                "reference": "083d3ab077b7825839566f92e96f7a5aac9e1db1",
                 "shasum": ""
             },
             "require": {
@@ -1590,7 +1590,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-telegram-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-telegram-sdk"
             },
-            "time": "2022-10-02T14:30:27+00:00"
+            "time": "2022-10-12T16:29:57+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -4590,16 +4590,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.11.0",
+            "version": "v3.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "7dcdea3f2f5f473464e835be9be55283ff8cfdc3"
+                "reference": "eae11d945e2885d86e1c080eec1bb30a2aa27998"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/7dcdea3f2f5f473464e835be9be55283ff8cfdc3",
-                "reference": "7dcdea3f2f5f473464e835be9be55283ff8cfdc3",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/eae11d945e2885d86e1c080eec1bb30a2aa27998",
+                "reference": "eae11d945e2885d86e1c080eec1bb30a2aa27998",
                 "shasum": ""
             },
             "require": {
@@ -4632,8 +4632,8 @@
                 "phpspec/prophecy": "^1.15",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpunit/phpunit": "^9.5",
-                "phpunitgoodpractices/polyfill": "^1.5",
-                "phpunitgoodpractices/traits": "^1.9.1",
+                "phpunitgoodpractices/polyfill": "^1.6",
+                "phpunitgoodpractices/traits": "^1.9.2",
                 "symfony/phpunit-bridge": "^6.0",
                 "symfony/yaml": "^5.4 || ^6.0"
             },
@@ -4667,7 +4667,7 @@
             "description": "A tool to automatically fix PHP code style",
             "support": {
                 "issues": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/issues",
-                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.11.0"
+                "source": "https://github.com/FriendsOfPHP/PHP-CS-Fixer/tree/v3.12.0"
             },
             "funding": [
                 {
@@ -4675,7 +4675,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-09-01T18:24:51+00:00"
+            "time": "2022-10-12T14:20:51+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -6599,16 +6599,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v5.4.13",
+            "version": "v5.4.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "3f97f6c7b7e26848a90c0c0cfb91eeb2bb8618be"
+                "reference": "984ea2c0f45f42dfed01d2f3987b187467c4b16d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/3f97f6c7b7e26848a90c0c0cfb91eeb2bb8618be",
-                "reference": "3f97f6c7b7e26848a90c0c0cfb91eeb2bb8618be",
+                "url": "https://api.github.com/repos/symfony/console/zipball/984ea2c0f45f42dfed01d2f3987b187467c4b16d",
+                "reference": "984ea2c0f45f42dfed01d2f3987b187467c4b16d",
                 "shasum": ""
             },
             "require": {
@@ -6678,7 +6678,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v5.4.13"
+                "source": "https://github.com/symfony/console/tree/v5.4.14"
             },
             "funding": [
                 {
@@ -6694,7 +6694,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-08-26T13:50:20+00:00"
+            "time": "2022-10-07T08:01:20+00:00"
         },
         {
             "name": "symfony/css-selector",
@@ -7581,16 +7581,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v5.4.13",
+            "version": "v5.4.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "2900c668a32138a34118740de3e4d5a701801f53"
+                "reference": "089e7237497fae7a9c404d0c3aeb8db3254733e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/2900c668a32138a34118740de3e4d5a701801f53",
-                "reference": "2900c668a32138a34118740de3e4d5a701801f53",
+                "url": "https://api.github.com/repos/symfony/string/zipball/089e7237497fae7a9c404d0c3aeb8db3254733e4",
+                "reference": "089e7237497fae7a9c404d0c3aeb8db3254733e4",
                 "shasum": ""
             },
             "require": {
@@ -7647,7 +7647,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v5.4.13"
+                "source": "https://github.com/symfony/string/tree/v5.4.14"
             },
             "funding": [
                 {
@@ -7663,20 +7663,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-09-01T01:52:16+00:00"
+            "time": "2022-10-05T15:16:54+00:00"
         },
         {
             "name": "symfony/yaml",
-            "version": "v5.4.12",
+            "version": "v5.4.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "7a3aa21ac8ab1a96cc6de5bbcab4bc9fc943b18c"
+                "reference": "e83fe9a72011f07c662da46a05603d66deeeb487"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/7a3aa21ac8ab1a96cc6de5bbcab4bc9fc943b18c",
-                "reference": "7a3aa21ac8ab1a96cc6de5bbcab4bc9fc943b18c",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/e83fe9a72011f07c662da46a05603d66deeeb487",
+                "reference": "e83fe9a72011f07c662da46a05603d66deeeb487",
                 "shasum": ""
             },
             "require": {
@@ -7722,7 +7722,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v5.4.12"
+                "source": "https://github.com/symfony/yaml/tree/v5.4.14"
             },
             "funding": [
                 {
@@ -7738,7 +7738,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-08-02T15:52:22+00:00"
+            "time": "2022-10-03T15:15:50+00:00"
         },
         {
             "name": "theseer/tokenizer",
