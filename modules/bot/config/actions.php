@@ -64,4 +64,8 @@ return [
     'all_new_matches',
     'section_matches',
     'section_new_matches',
+    'set_member_messages_limit',
+    'set_member_messages_skip-days',
+    'delete_member_messages_skip_days',
+    'delete_member',
 ];

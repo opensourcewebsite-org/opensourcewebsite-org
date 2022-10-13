@@ -31,6 +31,11 @@ class JobResumeKeyword extends ActiveRecord
         ];
     }
 
+    public function getResume(): ActiveQuery
+    {
+        return $this->hasOne(Resume::className(), ['id' => 'resume_id']);
+    }
+
     public function getKeyword(): ActiveQuery
     {
         return $this->hasOne(JobKeyword::class, ['id' => 'job_keyword_id']);

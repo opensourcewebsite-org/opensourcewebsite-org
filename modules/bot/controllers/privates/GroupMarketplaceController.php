@@ -12,6 +12,7 @@ use app\modules\bot\models\ChatMarketplaceLink;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatPhrase;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 
@@ -406,7 +407,7 @@ class GroupMarketplaceController extends Controller
             ])
             ->joinWith('user')
             ->andWhere([
-                '{{%bot_user}}.provider_user_name' => $username,
+                User::tableName() . '.provider_user_name' => $username,
             ])
             ->one();
 

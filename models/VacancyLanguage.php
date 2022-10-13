@@ -23,16 +23,28 @@ use yii\db\ActiveRecord;
  */
 class VacancyLanguage extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%vacancy_language}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
-            [['vacancy_id', 'language_id', 'language_level_id'], 'safe'],
+            [['vacancy_id', 'language_id', 'language_level_id'], 'integer'],
+            [['vacancy_id', 'language_id', 'language_level_id'], 'required'],
         ];
+    }
+
+    public function getVacancy(): ActiveQuery
+    {
+        return $this->hasOne(Vacancy::className(), ['id' => 'vacancy_id']);
     }
 
     public function getLevel(): ActiveQuery

@@ -2,28 +2,35 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 class UserCitizenship extends ActiveRecord
 {
-    public static function tableName()
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName(): string
     {
         return '{{%user_citizenship}}';
     }
 
-    public function rules()
+    /**
+     * {@inheritdoc}
+     */
+    public function rules(): array
     {
         return [
-            [ ['user_id', 'country_id' ], 'integer' ],
-            [ ['user_id', 'country_id' ], 'required' ],
+            [['user_id', 'country_id'], 'integer'],
+            [['user_id', 'country_id'], 'required'],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -32,12 +39,12 @@ class UserCitizenship extends ActiveRecord
         ];
     }
 
-    public function getUser()
+    public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, [ 'id' => 'user_id' ]);
     }
 
-    public function getCountry()
+    public function getCountry(): ActiveQuery
     {
         return $this->hasOne(Country::class, [ 'id' => 'country_id' ]);
     }

@@ -31,6 +31,11 @@ class JobVacancyKeyword extends ActiveRecord
         ];
     }
 
+    public function getVacancy(): ActiveQuery
+    {
+        return $this->hasOne(Vacancy::className(), ['id' => 'vacancy_id']);
+    }
+
     public function getKeyword(): ActiveQuery
     {
         return $this->hasOne(JobKeyword::class, ['id' => 'job_keyword_id']);

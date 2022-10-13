@@ -23,6 +23,7 @@ use yii\db\ActiveRecord;
  * @property int $role
  * @property int $slow_mode_messages
  * @property int $slow_mode_messages_limit
+ * @property int $slow_mode_messages_skip_days
  * @property int|null $last_message_at
  * @property string|null $limiter_date
  * @property string|null $membership_date
@@ -95,9 +96,11 @@ class ChatMember extends ActiveRecord
     {
         return [
             [['chat_id', 'user_id', 'status', 'role', 'slow_mode_messages'], 'required'],
-            [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages_limit'], 'integer'],
+            [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages_limit', 'slow_mode_messages_skip_days'], 'integer'],
             ['role', 'default', 'value' => self::ROLE_MEMBER],
             ['slow_mode_messages', 'default', 'value' => 0],
+            [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],
+            [['slow_mode_messages_skip_days'], 'integer', 'min' => 0, 'max' => 365],
             [['status', 'membership_note'], 'string'],
             [['limiter_date', 'membership_date'], 'date'],
             ['intro', 'string', 'max' => 10000],
@@ -185,6 +188,10 @@ class ChatMember extends ActiveRecord
         if ($chat = $this->chat) {
             if ($this->last_message_at) {
                 $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
+
+                if ($this->slow_mode_messages_skip_days) {
+                    $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
+                }
 
                 if ($today->getTimestamp() < $this->last_message_at) {
                     $slowModeMessagesLimit = $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
@@ -279,6 +286,10 @@ class ChatMember extends ActiveRecord
 
         if ($chat = $this->chat) {
             $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
+
+            if ($this->slow_mode_messages_skip_days) {
+                $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
+            }
 
             if ($today->getTimestamp() < $this->last_message_at) {
                 $this->slow_mode_messages += 1;

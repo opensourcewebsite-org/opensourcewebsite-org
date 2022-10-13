@@ -208,19 +208,13 @@ class User extends ActiveRecord implements IdentityInterface
         $this->status = self::STATUS_ACTIVE;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     // TODO remove old
-    public function getEmail()
+    public function getEmail(): ActiveQuery
     {
         return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUserEmail()
+    public function getUserEmail(): ActiveQuery
     {
         return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
     }

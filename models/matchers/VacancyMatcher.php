@@ -50,7 +50,7 @@ final class VacancyMatcher implements MatcherInterface
                     $sql .= ' OR ';
                 }
 
-                $sql .= UserLanguage::tableName() . '.language_id = ' . $vacancyLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value >= ' . $languageLevel->value;
+                $sql .= '(' . UserLanguage::tableName() . '.language_id = ' . $vacancyLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value >= ' . $languageLevel->value . ')';
             }
 
             $sql .= ')) = ' . count($vacancyLanguages);

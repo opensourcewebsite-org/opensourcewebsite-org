@@ -5,6 +5,8 @@ namespace app\models;
 use app\modules\bot\validators\StellarPublicKeyValidator;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_stellar".
@@ -15,7 +17,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int $created_at
  * @property int|null $confirmed_at
  */
-class UserStellar extends \yii\db\ActiveRecord
+class UserStellar extends ActiveRecord
 {
     public const CONFIRM_REQUEST_LIFETIME = 20 * 60; // seconds
 
@@ -25,19 +27,6 @@ class UserStellar extends \yii\db\ActiveRecord
     public static function tableName(): string
     {
         return '{{%user_stellar}}';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors(): array
-    {
-        return [
-            'timestamp' => [
-                'class' => TimestampBehavior::class,
-                'updatedAtAttribute' => false,
-            ],
-        ];
     }
 
     /**
@@ -71,6 +60,24 @@ class UserStellar extends \yii\db\ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'confirmed_at' => Yii::t('app', 'Confirmed At'),
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors(): array
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::class,
+                'updatedAtAttribute' => false,
+            ],
+        ];
+    }
+
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, [ 'id' => 'user_id' ]);
     }
 
     /**

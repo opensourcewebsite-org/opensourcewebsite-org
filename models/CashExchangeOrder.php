@@ -9,7 +9,7 @@ class CashExchangeOrder extends CurrencyExchangeOrder
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',

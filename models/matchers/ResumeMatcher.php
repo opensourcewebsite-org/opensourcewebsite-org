@@ -49,7 +49,7 @@ final class ResumeMatcher implements MatcherInterface
                     $sql .= ' OR ';
                 }
 
-                $sql .= VacancyLanguage::tableName() . '.language_id = ' . $userLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value <= ' . $languageLevel->value;
+                $sql .= '(' . VacancyLanguage::tableName() . '.language_id = ' . $userLanguage->language_id . ' AND ' . LanguageLevel::tableName() . '.value <= ' . $languageLevel->value . ')';
             }
 
             $sql .= ')) = (SELECT COUNT(*) FROM ' . VacancyLanguage::tableName() . ' WHERE ' . Vacancy::tableName() . '.id = ' . VacancyLanguage::tableName() . '.vacancy_id)';

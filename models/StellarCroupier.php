@@ -20,6 +20,7 @@ class StellarCroupier extends StellarServer
     public const WINNER_RATES = [2, 3, 4, 5, 10, 20, 50, 100, 500, 1000, 10000, 100000, 1000000];
 
     private ?Account $account = null;
+
     private ?float $balance = null;
 
     /**

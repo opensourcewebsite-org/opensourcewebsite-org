@@ -2,30 +2,42 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 class UserLanguage extends ActiveRecord
 {
-    public static function tableName()
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName(): string
     {
         return '{{%user_language}}';
     }
 
-    public function rules()
+    /**
+     * {@inheritdoc}
+     */
+    public function rules(): array
     {
         return [
-            [ [ 'user_id', 'language_id', 'language_level_id' ], 'integer' ],
-            [ [ 'user_id', 'language_id', 'language_level_id' ], 'required' ],
+            [['user_id', 'language_id', 'language_level_id'], 'integer'],
+            [['user_id', 'language_id', 'language_level_id'], 'required'],
         ];
     }
 
-    public function getLevel()
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, [ 'id' => 'user_id' ]);
+    }
+
+    public function getLevel(): ActiveQuery
     {
         return $this->hasOne(LanguageLevel::class, [ 'id' => 'language_level_id' ]);
     }
 
-    public function getLanguage()
+    public function getLanguage(): ActiveQuery
     {
         return $this->hasOne(Language::class, [ 'id' => 'language_id' ]);
     }

@@ -11,6 +11,7 @@ use ZuluCrypto\StellarSdk\Horizon\Exception\PostTransactionException;
 use ZuluCrypto\StellarSdk\Transaction\TransactionBuilder;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
+
 use function Functional\group;
 
 class StellarGiver extends StellarServer
@@ -29,6 +30,7 @@ class StellarGiver extends StellarServer
     public const PARTICIPANT_MINIMUM_VOTES = 5;
 
     private ?Account $account = null;
+
     private ?float $balance = null;
 
     /**

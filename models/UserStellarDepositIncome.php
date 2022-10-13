@@ -20,7 +20,7 @@ class UserStellarDepositIncome extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%user_stellar_income}}';
     }
@@ -28,7 +28,7 @@ class UserStellarDepositIncome extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['account_id', 'asset_code', 'income'], 'required'],
@@ -42,7 +42,7 @@ class UserStellarDepositIncome extends ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',

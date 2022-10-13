@@ -2,12 +2,11 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
- * Class LanguageLevel
- * @package app\models
+ * This is the model class for table "language_level".
  *
  * @property int $id
  * @property int $value
@@ -18,17 +17,23 @@ use Yii;
  */
 class LanguageLevel extends ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName(): string
     {
         return '{{%language_level}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules(): array
     {
         return [
-            [ [ 'code', 'description' ], 'string' ],
-            [ [ 'value' ], 'integer' ],
-            [ [ 'description', 'value' ], 'required' ],
+            [['code', 'description'], 'string'],
+            [['value' ], 'integer'],
+            [['description', 'value'], 'required'],
         ];
     }
 

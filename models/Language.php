@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "language".
@@ -12,20 +13,20 @@ use Yii;
  * @property string $name
  * @property string $name_ascii
  */
-class Language extends \yii\db\ActiveRecord
+class Language extends ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
-        return 'language';
+        return '{{%language}}';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['code', 'name', 'name_ascii'], 'required'],
@@ -37,7 +38,7 @@ class Language extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),

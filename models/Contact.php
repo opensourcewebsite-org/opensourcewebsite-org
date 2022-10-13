@@ -53,15 +53,15 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
-        return 'contact';
+        return '{{%contact}}';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['user_id'], 'required'],
@@ -132,7 +132,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -149,7 +149,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         ];
     }
 
-    public function attributeHints()
+    public function attributeHints(): array
     {
         return [
             'debt_redistribution_priority' => Html::ul([
@@ -265,23 +265,19 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         ]);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery|ContactQuery
-     */
-    public function getChainMembers()
+    public function getChainMembers(): ActiveQuery
     {
         return $this->hasMany(self::className(), [
             'user_id' => 'link_user_id',
-        ])->inverseOf('chainMemberParent');
+        ])
+        ->inverseOf('chainMemberParent');
     }
 
-    /**
-     * @return \yii\db\ActiveQuery|ContactQuery
-     */
-    public function getChainMemberParent()
+    public function getChainMemberParent(): ActiveQuery
     {
         /** @var [] $link empty array is not bug. {@see DebtBalance::$chainMemberParent} */
         $link = [];
+
         return $this->hasOne(self::className(), $link);
     }
 
@@ -395,12 +391,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         parent::afterSave($insert, $changedAttributes);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     *
-     * Get contact's groups
-     */
-    public function getGroups()
+    public function getGroups(): ActiveQuery
     {
         return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
                     ->viaTable('contact_has_group', ['contact_id' => 'id'])
@@ -432,10 +423,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         $this->link_user_id = $userId;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getLinkedUser()
+    public function getLinkedUser(): ?ActiveQuery
     {
         if ($this->link_user_id) {
             return $this->hasOne(User::class, ['id' => 'link_user_id']);
@@ -506,10 +494,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCounterBotUser()
+    public function getCounterBotUser(): ActiveQuery
     {
         return $this->hasOne(BotUser::className(), ['user_id' => 'link_user_id']);
     }

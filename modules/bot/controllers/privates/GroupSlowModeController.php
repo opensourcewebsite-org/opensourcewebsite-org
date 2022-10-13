@@ -8,6 +8,7 @@ use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 
@@ -48,18 +49,18 @@ class GroupSlowModeController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('members', [
-                                'id' => $chat->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Members with exceptions'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => self::createRoute('set-messages-limit', [
                                 'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Limit of messages'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('members', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Members with exceptions'),
                         ],
                     ],
                     [
@@ -189,7 +190,9 @@ class GroupSlowModeController extends Controller
                 'chat_id' => $chat->id,
             ])
             ->andWhere([
-                'not', ['slow_mode_messages_limit' => null],
+                'OR',
+                ['not', ['slow_mode_messages_limit' => null]],
+                ['not', ['slow_mode_messages_skip_days' => null]],
             ]);
 
         $pagination = new Pagination([
@@ -221,7 +224,7 @@ class GroupSlowModeController extends Controller
                     'callback_data' => self::createRoute('member', [
                         'id' => $member->id,
                     ]),
-                    'text' => $member->slow_mode_messages_limit . ' - ' . $member->user->getDisplayName(),
+                    'text' => $member->user->getDisplayName(),
                 ];
             }
 
@@ -285,7 +288,7 @@ class GroupSlowModeController extends Controller
             ])
             ->joinWith('user')
             ->andWhere([
-                '{{%bot_user}}.provider_user_name' => $username,
+                User::tableName() . '.provider_user_name' => $username,
             ])
             ->one();
 
@@ -295,8 +298,8 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        if (!$member->slow_mode_messages_limit) {
-            $member->slow_mode_messages_limit = 1;
+        if (is_null($member->slow_mode_messages_limit)) {
+            $member->slow_mode_messages_limit = $chat->slow_mode_messages_limit;
             $member->save(false);
         }
 
@@ -327,10 +330,6 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-member-messages-limit', [
-            'id' => $member->id,
-        ]));
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('member', [
@@ -338,6 +337,22 @@ class GroupSlowModeController extends Controller
                     'chatMember' => $member,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-member-messages-limit', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Limit of messages') . (!is_null($member->slow_mode_messages_limit) ? ': ' . $member->slow_mode_messages_limit : ''),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-member-messages-skip-days', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Skip days') . (!is_null($member->slow_mode_messages_skip_days) ? ': ' . $member->slow_mode_messages_skip_days : ''),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('members', [
@@ -350,7 +365,7 @@ class GroupSlowModeController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('delete-member-messages-limit', [
+                            'callback_data' => self::createRoute('delete-member', [
                                 'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
@@ -365,7 +380,7 @@ class GroupSlowModeController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionInputMemberMessagesLimit($id = null)
+    public function actionSetMemberMessagesLimit($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -383,6 +398,10 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
+        $this->getState()->setName(self::createRoute('set-member-messages-limit', [
+            'id' => $member->id,
+        ]));
+
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $member->slow_mode_messages_limit = $text;
@@ -398,7 +417,90 @@ class GroupSlowModeController extends Controller
         }
 
         return $this->getResponseBuilder()
-            ->answerCallbackQuery()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-member-messages-limit'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-messages-limit', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => !is_null($member->slow_mode_messages_limit),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionSetMemberMessagesSkipDays($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-messages-skip-days', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = $this->getUpdate()->getMessage()->getText()) !== null) {
+                $member->slow_mode_messages_skip_days = $text;
+
+                if ($member->validate('slow_mode_messages_skip_days')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-member-messages-skip-days'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-messages-skip-days', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => !is_null($member->slow_mode_messages_skip_days),
+                        ],
+                    ],
+                ]
+            )
             ->build();
     }
 
@@ -425,6 +527,67 @@ class GroupSlowModeController extends Controller
         }
 
         $member->slow_mode_messages_limit = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
+         ]);
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionDeleteMemberMessagesSkipDays($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->slow_mode_messages_skip_days = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
+         ]);
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionDeleteMember($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->slow_mode_messages_limit = null;
+        $member->slow_mode_messages_skip_days = null;
         $member->save(false);
 
         return $this->runAction('members', [
