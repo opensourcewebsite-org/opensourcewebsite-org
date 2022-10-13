@@ -143,6 +143,7 @@ class GroupLimiterController extends Controller
             ])
             ->orderBy([
                 'limiter_date' => SORT_ASC,
+                'user_id' => SORT_ASC,
             ]);
 
         $pagination = new Pagination([

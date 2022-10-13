@@ -206,6 +206,7 @@ class GroupMembershipController extends Controller
             ])
             ->orderBy([
                 'membership_date' => SORT_ASC,
+                'user_id' => SORT_ASC,
             ]);
 
         $pagination = new Pagination([
