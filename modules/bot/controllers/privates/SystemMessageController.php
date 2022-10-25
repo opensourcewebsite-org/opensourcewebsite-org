@@ -6,12 +6,13 @@ use app\modules\bot\components\Controller;
 use Yii;
 
 /**
- * Class MessageController
+ * Class SystemMessageController
  *
  * @package app\modules\bot\controllers\privates
  */
-class MessageController extends Controller
+class SystemMessageController extends Controller
 {
+    // TODO block/unblock bot by user
     /**
      * @return array
      */

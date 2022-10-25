@@ -10,7 +10,9 @@ use TelegramBot\Api\Types\Audio;
 use TelegramBot\Api\Types\Contact;
 use TelegramBot\Api\Types\Dice;
 use TelegramBot\Api\Types\Document;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Location;
+use TelegramBot\Api\Types\MessageAutoDeleteTimerChanged;
 use TelegramBot\Api\Types\Payments\Invoice;
 use TelegramBot\Api\Types\Payments\SuccessfulPayment;
 use TelegramBot\Api\Types\Poll;
@@ -37,6 +39,7 @@ class Message extends \TelegramBot\Api\Types\Message
     protected static $map = [
         'message_id' => true,
         'from' => User::class,
+        'sender_chat' => Chat::class,
         'date' => true,
         'chat' => Chat::class,
         'forward_from' => User::class,
@@ -47,7 +50,9 @@ class Message extends \TelegramBot\Api\Types\Message
         'forward_signature' => true,
         'forward_sender_name' => true,
         'reply_to_message' => Message::class,
+        'via_bot' => User::class,
         'edit_date' => true,
+        'has_protected_content' => true,
         'media_group_id' => true,
         'author_signature' => true,
         'text' => true,
@@ -74,6 +79,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'group_chat_created' => true,
         'supergroup_chat_created' => true,
         'channel_chat_created' => true,
+        'message_auto_delete_timer_changed' => MessageAutoDeleteTimerChanged::class,
         'migrate_to_chat_id' => true,
         'migrate_from_chat_id' => true,
         'pinned_message' => Message::class,
@@ -84,6 +90,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'video_chat_started' => VideoChatStarted::class,
         'video_chat_ended' => VideoChatEnded::class,
         'video_chat_participants_invited' => VideoChatParticipantsInvited::class,
+        'reply_markup' => InlineKeyboardMarkup::class,
     ];
 
     /**

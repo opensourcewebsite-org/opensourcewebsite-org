@@ -667,7 +667,7 @@ class GroupMarketplaceController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-link-title'),
+                $this->render('../set-value'),
                 [
                     [
                         [
@@ -720,7 +720,7 @@ class GroupMarketplaceController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-link-url'),
+                $this->render('../set-value'),
                 [
                     [
                         [

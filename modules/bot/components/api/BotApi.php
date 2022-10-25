@@ -60,7 +60,7 @@ class BotApi extends \TelegramBot\Api\BotApi
     * @param bool $showAlert
     * @return bool
      */
-    public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false)
+    public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false, $url = null, $cacheTime = 0)
     {
         Yii::warning('BotApi->answerCallbackQuery()');
 
@@ -68,7 +68,9 @@ class BotApi extends \TelegramBot\Api\BotApi
             return parent::answerCallbackQuery(
                 $callbackQueryId,
                 $text,
-                $showAlert
+                $showAlert,
+                $url,
+                $cacheTime
             );
         } catch (HttpException $e) {
             Yii::warning($e);

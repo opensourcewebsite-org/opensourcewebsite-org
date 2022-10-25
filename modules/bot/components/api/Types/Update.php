@@ -48,6 +48,7 @@ class Update extends \TelegramBot\Api\Types\Update
         'poll' => Poll::class,
         'my_chat_member' => ChatMemberUpdated::class,
         'chat_member' => ChatMemberUpdated::class,
+        'chat_join_request' => ChatJoinRequest::class,
     ];
 
     public function map($data)

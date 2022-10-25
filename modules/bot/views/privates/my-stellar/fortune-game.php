@@ -7,8 +7,8 @@ use app\modules\bot\components\helpers\ExternalLink;
 $stellarCroupier = new StellarCroupier();
 ?>
 <b><?= Yii::t('bot', 'Fortune Game') ?></b><br/>
-<br/>
 <?php if (StellarCroupier::getCroupierPublicKey()) : ?>
+<br/>
 <?= Yii::t('bot', 'Prize Fund') ?>: <b><?= $stellarCroupier->getAvailableBalance() ?> XLM</b><br/>
 <br/>
 <?= Yii::t('bot', 'Try your luck at blockchain based fortune game with transparent open source winning algorithms') ?>. <?= Yii::t('bot', 'When you win, your prize will be instantly sent to your Stellar account') ?>.<br/>

@@ -65,7 +65,11 @@ return [
     'section_matches',
     'section_new_matches',
     'set_member_messages_limit',
-    'set_member_messages_skip-days',
+    'set_member_messages_skip_days',
     'delete_member_messages_skip_days',
     'delete_member',
+    'set_member_tariff_price',
+    'delete_member_tariff_price',
+    'set_member_tariff_days',
+    'delete_member_tariff_days',
 ];

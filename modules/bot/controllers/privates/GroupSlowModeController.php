@@ -330,6 +330,8 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
+        $this->getState()->setName(null);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('member', [
@@ -418,7 +420,7 @@ class GroupSlowModeController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-member-messages-limit'),
+                $this->render('../set-value'),
                 [
                     [
                         [
@@ -482,7 +484,7 @@ class GroupSlowModeController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set-member-messages-skip-days'),
+                $this->render('../set-value'),
                 [
                     [
                         [

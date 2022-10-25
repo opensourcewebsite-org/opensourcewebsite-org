@@ -28,6 +28,8 @@ use yii\db\ActiveRecord;
  * @property string|null $limiter_date
  * @property string|null $membership_date
  * @property string $membership_note
+ * @property float $membership_tariff_price
+ * @property int $membership_tariff_days
  * @property string|null $intro
  *
  * @package app\modules\bot\models
@@ -96,14 +98,15 @@ class ChatMember extends ActiveRecord
     {
         return [
             [['chat_id', 'user_id', 'status', 'role', 'slow_mode_messages'], 'required'],
-            [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages_limit', 'slow_mode_messages_skip_days'], 'integer'],
-            ['role', 'default', 'value' => self::ROLE_MEMBER],
+            [['id', 'chat_id', 'user_id', 'role', 'last_message_at'], 'integer'],
+            [['role'], 'default', 'value' => self::ROLE_MEMBER],
             ['slow_mode_messages', 'default', 'value' => 0],
             [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],
-            [['slow_mode_messages_skip_days'], 'integer', 'min' => 0, 'max' => 365],
+            [['slow_mode_messages_skip_days', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 365],
+            [['membership_tariff_price'], 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['status', 'membership_note'], 'string'],
             [['limiter_date', 'membership_date'], 'date'],
-            ['intro', 'string', 'max' => 10000],
+            [['intro'], 'string', 'max' => 10000],
         ];
     }
 
@@ -479,5 +482,40 @@ class ChatMember extends ActiveRecord
     public function getMembershipNote()
     {
         return $this->membership_note;
+    }
+
+    public function getMembershipTariffPrice()
+    {
+        return $this->membership_tariff_price;
+    }
+
+    public function getMembershipTariffDays()
+    {
+        return $this->membership_tariff_days;
+    }
+
+    public function getMembershipTariffBalance()
+    {
+        $chat = $this->chat;
+        $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+
+        if ($this->membership_tariff_price && $this->membership_tariff_days && $this->membership_date) {
+            $today = new DateTime('today', $dateTimeZone);
+            $date = new DateTime($this->membership_date, $dateTimeZone);
+            $interval = $today->diff($date);
+            $interval2 = $date->diff($today);
+            $days = $interval->days - 1;
+
+            if ($interval->invert || !$days) {
+                return 0;
+            }
+
+            $dayPrice = $this->membership_tariff_price / $this->membership_tariff_days;
+            $balance = round($days * $dayPrice, 2);
+
+            return $balance;
+        }
+
+        return $this->membership_tariff_price;
     }
 }

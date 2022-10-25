@@ -39,7 +39,7 @@ class WalletTransaction extends ActiveRecord
         return [
             [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'created_at'], 'required'],
             [['currency_id', 'from_user_id', 'to_user_id', 'type', 'created_at'], 'integer'],
-            ['amount', 'double', 'min' => -9999999999999.99, 'max' => 9999999999999.99],
+            ['amount', 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
             [['from_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['from_user_id' => 'id']],
             [['to_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['to_user_id' => 'id']],

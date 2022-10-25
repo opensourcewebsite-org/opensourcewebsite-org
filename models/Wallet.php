@@ -39,7 +39,7 @@ class Wallet extends ActiveRecord
             [['currency_id', 'user_id'], 'required'],
             [['currency_id', 'user_id'], 'integer'],
             ['amount', 'default', 'value' => 0],
-            ['amount', 'double', 'min' => -9999999999999.99, 'max' => 9999999999999.99],
+            ['amount', 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['currency_id', 'user_id'], 'unique', 'targetAttribute' => ['currency_id', 'user_id']],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],

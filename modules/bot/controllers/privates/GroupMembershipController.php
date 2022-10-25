@@ -365,6 +365,22 @@ class GroupMembershipController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('set-member-tariff-price', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Tariff, price'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-member-tariff-days', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Tariff, days'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('members', [
                                 'id' => $chat->id,
                             ]),
@@ -519,6 +535,192 @@ class GroupMembershipController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionSetMemberTariffPrice($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-tariff-price', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $member->membership_tariff_price = $text;
+                if ($member->validate('membership_tariff_price')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('../set-value'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-tariff-price', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => (bool)$member->getMembershipTariffPrice(),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionDeleteMemberTariffPrice($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->membership_tariff_price = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
+         ]);
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionSetMemberTariffDays($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-tariff-days', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $member->membership_tariff_days = $text;
+                if ($member->validate('membership_tariff_days')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('../set-value'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-tariff-days', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => (bool)$member->getMembershipTariffDays(),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionDeleteMemberTariffDays($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->membership_tariff_days = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
+         ]);
     }
 
     /**
