@@ -139,15 +139,15 @@ class Message extends \TelegramBot\Api\Types\Message
      */
     public function hasCustomEmojis()
     {
-        if(!is_null($this->getEntities())) {
+        if (!is_null($this->getEntities())) {
             foreach ($this->getEntities() as $value) {
-                if($value->getType() == MessageEntity::TYPE_CUSTOM_EMOJI){
+                if ($value->getType() == MessageEntity::TYPE_CUSTOM_EMOJI) {
                     return true;
                 }
             }
         } elseif (!is_null($this->getCaptionEntities())) {
-            foreach($this->getCaptionEntities() as $value){
-                if($value->getType() == MessageEntity::TYPE_CUSTOM_EMOJI){
+            foreach ($this->getCaptionEntities() as $value) {
+                if ($value->getType() == MessageEntity::TYPE_CUSTOM_EMOJI) {
                     return true;
                 }
             }
@@ -161,15 +161,15 @@ class Message extends \TelegramBot\Api\Types\Message
     public function hasEmojis()
     {
         $text = null;
-        if(!is_null($this->getText())){
+        if (!is_null($this->getText())) {
             $text = $this->getText();
-        } elseif (!is_null($this->getCaption())){
+        } elseif (!is_null($this->getCaption())) {
             $text = $this->getCaption();
         } else {
             return false;
         }
 
-        if(preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $text)){
+        if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $text)) {
             return true;
         } else {
             return false;
