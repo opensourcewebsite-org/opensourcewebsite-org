@@ -25,6 +25,7 @@ use TelegramBot\Api\Types\VideoChatParticipantsInvited;
 use TelegramBot\Api\Types\VideoChatScheduled;
 use TelegramBot\Api\Types\VideoChatStarted;
 use TelegramBot\Api\Types\Voice;
+use TelegramBot\Api\Types\MessageEntity;
 
 class Message extends \TelegramBot\Api\Types\Message
 {
@@ -131,5 +132,47 @@ class Message extends \TelegramBot\Api\Types\Message
     public function isReply()
     {
         return (bool)$this->getReplyToMessage();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCustomEmojis()
+    {
+        if(!is_null($this->getEntities())) {
+            foreach ($this->getEntities() as $value) {
+                if($value->getType() == MessageEntity::TYPE_CUSTOM_EMOJI){
+                    return true;
+                }
+            }
+        } elseif (!is_null($this->getCaptionEntities())) {
+            foreach($this->getCaptionEntities() as $value){
+                if($value->getType() == MessageEntity::TYPE_CUSTOM_EMOJI){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasEmojis()
+    {
+        $text = null;
+        if(!is_null($this->getText())){
+            $text = $this->getText();
+        } elseif (!is_null($this->getCaption())){
+            $text = $this->getCaption();
+        } else {
+            return false;
+        }
+
+        if(preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $text)){
+            return true;
+        } else {
+            return false;
+        }
     }
 }
