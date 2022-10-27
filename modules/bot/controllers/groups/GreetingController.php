@@ -29,9 +29,15 @@ class GreetingController extends Controller
 
         if ($chat->isGreetingOn()) {
             if (!empty($telegramUserId)) {
-                $telegramUser = User::findOne($telegramUserId);
+                $telegramUser = User::findOne([
+                    'provider_user_id' => $telegramUserId,
+                ]);
             } else {
                 $telegramUser = $this->getTelegramUser();
+            }
+
+            if (!$telegramUser) {
+                return [];
             }
 
             $hasGreeting = ChatGreeting::find()
@@ -48,15 +54,7 @@ class GreetingController extends Controller
                             'user' => $telegramUser,
                             'message' => $chat->greeting_message,
                         ]),
-                        [
-                            [
-                                [
-                                    'url' => ExternalLink::getBotGroupGuestLink($chat->getChatId()),
-                                    'text' => Yii::t('bot', 'FAQ'),
-                                    'visible' => $chat->faq_status == ChatSetting::STATUS_ON,
-                                ],
-                            ],
-                        ],
+                        [],
                         [
                             'disablePreview' => true,
                             'disableNotification' => true,
