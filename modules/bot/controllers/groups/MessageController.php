@@ -254,9 +254,7 @@ class MessageController extends Controller
                     if (!$deleteMessage) {
                         if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
                             if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                                // https://unicode.org/emoji/charts/full-emoji-list.html
-                                // TODO remove more emoji
-                                if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $this->getMessage()->getText())) {
+                                if ($this->getMessage()->hasEmojis() || $this->getMessage()->hasCustomEmojis()) {
                                     $deleteMessage = true;
 
                                     $telegramUser->sendMessage(

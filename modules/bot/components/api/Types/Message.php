@@ -152,15 +152,18 @@ class Message extends \TelegramBot\Api\Types\Message
                 }
             }
         }
+
         return false;
     }
 
     /**
      * @return bool
+     * @link https://unicode.org/emoji/charts/full-emoji-list.html
      */
     public function hasEmojis()
     {
         $text = null;
+
         if (!is_null($this->getText())) {
             $text = $this->getText();
         } elseif (!is_null($this->getCaption())) {
@@ -168,7 +171,7 @@ class Message extends \TelegramBot\Api\Types\Message
         } else {
             return false;
         }
-
+        // TODO add more emoji
         if (preg_match('/(?:[\x{10000}-\x{10FFFF}]+)/iu', $text)) {
             return true;
         } else {

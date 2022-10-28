@@ -80,21 +80,21 @@ class JoinCaptchaController extends Controller
                     ->send();
 
                 if ($response) {
-                    $botCaptcha = ChatCaptcha::find()
+                    $captcha = ChatCaptcha::find()
                         ->where([
                             'chat_id' => $chat->id,
                             'provider_user_id' => $telegramUser->provider_user_id,
                         ])
                         ->exists();
 
-                    if (!$botCaptcha) {
-                        $botCaptcha = new ChatCaptcha([
+                    if (!$captcha) {
+                        $captcha = new ChatCaptcha([
                             'chat_id' => $chat->id,
                             'provider_user_id' => $telegramUser->provider_user_id,
                             'captcha_message_id' => $response->getMessageId(),
                         ]);
 
-                        $botCaptcha->save();
+                        $captcha->save();
                     }
                 }
             }
@@ -116,14 +116,14 @@ class JoinCaptchaController extends Controller
             $chat = $this->getTelegramChat();
             $telegramUser = $this->getTelegramUser();
 
-            $botCaptcha = ChatCaptcha::find()
+            $captcha = ChatCaptcha::find()
                 ->where([
                     'chat_id' => $chat->id,
                     'provider_user_id' => $telegramUser->provider_user_id,
                 ])
                 ->one();
 
-            if (isset($botCaptcha)) {
+            if (isset($captcha)) {
                 switch ($choice) {
                     case self::PASS:
                         $chatMember = ChatMember::findOne([
@@ -134,10 +134,10 @@ class JoinCaptchaController extends Controller
                         if ($chatMember->role == self::ROLE_UNVERIFIED) {
                             // Remove captcha message
 
-                            $this->getBotApi()->deleteMessage($chat->chat_id, $botCaptcha->captcha_message_id);
+                            $this->getBotApi()->deleteMessage($chat->chat_id, $captcha->captcha_message_id);
 
                             // Delete record about captcha
-                            $botCaptcha->delete();
+                            $captcha->delete();
 
                             // Set role = 1 in bot_chat_member table
                             $chatMember->role = self::ROLE_VERIFIED;
@@ -148,26 +148,28 @@ class JoinCaptchaController extends Controller
                         } else {
                             return false;
                         }
+
                         break;
                     case self::BAN:
                         // Kick member from the group
-                        $this->getBotApi()
-                            ->kickChatMember(
-                                $chat->chat_id,
-                                $telegramUser->provider_user_id
-                            );
+                        $this->getBotApi()->kickChatMember(
+                            $chat->chat_id,
+                            $telegramUser->provider_user_id
+                        );
 
                         // Remove captcha message
-                        $this->getBotApi()->deleteMessage($chat->chat_id, $botCaptcha->captcha_message_id);
+                        $this->getBotApi()->deleteMessage($chat->chat_id, $captcha->captcha_message_id);
 
                         // Delete record about captcha
-                        $botCaptcha->delete();
+                        $captcha->delete();
 
                         $telegramUser->captcha_confirmed_at = null;
                         $telegramUser->save(false);
+
                         break;
                     default:
                         return false;
+
                         break;
                 }
             } else {

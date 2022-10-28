@@ -21,29 +21,58 @@ class GreetingController extends Controller
     /**
      * Action shows greeting message
      *
+     * @param string|null $message
+     * @param int|string|null $id User->provider_user_id|User->provider_user_name
      * @return array
      */
-    public function actionShowGreeting($telegramUserId = null)
+    public function actionIndex($message = null, $id = null)
     {
         $chat = $this->getTelegramChat();
 
         if ($chat->isGreetingOn()) {
-            if (!empty($telegramUserId)) {
-                $telegramUser = User::findOne([
-                    'provider_user_id' => $telegramUserId,
-                ]);
-            } else {
-                $telegramUser = $this->getTelegramUser();
+            if (!$id) {
+                if ($message) {
+                    if ((int)$message[0] > 0) {
+                        if (preg_match('/(?:^(?:[0-9]+))/i', $message, $matches)) {
+                            $id = $matches[0];
+                        }
+                    } else {
+                        if ($message[0] == '@') {
+                            if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $message, $matches)) {
+                                $id = ltrim($matches[0], '@');
+                            }
+                        } else {
+                            if (preg_match('/(?:(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $message, $matches)) {
+                                $id = $matches[0];
+                            }
+                        }
+                    }
+                } elseif ($this->getMessage() && ($replyMessage = $this->getMessage()->getReplyToMessage())) {
+                    $id = $replyMessage->getFrom()->getId();
+                }
             }
 
-            if (!$telegramUser) {
+            if ($id) {
+                $viewUser = User::find()
+                    ->andWhere([
+                        'or',
+                        ['provider_user_name' => $id],
+                        ['provider_user_id' => $id],
+                    ])
+                    ->human()
+                    ->one();
+            } else {
+                $viewUser = $this->getTelegramUser();
+            }
+
+            if (!$viewUser) {
                 return [];
             }
 
             $hasGreeting = ChatGreeting::find()
                 ->where([
                     'chat_id' => $chat->id,
-                    'provider_user_id' => $telegramUser->provider_user_id,
+                    'provider_user_id' => $viewUser->provider_user_id,
                 ])
                 ->exists();
 
@@ -51,7 +80,7 @@ class GreetingController extends Controller
                 $response =  $this->getResponseBuilder()
                     ->sendMessage(
                         $this->render('show-greeting', [
-                            'user' => $telegramUser,
+                            'user' => $viewUser,
                             'message' => $chat->greeting_message,
                         ]),
                         [],
@@ -65,7 +94,7 @@ class GreetingController extends Controller
                 if ($response) {
                     $greeting = new ChatGreeting([
                         'chat_id' => $chat->id,
-                        'provider_user_id' => $telegramUser->provider_user_id,
+                        'provider_user_id' => $viewUser->provider_user_id,
                         'message_id' => $response->getMessageId(),
                     ]);
 

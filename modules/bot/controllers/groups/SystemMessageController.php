@@ -60,7 +60,6 @@ class SystemMessageController extends Controller
                         $chat->getChatId(),
                         $user->provider_user_id
                     );
-
                     // TODO Error: Call to a member function getStatus() on bool in
                     if ($botApiChatMember) {
                         $fromUserId = null;
@@ -88,12 +87,11 @@ class SystemMessageController extends Controller
 
                     $chatMember->save();
                 }
-
                 // Send greeting message
                 if ($chat->isGreetingOn()) {
                     if (!$newChatMember->isBot()) {
-                        $this->run('greeting/show-greeting', [
-                            'telegramUserId' => $user->id,
+                        $this->run('greeting/index', [
+                            'id' => $user->provider_user_id,
                         ]);
                     }
                 }
@@ -106,9 +104,9 @@ class SystemMessageController extends Controller
     */
     public function actionLeftChatMember()
     {
-        if ($this->getUpdate()->getMessage()->getLeftChatMember()) {
+        // TODO Optional. A member was removed from the group, information about them (this member may be the bot itself)
+        if ($botApiUser = $this->getUpdate()->getMessage()->getLeftChatMember()) {
             $chat = $this->getTelegramChat();
-            $user = $this->getTelegramUser();
 
             if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_member_left == ChatSetting::STATUS_ON) {
@@ -118,13 +116,11 @@ class SystemMessageController extends Controller
                     );
                 }
             }
-
             // Remove captcha message if user left the group
-            // Doesn't work if someone kicked the user from the group
             $chatCaptcha = ChatCaptcha::find()
                 ->where([
                     'chat_id' => $chat->id,
-                    'provider_user_id' => $user->provider_user_id,
+                    'provider_user_id' => $botApiUser->getId(),
                 ])
                 ->one();
 
@@ -136,13 +132,11 @@ class SystemMessageController extends Controller
 
                 $chatCaptcha->delete();
             }
-
             // Remove greeting message if user left the group
-            // Doesn't work if someone kicked the user from the group
             $chatGreeting = ChatGreeting::find()
                 ->where([
                     'chat_id' => $chat->id,
-                    'provider_user_id' => $user->provider_user_id,
+                    'provider_user_id' => $botApiUser->getId(),
                 ])
                 ->one();
 
