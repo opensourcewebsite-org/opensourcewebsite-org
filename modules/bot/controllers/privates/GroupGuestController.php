@@ -46,7 +46,7 @@ class GroupGuestController extends Controller
                     'callback_data' => self::createRoute('input-intro-text', [
                         'id' => $chatMember->id,
                     ]),
-                    'text' => Yii::t('bot', 'Your public intro'),
+                    'text' => Yii::t('bot', 'My public intro'),
                 ],
             ];
 
@@ -66,7 +66,7 @@ class GroupGuestController extends Controller
                         'callback_data' => GroupGuestMarketplaceController::createRoute('index', [
                             'id' => $chat->id,
                         ]),
-                        'text' => Yii::t('bot', 'Your posts'),
+                        'text' => Yii::t('bot', 'My posts'),
                     ],
                 ];
             }

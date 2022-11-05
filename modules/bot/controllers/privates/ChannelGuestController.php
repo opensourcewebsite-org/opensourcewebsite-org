@@ -45,7 +45,7 @@ class ChannelGuestController extends Controller
                         'callback_data' => ChannelGuestMarketplaceController::createRoute('index', [
                             'id' => $chat->id,
                         ]),
-                        'text' => Yii::t('bot', 'Your posts'),
+                        'text' => Yii::t('bot', 'My posts'),
                     ],
                 ];
             }

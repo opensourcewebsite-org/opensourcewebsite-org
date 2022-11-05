@@ -1,7 +1,7 @@
 <?php
 
 # https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/usage.rst
-# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.11
+# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.12
 
 declare(strict_types=1);
 

@@ -98,7 +98,7 @@ class ChatMember extends ActiveRecord
     {
         return [
             [['chat_id', 'user_id', 'status', 'role', 'slow_mode_messages'], 'required'],
-            [['id', 'chat_id', 'user_id', 'role', 'last_message_at'], 'integer'],
+            [['id', 'chat_id', 'user_id', 'role', 'last_message_at', 'slow_mode_messages'], 'integer'],
             [['role'], 'default', 'value' => self::ROLE_MEMBER],
             ['slow_mode_messages', 'default', 'value' => 0],
             [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],

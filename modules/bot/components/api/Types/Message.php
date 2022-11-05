@@ -20,6 +20,7 @@ use TelegramBot\Api\Types\Sticker;
 use TelegramBot\Api\Types\User;
 use TelegramBot\Api\Types\Venue;
 use TelegramBot\Api\Types\Video;
+use TelegramBot\Api\Types\VideoNote;
 use TelegramBot\Api\Types\VideoChatEnded;
 use TelegramBot\Api\Types\VideoChatParticipantsInvited;
 use TelegramBot\Api\Types\VideoChatScheduled;
@@ -65,6 +66,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'photo' => ArrayOfPhotoSize::class,
         'sticker' => Sticker::class,
         'video' => Video::class,
+        'video_note' => VideoNote::class,
         'voice' => Voice::class,
         'caption' => true,
         'contact' => Contact::class,

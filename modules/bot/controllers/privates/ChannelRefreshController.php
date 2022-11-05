@@ -37,7 +37,8 @@ class ChannelRefreshController extends Controller
 
             if (in_array($e->getCode(), [400, 403])) {
                 // Chat has been removed in Telegram => remove chat from db
-                $chat->delete();
+                // TODO add confirm for owner
+                //$chat->delete();
 
                 return $this->run('channel/index');
             }
@@ -47,7 +48,8 @@ class ChannelRefreshController extends Controller
 
         if (!$this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember()) {
             // Bot is not the chat member => remove chat from db
-            $chat->delete();
+            // TODO add confirm for owner
+            //$chat->delete();
 
             return $this->run('channel/index');
         }

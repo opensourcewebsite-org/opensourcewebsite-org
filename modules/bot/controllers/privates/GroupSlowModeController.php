@@ -341,6 +341,14 @@ class GroupSlowModeController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('set-member-messages-now', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Now messages') . ': ' . $member->slow_mode_messages,
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('set-member-messages-limit', [
                                 'id' => $member->id,
                             ]),
@@ -373,6 +381,70 @@ class GroupSlowModeController extends Controller
                             'text' => Emoji::DELETE,
                         ],
                     ]
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionSetMemberMessagesNow($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-messages-now', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = $this->getUpdate()->getMessage()->getText()) !== null) {
+                $member->slow_mode_messages = $text;
+
+                if ($member->validate('slow_mode_messages')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('../set-value'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-messages-now', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => !is_null($member->slow_mode_messages),
+                        ],
+                    ],
                 ]
             )
             ->build();
@@ -504,6 +576,36 @@ class GroupSlowModeController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
+    public function actionDeleteMemberMessagesNow($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->slow_mode_messages = 0;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
+         ]);
     }
 
     /**

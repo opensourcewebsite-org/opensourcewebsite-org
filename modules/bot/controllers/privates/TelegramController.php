@@ -38,11 +38,11 @@ class TelegramController extends Controller
                     [
                         [
                             'callback_data' => GroupController::createRoute(),
-                            'text' => Yii::t('bot', 'Your groups'),
+                            'text' => Yii::t('bot', 'My groups'),
                         ],
                         [
                             'callback_data' => ChannelController::createRoute(),
-                            'text' => Yii::t('bot', 'Your channels'),
+                            'text' => Yii::t('bot', 'My channels'),
                         ],
                     ],
                     [
