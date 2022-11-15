@@ -35,4 +35,5 @@ blocks:
             - mysql --host=0.0.0.0 -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'opensourcewebsite_user'@'localhost';"
             - ./tests/bin/yii migrate --interactive=0 -c
             - ./tests/bin/yii fixture/load '*' --interactive=0
+            - export XDEBUG_MODE=coverage
             - ./vendor/bin/codecept run -c ./codeception.yml --coverage
