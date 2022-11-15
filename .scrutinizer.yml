@@ -16,6 +16,7 @@ build:
             MYSQL_DATABASE: opensourcewebsite_test
             MYSQL_USER: opensourcewebsite_user
             MYSQL_PASSWORD: opensourcewebsite_password
+            MYSQL_ALLOW_EMPTY_PASSWORD: yes
   dependencies:
     before:
       - cp .env.test.dist .env.test
