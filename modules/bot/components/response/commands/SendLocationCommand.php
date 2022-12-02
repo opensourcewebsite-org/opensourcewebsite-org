@@ -28,6 +28,7 @@ class SendLocationCommand extends Command
                 $this->chatId,
                 $this->latitude,
                 $this->longitude,
+                $this->getOptionalProperty('messageThreadId', null),
                 $this->getOptionalProperty('replyToMessageId', null),
                 $this->getOptionalProperty('replyMarkup', null),
                 $this->getOptionalProperty('disableNotification', false),

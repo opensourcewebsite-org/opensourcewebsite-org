@@ -148,11 +148,17 @@ class ChatSetting extends ActiveRecord
         ],
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%bot_chat_setting}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -164,6 +170,9 @@ class ChatSetting extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [

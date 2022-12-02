@@ -262,10 +262,11 @@ class ResponseBuilder
             $replyMarkup,
             $optionalParams,
             [
+                'messageThreadId',
+                'parseMode',
                 'disablePreview',
                 'replyToMessageId',
                 'disableNotification',
-                'parseMode',
             ]
         );
     }

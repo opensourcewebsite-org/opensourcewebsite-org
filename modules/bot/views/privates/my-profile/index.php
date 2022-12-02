@@ -4,6 +4,7 @@ use app\components\helpers\TimeHelper;
 
 ?>
 <b><?= Yii::t('bot', 'Your Profile') ?></b><br/>
+<?php if ($user->birthday || $user->gender || $user->sexuality) : ?>
 <br/>
 <?php if ($user->birthday) : ?>
 <?= Yii::t('bot', 'Birthday') ?>: <?= $user->birthday; ?><br/>
@@ -13,6 +14,7 @@ use app\components\helpers\TimeHelper;
 <?php endif; ?>
 <?php if ($user->sexuality) : ?>
 <?= Yii::t('bot', 'Sexuality') ?>: <?= Yii::t('bot', $user->sexuality->name); ?><br/>
+<?php endif; ?>
 <?php endif; ?>
 <?php if ($user->languages) : ?>
 <br/>

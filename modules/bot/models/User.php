@@ -114,6 +114,9 @@ class User extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function find(): UserQuery
     {
         return new UserQuery(get_called_class());

@@ -100,7 +100,7 @@ class GroupTimezoneController extends Controller
                 ->build();
         }
 
-        if (!$timezone) {
+        if ($timezone === null) {
             return $this->actionList($chatId);
         }
 

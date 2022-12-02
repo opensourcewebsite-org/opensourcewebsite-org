@@ -31,7 +31,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endif; ?>
 <?php if ($chatMember->limiter_date) : ?>
 <br/>
-<?= Yii::t('bot', 'You can send messages until') ?>: <?= $chatMember->limiter_date ?><br/>
+<?= Yii::t('bot', 'Your verification is valid until') ?>: <?= $chatMember->limiter_date ?><br/>
 <?php endif; ?>
 <?php if ($chat->isSlowModeOn()) : ?>
 <br/>
