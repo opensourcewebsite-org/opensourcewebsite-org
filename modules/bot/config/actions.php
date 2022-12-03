@@ -76,4 +76,5 @@ return [
     'set_member_tariff_days_balance',
     'set_member_messages_now',
     'delete_member_messages_now',
+    'confirm',
 ];

@@ -636,4 +636,8 @@ return [
     'Send any @username or Telegram ID to view information about the user or group' => 'Отправьте любой @username или Телеграм ID для просмотра информации о пользователе или группе',
     'If you select «{0}» then this user will receive a notification' => 'Если вы выберете «{0}», то этот пользователь получит уведомление',
     'The user has made the folowing changes to your account' => 'Пользователь внес следующие изменения для вашего аккаунта',
+    'Inaccessible, the bot is an inactive member' => 'Недоступно, бот является неактивным участником',
+    'Irreversible operation' => 'Необратимая операция',
+    'Delete the group and all settings?' => 'Удалить группу и все настройки?',
+    'Delete the channel and all settings?' => 'Удалить канал и все настройки?',
 ];

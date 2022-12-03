@@ -50,7 +50,7 @@ class RefreshController extends Controller
                     $outdatedAdministrator->provider_user_id
                 );
 
-                if ($botApiChatMember && $botApiChatMember->isActualChatMember()) {
+                if ($botApiChatMember && $botApiChatMember->isActiveChatMember()) {
                     $chatMember = ChatMember::findOne([
                         'chat_id' => $chat->id,
                         'user_id' => $outdatedAdministrator->id,

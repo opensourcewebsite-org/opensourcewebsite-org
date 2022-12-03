@@ -37,21 +37,12 @@ class ChannelRefreshController extends Controller
 
             if (in_array($e->getCode(), [400, 403])) {
                 // Chat has been removed in Telegram => remove chat from db
-                // TODO add confirm for owner
-                //$chat->delete();
-
-                return $this->run('channel/index');
+                return $this->run('channel-delete/index', [
+                    'id' => $chat->id,
+                ]);
             }
 
             throw $e;
-        }
-
-        if (!$this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember()) {
-            // Bot is not the chat member => remove chat from db
-            // TODO add confirm for owner
-            //$chat->delete();
-
-            return $this->run('channel/index');
         }
         // Update chat information
         $chat->setAttributes([
@@ -66,6 +57,17 @@ class ChannelRefreshController extends Controller
 
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
+                ->build();
+        }
+        // Bot is the chat member with kicked or left statuses
+        if (!$this->getBotApi()->getChatMember($chat->getChatId(), $this->getBot()->getProviderUserId())->isActiveChatMember()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('../alert', [
+                        'alert' => Yii::t('bot', 'Inaccessible, the bot is an inactive member') . '.',
+                    ]),
+                    true
+                )
                 ->build();
         }
 
@@ -90,7 +92,7 @@ class ChannelRefreshController extends Controller
                     $outdatedAdministrator->provider_user_id
                 );
 
-                if ($botApiChatMember && $botApiChatMember->isActualChatMember()) {
+                if ($botApiChatMember && $botApiChatMember->isActiveChatMember()) {
                     $chatMember = ChatMember::findOne([
                         'chat_id' => $chat->id,
                         'user_id' => $outdatedAdministrator->id,
@@ -149,7 +151,7 @@ class ChannelRefreshController extends Controller
                 $chatMember->save(false);
             }
         }
-        // user is not in Telegram admin list
+        // User is not in Telegram admin list
         if (!in_array($this->getTelegramUser()->provider_user_id, $botApiAdministratorsIds)) {
             return $this->run('channel/index');
         } else {
