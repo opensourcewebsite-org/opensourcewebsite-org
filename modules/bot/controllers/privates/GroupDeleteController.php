@@ -81,7 +81,6 @@ class GroupDeleteController extends Controller
     /**
      * @param int $id Chat->id
      * @return array
-     * @throws \yii\db\Exception
      */
     public function actionConfirm($id = null)
     {

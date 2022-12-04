@@ -514,13 +514,13 @@ class ChatMember extends ActiveRecord
             $today = new DateTime('today', $dateTimeZone);
             $date = new DateTime($this->membership_date, $dateTimeZone);
             $interval = $today->diff($date);
+            $days = $interval->days;
 
-            if ($interval->invert || !$interval->days) {
+            if ($interval->invert || !$days) {
                 return 0;
             }
 
             $dayPrice = $this->membership_tariff_price / $this->membership_tariff_days;
-            $days = $interval->days - 1;
             $balance = round($days * $dayPrice, 2);
 
             return $balance;
@@ -547,14 +547,6 @@ class ChatMember extends ActiveRecord
                 $days = round($this->membership_tariff_price_balance / $dayPrice);
             } else {
                 $days = 0;
-            }
-
-            if ($this->membership_date) {
-                $date = new DateTime($this->membership_date, $dateTimeZone);
-
-                if ($today < $date) {
-                    $days++;
-                }
             }
 
             if ($days) {

@@ -60,7 +60,7 @@ class ChannelDeleteController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => GroupController::createRoute('view', [
+                            'callback_data' => ChannelController::createRoute('view', [
                                 'chatId' => $chat->id,
                             ]),
                             'text' => Emoji::BACK,
@@ -81,13 +81,12 @@ class ChannelDeleteController extends Controller
     /**
      * @param int $id Chat->id
      * @return array
-     * @throws \yii\db\Exception
      */
     public function actionConfirm($id = null)
     {
         $chat = Chat::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup()) {
+        if (!isset($chat) || !$chat->isChannel()) {
             return $this->run('channel/index');
         }
 
