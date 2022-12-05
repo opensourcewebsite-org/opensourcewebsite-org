@@ -408,7 +408,9 @@ class Chat extends ActiveRecord
 
         return $this->getPremiumChatMembers()
             ->andWhere([
-                '>', ChatMember::tableName() . '.limiter_date', $today->format('Y-m-d'),
+                'OR',
+                ['>', ChatMember::tableName() . '.limiter_date', $today->format('Y-m-d')],
+                [ChatMember::tableName() . '.limiter_date' => null],
             ]);
     }
 
