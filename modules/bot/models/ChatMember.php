@@ -553,7 +553,7 @@ class ChatMember extends ActiveRecord
                 $today->modify('+' . $days . ' days');
             }
 
-            $this->membership_date = Yii::$app->formatter->asDate($today);
+            $this->membership_date = Yii::$app->formatter->asDate($today->getTimestamp() + $today->getOffset());
         }
 
         return true;
@@ -598,7 +598,7 @@ class ChatMember extends ActiveRecord
             $today->modify('+' . $this->membership_tariff_days_balance . ' days');
         }
 
-        $this->membership_date = Yii::$app->formatter->asDate($today);
+        $this->membership_date = Yii::$app->formatter->asDate($today->getTimestamp() + $today->getOffset());
 
         return true;
     }
