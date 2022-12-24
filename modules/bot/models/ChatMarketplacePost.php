@@ -95,6 +95,9 @@ class ChatMarketplacePost extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function find(): ChatMarketplacePostQuery
     {
         return new ChatMarketplacePostQuery(get_called_class());

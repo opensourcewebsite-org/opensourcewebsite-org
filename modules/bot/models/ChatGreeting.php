@@ -58,6 +58,9 @@ class ChatGreeting extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [

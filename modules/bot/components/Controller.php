@@ -149,6 +149,8 @@ class Controller extends \yii\web\Controller
             $route = "/$key";
         } else {
             $route = "/$controllerName";
+
+            Yii::warning('Controller: ' . $controllerName);
         }
 
         if (!empty($actionName)) {
@@ -160,6 +162,8 @@ class Controller extends \yii\web\Controller
                 $route .= "__$key";
             } else {
                 $route .= "__$actionName";
+
+                Yii::warning('Action: ' . $actionName);
             }
         }
 

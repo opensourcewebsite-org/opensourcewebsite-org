@@ -30,8 +30,7 @@ class UserState
 
     /**
      * @param string $name
-     * @param null   $defaultValue
-     *
+     * @param null $defaultValue
      * @return mixed|null
      */
     public function getIntermediateField(string $name, $defaultValue = null)
@@ -51,7 +50,7 @@ class UserState
 
     /**
      * @param string $name
-     * @param        $value
+     * @param $value
      */
     public function setIntermediateField(string $name, $value)
     {
@@ -60,7 +59,6 @@ class UserState
 
     /**
      * @param string $name
-     *
      * @return bool
      */
     public function isIntermediateFieldExists(string $name)

@@ -89,11 +89,21 @@ class ChatMember extends ActiveRecord
         ],
     ];
 
+    public $membership_tariff_price_balance;
+
+    public $membership_tariff_days_balance;
+
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%bot_chat_member}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -103,13 +113,17 @@ class ChatMember extends ActiveRecord
             ['slow_mode_messages', 'default', 'value' => 0],
             [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],
             [['slow_mode_messages_skip_days', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 365],
-            [['membership_tariff_price'], 'double', 'min' => 0, 'max' => 9999999999999.99],
+            [['membership_tariff_days_balance'], 'integer', 'min' => 0],
+            [['membership_tariff_price', 'membership_tariff_price_balance'], 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['status', 'membership_note'], 'string'],
             [['limiter_date', 'membership_date'], 'date'],
             [['intro'], 'string', 'max' => 10000],
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
@@ -117,6 +131,9 @@ class ChatMember extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function find(): ChatMemberQuery
     {
         return new ChatMemberQuery(get_called_class());
@@ -489,22 +506,15 @@ class ChatMember extends ActiveRecord
         return $this->membership_tariff_price;
     }
 
-    public function getMembershipTariffDays()
+    public function getMembershipTariffPriceBalance()
     {
-        return $this->membership_tariff_days;
-    }
-
-    public function getMembershipTariffBalance()
-    {
-        $chat = $this->chat;
-        $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
-
         if ($this->membership_tariff_price && $this->membership_tariff_days && $this->membership_date) {
+            $chat = $this->chat;
+            $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
             $today = new DateTime('today', $dateTimeZone);
             $date = new DateTime($this->membership_date, $dateTimeZone);
             $interval = $today->diff($date);
-            $interval2 = $date->diff($today);
-            $days = $interval->days - 1;
+            $days = $interval->days;
 
             if ($interval->invert || !$days) {
                 return 0;
@@ -517,5 +527,79 @@ class ChatMember extends ActiveRecord
         }
 
         return $this->membership_tariff_price;
+    }
+
+    public function setMembershipTariffPriceBalance($price)
+    {
+        $this->membership_tariff_price_balance = $price;
+
+        if (!$this->validate('membership_tariff_price_balance')) {
+            return false;
+        }
+
+        if ($this->membership_tariff_price && $this->membership_tariff_days) {
+            $chat = $this->chat;
+            $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+            $today = new DateTime('today', $dateTimeZone);
+            $dayPrice = $this->membership_tariff_price / $this->membership_tariff_days;
+
+            if ($this->membership_tariff_price_balance) {
+                $days = round($this->membership_tariff_price_balance / $dayPrice);
+            } else {
+                $days = 0;
+            }
+
+            if ($days) {
+                $today->modify('+' . $days . ' days');
+            }
+
+            $this->membership_date = Yii::$app->formatter->asDate($today->getTimestamp() + $today->getOffset());
+        }
+
+        return true;
+    }
+
+    public function getMembershipTariffDays()
+    {
+        return $this->membership_tariff_days;
+    }
+
+    public function getMembershipTariffDaysBalance()
+    {
+        if ($this->membership_date) {
+            $chat = $this->chat;
+            $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+            $today = new DateTime('today', $dateTimeZone);
+            $date = new DateTime($this->membership_date, $dateTimeZone);
+            $interval = $today->diff($date);
+            $balance = $interval->days;
+
+            if (!$interval->invert && $balance) {
+                return $balance;
+            }
+        }
+
+        return 0;
+    }
+
+    public function setMembershipTariffDaysBalance($days)
+    {
+        $this->membership_tariff_days_balance = $days;
+
+        if (!$this->validate('membership_tariff_days_balance')) {
+            return false;
+        }
+
+        $chat = $this->chat;
+        $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+        $today = new DateTime('today', $dateTimeZone);
+
+        if ($this->membership_tariff_days_balance) {
+            $today->modify('+' . $this->membership_tariff_days_balance . ' days');
+        }
+
+        $this->membership_date = Yii::$app->formatter->asDate($today->getTimestamp() + $today->getOffset());
+
+        return true;
     }
 }

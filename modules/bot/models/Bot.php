@@ -81,4 +81,9 @@ class Bot
     {
         return $this->botApi;
     }
+
+    public function getProviderUserId()
+    {
+        return explode(':', $this->getToken())[0];
+    }
 }

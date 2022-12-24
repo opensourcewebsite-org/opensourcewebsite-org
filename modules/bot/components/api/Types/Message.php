@@ -10,9 +10,13 @@ use TelegramBot\Api\Types\Audio;
 use TelegramBot\Api\Types\Contact;
 use TelegramBot\Api\Types\Dice;
 use TelegramBot\Api\Types\Document;
+use TelegramBot\Api\Types\ForumTopicClosed;
+use TelegramBot\Api\Types\ForumTopicCreated;
+use TelegramBot\Api\Types\ForumTopicReopened;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Location;
 use TelegramBot\Api\Types\MessageAutoDeleteTimerChanged;
+use TelegramBot\Api\Types\MessageEntity;
 use TelegramBot\Api\Types\Payments\Invoice;
 use TelegramBot\Api\Types\Payments\SuccessfulPayment;
 use TelegramBot\Api\Types\Poll;
@@ -20,13 +24,12 @@ use TelegramBot\Api\Types\Sticker;
 use TelegramBot\Api\Types\User;
 use TelegramBot\Api\Types\Venue;
 use TelegramBot\Api\Types\Video;
-use TelegramBot\Api\Types\VideoNote;
 use TelegramBot\Api\Types\VideoChatEnded;
 use TelegramBot\Api\Types\VideoChatParticipantsInvited;
 use TelegramBot\Api\Types\VideoChatScheduled;
 use TelegramBot\Api\Types\VideoChatStarted;
+use TelegramBot\Api\Types\VideoNote;
 use TelegramBot\Api\Types\Voice;
-use TelegramBot\Api\Types\MessageEntity;
 
 class Message extends \TelegramBot\Api\Types\Message
 {
@@ -40,6 +43,7 @@ class Message extends \TelegramBot\Api\Types\Message
      */
     protected static $map = [
         'message_id' => true,
+        'message_thread_id' => true,
         'from' => User::class,
         'sender_chat' => Chat::class,
         'date' => true,
@@ -48,6 +52,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'forward_from_chat' => Chat::class,
         'forward_from_message_id' => true,
         'forward_date' => true,
+        'is_topic_message' => true,
         'is_automatic_forward' => true,
         'forward_signature' => true,
         'forward_sender_name' => true,
@@ -89,6 +94,9 @@ class Message extends \TelegramBot\Api\Types\Message
         'invoice' => Invoice::class,
         'successful_payment' => SuccessfulPayment::class,
         'connected_website' => true,
+        'forum_topic_created' => ForumTopicCreated::class,
+        'forum_topic_closed' => ForumTopicClosed::class,
+        'forum_topic_reopened' => ForumTopicReopened::class,
         'video_chat_scheduled' => VideoChatScheduled::class,
         'video_chat_started' => VideoChatStarted::class,
         'video_chat_ended' => VideoChatEnded::class,

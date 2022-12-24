@@ -87,15 +87,7 @@ class User extends ActiveRecord
         return [
             [['provider_user_id'], 'required'],
             [['user_id', 'provider_user_id', 'provider_user_blocked', 'language_id', 'is_bot', 'captcha_confirmed_at'], 'integer'],
-            [
-                [
-                    'provider_user_name',
-                    'provider_user_first_name',
-                    'provider_user_last_name',
-                ],
-                'string',
-                'max' => 255,
-            ],
+            [['provider_user_name', 'provider_user_first_name', 'provider_user_last_name'], 'string', 'max' => 255],
         ];
     }
 
@@ -114,6 +106,9 @@ class User extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function find(): UserQuery
     {
         return new UserQuery(get_called_class());

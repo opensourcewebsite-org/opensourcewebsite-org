@@ -3,7 +3,6 @@
 namespace app\modules\bot\components\api\Types;
 
 use app\modules\bot\models\ChatMember as ChatMemberModel;
-use TelegramBot\Api\Types\User;
 
 class ChatMember extends \TelegramBot\Api\Types\ChatMember
 {
@@ -33,7 +32,7 @@ class ChatMember extends \TelegramBot\Api\Types\ChatMember
     /**
      * @return bool
      */
-    public function isActualChatMember()
+    public function isActiveChatMember()
     {
         if (($this->getStatus() == ChatMemberModel::STATUS_LEFT) || ($this->getStatus() == ChatMemberModel::STATUS_KICKED) || (($this->getStatus() == ChatMemberModel::STATUS_RESTRICTED) && !$this->isMember())) {
             return false;

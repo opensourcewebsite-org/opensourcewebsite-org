@@ -23,11 +23,17 @@ class ChatPhrase extends ActiveRecord
     public const TYPE_BLACKLIST = 'blacklist';
     public const TYPE_MARKETPLACE_TAGS = 'marketplace-tags';
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%bot_chat_phrase}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [

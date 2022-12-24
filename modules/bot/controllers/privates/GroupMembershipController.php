@@ -370,6 +370,12 @@ class GroupMembershipController extends Controller
                             ]),
                             'text' => Yii::t('bot', 'Tariff, price'),
                         ],
+                        [
+                            'callback_data' => self::createRoute('set-member-tariff-price-balance', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Balance, price'),
+                        ],
                     ],
                     [
                         [
@@ -377,6 +383,12 @@ class GroupMembershipController extends Controller
                                 'id' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Tariff, days'),
+                        ],
+                        [
+                            'callback_data' => self::createRoute('set-member-tariff-days-balance', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Balance, days'),
                         ],
                     ],
                     [
@@ -503,6 +515,7 @@ class GroupMembershipController extends Controller
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $member->membership_note = $text;
+
                 if ($member->validate('membership_note')) {
                     $member->save(false);
 
@@ -541,6 +554,36 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
+    public function actionDeleteMemberNote($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->membership_note = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+             'id' => $member->id,
+         ]);
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
     public function actionSetMemberTariffPrice($id = null)
     {
         $member = ChatMember::findOne($id);
@@ -566,6 +609,7 @@ class GroupMembershipController extends Controller
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $member->membership_tariff_price = $text;
+
                 if ($member->validate('membership_tariff_price')) {
                     $member->save(false);
 
@@ -634,6 +678,61 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
+    public function actionSetMemberTariffPriceBalance($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-tariff-price-balance', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = $this->getUpdate()->getMessage()->getText()) !== null) {
+                if ($member->setMembershipTariffPriceBalance($text)) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('../set-value'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+    * @param int $id ChatMember->id
+    * @return array
+    */
     public function actionSetMemberTariffDays($id = null)
     {
         $member = ChatMember::findOne($id);
@@ -659,6 +758,7 @@ class GroupMembershipController extends Controller
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $member->membership_tariff_days = $text;
+
                 if ($member->validate('membership_tariff_days')) {
                     $member->save(false);
 
@@ -727,7 +827,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionDeleteMemberNote($id = null)
+    public function actionSetMemberTariffDaysBalance($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -745,12 +845,37 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $member->membership_note = null;
-        $member->save(false);
+        $this->getState()->setName(self::createRoute('set-member-tariff-days-balance', [
+            'id' => $member->id,
+        ]));
 
-        return $this->runAction('member', [
-             'id' => $member->id,
-         ]);
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = $this->getUpdate()->getMessage()->getText()) !== null) {
+                if ($member->setMembershipTariffDaysBalance($text)) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('../set-value'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     /**

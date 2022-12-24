@@ -69,6 +69,9 @@ class ChatMemberReview extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors(): array
     {
         return [
@@ -79,6 +82,9 @@ class ChatMemberReview extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function find(): ChatMemberReviewQuery
     {
         return new ChatMemberReviewQuery(get_called_class());

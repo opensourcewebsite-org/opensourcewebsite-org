@@ -68,8 +68,8 @@ class UserController extends Controller
             'provider_user_id' => $id,
             'is_bot' => 0,
         ]);
-
-        if (!isset($viewUser)) {
+        // TODO fix for empty $viewUser->globalUser
+        if (!isset($viewUser) || !isset($viewUser->globalUser)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

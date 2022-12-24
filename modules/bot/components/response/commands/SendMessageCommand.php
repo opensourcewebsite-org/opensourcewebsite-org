@@ -26,6 +26,7 @@ class SendMessageCommand extends MessageTextCommand
             $answer = $this->getBotApi()->sendMessage(
                 $this->chatId,
                 $this->text,
+                $this->getOptionalProperty('messageThreadId', null),
                 $this->getOptionalProperty('parseMode', null),
                 $this->getOptionalProperty('disablePreview', false),
                 $this->getOptionalProperty('replyToMessageId', null),

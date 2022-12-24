@@ -28,11 +28,17 @@ class Chat extends ActiveRecord
 
     private array $settings = [];
 
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return '{{%bot_chat}}';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -44,6 +50,9 @@ class Chat extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
@@ -51,6 +60,9 @@ class Chat extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function find(): ChatQuery
     {
         return new ChatQuery(get_called_class());

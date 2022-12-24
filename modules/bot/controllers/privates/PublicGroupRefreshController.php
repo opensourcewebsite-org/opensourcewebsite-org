@@ -48,16 +48,6 @@ class PublicGroupRefreshController extends Controller
 
             throw $e;
         }
-
-        if (!$this->getBotApi()->getChatMember($chat->getChatId(), explode(':', $this->getBot()->token)[0])->isActualChatMember()) {
-            // Bot is not the chat member => remove chat from db
-            // TODO add confirm for owner
-            //$chat->delete();
-
-            return $this->run('public-group/index', [
-                'page' => $page,
-            ]);
-        }
         // Update chat information
         $chat->setAttributes([
             'type' => $botApiChat->getType(),

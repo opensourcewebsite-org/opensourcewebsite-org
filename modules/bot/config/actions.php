@@ -70,8 +70,11 @@ return [
     'delete_member',
     'set_member_tariff_price',
     'delete_member_tariff_price',
+    'set_member_tariff_price_balance',
     'set_member_tariff_days',
     'delete_member_tariff_days',
+    'set_member_tariff_days_balance',
     'set_member_messages_now',
     'delete_member_messages_now',
+    'confirm',
 ];

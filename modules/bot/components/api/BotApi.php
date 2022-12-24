@@ -2,11 +2,11 @@
 
 namespace app\modules\bot\components\api;
 
-use app\modules\bot\components\api\Types\ChatMember;
+use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\models\Chat;
 use TelegramBot\Api\HttpException;
+use TelegramBot\Api\Types\ChatMember;
 use Yii;
-use app\modules\bot\components\helpers\MessageText;
 
 /**
  * Class botApi

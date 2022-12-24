@@ -36,6 +36,7 @@ class SendPhotoCommand extends Command
             $answer = $this->getBotApi()->sendPhoto(
                 $this->chatId,
                 $this->photo,
+                $this->getOptionalProperty('messageThreadId', null),
                 $this->getOptionalProperty('caption', null),
                 $this->getOptionalProperty('replyToMessageId', null),
                 $this->getOptionalProperty('replyMarkup', null),

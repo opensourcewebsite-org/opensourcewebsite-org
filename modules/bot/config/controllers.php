@@ -53,4 +53,9 @@ return [
     'jo_vacancy',
     'ad_offer',
     'ad_search',
+    'delete',
+    'group_delete',
+    'channel_delete',
+    'public_group_refresh',
+    'public_channel_refresh',
 ];
