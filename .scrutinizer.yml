@@ -24,7 +24,7 @@ build:
       - composer install --prefer-dist --no-interaction
       - php --version
       - php -m
-      #- mysql --version
+      - mysql --version
       - mysql --host=${SERVICE_MYSQL_IP} -uroot -e 'SHOW VARIABLES like "version"';
       - mysql --host=${SERVICE_MYSQL_IP} -uroot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
       - ./tests/bin/yii migrate --interactive=0 -c
