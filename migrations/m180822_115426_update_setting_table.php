@@ -1,6 +1,5 @@
 <?php
 
-use Yii;
 use yii\db\Migration;
 
 /**
@@ -13,9 +12,7 @@ class m180822_115426_update_setting_table extends Migration
      */
     public function safeUp()
     {
-        $formatter = Yii::$app->formatter;
-        $now = $formatter->asDateTime('now');
-        $now = strtotime($now);
+        $now = strtotime("now");
 
         $this->execute("INSERT INTO `setting` (`id`, `key`, `value`, `updated_at`) VALUES
         (1, 'moqup_entries_limit', '20', " . $now . "),
