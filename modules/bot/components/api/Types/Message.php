@@ -166,6 +166,37 @@ class Message extends \TelegramBot\Api\Types\Message
         return false;
     }
 
+    public function hasStyledTexts()
+    {
+        if (!is_null($this->getEntities())) {
+            foreach ($this->getEntities() as $value) {
+                if ($value->getType() == MessageEntity::TYPE_BOLD ||
+                    $value->getType() == MessageEntity::TYPE_ITALIC ||
+                    $value->getType() == MessageEntity::TYPE_UNDERLINE ||
+                    $value->getType() == MessageEntity::TYPE_STRIKETHROUGH ||
+                    $value->getType() == MessageEntity::TYPE_CODE ||
+                    $value->getType() == MessageEntity::TYPE_PRE
+                ) {
+                    return true;
+                }
+            }
+        } elseif (!is_null($this->getCaptionEntities())) {
+            foreach ($this->getCaptionEntities() as $value) {
+                if ($value->getType() == MessageEntity::TYPE_BOLD ||
+                    $value->getType() == MessageEntity::TYPE_ITALIC ||
+                    $value->getType() == MessageEntity::TYPE_UNDERLINE ||
+                    $value->getType() == MessageEntity::TYPE_STRIKETHROUGH ||
+                    $value->getType() == MessageEntity::TYPE_CODE ||
+                    $value->getType() == MessageEntity::TYPE_PRE
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return bool
      * @link https://unicode.org/emoji/charts/full-emoji-list.html
