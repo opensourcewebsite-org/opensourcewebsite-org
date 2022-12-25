@@ -24,6 +24,7 @@ use yii\db\ActiveRecord;
  * @property int $slow_mode_messages
  * @property int $slow_mode_messages_limit
  * @property int $slow_mode_messages_skip_days
+ * @property int $slow_mode_messages_skip_hours
  * @property int|null $last_message_at
  * @property string|null $limiter_date
  * @property string|null $membership_date
@@ -113,6 +114,7 @@ class ChatMember extends ActiveRecord
             ['slow_mode_messages', 'default', 'value' => 0],
             [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],
             [['slow_mode_messages_skip_days', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 365],
+            [['slow_mode_messages_skip_hours', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 24],
             [['membership_tariff_days_balance'], 'integer', 'min' => 0],
             [['membership_tariff_price', 'membership_tariff_price_balance'], 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['status', 'membership_note'], 'string'],
@@ -207,16 +209,22 @@ class ChatMember extends ActiveRecord
     {
         if ($chat = $this->chat) {
             if ($this->last_message_at) {
-                $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
+                $todayForSkipDaysCheck = new DateTime('now', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
+                $todayForSkipHoursCheck = clone $todayForSkipDaysCheck;
 
                 if ($this->slow_mode_messages_skip_days) {
-                    $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
+                    $todayForSkipDaysCheck->modify('-' . $this->slow_mode_messages_skip_days . ' days');
                 }
 
-                if ($today->getTimestamp() < $this->last_message_at) {
+                if ($this->slow_mode_messages_skip_hours) {
+                    $todayForSkipHoursCheck->modify('-' . $this->slow_mode_messages_skip_hours . ' hours');
+
+                }
+
+                if ($todayForSkipDaysCheck->getTimestamp() < $this->last_message_at) {
                     $slowModeMessagesLimit = $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
 
-                    if ($slowModeMessagesLimit <= $this->slow_mode_messages) {
+                    if ($slowModeMessagesLimit <= $this->slow_mode_messages || $todayForSkipHoursCheck->getTimestamp() < $this->last_message_at) {
                         return false;
                     }
                 }
@@ -510,7 +518,7 @@ class ChatMember extends ActiveRecord
     {
         if ($this->membership_tariff_price && $this->membership_tariff_days && $this->membership_date) {
             $chat = $this->chat;
-            $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+            $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
             $today = new DateTime('today', $dateTimeZone);
             $date = new DateTime($this->membership_date, $dateTimeZone);
             $interval = $today->diff($date);
@@ -539,7 +547,7 @@ class ChatMember extends ActiveRecord
 
         if ($this->membership_tariff_price && $this->membership_tariff_days) {
             $chat = $this->chat;
-            $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+            $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
             $today = new DateTime('today', $dateTimeZone);
             $dayPrice = $this->membership_tariff_price / $this->membership_tariff_days;
 
@@ -568,7 +576,7 @@ class ChatMember extends ActiveRecord
     {
         if ($this->membership_date) {
             $chat = $this->chat;
-            $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+            $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
             $today = new DateTime('today', $dateTimeZone);
             $date = new DateTime($this->membership_date, $dateTimeZone);
             $interval = $today->diff($date);
@@ -591,7 +599,7 @@ class ChatMember extends ActiveRecord
         }
 
         $chat = $this->chat;
-        $dateTimeZone =  new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
+        $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone));
         $today = new DateTime('today', $dateTimeZone);
 
         if ($this->membership_tariff_days_balance) {
