@@ -53,7 +53,7 @@ class ResponseBuilder
     ) {
         if ($this->getUpdate()) {
             if ($this->getChat()->isPrivate()) {
-                // Delete messages, sended earlier by bot in private chat
+                // Delete messages, sent earlier by bot in private chat
                 if ($messageIds = $this->getUpdate()->getPrivateMessageIds()) {
                     // Ignore the message with callbackQuery
                     if ($this->getUpdate()->getCallbackQuery()) {

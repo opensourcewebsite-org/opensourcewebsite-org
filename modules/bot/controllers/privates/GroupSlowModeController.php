@@ -193,6 +193,7 @@ class GroupSlowModeController extends Controller
                 'OR',
                 ['not', ['slow_mode_messages_limit' => null]],
                 ['not', ['slow_mode_messages_skip_days' => null]],
+                ['not', ['slow_mode_messages_skip_hours' => null]],
             ]);
 
         $pagination = new Pagination([
@@ -305,7 +306,7 @@ class GroupSlowModeController extends Controller
 
         return $this->runAction('member', [
             'id' => $member->id,
-         ]);
+        ]);
     }
 
     /**
@@ -361,6 +362,14 @@ class GroupSlowModeController extends Controller
                                 'id' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Skip days') . (!is_null($member->slow_mode_messages_skip_days) ? ': ' . $member->slow_mode_messages_skip_days : ''),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-member-messages-skip-hours', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Skip hours') . (!is_null($member->slow_mode_messages_skip_hours) ? ': ' . $member->slow_mode_messages_skip_hours : ''),
                         ],
                     ],
                     [
@@ -421,7 +430,7 @@ class GroupSlowModeController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -485,7 +494,7 @@ class GroupSlowModeController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -549,7 +558,7 @@ class GroupSlowModeController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -571,6 +580,70 @@ class GroupSlowModeController extends Controller
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => !is_null($member->slow_mode_messages_skip_days),
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberMessagesSkipHours($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-messages-skip-hours', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if (($text = $this->getUpdate()->getMessage()->getText()) !== null) {
+                $member->slow_mode_messages_skip_hours = $text;
+
+                if ($member->validate('slow_mode_messages_skip_hours')) {
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                    ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('../set-value'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-messages-skip-hours', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                            'visible' => !is_null($member->slow_mode_messages_skip_hours),
                         ],
                     ],
                 ]
@@ -604,8 +677,8 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
-         ]);
+            'id' => $member->id,
+        ]);
     }
 
     /**
@@ -634,8 +707,8 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
-         ]);
+            'id' => $member->id,
+        ]);
     }
 
     /**
@@ -664,8 +737,38 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
-         ]);
+            'id' => $member->id,
+        ]);
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberMessagesSkipHours($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->slow_mode_messages_skip_hours = null;
+        $member->save(false);
+
+        return $this->runAction('member', [
+            'id' => $member->id,
+        ]);
     }
 
     /**
@@ -695,7 +798,7 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('members', [
-             'id' => $chat->id,
-         ]);
+            'id' => $chat->id,
+        ]);
     }
 }
