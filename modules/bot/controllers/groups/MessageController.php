@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\modules\bot\components\Controller;
-use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\controllers\privates\GroupGuestController;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatMember;
@@ -259,6 +258,32 @@ class MessageController extends Controller
 
                                     $telegramUser->sendMessage(
                                         $this->render('/privates/warning-filter-remove-emoji', [
+                                            'chat' => $chat,
+                                        ]),
+                                        [
+                                            [
+                                                [
+                                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                                        'id' => $chat->id,
+                                                    ]),
+                                                    'text' => Yii::t('bot', 'Group View'),
+                                                ],
+                                            ],
+                                        ]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    if (!$deleteMessage) {
+                        if ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON) {
+                            if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                if ($this->getMessage()->hasStyledTexts()) {
+                                    $deleteMessage = true;
+
+                                    $telegramUser->sendMessage(
+                                        $this->render('/privates/warning-filter-remove-styled-texts', [
                                             'chat' => $chat,
                                         ]),
                                         [
