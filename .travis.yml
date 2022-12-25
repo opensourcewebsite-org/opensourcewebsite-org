@@ -30,6 +30,7 @@ before_script:
   - php --version
   - php -m
   - mysql --version
+  - mpsql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
   - mysql -e 'CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;'
   - ./tests/bin/yii migrate --interactive=0 -c
 script:
