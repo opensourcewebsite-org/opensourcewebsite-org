@@ -114,7 +114,7 @@ class ChatMember extends ActiveRecord
             ['slow_mode_messages', 'default', 'value' => 0],
             [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],
             [['slow_mode_messages_skip_days', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 365],
-            [['slow_mode_messages_skip_hours', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 24],
+            [['slow_mode_messages_skip_hours'], 'integer', 'min' => 0, 'max' => 24],
             [['membership_tariff_days_balance'], 'integer', 'min' => 0],
             [['membership_tariff_price', 'membership_tariff_price_balance'], 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['status', 'membership_note'], 'string'],
