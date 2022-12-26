@@ -221,7 +221,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         if ($this->link_user_id == $this->user_id) {
             $this->addError('userIdOrName', 'Contact owner and linked user cannot be same.');
+            return false;
         }
+        return true;
     }
 
     public function validateLinkUserIdUnique($attribute)
@@ -238,7 +240,9 @@ class Contact extends ActiveRecord implements ByOwnerInterface
 
         if ($contactExists) {
             $this->addError('userIdOrName', 'This User ID is already in use for another contact.');
+            return false;
         }
+        return true;
     }
 
     /**
