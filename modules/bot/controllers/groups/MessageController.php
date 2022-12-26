@@ -134,7 +134,7 @@ class MessageController extends Controller
 
         if (!$deleteMessage) {
             if (($chat->filter_status == ChatSetting::STATUS_ON) && !$chatMember->isAdministrator()) {
-                if ($this->getMessage()->getText() !== null) {
+                if ($this->getMessage()->getText() !== null || $this->getMessage()->getLocation() !== null) {
                     if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                         $replyUser = User::findOne([
                             'provider_user_id' => $replyMessage->getFrom()->getId(),
@@ -277,6 +277,32 @@ class MessageController extends Controller
                     }
 
                     if (!$deleteMessage) {
+                        if ($chat->filter_remove_locations == ChatSetting::STATUS_ON) {
+                            if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                if ($this->getMessage()->getLocation() !== null) {
+                                    $deleteMessage = true;
+
+                                    $telegramUser->sendMessage(
+                                        $this->render('/privates/warning-filter-remove-locations', [
+                                            'chat' => $chat,
+                                        ]),
+                                        [
+                                            [
+                                                [
+                                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                                        'id' => $chat->id,
+                                                    ]),
+                                                    'text' => Yii::t('bot', 'Group View'),
+                                                ],
+                                            ],
+                                        ]
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    if (!$deleteMessage) {
                         if ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON) {
                             if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
                                 if ($this->getMessage()->hasStyledTexts()) {
@@ -373,8 +399,8 @@ class MessageController extends Controller
 
                     if (isset($question)) {
                         return $this->run('faq/show-answer', [
-                                'questionId' => $question->id,
-                            ]);
+                            'questionId' => $question->id,
+                        ]);
                     }
                 }
             }
