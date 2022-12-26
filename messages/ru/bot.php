@@ -576,6 +576,7 @@ return [
     'Some @username is present' => 'Присутствует какой то @username',
     'Emoji are present' => 'Присутствуют эмодзи',
     'Unallowed text elements are present' => 'Присутствуют не разрешенные текстовые элементы',
+    'Styled text is present' => 'Присутствует стилизованный текст',
     'You have exceeded the allowed posting frequency' => 'Вы превысили разрешенную частоту публикации сообщений',
     'Try again later or tomorrow' => 'Повторите попытку позже или завтра',
     'Contact the group admins for details' => 'Свяжитесь с администраторами группы для выяснения деталей',
