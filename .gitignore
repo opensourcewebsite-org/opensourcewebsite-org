@@ -45,3 +45,5 @@ php-cs-fixer.phar
 
 # cache for php-cs-fixer
 .php-cs-fixer.cache
+
+ngrok.exe
