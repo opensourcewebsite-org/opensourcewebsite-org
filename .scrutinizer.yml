@@ -27,8 +27,8 @@ build:
       - php --version
       - php -m
       - mysql --version
-      - mysql --host=127.0.0.1 -uroot -proot -e 'SHOW VARIABLES like "version"';
-      - mysql --host=127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+      - mysql  --default-auth=mysql_native_password --host=127.0.0.1 -uroot -proot -e 'SHOW VARIABLES like "version"';
+      - mysql  --default-auth=mysql_native_password --host=127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS opensourcewebsite_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
       - ./tests/bin/yii migrate --interactive=0 -c
       - ./tests/bin/yii fixture/load '*' --interactive=0
   tests:
