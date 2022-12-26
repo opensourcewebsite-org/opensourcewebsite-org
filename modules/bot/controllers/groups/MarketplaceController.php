@@ -206,6 +206,7 @@ class MarketplaceController extends Controller
                     $buttons,
                     [
                         'disablePreview' => true,
+                        'messageThreadId' => $this->getMessage() == null ? null : $this->getMessage()->getMessageThreadId(),
                     ]
                 );
         } else {
