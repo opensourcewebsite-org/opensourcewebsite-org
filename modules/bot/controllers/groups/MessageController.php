@@ -134,7 +134,7 @@ class MessageController extends Controller
 
         if (!$deleteMessage) {
             if (($chat->filter_status == ChatSetting::STATUS_ON) && !$chatMember->isAdministrator()) {
-                if ($this->getMessage()->getText() !== null || $this->getMessage()->getLocation() !== null) {
+                if (($this->getMessage()->getText() !== null) || ($this->getMessage()->getLocation() !== null)) {
                     if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                         $replyUser = User::findOne([
                             'provider_user_id' => $replyMessage->getFrom()->getId(),
