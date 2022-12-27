@@ -209,22 +209,25 @@ class ChatMember extends ActiveRecord
     {
         if ($chat = $this->chat) {
             if ($this->last_message_at) {
-                $todayForSkipDaysCheck = new DateTime('now', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
-                $todayForSkipHoursCheck = clone $todayForSkipDaysCheck;
+                if ($this->slow_mode_messages_skip_hours) {
+                    $now = new DateTime('now');
+                    $now->modify('-' . $this->slow_mode_messages_skip_hours . ' hours');
+
+                    if ($now->getTimestamp() < $this->last_message_at) {
+                        return false;
+                    }
+                }
+
+                $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
 
                 if ($this->slow_mode_messages_skip_days) {
-                    $todayForSkipDaysCheck->modify('-' . $this->slow_mode_messages_skip_days . ' days');
+                    $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
                 }
 
-                if ($this->slow_mode_messages_skip_hours) {
-                    $todayForSkipHoursCheck->modify('-' . $this->slow_mode_messages_skip_hours . ' hours');
-
-                }
-
-                if ($todayForSkipDaysCheck->getTimestamp() < $this->last_message_at) {
+                if ($today->getTimestamp() < $this->last_message_at) {
                     $slowModeMessagesLimit = $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
 
-                    if ($slowModeMessagesLimit <= $this->slow_mode_messages || $todayForSkipHoursCheck->getTimestamp() < $this->last_message_at) {
+                    if ($slowModeMessagesLimit <= $this->slow_mode_messages) {
                         return false;
                     }
                 }
