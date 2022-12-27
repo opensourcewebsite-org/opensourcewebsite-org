@@ -254,12 +254,13 @@ class SupportGroupBotHandler extends BotApi
         } elseif (trim($this->getMessage()->getText()) == '/lang' || $this->_language_code == null) {
             # when group has only 1 language
             $languages = $this->getLanguagesByGroup();
-            if (count($languages) == 1)  {
+            if (count($languages) == 1) {
                 #if command /land setting  send our response
                 $commands = $this->checkCommandLangByGroup();
                 if ($commands) {
-                   return $this->generateResponse($commands->supportGroupCommandTexts);
+                    return $this->generateResponse($commands->supportGroupCommandTexts);
                 }
+
                 #if command /land not setting  send defult response
                 return $this->generateDefaultResponse();
             }
@@ -457,13 +458,13 @@ class SupportGroupBotHandler extends BotApi
     private function getCommandsByGroup()
     {
         $commands = SupportGroupCommand::find()
-        ->where(['token' => $this->token])
-        ->andWhere(['command' => trim($this->getMessage()->getText())])
-        ->joinWith([
-            'supportGroupBot',
-            'supportGroupCommandTexts',
-        ])
-        ->one();
+            ->where(['token' => $this->token])
+            ->andWhere(['command' => trim($this->getMessage()->getText())])
+            ->joinWith([
+                'supportGroupBot',
+                'supportGroupCommandTexts',
+            ])
+            ->one();
 
         return $commands;
     }

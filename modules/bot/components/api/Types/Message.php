@@ -175,7 +175,8 @@ class Message extends \TelegramBot\Api\Types\Message
                     $value->getType() == MessageEntity::TYPE_UNDERLINE ||
                     $value->getType() == MessageEntity::TYPE_STRIKETHROUGH ||
                     $value->getType() == MessageEntity::TYPE_CODE ||
-                    $value->getType() == MessageEntity::TYPE_PRE
+                    $value->getType() == MessageEntity::TYPE_PRE ||
+                    $value->getType() == MessageEntity::TYPE_SPOILER
                 ) {
                     return true;
                 }
@@ -187,7 +188,8 @@ class Message extends \TelegramBot\Api\Types\Message
                     $value->getType() == MessageEntity::TYPE_UNDERLINE ||
                     $value->getType() == MessageEntity::TYPE_STRIKETHROUGH ||
                     $value->getType() == MessageEntity::TYPE_CODE ||
-                    $value->getType() == MessageEntity::TYPE_PRE
+                    $value->getType() == MessageEntity::TYPE_PRE ||
+                    $value->getType() == MessageEntity::TYPE_SPOILER
                 ) {
                     return true;
                 }
