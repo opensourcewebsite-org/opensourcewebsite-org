@@ -1533,12 +1533,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-telegram-sdk.git",
-                "reference": "3fb25d86f5e6803f5cbb9753dbac242134c00f48"
+                "reference": "c907c18ef83d2f292aec37335910b1cbdd18486a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/3fb25d86f5e6803f5cbb9753dbac242134c00f48",
-                "reference": "3fb25d86f5e6803f5cbb9753dbac242134c00f48",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/c907c18ef83d2f292aec37335910b1cbdd18486a",
+                "reference": "c907c18ef83d2f292aec37335910b1cbdd18486a",
                 "shasum": ""
             },
             "require": {
@@ -1590,7 +1590,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-telegram-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-telegram-sdk"
             },
-            "time": "2022-12-24T03:06:53+00:00"
+            "time": "2022-12-27T03:33:45+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
