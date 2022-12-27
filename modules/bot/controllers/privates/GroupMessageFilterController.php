@@ -27,6 +27,7 @@ class GroupMessageFilterController extends Controller
         4 => 'filter_remove_empty_line',
         5 => 'filter_remove_channels',
         6 => 'filter_remove_styled_texts',
+        7 => 'filter_remove_locations',
     ];
 
     public function actions()
@@ -156,6 +157,15 @@ class GroupMessageFilterController extends Controller
                                 'i' => 6,
                             ]),
                             'text' => ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: styled texts'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-status', [
+                                'id' => $chat->id,
+                                'i' => 7,
+                            ]),
+                            'text' => ($chat->filter_remove_locations == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: locations'),
                         ],
                     ],
                     [

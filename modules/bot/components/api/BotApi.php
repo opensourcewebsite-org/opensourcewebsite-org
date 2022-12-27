@@ -55,10 +55,10 @@ class BotApi extends \TelegramBot\Api\BotApi
     }
 
     /**
-    * @param $callbackQueryId
-    * @param string|null $text
-    * @param bool $showAlert
-    * @return bool
+     * @param $callbackQueryId
+     * @param string|null $text
+     * @param bool $showAlert
+     * @return bool
      */
     public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false, $url = null, $cacheTime = 0)
     {
