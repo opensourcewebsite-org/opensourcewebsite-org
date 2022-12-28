@@ -16,8 +16,6 @@ use Yii;
 class BanController extends Controller
 {
     /**
-     * Action shows captcha
-     *
      * @return array
      */
     public function actionIndex()
