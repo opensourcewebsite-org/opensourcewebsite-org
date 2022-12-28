@@ -9,11 +9,11 @@ use app\modules\bot\models\User;
 use Yii;
 
 /**
- * Class MuteController
+ * Class BanController
  *
  * @package app\modules\bot\controllers\groups
  */
-class MuteController extends Controller
+class BanController extends Controller
 {
     /**
      * Action shows captcha
@@ -52,21 +52,21 @@ class MuteController extends Controller
                                 $this->getMessage()->getReplyToMessage()->getMessageId()
                             );
 
-                            // delete /mute command
+                            // delete /ban command
                             $this->getBotApi()->deleteMessage(
                                 $chat->getChatId(),
                                 $this->getMessage()->getMessageId()
                             );
                         }
 
-                        // Mute member of the group (currently forever)
-                        $this->getBotApi()->restrictChatMember(
+                        // Kick member from the group
+                        $this->getBotApi()->kickChatMember(
                             $chat->chat_id,
                             $replyUser->provider_user_id
                         );
 
                         $replyUser->sendMessage(
-                            $this->render('/privates/warning-mute-chat-member', [
+                            $this->render('/privates/warning-ban-chat-member', [
                                 'chat' => $chat,
                             ]),
                             [
