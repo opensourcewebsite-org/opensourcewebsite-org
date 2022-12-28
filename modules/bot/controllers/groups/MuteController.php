@@ -28,7 +28,7 @@ class MuteController extends Controller
             'user_id' => $telegramUser->id,
         ]);
 
-        if ($chatMember->isAdministrator()) {
+        if ($chatMember->isActiveAdministrator()) {
             if ($this->getMessage()->getText() !== null) {
                 if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                     $replyUser = User::findOne([
@@ -43,19 +43,11 @@ class MuteController extends Controller
                     }
 
                     if (!isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                        if ($this->getMessage()) {
-                            // delete replyMessage
-                            $this->getBotApi()->deleteMessage(
-                                $chat->getChatId(),
-                                $this->getMessage()->getReplyToMessage()->getMessageId()
-                            );
-
-                            // delete /mute command
-                            $this->getBotApi()->deleteMessage(
-                                $chat->getChatId(),
-                                $this->getMessage()->getMessageId()
-                            );
-                        }
+                        // delete replyMessage
+                        $this->getBotApi()->deleteMessage(
+                            $chat->getChatId(),
+                            $this->getMessage()->getReplyToMessage()->getMessageId()
+                        );
 
                         // Mute member of the group (currently forever)
                         $this->getBotApi()->restrictChatMember(
@@ -81,6 +73,12 @@ class MuteController extends Controller
                     }
 
                 }
+
+                // delete /mute command
+                $this->getBotApi()->deleteMessage(
+                    $chat->getChatId(),
+                    $this->getMessage()->getMessageId()
+                );
             }
         }
 
