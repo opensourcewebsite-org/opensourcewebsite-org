@@ -61,6 +61,12 @@ class MuteController extends Controller
                             );
                         }
 
+                        // Mute member of the group (currently forever)
+                        $this->getBotApi()->restrictChatMember(
+                            $chat->chat_id,
+                            $replyUser->provider_user_id
+                        );
+
                         $replyUser->sendMessage(
                             $this->render('/privates/warning-mute-chat-member', [
                                 'chat' => $chat,
