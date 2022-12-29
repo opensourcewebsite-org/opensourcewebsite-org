@@ -73,10 +73,9 @@ class MuteController extends Controller
         }
 
         // delete /mute command
-        $this->getBotApi()->deleteMessage(
-            $chat->getChatId(),
-            $this->getMessage()->getMessageId()
-        );
+        $this->getResponseBuilder()
+            ->deleteMessage()
+            ->send();
 
         return [];
     }

@@ -73,10 +73,9 @@ class BanController extends Controller
         }
 
         // delete /ban command
-        $this->getBotApi()->deleteMessage(
-            $chat->getChatId(),
-            $this->getMessage()->getMessageId()
-        );
+        $this->getResponseBuilder()
+            ->deleteMessage()
+            ->send();
 
         return [];
     }
