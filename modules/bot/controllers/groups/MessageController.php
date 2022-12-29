@@ -131,7 +131,7 @@ class MessageController extends Controller
             }
 
             if (!$deleteMessage) {
-                if (!$chatMember->isAdministrator() && (!$chat->isMembershipOn() || ($chat->isMembershipOn() && !$chatMember->checkMembership()))) {
+                if (!$chatMember->isAdministrator() && (!$chat->isMembershipOn() || ($chat->isMembershipOn() && !$chatMember->hasMembership()))) {
                     if ($chat->filter_status == ChatSetting::STATUS_ON) {
                         if (($this->getMessage()->getText() !== null) || ($this->getMessage()->getLocation() !== null)) {
                             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
