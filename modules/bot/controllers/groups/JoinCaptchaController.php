@@ -133,7 +133,6 @@ class JoinCaptchaController extends Controller
 
                         if ($chatMember->role == self::ROLE_UNVERIFIED) {
                             // Remove captcha message
-
                             $this->getBotApi()->deleteMessage($chat->chat_id, $captcha->captcha_message_id);
 
                             // Delete record about captcha
