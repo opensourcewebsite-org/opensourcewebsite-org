@@ -522,4 +522,15 @@ class Chat extends ActiveRecord
 
         return false;
     }
+
+    public function isNotifyNameChangeOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->notify_name_change_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
