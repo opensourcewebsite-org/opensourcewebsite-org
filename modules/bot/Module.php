@@ -184,8 +184,7 @@ class Module extends \yii\base\Module
 
                     $administrator->link('chats', $chat, [
                         'status' => $botApiAdministrator->getStatus(),
-                        'role' => $botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR
-                            ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
+                        'role' => $botApiAdministrator->getStatus() == ChatMember::STATUS_CREATOR ? ChatMember::ROLE_ADMINISTRATOR : ChatMember::ROLE_MEMBER,
                     ]);
                 }
             }
@@ -256,7 +255,7 @@ class Module extends \yii\base\Module
                     $this->getChat()->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
-                // Ignore editing the user message in private chat
+            // Ignore editing the user message in private chat
             } elseif ($this->getUpdate()->getEditedMessage()) {
                 return true;
             }
@@ -268,13 +267,13 @@ class Module extends \yii\base\Module
             }
         }
 
-        [$route, $params, $isStateRoute] = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
+        list($route, $params, $isStateRoute) = $this->commandRouteResolver->resolveRoute($this->getUpdate(), $state);
 
         if ($this->getChat()->isPrivate()) {
             if (!$isStateRoute) {
                 $this->getUserState()->setName($state);
             }
-            // Ignore other botname if present
+        // Ignore other botname if present
         } elseif ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {
             if (isset($params['botname']) && $params['botname'] && ($params['botname'] != $this->getBot()
                         ->getUsername())) {
