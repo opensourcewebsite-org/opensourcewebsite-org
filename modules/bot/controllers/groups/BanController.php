@@ -20,6 +20,12 @@ class BanController extends Controller
      */
     public function actionIndex()
     {
+        if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
+            $this->getResponseBuilder()
+                ->deleteMessage()
+                ->send();
+        }
+
         $user = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
@@ -71,11 +77,6 @@ class BanController extends Controller
                 }
             }
         }
-
-        // delete /ban command
-        $this->getResponseBuilder()
-            ->deleteMessage()
-            ->send();
 
         return [];
     }

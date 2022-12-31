@@ -12,6 +12,7 @@ use TelegramBot\Api\Types\Dice;
 use TelegramBot\Api\Types\Document;
 use TelegramBot\Api\Types\ForumTopicClosed;
 use TelegramBot\Api\Types\ForumTopicCreated;
+use TelegramBot\Api\Types\ForumTopicEdited;
 use TelegramBot\Api\Types\ForumTopicReopened;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Location;
@@ -65,6 +66,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'text' => true,
         'entities' => ArrayOfMessageEntity::class,
         'caption_entities' => ArrayOfMessageEntity::class,
+        'has_media_spoiler' => true,
         'audio' => Audio::class,
         'document' => Document::class,
         'animation' => Animation::class,
@@ -95,6 +97,7 @@ class Message extends \TelegramBot\Api\Types\Message
         'successful_payment' => SuccessfulPayment::class,
         'connected_website' => true,
         'forum_topic_created' => ForumTopicCreated::class,
+        'forum_topic_edited' => ForumTopicEdited::class,
         'forum_topic_closed' => ForumTopicClosed::class,
         'forum_topic_reopened' => ForumTopicReopened::class,
         'video_chat_scheduled' => VideoChatScheduled::class,

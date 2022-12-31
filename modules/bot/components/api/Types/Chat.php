@@ -36,6 +36,7 @@ class Chat extends \TelegramBot\Api\Types\Chat
         'permissions' => ChatPermissions::class,
         'slow_mode_delay' => true,
         'message_auto_delete_time' => true,
+        'has_hidden_members' => true,
         'has_protected_content' => true,
         'sticker_set_name' => true,
         'can_set_sticker_set' => true,
