@@ -285,6 +285,18 @@ class User extends ActiveRecord
 
     public function updateInfo($updateUser)
     {
+        // check if user changed username
+        if ($updateUser->getUpdate()->getFrom()->getUsername() != $this->getUsername()) {
+            $userGroups = $this->getGroups();
+            $updateUser->getBotApi()->sendMessage($updateUser->getUpdate()->getChat()->getId(), 'new username');
+        }
+
+        $userFullName = $updateUser->getUpdate()->getFrom()->getFirstName() . ' ' . $updateUser->getUpdate()->getFrom()->getLastName();
+        if ($updateUser->getUpdate()->getFrom()->getFirstName() != $this->provider_user_first_name || $updateUser->getUpdate()->getFrom()->getLastName() != $this->provider_user_last_name) {
+            $userGroups = $this->getGroups();
+            $updateUser->getBotApi()->sendMessage($updateUser->getUpdate()->getChat()->getId(), 'new name');
+        }
+
         $this->setAttributes([
             'provider_user_name' => $updateUser->getUsername(),
             'provider_user_first_name' => $updateUser->getFirstName(),
