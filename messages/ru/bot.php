@@ -580,6 +580,8 @@ return [
     'Styled text is present' => 'Присутствует стилизованный текст',
     'You have exceeded the allowed posting frequency' => 'Вы превысили разрешенную частоту публикации сообщений',
     'Try again later or tomorrow' => 'Повторите попытку позже или завтра',
+    'Your account in the group has been muted by administrators' => 'Ваш аккаунт в группе был заблокирован администраторами',
+    'Your account in the group has been banned by administrators' => 'Ваш аккаунт в группе был забанен администраторами',
     'Contact the group admins for details' => 'Свяжитесь с администраторами группы для выяснения деталей',
     'Your verification is valid until {0}' => 'Ваша верификация действительна до {0}',
     'Your verification is valid until' => 'Ваша верификация действительна до',
