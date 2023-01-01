@@ -286,15 +286,30 @@ class User extends ActiveRecord
     public function updateInfo($updateUser)
     {
         // check if user changed username
-        if ($updateUser->getUpdate()->getFrom()->getUsername() != $this->getUsername()) {
+        if ($updateUser->getUsername() != $this->getUsername()) {
             $userGroups = $this->getGroups();
-            $updateUser->getBotApi()->sendMessage($updateUser->getUpdate()->getChat()->getId(), 'new username');
+            foreach ($userGroups->each() as $group) {
+                $module = Yii::$app->getModule('bot');
+                $module->setChat($group);
+                $module->runAction('notify-name-change/username-change', [
+                    'group' => $group,
+                    'updateUser' => $updateUser,
+                    'oldUser' => $this,
+                ]);
+            }
         }
 
-        $userFullName = $updateUser->getUpdate()->getFrom()->getFirstName() . ' ' . $updateUser->getUpdate()->getFrom()->getLastName();
-        if ($updateUser->getUpdate()->getFrom()->getFirstName() != $this->provider_user_first_name || $updateUser->getUpdate()->getFrom()->getLastName() != $this->provider_user_last_name) {
+        if ($updateUser->getFirstName() != $this->provider_user_first_name || $updateUser->getLastName() != $this->provider_user_last_name) {
             $userGroups = $this->getGroups();
-            $updateUser->getBotApi()->sendMessage($updateUser->getUpdate()->getChat()->getId(), 'new name');
+            foreach ($userGroups->each() as $group) {
+                $module = Yii::$app->getModule('bot');
+                $module->setChat($group);
+                $module->runAction('notify-name-change/name-change', [
+                    'group' => $group,
+                    'updateUser' => $updateUser,
+                    'oldUser' => $this,
+                ]);
+            }
         }
 
         $this->setAttributes([
