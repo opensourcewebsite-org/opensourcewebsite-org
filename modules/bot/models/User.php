@@ -285,6 +285,33 @@ class User extends ActiveRecord
 
     public function updateInfo($updateUser)
     {
+        // check if user changed username
+        if ($updateUser->getUsername() != $this->getUsername()) {
+            $userGroups = $this->getGroups();
+            foreach ($userGroups->each() as $group) {
+                $module = Yii::$app->getModule('bot');
+                $module->setChat($group);
+                $module->runAction('notify-name-change/username-change', [
+                    'group' => $group,
+                    'updateUser' => $updateUser,
+                    'oldUser' => $this,
+                ]);
+            }
+        }
+
+        if ($updateUser->getFirstName() != $this->provider_user_first_name || $updateUser->getLastName() != $this->provider_user_last_name) {
+            $userGroups = $this->getGroups();
+            foreach ($userGroups->each() as $group) {
+                $module = Yii::$app->getModule('bot');
+                $module->setChat($group);
+                $module->runAction('notify-name-change/name-change', [
+                    'group' => $group,
+                    'updateUser' => $updateUser,
+                    'oldUser' => $this,
+                ]);
+            }
+        }
+
         $this->setAttributes([
             'provider_user_name' => $updateUser->getUsername(),
             'provider_user_first_name' => $updateUser->getFirstName(),

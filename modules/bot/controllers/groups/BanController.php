@@ -34,7 +34,7 @@ class BanController extends Controller
             'user_id' => $user->id,
         ]);
 
-        if ($chatMember->isActiveAdministrator()) {
+        if ($chatMember->isActiveAdministrator() || $chatMember->isAnonymousAdministrator()) {
             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                 $replyUser = User::findOne([
                     'provider_user_id' => $replyMessage->getFrom()->getId(),

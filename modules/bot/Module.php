@@ -84,6 +84,7 @@ class Module extends \yii\base\Module
 
                     $isNewUser = true;
                 }
+
                 // Update telegram user information
                 $user->updateInfo($this->getUpdate()->getFrom());
 
@@ -274,7 +275,8 @@ class Module extends \yii\base\Module
             }
         // Ignore other botname if present
         } elseif ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {
-            if (isset($params['botname']) && $params['botname'] && ($params['botname'] != $this->getBot()->getUsername())) {
+            if (isset($params['botname']) && $params['botname'] && ($params['botname'] != $this->getBot()
+                        ->getUsername())) {
                 return true;
             }
         }
