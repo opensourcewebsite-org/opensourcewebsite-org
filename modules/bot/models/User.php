@@ -287,9 +287,17 @@ class User extends ActiveRecord
     {
         // check if user changed username
         if ($updateUser->getUsername() != $this->getUsername()) {
-            $userGroups = $this->getGroups();
-            foreach ($userGroups->each() as $group) {
-                $module = Yii::$app->getModule('bot');
+            $chats = $this->getGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'and',
+                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                ])
+                ->all();
+
+            $module = Yii::$app->getModule('bot');
+            foreach ($chats as $group) {
                 $module->setChat($group);
                 $module->runAction('notify-name-change/username-change', [
                     'group' => $group,
@@ -300,9 +308,17 @@ class User extends ActiveRecord
         }
 
         if ($updateUser->getFirstName() != $this->provider_user_first_name || $updateUser->getLastName() != $this->provider_user_last_name) {
-            $userGroups = $this->getGroups();
-            foreach ($userGroups->each() as $group) {
-                $module = Yii::$app->getModule('bot');
+            $chats = $this->getGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'and',
+                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                ])
+                ->all();
+
+            $module = Yii::$app->getModule('bot');
+            foreach ($chats as $group) {
                 $module->setChat($group);
                 $module->runAction('notify-name-change/name-change', [
                     'group' => $group,
