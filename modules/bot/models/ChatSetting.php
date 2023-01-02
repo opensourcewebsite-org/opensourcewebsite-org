@@ -62,6 +62,9 @@ class ChatSetting extends ActiveRecord
         'join_captcha_status' => [
             'default' => self::STATUS_OFF,
         ],
+        'notify_name_change_status' => [
+            'default' => self::STATUS_OFF,
+        ],
         'greeting_status' => [
             'default' => self::STATUS_OFF,
         ],

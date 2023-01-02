@@ -84,6 +84,7 @@ class Module extends \yii\base\Module
 
                     $isNewUser = true;
                 }
+
                 // Update telegram user information
                 $user->updateInfo($this->getUpdate()->getFrom());
 
