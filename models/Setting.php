@@ -99,6 +99,16 @@ class Setting extends ActiveRecord
             'default' => 1,
             'min' => 0,
         ],
+        'active_bot_group_notify_name_change_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_notify_name_change_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'min' => 0,
+        ],
         'active_bot_group_membership_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
