@@ -297,17 +297,18 @@ class User extends ActiveRecord
                 ->all();
 
             $module = Yii::$app->getModule('bot');
-            foreach ($chats as $group) {
-                $module->setChat($group);
+
+            foreach ($chats as $chat) {
+                $module->setChat($chat);
                 $module->runAction('notify-name-change/username-change', [
-                    'group' => $group,
+                    'chat' => $chat,
                     'updateUser' => $updateUser,
                     'oldUser' => $this,
                 ]);
             }
         }
 
-        if ($updateUser->getFirstName() != $this->provider_user_first_name || $updateUser->getLastName() != $this->provider_user_last_name) {
+        if (($updateUser->getFirstName() != $this->provider_user_first_name) || ($updateUser->getLastName() != $this->provider_user_last_name)) {
             $chats = $this->getGroups()
                 ->joinWith('settings')
                 ->andWhere([
@@ -318,10 +319,11 @@ class User extends ActiveRecord
                 ->all();
 
             $module = Yii::$app->getModule('bot');
-            foreach ($chats as $group) {
-                $module->setChat($group);
+
+            foreach ($chats as $chat) {
+                $module->setChat($chat);
                 $module->runAction('notify-name-change/name-change', [
-                    'group' => $group,
+                    'chat' => $chat,
                     'updateUser' => $updateUser,
                     'oldUser' => $this,
                 ]);

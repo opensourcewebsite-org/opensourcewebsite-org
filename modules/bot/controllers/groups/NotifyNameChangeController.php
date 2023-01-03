@@ -16,28 +16,30 @@ class NotifyNameChangeController extends Controller
     /**
      * Action notifies when user changes username
      *
-     * @param Chat $group
+     * @param Chat $chat
      * @param \TelegramBot\Api\Types\User $updateUser
      * @param User $oldUser
      *
      * @return array
      */
-    public function actionUsernameChange($group = null, $updateUser = null, $oldUser = null)
+    public function actionUsernameChange($chat = null, $updateUser = null, $oldUser = null)
     {
-        if ($group->isNotifyNameChangeOn()) {
-            $this->getResponseBuilder()
-                ->sendMessage(
-                    $this->render('username-change', [
-                        'updateUser' => $updateUser,
-                        'oldUser' => $oldUser,
-                    ]),
-                    [],
-                    [
-                        'disablePreview' => true,
-                        'disableNotification' => true,
-                    ]
-                )
-                ->send();
+        if ($chat && $updateUser && $oldUser) {
+            if ($chat->isNotifyNameChangeOn()) {
+                $this->getResponseBuilder()
+                    ->sendMessage(
+                        $this->render('username-change', [
+                            'updateUser' => $updateUser,
+                            'user' => $oldUser,
+                        ]),
+                        [],
+                        [
+                            'disablePreview' => true,
+                            'disableNotification' => true,
+                        ]
+                    )
+                    ->send();
+            }
         }
 
         return [];
@@ -46,28 +48,30 @@ class NotifyNameChangeController extends Controller
     /**
      * Action notifies when user changes name
      *
-     * @param Chat $group
+     * @param Chat $chat
      * @param \TelegramBot\Api\Types\User $updateUser
      * @param User $oldUser
      *
      * @return array
      */
-    public function actionNameChange($group = null, $updateUser = null, $oldUser = null)
+    public function actionNameChange($chat = null, $updateUser = null, $oldUser = null)
     {
-        if ($group->isNotifyNameChangeOn()) {
-            $this->getResponseBuilder()
-                ->sendMessage(
-                    $this->render('name-change', [
-                        'updateUser' => $updateUser,
-                        'oldUser' => $oldUser,
-                    ]),
-                    [],
-                    [
-                        'disablePreview' => true,
-                        'disableNotification' => true,
-                    ]
-                )
-                ->send();
+        if ($chat && $updateUser && $oldUser) {
+            if ($chat->isNotifyNameChangeOn()) {
+                $this->getResponseBuilder()
+                    ->sendMessage(
+                        $this->render('name-change', [
+                            'updateUser' => $updateUser,
+                            'user' => $oldUser,
+                        ]),
+                        [],
+                        [
+                            'disablePreview' => true,
+                            'disableNotification' => true,
+                        ]
+                    )
+                    ->send();
+            }
         }
 
         return [];
