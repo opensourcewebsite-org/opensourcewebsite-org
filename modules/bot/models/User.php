@@ -286,15 +286,48 @@ class User extends ActiveRecord
     public function updateInfo($updateUser)
     {
         // check if user changed username
-        if ($updateUser->getUpdate()->getFrom()->getUsername() != $this->getUsername()) {
-            $userGroups = $this->getGroups();
-            $updateUser->getBotApi()->sendMessage($updateUser->getUpdate()->getChat()->getId(), 'new username');
+        if ($updateUser->getUsername() != $this->getUsername()) {
+            $chats = $this->getGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'and',
+                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                ])
+                ->all();
+
+            $module = Yii::$app->getModule('bot');
+
+            foreach ($chats as $chat) {
+                $module->setChat($chat);
+                $module->runAction('notify-name-change/username-change', [
+                    'chat' => $chat,
+                    'updateUser' => $updateUser,
+                    'oldUser' => $this,
+                ]);
+            }
         }
 
-        $userFullName = $updateUser->getUpdate()->getFrom()->getFirstName() . ' ' . $updateUser->getUpdate()->getFrom()->getLastName();
-        if ($updateUser->getUpdate()->getFrom()->getFirstName() != $this->provider_user_first_name || $updateUser->getUpdate()->getFrom()->getLastName() != $this->provider_user_last_name) {
-            $userGroups = $this->getGroups();
-            $updateUser->getBotApi()->sendMessage($updateUser->getUpdate()->getChat()->getId(), 'new name');
+        if (($updateUser->getFirstName() != $this->provider_user_first_name) || ($updateUser->getLastName() != $this->provider_user_last_name)) {
+            $chats = $this->getGroups()
+                ->joinWith('settings')
+                ->andWhere([
+                    'and',
+                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                ])
+                ->all();
+
+            $module = Yii::$app->getModule('bot');
+
+            foreach ($chats as $chat) {
+                $module->setChat($chat);
+                $module->runAction('notify-name-change/name-change', [
+                    'chat' => $chat,
+                    'updateUser' => $updateUser,
+                    'oldUser' => $this,
+                ]);
+            }
         }
 
         $this->setAttributes([
