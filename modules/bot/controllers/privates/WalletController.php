@@ -427,6 +427,7 @@ class WalletController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('confirm-transaction', [
                     'amount' => $amount,
+                    'fee' => WalletTransaction::TRANSACTION_FEE,
                     'fromUser' => $fromUser,
                     'toUser' => $toUser,
                     'currency' => $currency,
@@ -479,7 +480,7 @@ class WalletController extends Controller
             'user_id' => $to_user_id,
         ]);
 
-        if (($fromUserWallet->amount - $amount) < 0) {
+        if (($fromUserWallet->amount - $amount -  WalletTransaction::TRANSACTION_FEE) < 0) {
             return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('warning-confirm-transaction'),
@@ -507,7 +508,8 @@ class WalletController extends Controller
             $walletTransaction->currency_id = $id;
             $walletTransaction->from_user_id = $this->globalUser->id;
             $walletTransaction->to_user_id = $to_user_id;
-            $walletTransaction->amount = $amount;
+            $walletTransaction->amount = $amount + WalletTransaction::TRANSACTION_FEE;
+            $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
             $walletTransaction->type = 0;
             $walletTransaction->anonymity = 0;
             $walletTransaction->created_at = time();
@@ -515,7 +517,7 @@ class WalletController extends Controller
             if ($walletTransaction->save()) {
                 $toUserWallet->amount += $amount;
                 $toUserWallet->save();
-                $fromUserWallet->amount -= $amount;
+                $fromUserWallet->amount -= $amount + WalletTransaction::TRANSACTION_FEE;
                 $fromUserWallet->save();
             }
 
