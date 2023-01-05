@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property int $to_user_id
  * @property float $amount
  * @property int $type
+ * @property int $anonymity
  * @property int $created_at
  *
  * @property Currency $currency
@@ -37,8 +38,8 @@ class WalletTransaction extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'created_at'], 'required'],
-            [['currency_id', 'from_user_id', 'to_user_id', 'type', 'created_at'], 'integer'],
+            [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'anonymity', 'created_at'], 'required'],
+            [['currency_id', 'from_user_id', 'to_user_id', 'type', 'anonymity', 'created_at'], 'integer'],
             ['amount', 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
             [['from_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['from_user_id' => 'id']],
@@ -58,6 +59,7 @@ class WalletTransaction extends ActiveRecord
             'to_user_id' => 'To User ID',
             'amount' => 'Amount',
             'type' => 'Type',
+            'anonymity' => 'Anonymity',
             'created_at' => 'Created At',
         ];
     }
@@ -75,5 +77,45 @@ class WalletTransaction extends ActiveRecord
     public function getToUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'to_user_id']);
+    }
+
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getToUserId()
+    {
+        return $this->to_user_id;
+    }
+
+    public function getFromUserId()
+    {
+        return $this->from_user_id;
+    }
+
+    public function getCurrencyId()
+    {
+        return $this->currency_id;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function getAnonymity()
+    {
+        return $this->anonymity;
     }
 }
