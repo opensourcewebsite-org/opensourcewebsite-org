@@ -480,7 +480,7 @@ class WalletController extends Controller
             'user_id' => $to_user_id,
         ]);
 
-        if (($fromUserWallet->amount - $amount -  WalletTransaction::TRANSACTION_FEE) < 0) {
+        if (($fromUserWallet->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
             return $this->getResponseBuilder()
                 ->editMessageTextOrSendMessage(
                     $this->render('warning-confirm-transaction'),
@@ -579,8 +579,9 @@ class WalletController extends Controller
                 ];
             }
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($id) {
                 return self::createRoute('transactions', [
+                    'id' => $id,
                     'page' => $page,
                 ]);
             });
