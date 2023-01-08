@@ -15,7 +15,7 @@ class WebHookService
      * @return bool
      * @throws \yii\db\Exception
      */
-    protected function handleSupportGroupBot($botInfo, $postdata)
+    public function handleSupportGroupBot($botInfo, $postdata)
     {
         $botApi = new SupportGroupBotHandler($botInfo->token, $postdata);
 
