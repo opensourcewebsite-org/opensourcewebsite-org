@@ -302,32 +302,41 @@ class GroupTipController extends Controller
 
                 $transaction->commit();
 
-                $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('success'),
-                        [
-                            [
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => Emoji::MENU,
-                                ],
-                            ],
-                        ]
-                    )
-                    ->build();
-
+                // send group message
+                $thisChat = $this->getTelegramChat();
                 $module = Yii::$app->getModule('bot');
                 $module->setChat(Chat::findOne($state->chatId));
-                $module->runAction('tip/show-tip-message', [
+                $response = $module->runAction('tip/show-tip-message', [
                     'chatId' => $state->chatId,
                     'walletTransaction' => $walletTransaction,
                 ]);
+
+                $module->setChat($thisChat);
+
+                // send response to private chat
+                if ($response) {
+                    return $this->getResponseBuilder()
+                        ->editMessageTextOrSendMessage(
+                            $this->render('success'),
+                            [
+                                [
+                                    [
+                                        'callback_data' => MenuController::createRoute(),
+                                        'text' => Emoji::MENU,
+                                    ],
+                                ],
+                            ]
+                        )
+                        ->build();
+                }
             } catch (\Throwable $e) {
                 $transaction->rollBack();
                 Yii::error($e->getMessage());
             }
         }
 
-        return [];
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }
