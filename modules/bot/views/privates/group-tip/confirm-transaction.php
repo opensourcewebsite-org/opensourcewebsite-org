@@ -4,8 +4,8 @@ use app\models\WalletTransaction;
 
 ?>
 <b><?= Yii::t('bot', 'Transaction') ?></b><br/><br/>
-<?= Yii::t('bot', 'Sender') ?>: @<?= $fromUsername ?><br/>
-<?= Yii::t('bot', 'Receiver') ?>: @<?= $toUsername ?><br/>
+<?= Yii::t('bot', 'Sender') ?>: @<?= $fromUser->getUsername() ?><br/>
+<?= Yii::t('bot', 'Receiver') ?>: @<?= $toUser->getUsername() ?><br/>
 <?php if ($amount && $code) : ?>
 <?= Yii::t('bot', 'Amount') ?>: <?= $amount ?> <?= $code ?><br/>
 <?= Yii::t('bot', 'Fee') ?>: <?= WalletTransaction::TRANSACTION_FEE ?> <?= $code ?><br/>

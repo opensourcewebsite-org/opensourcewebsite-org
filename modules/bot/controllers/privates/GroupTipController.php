@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\models\Currency;
+use app\models\DebtBalance;
 use app\models\Wallet;
 use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
@@ -24,8 +25,6 @@ class GroupTipController extends Controller
     /**
      * @param int $chatId Chat->id
      * @param int $toUserId User->id
-     * @param string|null $code Currency->code
-     * @param int $amount
      *
      * @return array
      */
@@ -41,7 +40,12 @@ class GroupTipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-amount', [
+//        $this->getState()->setName(self::createRoute('choose-currency', [
+//            'chatId' => $chatId,
+//            'toUserId' => $toUserId,
+//        ]));
+
+        $this->getState()->setName(json_encode([
             'chatId' => $chatId,
             'toUserId' => $toUserId,
         ]));
@@ -49,10 +53,16 @@ class GroupTipController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
-                    'fromUsername' => $fromUser->getUsername(),
-                    'toUsername' => $toUser->getUsername(),
+                    'fromUser' => $fromUser,
+                    'toUser' => $toUser,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('choose-currency'),
+                            'text' =>'Currency',
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => MenuController::createRoute(),
@@ -67,11 +77,18 @@ class GroupTipController extends Controller
     /**
      * @param int $chatId Chat->id
      * @param int $toUserId User->id
+     * @param string $code Currency->code
      *
      * @return array
      */
-    public function actionSetAmount($chatId = null, $toUserId = null)
+    public function actionSetAmount($chatId = null, $toUserId = null, $code = null)
     {
+        $this->getState()->setName(self::createRoute('set-amount', [
+            'chatId' => $chatId,
+            'toUserId' => $toUserId,
+            'code' =>$code,
+        ]));
+
         if ($this->getUpdate()->getMessage()) {
             if ((float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = (float)$this->getUpdate()->getMessage()->getText();
@@ -80,20 +97,70 @@ class GroupTipController extends Controller
                 $this->getState()->setName(json_encode([
                     'chatId' => $chatId,
                     'toUserId' => $toUserId,
+                    'code' => $code,
                     'amount' => $amount,
                 ]));
 
-                return $this->actionChooseCurrency();
+                $fromUser = $this->getTelegramUser();
+                $toUser = User::findOne($toUserId);
+
+                return $this->getResponseBuilder()
+                    ->editMessageTextOrSendMessage(
+                        $this->render('confirm-transaction', [
+                            'fromUser' => $fromUser,
+                            'toUser' => $toUser,
+                            'amount' => $amount,
+                            'code' => $code,
+                        ]),
+                        [
+                            [
+                                [
+                                    'callback_data' => self::createRoute('confirm-transaction'),
+                                    'text' => 'Confirm',
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => self::createRoute('view', [
+                                        'chatId' => $chatId,
+                                        'toUserId' => $toUserId,
+                                    ]),
+                                    'text' => Emoji::DELETE,
+                                ],
+                                [
+                                    'callback_data' => MenuController::createRoute(),
+                                    'text' => Emoji::MENU,
+                                ],
+                            ],
+                        ]
+                    )
+                    ->build();
             }
         }
 
-        return [];
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-amount'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('view', [
+                                'chatId' => $chatId,
+                                'toUserId' => $toUserId,
+                            ]),
+                            'text' => Emoji::DELETE,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     /**
-     * @param int $chatId Chat->id
-     * @param int $toUserId User->id
-     * @param int $amount
      * @param string|null $code Currency->code
      * @param int $page
      *
@@ -104,12 +171,6 @@ class GroupTipController extends Controller
         $state = json_decode($this->getState()->getName());
         $fromUser = $this->getTelegramUser();
         $toUser = User::findOne($state->toUserId);
-
-        if (!isset($toUser)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
 
         if ($code) {
             $currency = Currency::findOne([
@@ -133,48 +194,13 @@ class GroupTipController extends Controller
                         ->build();
                 }
 
-                $this->getState()->setName(json_encode([
-                    'chatId' => $state->chatId,
-                    'toUserId' => $state->toUserId,
-                    'amount' => $state->amount,
-                    'code' => $code,
-                ]));
-
-                return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('confirm-transaction', [
-                            'fromUsername' => $fromUser->getUsername(),
-                            'toUsername' => $toUser->getUsername(),
-                            'amount' => $state->amount,
-                            'code' => $code,
-                        ]),
-                        [
-                            [
-                                [
-                                    'callback_data' => self::createRoute('confirm-transaction'),
-                                    'text' => 'Confirm',
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute('view', [
-                                        'chatId' => $state->chatId,
-                                        'toUserId' => $state->toUserId,
-                                    ]),
-                                    'text' => Emoji::DELETE,
-                                ],
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => Emoji::MENU,
-                                ],
-                            ],
-                        ]
-                    )
-                    ->build();
+                return $this->actionSetAmount($state->chatId, $state->toUserId, $code);
             }
         }
 
         $query = Currency::find()
+            ->joinWith('wallets')
+            ->andWhere(['>', Wallet::tableName() . '.amount', 0])
             ->orderBy([
                 'code' => SORT_ASC,
             ]);

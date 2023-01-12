@@ -70,6 +70,11 @@ class Currency extends ActiveRecord
         return $this->hasMany(DebtBalance::className(), ['currency_id' => 'id']);
     }
 
+    public function getWallets()
+    {
+        return $this->hasMany(Wallet::className(), ['currency_id' => 'id']);
+    }
+
     /**
      * @return string
      */

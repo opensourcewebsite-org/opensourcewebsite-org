@@ -2,10 +2,10 @@
 
 namespace app\modules\bot\controllers\groups;
 
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\controllers\privates\GroupTipController;
 use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
 use Yii;
 
@@ -29,14 +29,9 @@ class TipController extends Controller
                 'provider_user_id' => $replyMessage->getFrom()->getId(),
             ]);
 
-            if ($toUser) {
-                $toChatMember = ChatMember::findOne([
-                    'chat_id' => $chat->id,
-                    'user_id' => $toUser->id,
-                ]);
-            }
-
-            if (isset($toChatMember)) {
+            // check if sender is a chat member
+            $fromChatMember = $chat->getChatMemberByUser($fromUser);
+            if (isset($toUser) && isset($fromChatMember)) {
                 $fromUser->sendMessage(
                     $this->render('/privates/tip', [
                         'chat' => $chat,
@@ -59,55 +54,58 @@ class TipController extends Controller
         return [];
     }
 
+    /**
+     * @param int $chatId Chat->id
+     * @param WalletTransaction $walletTransaction
+     *
+     * @return array
+     */
     public function actionShowTipMessage($chatId, $walletTransaction) {
-        $fromUser = User::findOne($walletTransaction->getFromUserId());
-        $toUser = User::findOne($walletTransaction->getToUserId());
-        $currency = $walletTransaction->getCurrency()->one();
+        $fromUser = $walletTransaction->fromUser->botUser;
+        $toUser = $walletTransaction->toUser->botUser;
+        $currency = $walletTransaction->currency;
 
-        if ($fromUser && $toUser && $currency) {
-            return $this->getResponseBuilder()
-                ->sendMessage(
-                    $this->render('show-tip-message', [
-                        'fromUsername' => $fromUser->getUsername(),
-                        'toUsername' => $toUser->getUsername(),
-                        'amount' => $walletTransaction->getAmount(),
-                        'code' => $currency->code,
-                    ]),
+        return $this->getResponseBuilder()
+            ->sendMessage(
+                $this->render('show-tip-message', [
+                    'fromUsername' => $fromUser->getUsername(),
+                    'toUsername' => $toUser->getUsername(),
+                    'amount' => $walletTransaction->getAmount(),
+                    'code' => $currency->code,
+                ]),
+                [
                     [
                         [
-                            [
-                                'callback_data' => self::createRoute('retry-tip', [
-                                    'chatId' => $chatId,
-                                    'toUserId' => $walletTransaction->getToUserId(),
-                                ]),
-                                'text' => Yii::t('bot', 'Tip'),
-                            ],
+                            'callback_data' => self::createRoute('retry-tip', [
+                                'chatId' => $chatId,
+                                'toUserId' => $walletTransaction->getToUserId(),
+                            ]),
+                            'text' => Yii::t('bot', 'Tip'),
                         ],
                     ],
-                    [
-                        'disablePreview' => true,
-                        'disableNotification' => true,
-                    ]
-                )
-                ->build();
-        }
-
-        return [];
+                ],
+                [
+                    'disablePreview' => true,
+                    'disableNotification' => true,
+                ]
+            )
+            ->build();
     }
 
+    /**
+     * @param int $chatId Chat->id
+     * @param int $toUserId User->id
+     *
+     * @return array
+     */
     public function actionRetryTip($chatId, $toUserId) {
         $fromUser = $this->getTelegramUser();
         $chat = Chat::findOne($chatId);
         $toUser = User::findOne($toUserId);
 
-        if ($toUser) {
-            $toChatMember = ChatMember::findOne([
-                'chat_id' => $chatId,
-                'user_id' => $toUserId,
-            ]);
-        }
-
-        if (isset($toChatMember)) {
+        // check if sender is a chat member
+        $fromChatMember = $chat->getChatMemberByUser($fromUser);
+        if (isset($toUser) && isset($fromChatMember)) {
             $fromUser->sendMessage(
                 $this->render('/privates/tip', [
                     'chat' => $chat,
