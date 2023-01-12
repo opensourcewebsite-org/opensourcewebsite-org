@@ -319,7 +319,7 @@ class User extends ActiveRecord
                     $module = Yii::$app->getModule('bot');
                     foreach ($chats as $chat) {
                         $module->setChat($chat);
-                        $module->runAction('notify-name-change/notify', [
+                        $module->runAction('notifier/index', [
                             'chat' => $chat,
                             'changedAttributes' => json_decode(json_encode($changedAttributes)),
                             'user' => $this,
