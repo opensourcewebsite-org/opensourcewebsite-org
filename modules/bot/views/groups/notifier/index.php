@@ -7,17 +7,12 @@ use app\modules\bot\components\helpers\Emoji;
  * @var $user \app\modules\bot\models\User
  */
 ?>
-<?php if (isset($changedAttributes->provider_user_name)) : ?>
-<?php endif; ?>
-<b><?= Yii::t('bot', 'User changed username'); ?></b>.<br/>
-<?php if(isset($changedAttributes->provider_user_first_name) || isset($changedAttributes->provider_user_last_name)) : ?>
-<b><?= Yii::t('bot', 'User changed name'); ?></b>.<br/>
-<?php endif; ?>
+<b><?= Yii::t('bot', 'User changed account information'); ?></b>.<br/>
 <br/>
 <b><?= Yii::t('bot', 'Telegram') ?> ID</b>: #<?= $user->getIdFullLink() ?><br/>
-<b><?= Yii::t('bot', 'Username') ?></b>: <?= $user->provider_user_name ? ' @' . $user->provider_user_name : '(No Username)' ?> <?= isset($changedAttributes->provider_user_name) ? Emoji::RIGHT . ' ' . $changedAttributes->provider_user_name : '' ?><br/>
-<b><?= Yii::t('bot', 'First Name') ?></b>: <?= $user->provider_user_first_name ?> <?= isset($changedAttributes->provider_user_first_name) ? Emoji::RIGHT . ' ' .  $changedAttributes->provider_user_first_name : ' '; ?><br/>
-<b><?= Yii::t('bot', 'Last Name') ?></b>: <?= $user->provider_user_last_name ?> <?= isset($changedAttributes->provider_user_last_name) ? Emoji::RIGHT . ' ' .  $changedAttributes->provider_user_last_name : ' '; ?><br/>
+<b><?= Yii::t('bot', 'Username') ?></b>: <?= isset($changedAttributes->provider_user_name) ? $changedAttributes->provider_user_name . ' ' . Emoji::RIGHT . ' ' : ''; ?><?= $user->provider_user_name ?><br/>
+<b><?= Yii::t('bot', 'First Name') ?></b>: <?= isset($changedAttributes->provider_user_first_name) ? $changedAttributes->provider_user_first_name . ' ' . Emoji::RIGHT . ' ' : ''; ?><?= $user->provider_user_first_name ?><br/>
+<b><?= Yii::t('bot', 'Last Name') ?></b>: <?= isset($changedAttributes->provider_user_last_name) ? $changedAttributes->provider_user_last_name . ' ' . Emoji::RIGHT . ' ' : ''; ?><?= $user->provider_user_last_name ?><br/>
 <?php if ($globalUser = $user->globalUser) : ?>
 <br/>
 <b>OSW ID</b>: #<?= $globalUser->getIdFullLink() ?><?= ($globalUser->username ? ' @' . $globalUser->username : '') ?><br/>
