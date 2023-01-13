@@ -3,7 +3,6 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\models\Currency;
-use app\models\DebtBalance;
 use app\models\Wallet;
 use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
@@ -39,11 +38,6 @@ class GroupTipController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
-//        $this->getState()->setName(self::createRoute('choose-currency', [
-//            'chatId' => $chatId,
-//            'toUserId' => $toUserId,
-//        ]));
 
         $this->getState()->setName(json_encode([
             'chatId' => $chatId,
