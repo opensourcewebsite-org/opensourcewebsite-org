@@ -208,7 +208,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator() || !$replyChatMember->hasMembership()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if (preg_match('/(?:(\n\s))/i', $this->getMessage()->getText())) {
                                             // removes empty lines and indents, ignores spaces at the end of lines
                                             $deleteMessage = true;
@@ -254,7 +254,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator() || !$replyChatMember->hasMembership()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if ($this->getMessage()->hasEmojis() || $this->getMessage()->hasCustomEmojis()) {
                                             $deleteMessage = true;
 
@@ -280,7 +280,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_locations == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator() || !$replyChatMember->hasMembership()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if ($this->getMessage()->getLocation() !== null) {
                                             $deleteMessage = true;
 
@@ -306,7 +306,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator() || !$replyChatMember->hasMembership()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if ($this->getMessage()->hasStyledTexts()) {
                                             $deleteMessage = true;
 
