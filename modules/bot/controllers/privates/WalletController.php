@@ -402,6 +402,7 @@ class WalletController extends Controller
             if ((float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = (float)$this->getUpdate()->getMessage()->getText();
                 $amount = number_format($amount, 2, '.', '');
+                $amount  = $amount < 0.01 ? 0 : $amount;
             }
         }
 
@@ -442,6 +443,7 @@ class WalletController extends Controller
                                 'amount' => $amount,
                             ]),
                             'text' => 'Confirm',
+                            'visible' => $amount > 0,
                         ],
                     ],
                     [
@@ -482,23 +484,7 @@ class WalletController extends Controller
 
         if (($fromUserWallet->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
             return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('warning-confirm-transaction'),
-                    [
-                        [
-                            [
-                                'callback_data' => self::createRoute('view', [
-                                    'id' => $id,
-                                ]),
-                                'text' => Emoji::BACK,
-                            ],
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => Emoji::MENU,
-                            ],
-                        ],
-                    ]
-                )
+                ->answerCallbackQuery()
                 ->build();
         }
 
