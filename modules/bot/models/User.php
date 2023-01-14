@@ -285,51 +285,6 @@ class User extends ActiveRecord
 
     public function updateInfo($updateUser)
     {
-        // check if user changed username
-        if ($updateUser->getUsername() != $this->getUsername()) {
-            $chats = $this->getGroups()
-                ->joinWith('settings')
-                ->andWhere([
-                    'and',
-                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
-                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                ])
-                ->all();
-
-            $module = Yii::$app->getModule('bot');
-
-            foreach ($chats as $chat) {
-                $module->setChat($chat);
-                $module->runAction('notify-name-change/username-change', [
-                    'chat' => $chat,
-                    'updateUser' => $updateUser,
-                    'oldUser' => $this,
-                ]);
-            }
-        }
-
-        if (($updateUser->getFirstName() != $this->provider_user_first_name) || ($updateUser->getLastName() != $this->provider_user_last_name)) {
-            $chats = $this->getGroups()
-                ->joinWith('settings')
-                ->andWhere([
-                    'and',
-                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
-                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                ])
-                ->all();
-
-            $module = Yii::$app->getModule('bot');
-
-            foreach ($chats as $chat) {
-                $module->setChat($chat);
-                $module->runAction('notify-name-change/name-change', [
-                    'chat' => $chat,
-                    'updateUser' => $updateUser,
-                    'oldUser' => $this,
-                ]);
-            }
-        }
-
         $this->setAttributes([
             'provider_user_name' => $updateUser->getUsername(),
             'provider_user_first_name' => $updateUser->getFirstName(),
@@ -339,6 +294,41 @@ class User extends ActiveRecord
             // TODO update if blocked after bot sent a message
             'provider_user_blocked' => 0,
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \Throwable
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (!$insert) {
+            if ((isset($changedAttributes['provider_user_name']) && ($changedAttributes['provider_user_name'] != $this->provider_user_name))
+                || (isset($changedAttributes['provider_user_first_name']) && ($changedAttributes['provider_user_first_name'] != $this->provider_user_first_name))
+                || (isset($changedAttributes['provider_user_last_name']) && ($changedAttributes['provider_user_last_name'] != $this->provider_user_last_name))) {
+                    $chats = $this->getGroups()
+                        ->joinWith('settings')
+                        ->andWhere([
+                            'and',
+                            [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                            [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                        ])
+                        ->all();
+
+                    $module = Yii::$app->getModule('bot');
+                    foreach ($chats as $chat) {
+                        $module->setChat($chat);
+                        $module->runAction('notifier/index', [
+                            'chat' => $chat,
+                            'changedAttributes' => json_decode(json_encode($changedAttributes)),
+                            'user' => $this,
+                        ]);
+                    }
+                }
+            }
+
+        parent::afterSave($insert, $changedAttributes);
     }
 
     public function getLink()

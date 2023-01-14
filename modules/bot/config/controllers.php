@@ -34,6 +34,7 @@ return [
     'group_message_filter',
     'group_join_captcha',
     'group_notify_name_change',
+    'group_tip',
     'group_greeting',
     'group_stellar',
     'group_refresh',
