@@ -53,8 +53,8 @@ class GroupTipController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('choose-currency'),
-                            'text' =>'Currency',
+                            'callback_data' => self::createRoute('choose-wallet'),
+                            'text' =>'Wallets',
                         ],
                     ],
                     [
@@ -80,55 +80,58 @@ class GroupTipController extends Controller
         $this->getState()->setName(self::createRoute('set-amount', [
             'chatId' => $chatId,
             'toUserId' => $toUserId,
-            'code' =>$code,
+            'code' => $code,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
             if ((float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = (float)$this->getUpdate()->getMessage()->getText();
                 $amount = number_format($amount, 2, '.', '');
+                $amount = $amount < 0.01 ? 0 : $amount;
 
-                $this->getState()->setName(json_encode([
-                    'chatId' => $chatId,
-                    'toUserId' => $toUserId,
-                    'code' => $code,
-                    'amount' => $amount,
-                ]));
+                if ($amount > 0) {
+                    $this->getState()->setName(json_encode([
+                        'chatId' => $chatId,
+                        'toUserId' => $toUserId,
+                        'code' => $code,
+                        'amount' => $amount,
+                    ]));
 
-                $fromUser = $this->getTelegramUser();
-                $toUser = User::findOne($toUserId);
+                    $fromUser = $this->getTelegramUser();
+                    $toUser = User::findOne($toUserId);
 
-                return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('confirm-transaction', [
-                            'fromUser' => $fromUser,
-                            'toUser' => $toUser,
-                            'amount' => $amount,
-                            'code' => $code,
-                        ]),
-                        [
+                    return $this->getResponseBuilder()
+                        ->editMessageTextOrSendMessage(
+                            $this->render('confirm-transaction', [
+                                'fromUser' => $fromUser,
+                                'toUser' => $toUser,
+                                'amount' => $amount,
+                                'code' => $code,
+                            ]),
                             [
                                 [
-                                    'callback_data' => self::createRoute('confirm-transaction'),
-                                    'text' => 'Confirm',
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute('view', [
-                                        'chatId' => $chatId,
-                                        'toUserId' => $toUserId,
-                                    ]),
-                                    'text' => Emoji::DELETE,
+                                    [
+                                        'callback_data' => self::createRoute('confirm-transaction'),
+                                        'text' => 'Confirm',
+                                    ],
                                 ],
                                 [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => Emoji::MENU,
+                                    [
+                                        'callback_data' => self::createRoute('view', [
+                                            'chatId' => $chatId,
+                                            'toUserId' => $toUserId,
+                                        ]),
+                                        'text' => Emoji::DELETE,
+                                    ],
+                                    [
+                                        'callback_data' => MenuController::createRoute(),
+                                        'text' => Emoji::MENU,
+                                    ],
                                 ],
-                            ],
-                        ]
-                    )
-                    ->build();
+                            ]
+                        )
+                        ->build();
+                }
             }
         }
 
@@ -155,49 +158,45 @@ class GroupTipController extends Controller
     }
 
     /**
-     * @param string|null $code Currency->code
+     * @param int|null $currencyId Currency->id
      * @param int $page
      *
      * @return array
      */
-    public function actionChooseCurrency($code = null, $page = 1)
+    public function actionChooseWallet($currencyId = null, $page = 1)
     {
         $state = json_decode($this->getState()->getName());
         $fromUser = $this->getTelegramUser();
         $toUser = User::findOne($state->toUserId);
 
-        if ($code) {
-            $currency = Currency::findOne([
-                'code' => $code,
+        if ($currencyId) {
+            $fromUserWallet = Wallet::findOne([
+                'currency_id' => $currencyId,
+                'user_id' => $fromUser->getUserId(),
             ]);
 
-            if ($currency) {
-                $fromUserWallet = Wallet::findOne([
-                    'currency_id' => $currency->id,
-                    'user_id' => $fromUser->getUserId(),
-                ]);
+            $toUserWallet = Wallet::findOne([
+                'currency_id' => $currencyId,
+                'user_id' => $toUser->getUserId(),
+            ]);
 
-                $toUserWallet = Wallet::findOne([
-                    'currency_id' => $currency->id,
-                    'user_id' => $toUser->getUserId(),
-                ]);
+            $currency = Currency::findOne([
+                'id' => $currencyId,
+            ]);
 
-                if (!$fromUserWallet || !$toUserWallet) {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery()
-                        ->build();
-                }
-
-                return $this->actionSetAmount($state->chatId, $state->toUserId, $code);
+            if (!$fromUserWallet || !$toUserWallet || !$currency) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
             }
+
+            return $this->actionSetAmount($state->chatId, $state->toUserId, $currency->code);
         }
 
-        $query = Currency::find()
-            ->joinWith('wallets')
+        $query = Wallet::find()
+            ->where(['user_id' => $fromUser->getUserId()])
             ->andWhere(['>', Wallet::tableName() . '.amount', 0])
-            ->orderBy([
-                'code' => SORT_ASC,
-            ]);
+            ->orderByCurrencyCode();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
@@ -209,24 +208,24 @@ class GroupTipController extends Controller
             'validatePage' => true,
         ]);
 
-        $currencies = $query->offset($pagination->offset)
+        $wallets = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
         $buttons = [];
 
-        if ($currencies) {
-            foreach ($currencies as $currency) {
+        if ($wallets) {
+            foreach ($wallets as $wallet) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('choose-currency', [
-                        'code' => $currency->code,
+                    'callback_data' => self::createRoute('choose-wallet', [
+                        'currencyId' => $wallet->getCurrencyId(),
                     ]),
-                    'text' => $currency->code . ' - ' . $currency->name,
+                    'text' => $wallet->amount . ' ' . $wallet->currency->code,
                 ];
             }
 
             $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-                return self::createRoute('choose-currency', [
+                return self::createRoute('choose-wallet', [
                     'page' => $page,
                 ]);
             });
@@ -248,7 +247,7 @@ class GroupTipController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('choose-currency'),
+                $this->render('choose-wallet'),
                 $buttons
             )
             ->build();
@@ -280,24 +279,7 @@ class GroupTipController extends Controller
 
             if (($fromUserWallet->amount - $state->amount - WalletTransaction::TRANSACTION_FEE) < 0) {
                 return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('warning-confirm-transaction'),
-                        [
-                            [
-                                [
-                                    'callback_data' => self::createRoute('view', [
-                                        'chatId' => $state->chatId,
-                                        'toUserId' => $state->toUserId,
-                                    ]),
-                                    'text' => Emoji::BACK,
-                                ],
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => Emoji::MENU,
-                                ],
-                            ],
-                        ]
-                    )
+                    ->answerCallbackQuery()
                     ->build();
             }
 
