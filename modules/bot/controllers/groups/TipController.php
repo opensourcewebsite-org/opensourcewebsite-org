@@ -6,6 +6,7 @@ use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\controllers\privates\GroupTipController;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatTipMessage;
 use app\modules\bot\models\User;
 use Yii;
 
@@ -65,7 +66,8 @@ class TipController extends Controller
         $toUser = $walletTransaction->toUser->botUser;
         $currency = $walletTransaction->currency;
 
-        return $this->getResponseBuilder()
+        // send message
+        $response = $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('show-tip-message', [
                     'fromUsername' => $fromUser->getUsername(),
@@ -89,6 +91,24 @@ class TipController extends Controller
                     'disableNotification' => true,
                 ]
             )
+            ->send();
+
+        if ($response) {
+            // create new record
+            $newTipTransaction = new ChatTipMessage([
+                'chat_id' => $chatId,
+                'from_user_id' => $walletTransaction->from_user_id,
+                'to_user_id' => $walletTransaction->to_user_id,
+                'currency_id' => $walletTransaction->currency_id,
+                'amount' => $walletTransaction->amount,
+                'message_id' => $response->getMessageId(),
+            ]);
+
+            $newTipTransaction->save();
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
             ->build();
     }
 
@@ -116,6 +136,7 @@ class TipController extends Controller
                             'callback_data' => GroupTipController::createRoute('view', [
                                 'chatId' => $chatId,
                                 'toUserId' => $toUserId,
+                                'messageId' => $this->getUpdate()->getRequestMessage()->getMessageId(),
                             ]),
                             'text' => Yii::t('bot', 'Tip'),
                         ],
@@ -125,5 +146,78 @@ class TipController extends Controller
         }
 
         return [];
+    }
+
+    /**
+     * @param int $chatId Chat->id
+     * @param WalletTransaction $walletTransaction
+     * @param int $messageId Message->id
+     *
+     * @return array
+     */
+    public function actionUpdateTipMessage($chatId, $walletTransaction, $messageId) {
+        $fromUser = $walletTransaction->fromUser->botUser;
+        $toUser = $walletTransaction->toUser->botUser;
+        $currency = $walletTransaction->currency;
+
+        $existingTipMessage = ChatTipMessage::findOne([
+            'message_id' => $messageId,
+            'from_user_id' => $fromUser->getUserId(),
+            'currency_id' => $walletTransaction->currency_id,
+        ]);
+
+        // check if user has already tipped with chosen currency
+        if (!isset($existingTipMessage)) {
+            // create new record
+            $newTipMessage = new ChatTipMessage([
+                'chat_id' => $chatId,
+                'from_user_id' => $walletTransaction->from_user_id,
+                'to_user_id' => $walletTransaction->to_user_id,
+                'currency_id' => $walletTransaction->currency_id,
+                'amount' => $walletTransaction->amount,
+                'message_id' => $messageId,
+            ]);
+
+            $newTipMessage->save();
+        } else {
+            // increase amount
+            $existingTipMessage->amount += $walletTransaction->amount;
+            $existingTipMessage->save();
+        }
+
+        $tipMessages = ChatTipMessage::find()
+            ->where(['message_id' => $messageId])
+            ->all();
+
+        // edit message
+        $this->getResponseBuilder()
+            ->editMessage(
+                $messageId,
+                $this->render('update-tip-message', [
+                    'tipTransactions' => $tipMessages,
+                    'toUser' => $toUser,
+                    'code' => $currency->code,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('retry-tip', [
+                                'chatId' => $chatId,
+                                'toUserId' => $walletTransaction->getToUserId(),
+                            ]),
+                            'text' => Yii::t('bot', 'Tip'),
+                        ],
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
+                    'disableNotification' => true,
+                ]
+            )
+            ->build();
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 }

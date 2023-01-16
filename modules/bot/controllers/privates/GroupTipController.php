@@ -24,10 +24,11 @@ class GroupTipController extends Controller
     /**
      * @param int $chatId Chat->id
      * @param int $toUserId User->id
+     * @param int $messageId Message->id
      *
      * @return array
      */
-    public function actionView($chatId = null, $toUserId = null)
+    public function actionView($chatId = null, $toUserId = null, $messageId = null)
     {
         $fromUser = $this->getTelegramUser();
         $chat = Chat::findOne($chatId);
@@ -42,6 +43,7 @@ class GroupTipController extends Controller
         $this->getState()->setName(json_encode([
             'chatId' => $chatId,
             'toUserId' => $toUserId,
+            'messageId' => $messageId,
         ]));
 
         return $this->getResponseBuilder()
@@ -72,15 +74,17 @@ class GroupTipController extends Controller
      * @param int $chatId Chat->id
      * @param int $toUserId User->id
      * @param string $code Currency->code
+     * @param int $messageId Message->id
      *
      * @return array
      */
-    public function actionSetAmount($chatId = null, $toUserId = null, $code = null)
+    public function actionSetAmount($chatId = null, $toUserId = null, $code = null, $messageId = null)
     {
         $this->getState()->setName(self::createRoute('set-amount', [
             'chatId' => $chatId,
             'toUserId' => $toUserId,
             'code' => $code,
+            'messageId' => $messageId,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -95,6 +99,7 @@ class GroupTipController extends Controller
                         'toUserId' => $toUserId,
                         'code' => $code,
                         'amount' => $amount,
+                        'messageId' => $messageId,
                     ]));
 
                     $fromUser = $this->getTelegramUser();
@@ -144,6 +149,7 @@ class GroupTipController extends Controller
                             'callback_data' => self::createRoute('view', [
                                 'chatId' => $chatId,
                                 'toUserId' => $toUserId,
+                                'messageId' => $messageId,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -190,7 +196,7 @@ class GroupTipController extends Controller
                     ->build();
             }
 
-            return $this->actionSetAmount($state->chatId, $state->toUserId, $currency->code);
+            return $this->actionSetAmount($state->chatId, $state->toUserId, $currency->code, $state->messageId);
         }
 
         $query = Wallet::find()
@@ -240,6 +246,7 @@ class GroupTipController extends Controller
                 'callback_data' => self::createRoute('view', [
                     'chatId' => $state->chatId,
                     'toUserId' => $state->toUserId,
+                    'messageId' => $state->messageId,
                 ]),
                 'text' => Emoji::DELETE,
             ],
@@ -308,10 +315,18 @@ class GroupTipController extends Controller
                 $thisChat = $this->getTelegramChat();
                 $module = Yii::$app->getModule('bot');
                 $module->setChat(Chat::findOne($state->chatId));
-                $response = $module->runAction('tip/show-tip-message', [
-                    'chatId' => $state->chatId,
-                    'walletTransaction' => $walletTransaction,
-                ]);
+                if (isset($state->messageId)) {
+                    $response = $module->runAction('tip/update-tip-message', [
+                        'chatId' => $state->chatId,
+                        'walletTransaction' => $walletTransaction,
+                        'messageId' => $state->messageId,
+                    ]);
+                } else {
+                    $response = $module->runAction('tip/show-tip-message', [
+                        'chatId' => $state->chatId,
+                        'walletTransaction' => $walletTransaction,
+                    ]);
+                }
 
                 $module->setChat($thisChat);
 
