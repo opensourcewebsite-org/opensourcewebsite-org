@@ -363,7 +363,8 @@ class WalletController extends Controller
             ])
             ->one();
 
-        if (!isset($toUser)) {
+        // check if user exists or user is bot
+        if (!isset($toUser) || $toUser->isBot()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

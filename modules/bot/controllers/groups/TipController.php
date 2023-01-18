@@ -30,9 +30,9 @@ class TipController extends Controller
                 'provider_user_id' => $replyMessage->getFrom()->getId(),
             ]);
 
-            // check if sender is a chat member
+            // check if $fromUser is a chat member and $toUser is not a bot
             $fromChatMember = $chat->getChatMemberByUser($fromUser);
-            if (isset($toUser) && isset($fromChatMember)) {
+            if (isset($toUser) && isset($fromChatMember) && !$toUser->isBot()) {
                 $fromUser->sendMessage(
                     $this->render('/privates/tip', [
                         'chat' => $chat,
