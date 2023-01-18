@@ -30,9 +30,9 @@ class TipController extends Controller
                 'provider_user_id' => $replyMessage->getFrom()->getId(),
             ]);
 
-            // check if $fromUser is a chat member and $toUser is not a bot
+            // check if $fromUser is a chat member && $toUser is not a bot && $fromUser is not tipping himself
             $fromChatMember = $chat->getChatMemberByUser($fromUser);
-            if (isset($toUser) && isset($fromChatMember) && !$toUser->isBot()) {
+            if (isset($toUser) && isset($fromChatMember) && !$toUser->isBot() && ($toUser->getUserId()) != $fromUser->getUserId()) {
                 $fromUser->sendMessage(
                     $this->render('/privates/tip', [
                         'chat' => $chat,
@@ -62,7 +62,6 @@ class TipController extends Controller
      * @return array
      */
     public function actionShowTipMessage($chatId, $walletTransaction) {
-        $fromUser = $walletTransaction->fromUser->botUser;
         $toUser = $walletTransaction->toUser->botUser;
         $currency = $walletTransaction->currency;
 
@@ -70,8 +69,7 @@ class TipController extends Controller
         $response = $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('show-tip-message', [
-                    'fromUsername' => $fromUser->getUsername(),
-                    'toUsername' => $toUser->getUsername(),
+                    'toUser' => $toUser,
                     'amount' => $walletTransaction->getAmount(),
                     'code' => $currency->code,
                 ]),
@@ -97,10 +95,7 @@ class TipController extends Controller
             // create new record
             $newTipTransaction = new ChatTipMessage([
                 'chat_id' => $chatId,
-                'from_user_id' => $walletTransaction->from_user_id,
-                'to_user_id' => $walletTransaction->to_user_id,
-                'currency_id' => $walletTransaction->currency_id,
-                'amount' => $walletTransaction->amount,
+                'transaction_id' => $walletTransaction->id,
                 'message_id' => $response->getMessageId(),
             ]);
 
@@ -123,9 +118,9 @@ class TipController extends Controller
         $chat = Chat::findOne($chatId);
         $toUser = User::findOne($toUserId);
 
-        // check if sender is a chat member
+        // check if $fromUser is a chat member && $fromUser is not tipping himself
         $fromChatMember = $chat->getChatMemberByUser($fromUser);
-        if (isset($toUser) && isset($fromChatMember)) {
+        if (isset($toUser) && isset($fromChatMember) && ($toUser->getUserId()) != $fromUser->getUserId()) {
             $fromUser->sendMessage(
                 $this->render('/privates/tip', [
                     'chat' => $chat,
@@ -156,47 +151,40 @@ class TipController extends Controller
      * @return array
      */
     public function actionUpdateTipMessage($chatId, $walletTransaction, $messageId) {
-        $fromUser = $walletTransaction->fromUser->botUser;
         $toUser = $walletTransaction->toUser->botUser;
-        $currency = $walletTransaction->currency;
 
-        $existingTipMessage = ChatTipMessage::findOne([
+        // create new record
+        $newTipMessage = new ChatTipMessage([
+            'chat_id' => $chatId,
+            'transaction_id' => $walletTransaction->id,
             'message_id' => $messageId,
-            'from_user_id' => $fromUser->getUserId(),
-            'currency_id' => $walletTransaction->currency_id,
         ]);
 
-        // check if user has already tipped with chosen currency
-        if (!isset($existingTipMessage)) {
-            // create new record
-            $newTipMessage = new ChatTipMessage([
-                'chat_id' => $chatId,
-                'from_user_id' => $walletTransaction->from_user_id,
-                'to_user_id' => $walletTransaction->to_user_id,
-                'currency_id' => $walletTransaction->currency_id,
-                'amount' => $walletTransaction->amount,
-                'message_id' => $messageId,
-            ]);
+        $newTipMessage->save();
 
-            $newTipMessage->save();
-        } else {
-            // increase amount
-            $existingTipMessage->amount += $walletTransaction->amount;
-            $existingTipMessage->save();
-        }
-
-        $tipMessages = ChatTipMessage::find()
-            ->where(['message_id' => $messageId])
+        // find all transactions for message
+        $transactions = WalletTransaction::find()
+            ->joinWith('chatTipMessage')
+            ->where([ChatTipMessage::tableName() . '.message_id' => $messageId])
             ->all();
 
+        // calculate amount according to currency
+        $totalAmounts = [];
+        foreach ($transactions as $transaction) {
+            if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
+                $totalAmounts[$transaction->currency->code] = $transaction->amount;
+            } else {
+                $totalAmounts[$transaction->currency->code] += $transaction->amount;
+            }
+        }
+
         // edit message
-        $this->getResponseBuilder()
+        return $this->getResponseBuilder()
             ->editMessage(
                 $messageId,
                 $this->render('update-tip-message', [
-                    'tipTransactions' => $tipMessages,
+                    'totalAmounts' => $totalAmounts,
                     'toUser' => $toUser,
-                    'code' => $currency->code,
                 ]),
                 [
                     [
@@ -214,10 +202,6 @@ class TipController extends Controller
                     'disableNotification' => true,
                 ]
             )
-            ->build();
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
             ->build();
     }
 }

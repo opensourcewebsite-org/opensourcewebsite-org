@@ -1,2 +1,2 @@
-@<?= $toUsername ?> <?= Yii::t('bot', 'was tipped') ?>:<br/>
-<?= Yii::t('bot', 'by') ?> @<?= $fromUsername ?> (<?= $amount ?> <?= $code ?> )
+@<?= $toUser->getUsername() ?> <?= Yii::t('bot', 'was tipped') ?>:<br/>
+<?= $amount ?> <?= $code ?>
