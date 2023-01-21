@@ -64,6 +64,13 @@ class PremiumMembersController extends Controller
 
                 if ($paginationButtons) {
                     $buttons[] = $paginationButtons;
+                } else {
+                    $buttons[] = [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ];
                 }
             }
 
