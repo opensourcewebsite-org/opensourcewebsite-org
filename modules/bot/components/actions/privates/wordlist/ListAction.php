@@ -95,6 +95,13 @@ class ListAction extends BaseAction
                 'text' => Emoji::BACK,
             ],
             [
+                'callback_data' => $this->createRoute($this->viewListActionId, [
+                    'chatId' => $chatId,
+                ]),
+                'text' => Emoji::LIST,
+                'visible' => !empty($phrases),
+            ],
+            [
                 'callback_data' => $this->createRoute($this->enterActionId, [
                     'chatId' => $chatId,
                 ]),
