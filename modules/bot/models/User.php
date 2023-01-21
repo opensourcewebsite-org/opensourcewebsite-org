@@ -413,12 +413,25 @@ class User extends ActiveRecord
         array $optionalParams = []
     ) {
         if (!$this->provider_user_blocked && $this->chat) {
-            $replyMarkup[] = [
-                [
-                    'callback_data' => DeleteMessageController::createRoute(),
-                    'text' => 'OK',
-                ],
-            ];
+            // check if replyMarkup is empty
+            if (empty($replyMarkup)) {
+                $replyMarkup[] = [
+                    [
+                        'callback_data' => DeleteMessageController::createRoute(),
+                        'text' => 'OK',
+                    ],
+                ];
+            } else if ($cancel = end($replyMarkup)) {
+                // check if replyMarkup contain delete message button
+                if ($cancel[0]['callback_data'] != DeleteMessageController::createRoute()) {
+                    $replyMarkup[] = [
+                        [
+                            'callback_data' => DeleteMessageController::createRoute(),
+                            'text' => 'OK',
+                        ],
+                    ];
+                }
+            }
 
             return $this->getResponseBuilder()
                 ->setChatId($this->chat->getChatId())

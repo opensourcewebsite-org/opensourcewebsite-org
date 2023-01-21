@@ -2,8 +2,7 @@
 
 namespace app\models;
 
-use app\modules\bot\models\ChatTipMessage;
-use Yii;
+use app\modules\bot\models\ChatTipWalletTransaction;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -86,9 +85,9 @@ class WalletTransaction extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'to_user_id']);
     }
 
-    public function getChatTipMessage(): ActiveQuery
+    public function getChatTipWalletTransaction(): ActiveQuery
     {
-        return $this->hasOne(ChatTipMessage::class, ['transaction_id' => 'id']);
+        return $this->hasOne(ChatTipWalletTransaction::class, ['transaction_id' => 'id']);
     }
 
     public function getAmount()
