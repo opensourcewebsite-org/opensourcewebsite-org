@@ -60,7 +60,6 @@ class SendGroupTipController extends Controller
     public function actionChooseWallet($currencyId = null, $page = 1)
     {
         $state = json_decode($this->getState()->getName());
-        $fromUser = $this->getTelegramUser();
 
         if ($currencyId) {
             $currency = Currency::findOne([
@@ -279,11 +278,25 @@ class SendGroupTipController extends Controller
                 $module = Yii::$app->getModule('bot');
                 $module->setChat(Chat::findOne($state->chatId));
                 if (isset($state->messageId)) {
+                    // find ChatTip record
+                    $chatTip = ChatTip::findOne(['message_id' => $state->messageId]);
+                    if (!isset($chatTip)) {
+                        return $this->getResponseBuilder()
+                            ->answerCallbackQuery()
+                            ->build();
+                    }
+
+                    // create new ChatTipWalletTransaction record
+                    $newChatTipWalletTransaction = new ChatTipWalletTransaction([
+                        'chat_tip_id' => $chatTip->id,
+                        'transaction_id' => $walletTransaction->id,
+                    ]);
+
+                    $newChatTipWalletTransaction->save();
+
                     // update tip message
                     $response = $module->runAction('tip/update-tip-message', [
-                        'chatId' => $state->chatId,
-                        'walletTransaction' => $walletTransaction,
-                        'messageId' => $state->messageId,
+                        'newChatTipWalletTransactionId' => $newChatTipWalletTransaction->id,
                     ]);
                 } else {
                     $tipTransaction = ActiveRecord::getDb()->beginTransaction();

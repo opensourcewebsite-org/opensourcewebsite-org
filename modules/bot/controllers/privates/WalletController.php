@@ -8,11 +8,11 @@ use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
-use function Functional\id;
 
 /**
  * Class WalletController
@@ -371,15 +371,15 @@ class WalletController extends Controller
     }
 
     /**
-     * @param int $to_user_id
+     * @param int $toUserId User->id
      * @param int $id Currency->id
      *
      * @return array
      */
-    public function actionInputAmount($to_user_id = null, $id = null)
+    public function actionInputAmount($toUserId = null, $id = null)
     {
         $this->getState()->setName(self::createRoute('input-amount', [
-            'to_user_id' => $to_user_id,
+            'toUserId' => $toUserId,
             'id' => $id,
         ]));
 
@@ -401,7 +401,7 @@ class WalletController extends Controller
         }
 
         $fromUser = $this->getTelegramUser();
-        $toUser = User::findOne(['id' => $to_user_id]);
+        $toUser = User::findOne(['id' => $toUserId]);
         $currency = Currency::findOne(['id' => $id]);
 
         return $this->getResponseBuilder()
@@ -409,7 +409,6 @@ class WalletController extends Controller
                 $this->render('confirm-transaction', [
                     'amount' => $amount,
                     'fee' => WalletTransaction::TRANSACTION_FEE,
-                    'fromUser' => $fromUser,
                     'toUser' => $toUser,
                     'currency' => $currency,
 
@@ -419,7 +418,7 @@ class WalletController extends Controller
                         [
                             'callback_data' => self::createRoute('confirm-transaction', [
                                 'id' => $id,
-                                'to_user_id' => $to_user_id,
+                                'toUserId' => $toUserId,
                                 'amount' => $amount,
                             ]),
                             'text' => 'Confirm',
@@ -445,15 +444,15 @@ class WalletController extends Controller
 
     /**
      * @param int $id Currency->id
-     * @param int $to_user_id
+     * @param int $toUserId User->id
      * @param int $amount
      *
      * @return array
      */
-    public function actionConfirmTransaction($id = null, $to_user_id = null, $amount = null)
+    public function actionConfirmTransaction($id = null, $toUserId = null, $amount = null)
     {
         $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($id);
-        $toUser = User::findOne(['id' => $to_user_id]);
+        $toUser = User::findOne(['id' => $toUserId]);
         $toUserWallet = $toUser->getWalletByCurrencyId($id);
 
         $transaction = ActiveRecord::getDb()->beginTransaction();
@@ -461,7 +460,7 @@ class WalletController extends Controller
             $walletTransaction = new WalletTransaction();
             $walletTransaction->currency_id = $id;
             $walletTransaction->from_user_id = $this->globalUser->id;
-            $walletTransaction->to_user_id = $to_user_id;
+            $walletTransaction->to_user_id = $toUserId;
             $walletTransaction->amount = $amount + WalletTransaction::TRANSACTION_FEE;
             $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
             $walletTransaction->type = 0;
@@ -517,14 +516,14 @@ class WalletController extends Controller
 
         $buttons = [];
 
-        $transactions = $query->offset($pagination->offset)
+        $walletTransactions = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
-        $currency = $wallet->getCurrency()->one();
+        $currency = $wallet->currency;
 
-        if ($transactions) {
-            foreach ($transactions as $transaction) {
+        if ($walletTransactions) {
+            foreach ($walletTransactions as $transaction) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('transaction', [
                         'id' => $transaction->getId(),
@@ -573,9 +572,9 @@ class WalletController extends Controller
      */
     public function actionTransaction($id = null)
     {
-        $transaction = WalletTransaction::findOne($id);
+        $walletTransaction = WalletTransaction::findOne($id);
 
-        if (!isset($transaction)) {
+        if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -583,24 +582,14 @@ class WalletController extends Controller
 
         $this->getState()->setName(null);
 
-        $fromUser = User::find()
-            ->where([
-                'id' => $transaction->getFromUserId(),
-            ])
-            ->one();
-
-        $toUser = User::find()
-            ->where([
-                'id' => $transaction->getToUserId(),
-            ])
-            ->one();
-
-        $currency = $transaction->getCurrency()->one();
+        $fromUser = $walletTransaction->fromUser->botUser;
+        $toUser = $walletTransaction->toUser->botUser;
+        $currency = $walletTransaction->currency;
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('transaction', [
-                    'transaction' => $transaction,
+                    'walletTransaction' => $walletTransaction,
                     'fromUser' => $fromUser,
                     'toUser' => $toUser,
                     'currency' => $currency,
@@ -609,7 +598,7 @@ class WalletController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('transactions', [
-                                'id' => $transaction->getCurrencyId(),
+                                'id' => $walletTransaction->getCurrencyId(),
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -617,15 +606,37 @@ class WalletController extends Controller
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
-                        [
-                            'callback_data' => self::createRoute('delete-transaction', [
-                                'id' => $id,
-                            ]),
-                            'text' => Emoji::DELETE,
-                        ],
                     ],
                 ]
             )
+            ->build();
+    }
+
+    /**
+     * @param int $walletTransactionId WalletTransaction->id
+     *
+     * @return array
+     */
+    public function actionDeleteTransaction($walletTransactionId = null)
+    {
+        $walletTransaction = WalletTransaction::findOne(['id' => $walletTransactionId]);
+        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['transaction_id' => $walletTransactionId]);
+
+        if ($walletTransaction && $chatTipWalletTransaction) {
+            $transaction = ActiveRecord::getDb()->beginTransaction();
+            try {
+                $chatTipWalletTransaction->delete();
+                $walletTransaction->delete();
+                $transaction->commit();
+                return $this->actionTransactions($walletTransaction->currency_id);
+            } catch (\Throwable $e) {
+                $transaction->rollBack();
+                Yii::error($e->getMessage());
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
             ->build();
     }
 }

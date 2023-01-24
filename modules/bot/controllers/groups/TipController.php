@@ -140,38 +140,22 @@ class TipController extends Controller
     }
 
     /**
-     * @param int $chatId Chat->id
-     * @param WalletTransaction $walletTransaction
-     * @param int $messageId Message->id
+     * @param int $newChatTipWalletTransactionId Chat->id
      *
      * @return array
      */
-    public function actionUpdateTipMessage($chatId, $walletTransaction, $messageId)
+    public function actionUpdateTipMessage($newChatTipWalletTransactionId)
     {
-        $toUser = $walletTransaction->toUser->botUser;
-
-        // find ChatTip record
-        $chatTip = ChatTip::findOne(['message_id' => $messageId]);
-        if (!isset($chatTip)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        // create new ChatTipWalletTransaction record
-        $newChatTipWalletTransaction = new ChatTipWalletTransaction([
-            'chat_tip_id' => $chatTip->id,
-            'transaction_id' => $walletTransaction->id,
-        ]);
-
-        $newChatTipWalletTransaction->save();
+        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['id' => $newChatTipWalletTransactionId]);
+        $chatTip = $chatTipWalletTransaction->chatTip;
+        $toUser = $chatTipWalletTransaction->walletTransaction->toUser->botUser;
 
         // find all transactions for tip message
-        $transactions = $newChatTipWalletTransaction->getWalletTransactionsByChatTipId($chatTip->id);
+        $walletTransactions = $chatTipWalletTransaction->getWalletTransactionsByChatTipId($chatTip->id);
 
         // calculate amount according to currency
         $totalAmounts = [];
-        foreach ($transactions as $transaction) {
+        foreach ($walletTransactions as $transaction) {
             if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
                 $totalAmounts[$transaction->currency->code] = $transaction->amount;
             } else {
@@ -182,7 +166,7 @@ class TipController extends Controller
         // edit message
         return $this->getResponseBuilder()
             ->editMessage(
-                $messageId,
+                $chatTip->message_id,
                 $this->render('update-tip-message', [
                     'totalAmounts' => $totalAmounts,
                     'toUser' => $toUser,
@@ -191,8 +175,8 @@ class TipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatId,
-                                'toUserId' => $walletTransaction->getToUserId(),
+                                'chatId' => $chatTip->chat_id,
+                                'toUserId' => $chatTipWalletTransaction->walletTransaction->getToUserId(),
                             ]),
                             'text' => Yii::t('bot', 'Tip'),
                         ],
