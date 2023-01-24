@@ -144,7 +144,7 @@ class Message extends \TelegramBot\Api\Types\Message
      */
     public function isReply()
     {
-        return (bool)$this->getReplyToMessage();
+        return ($this->getReplyToMessage() && !$this->getReplyToMessage()->getForumTopicCreated());
     }
 
     /**

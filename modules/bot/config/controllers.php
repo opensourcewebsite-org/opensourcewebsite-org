@@ -59,4 +59,5 @@ return [
     'channel_delete',
     'public_group_refresh',
     'public_channel_refresh',
+    'group_tip',
 ];
