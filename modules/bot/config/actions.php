@@ -79,4 +79,11 @@ return [
     'set_member_messages_now',
     'delete_member_messages_now',
     'confirm',
+    'word_view_list',
+    'word_select',
+    'word_enter',
+    'word_insert',
+    'word_update',
+    'word_change',
+    'word_delete',
 ];
