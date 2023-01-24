@@ -3,23 +3,24 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\models\Currency;
-use app\models\Wallet;
 use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatTip;
+use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
 
 /**
- * Class GroupTipController
+ * Class SendGroupTipController
  *
  * @package app\modules\bot\controllers\privates
  */
-class GroupTipController extends Controller
+class SendGroupTipController extends Controller
 {
     /**
      * @param int $chatId Chat->id
@@ -29,7 +30,7 @@ class GroupTipController extends Controller
      *
      * @return array
      */
-    public function actionView($chatId = null, $toUserId = null, $replyMessageId = null, $messageId = null)
+    public function actionIndex($chatId = null, $toUserId = null, $replyMessageId = null, $messageId = null)
     {
         $chat = Chat::findOne($chatId);
         $toUser = User::findOne($toUserId);
@@ -60,24 +61,13 @@ class GroupTipController extends Controller
     {
         $state = json_decode($this->getState()->getName());
         $fromUser = $this->getTelegramUser();
-        $toUser = User::findOne($state->toUserId);
 
         if ($currencyId) {
-            $fromUserWallet = Wallet::findOne([
-                'currency_id' => $currencyId,
-                'user_id' => $fromUser->getUserId(),
-            ]);
-
-            $toUserWallet = Wallet::findOne([
-                'currency_id' => $currencyId,
-                'user_id' => $toUser->getUserId(),
-            ]);
-
             $currency = Currency::findOne([
                 'id' => $currencyId,
             ]);
 
-            if (!$fromUserWallet || !$toUserWallet || !$currency) {
+            if (!isset($currency)) {
                 return $this->getResponseBuilder()
                     ->answerCallbackQuery()
                     ->build();
@@ -86,10 +76,7 @@ class GroupTipController extends Controller
             return $this->actionSetAmount($state->chatId, $state->toUserId, $currency->code, $state->replyMessageId, $state->messageId);
         }
 
-        $query = Wallet::find()
-            ->where(['user_id' => $fromUser->getUserId()])
-            ->andWhere(['>', Wallet::tableName() . '.amount', 0])
-            ->orderByCurrencyCode();
+        $query = $this->getTelegramUser()->getWalletWithPositiveBalance();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
@@ -166,62 +153,61 @@ class GroupTipController extends Controller
             'code' => $code,
         ]);
 
-        $fromUserWallet = Wallet::findOne([
-            'currency_id' => $currency->id,
-            'user_id' => $this->getTelegramUser()->getUserId(),
-        ]);
+        if ($currency) {
+            $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($currency->id);
 
-        if ($this->getUpdate()->getMessage()) {
-            if ((float)$this->getUpdate()->getMessage()->getText()) {
-                $amount = (float)$this->getUpdate()->getMessage()->getText();
-                $amount = number_format($amount, 2, '.', '');
-                $amount = $amount < 0.01 ? 0 : $amount;
+            if ($this->getUpdate()->getMessage()) {
+                if ((float)$this->getUpdate()->getMessage()->getText()) {
+                    $amount = (float)$this->getUpdate()->getMessage()->getText();
+                    $amount = number_format($amount, 2, '.', '');
+                    $amount = $amount < 0.01 ? 0 : $amount;
 
-                if ($amount > 0) {
-                    if (($fromUserWallet->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
+                    if ($amount > 0) {
+                        if (($fromUserWallet->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
+                            return $this->getResponseBuilder()
+                                ->answerCallbackQuery()
+                                ->build();
+                        }
+
+                        $this->getState()->setName(json_encode([
+                            'chatId' => $chatId,
+                            'toUserId' => $toUserId,
+                            'code' => $code,
+                            'amount' => $amount,
+                            'replyMessageId' => $replyMessageId,
+                            'messageId' => $messageId,
+                        ]));
+
+                        $toUser = User::findOne($toUserId);
+
                         return $this->getResponseBuilder()
-                            ->answerCallbackQuery()
+                            ->editMessageTextOrSendMessage(
+                                $this->render('confirm-transaction', [
+                                    'toUser' => $toUser,
+                                    'amount' => $amount,
+                                    'code' => $code,
+                                ]),
+                                [
+                                    [
+                                        [
+                                            'callback_data' => self::createRoute('confirm-transaction'),
+                                            'text' => 'Confirm',
+                                        ],
+                                    ],
+                                    [
+                                        [
+                                            'callback_data' => self::createRoute('choose-currency'),
+                                            'text' => Emoji::DELETE,
+                                        ],
+                                        [
+                                            'callback_data' => MenuController::createRoute(),
+                                            'text' => Emoji::MENU,
+                                        ],
+                                    ],
+                                ]
+                            )
                             ->build();
                     }
-
-                    $this->getState()->setName(json_encode([
-                        'chatId' => $chatId,
-                        'toUserId' => $toUserId,
-                        'code' => $code,
-                        'amount' => $amount,
-                        'replyMessageId' => $replyMessageId,
-                        'messageId' => $messageId,
-                    ]));
-
-                    $toUser = User::findOne($toUserId);
-
-                    return $this->getResponseBuilder()
-                        ->editMessageTextOrSendMessage(
-                            $this->render('confirm-transaction', [
-                                'toUser' => $toUser,
-                                'amount' => $amount,
-                                'code' => $code,
-                            ]),
-                            [
-                                [
-                                    [
-                                        'callback_data' => self::createRoute('confirm-transaction'),
-                                        'text' => 'Confirm',
-                                    ],
-                                ],
-                                [
-                                    [
-                                        'callback_data' => self::createRoute('choose-currency'),
-                                        'text' => Emoji::DELETE,
-                                    ],
-                                    [
-                                        'callback_data' => MenuController::createRoute(),
-                                        'text' => Emoji::MENU,
-                                    ],
-                                ],
-                            ]
-                        )
-                        ->build();
                 }
             }
         }
@@ -235,7 +221,7 @@ class GroupTipController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('view', [
+                            'callback_data' => self::createRoute('index', [
                                 'chatId' => $chatId,
                                 'toUserId' => $toUserId,
                                 'messageId' => $messageId,
@@ -258,7 +244,6 @@ class GroupTipController extends Controller
     public function actionConfirmTransaction()
     {
         $state = json_decode($this->getState()->getName());
-        $fromUser = $this->getTelegramUser();
         $toUser = User::findOne($state->toUserId);
 
         $currency = Currency::findOne([
@@ -266,15 +251,8 @@ class GroupTipController extends Controller
         ]);
 
         if ($currency) {
-            $fromUserWallet = Wallet::findOne([
-                'currency_id' => $currency->id,
-                'user_id' => $fromUser->getUserId(),
-            ]);
-
-            $toUserWallet = Wallet::findOne([
-                'currency_id' => $currency->id,
-                'user_id' => $toUser->getUserId(),
-            ]);
+            $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($currency->id);
+            $toUserWallet = $toUser->getWalletByCurrencyId($currency->id);
 
             $transaction = ActiveRecord::getDb()->beginTransaction();
             try {
@@ -308,12 +286,36 @@ class GroupTipController extends Controller
                         'messageId' => $state->messageId,
                     ]);
                 } else {
-                    // send tip message
-                    $response = $module->runAction('tip/show-tip-message', [
-                        'chatId' => $state->chatId,
-                        'walletTransaction' => $walletTransaction,
-                        'replyMessageId' => $state->replyMessageId,
-                    ]);
+                    $tipTransaction = ActiveRecord::getDb()->beginTransaction();
+                    try {
+                        // create new ChatTip record
+                        $newChatTip = new ChatTip([
+                            'chat_id' => $state->chatId,
+                            'message_id' => null,
+                        ]);
+
+                        $newChatTip->save();
+
+                        // create new ChatTipWalletTransaction record
+                        $newChatTipWalletTransaction = new ChatTipWalletTransaction([
+                            'chat_tip_id' => $newChatTip->id,
+                            'transaction_id' => $walletTransaction->id,
+                        ]);
+
+                        $newChatTipWalletTransaction->save();
+
+                        $tipTransaction->commit();
+
+                        // send tip message
+                        $response = $module->runAction('tip/show-tip-message', [
+                            'newChatTipWalletTransaction' => $newChatTipWalletTransaction,
+                            'replyMessageId' => $state->replyMessageId,
+                        ]);
+
+                    } catch (\Throwable $e) {
+                        $tipTransaction->rollBack();
+                        Yii::error($e->getMessage());
+                    }
                 }
 
                 $module->setChat($thisChat);

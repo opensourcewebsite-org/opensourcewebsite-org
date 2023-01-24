@@ -64,12 +64,25 @@ class ChatTipWalletTransaction extends ActiveRecord
     }
 
     /**
-     * Gets query for [[ChatPhrase]].
+     * Gets query for [[WalletTransaction]].
      *
      * @return ActiveQuery
      */
     public function getWalletTransaction()
     {
         return $this->hasOne(WalletTransaction::class, ['id' => 'transaction_id']);
+    }
+
+    /**
+     * @param int $chatTipId ChatTip->id
+     *
+     * @return ActiveRecord[]
+     */
+    public function getWalletTransactionsByChatTipId($chatTipId)
+    {
+        return WalletTransaction::find()
+            ->joinWith('chatTipWalletTransaction')
+            ->where([ChatTipWalletTransaction::tableName() . '.chat_tip_id' => $chatTipId])
+            ->all();
     }
 }

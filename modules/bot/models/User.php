@@ -7,14 +7,17 @@ namespace app\modules\bot\models;
 use app\models\Contact;
 use app\models\Language;
 use app\models\queries\ContactQuery;
+use app\models\queries\WalletQuery;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
 use app\models\Wallet;
+use app\models\WalletTransaction;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\models\queries\UserQuery;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -474,5 +477,40 @@ class User extends ActiveRecord
     {
         return $this->hasMany(Wallet::class, ['user_id' => 'id'])
             ->viaTable(GlobalUser::tableName(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @param int $currencyId Currency->id
+     *
+     * @return ActiveRecord
+     */
+    public function getWalletByCurrencyId($currencyId)
+    {
+        $wallet = Wallet::findOne([
+            'currency_id' => $currencyId,
+            'user_id' => $this->user_id,
+        ]);
+
+        if (!isset($wallet)) {
+            $wallet = new Wallet();
+            $wallet->currency_id = $currencyId;
+            $wallet->user_id = $this->user_id;
+            $wallet->save();
+        }
+
+        return $wallet;
+    }
+
+    /**
+     * @return WalletQuery
+     */
+    public function getWalletWithPositiveBalance()
+    {
+        $walletQuery = Wallet::find()
+            ->where(['user_id' => $this->user_id])
+            ->andWhere(['>', Wallet::tableName() . '.amount', 0])
+            ->orderByCurrencyCode();
+
+        return $walletQuery;
     }
 }

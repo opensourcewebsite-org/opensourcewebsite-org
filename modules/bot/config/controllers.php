@@ -34,7 +34,6 @@ return [
     'group_message_filter',
     'group_join_captcha',
     'group_notify_name_change',
-    'group_tip',
     'group_greeting',
     'group_stellar',
     'group_refresh',
@@ -60,4 +59,5 @@ return [
     'channel_delete',
     'public_group_refresh',
     'public_channel_refresh',
+    'group_tip',
 ];

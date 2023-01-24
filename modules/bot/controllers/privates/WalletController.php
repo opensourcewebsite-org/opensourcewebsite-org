@@ -12,6 +12,7 @@ use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
+use function Functional\id;
 
 /**
  * Class WalletController
@@ -357,26 +358,10 @@ class WalletController extends Controller
                 ->build();
         }
 
-        $toUser = User::find()
-            ->where([
-                'provider_user_name' => $username,
-            ])
-            ->one();
+        $toUser = User::findOne(['provider_user_name' => $username]);
 
         // check if user exists or user is bot
         if (!isset($toUser) || $toUser->isBot()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        // check if to_user user has wallet
-        $toUserWallet = Wallet::findOne([
-            'currency_id' => $id,
-            'user_id' => $toUser->getId(),
-        ]);
-
-        if (!$toUserWallet) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -404,26 +389,20 @@ class WalletController extends Controller
                 $amount = (float)$this->getUpdate()->getMessage()->getText();
                 $amount = number_format($amount, 2, '.', '');
                 $amount  = $amount < 0.01 ? 0 : $amount;
+
+                if ($amount > 0) {
+                    if (($this->getTelegramUser()->getWalletByCurrencyId($id)->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
+                        return $this->getResponseBuilder()
+                            ->answerCallbackQuery()
+                            ->build();
+                    }
+                }
             }
         }
 
-        $fromUser = User::find()
-            ->where([
-                'id' => $this->globalUser->id,
-            ])
-            ->one();
-
-        $toUser = User::find()
-            ->where([
-                'id' => $to_user_id,
-            ])
-            ->one();
-
-        $currency = Currency::find()
-            ->where([
-                'id' => $id,
-            ])
-            ->one();
+        $fromUser = $this->getTelegramUser();
+        $toUser = User::findOne(['id' => $to_user_id]);
+        $currency = Currency::findOne(['id' => $id]);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -473,21 +452,9 @@ class WalletController extends Controller
      */
     public function actionConfirmTransaction($id = null, $to_user_id = null, $amount = null)
     {
-        $fromUserWallet = Wallet::findOne([
-            'currency_id' => $id,
-            'user_id' => $this->globalUser->id,
-        ]);
-
-        $toUserWallet = Wallet::findOne([
-            'currency_id' => $id,
-            'user_id' => $to_user_id,
-        ]);
-
-        if (($fromUserWallet->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($id);
+        $toUser = User::findOne(['id' => $to_user_id]);
+        $toUserWallet = $toUser->getWalletByCurrencyId($id);
 
         $transaction = ActiveRecord::getDb()->beginTransaction();
         try {

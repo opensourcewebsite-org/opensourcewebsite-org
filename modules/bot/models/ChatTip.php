@@ -37,7 +37,7 @@ class ChatTip extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'message_id'], 'required'],
+            [['chat_id'], 'required'],
             [['chat_id', 'message_id', 'sent_at'], 'integer'],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
         ];
