@@ -7,14 +7,17 @@ namespace app\modules\bot\models;
 use app\models\Contact;
 use app\models\Language;
 use app\models\queries\ContactQuery;
+use app\models\queries\WalletQuery;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
 use app\models\Wallet;
+use app\models\WalletTransaction;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\models\queries\UserQuery;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -285,51 +288,6 @@ class User extends ActiveRecord
 
     public function updateInfo($updateUser)
     {
-        // check if user changed username
-        if ($updateUser->getUsername() != $this->getUsername()) {
-            $chats = $this->getGroups()
-                ->joinWith('settings')
-                ->andWhere([
-                    'and',
-                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
-                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                ])
-                ->all();
-
-            $module = Yii::$app->getModule('bot');
-
-            foreach ($chats as $chat) {
-                $module->setChat($chat);
-                $module->runAction('notify-name-change/username-change', [
-                    'chat' => $chat,
-                    'updateUser' => $updateUser,
-                    'oldUser' => $this,
-                ]);
-            }
-        }
-
-        if (($updateUser->getFirstName() != $this->provider_user_first_name) || ($updateUser->getLastName() != $this->provider_user_last_name)) {
-            $chats = $this->getGroups()
-                ->joinWith('settings')
-                ->andWhere([
-                    'and',
-                    [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
-                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                ])
-                ->all();
-
-            $module = Yii::$app->getModule('bot');
-
-            foreach ($chats as $chat) {
-                $module->setChat($chat);
-                $module->runAction('notify-name-change/name-change', [
-                    'chat' => $chat,
-                    'updateUser' => $updateUser,
-                    'oldUser' => $this,
-                ]);
-            }
-        }
-
         $this->setAttributes([
             'provider_user_name' => $updateUser->getUsername(),
             'provider_user_first_name' => $updateUser->getFirstName(),
@@ -339,6 +297,41 @@ class User extends ActiveRecord
             // TODO update if blocked after bot sent a message
             'provider_user_blocked' => 0,
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \Throwable
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        if (!$insert) {
+            if ((isset($changedAttributes['provider_user_name']) && ($changedAttributes['provider_user_name'] != $this->provider_user_name))
+                || (isset($changedAttributes['provider_user_first_name']) && ($changedAttributes['provider_user_first_name'] != $this->provider_user_first_name))
+                || (isset($changedAttributes['provider_user_last_name']) && ($changedAttributes['provider_user_last_name'] != $this->provider_user_last_name))) {
+                    $chats = $this->getGroups()
+                        ->joinWith('settings')
+                        ->andWhere([
+                            'and',
+                            [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                            [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                        ])
+                        ->all();
+
+                    $module = Yii::$app->getModule('bot');
+                    foreach ($chats as $chat) {
+                        $module->setChat($chat);
+                        $module->runAction('notifier/index', [
+                            'chat' => $chat,
+                            'changedAttributes' => json_decode(json_encode($changedAttributes)),
+                            'user' => $this,
+                        ]);
+                    }
+                }
+            }
+
+        parent::afterSave($insert, $changedAttributes);
     }
 
     public function getLink()
@@ -423,12 +416,25 @@ class User extends ActiveRecord
         array $optionalParams = []
     ) {
         if (!$this->provider_user_blocked && $this->chat) {
-            $replyMarkup[] = [
-                [
-                    'callback_data' => DeleteMessageController::createRoute(),
-                    'text' => 'OK',
-                ],
-            ];
+            // check if replyMarkup is empty
+            if (empty($replyMarkup)) {
+                $replyMarkup[] = [
+                    [
+                        'callback_data' => DeleteMessageController::createRoute(),
+                        'text' => 'OK',
+                    ],
+                ];
+            } else if ($cancel = end($replyMarkup)) {
+                // check if replyMarkup contain delete message button
+                if ($cancel[0]['callback_data'] != DeleteMessageController::createRoute()) {
+                    $replyMarkup[] = [
+                        [
+                            'callback_data' => DeleteMessageController::createRoute(),
+                            'text' => 'OK',
+                        ],
+                    ];
+                }
+            }
 
             return $this->getResponseBuilder()
                 ->setChatId($this->chat->getChatId())
@@ -471,5 +477,40 @@ class User extends ActiveRecord
     {
         return $this->hasMany(Wallet::class, ['user_id' => 'id'])
             ->viaTable(GlobalUser::tableName(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @param int $currencyId Currency->id
+     *
+     * @return ActiveRecord
+     */
+    public function getWalletByCurrencyId($currencyId)
+    {
+        $wallet = Wallet::findOne([
+            'currency_id' => $currencyId,
+            'user_id' => $this->user_id,
+        ]);
+
+        if (!isset($wallet)) {
+            $wallet = new Wallet();
+            $wallet->currency_id = $currencyId;
+            $wallet->user_id = $this->user_id;
+            $wallet->save();
+        }
+
+        return $wallet;
+    }
+
+    /**
+     * @return WalletQuery
+     */
+    public function getWalletWithPositiveBalance()
+    {
+        $walletQuery = Wallet::find()
+            ->where(['user_id' => $this->user_id])
+            ->andWhere(['>', Wallet::tableName() . '.amount', 0])
+            ->orderByCurrencyCode();
+
+        return $walletQuery;
     }
 }

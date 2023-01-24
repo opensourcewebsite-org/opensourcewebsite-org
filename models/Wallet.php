@@ -19,9 +19,6 @@ use yii\db\ActiveRecord;
  */
 class Wallet extends ActiveRecord
 {
-    // fee for internal transactions in source currency
-    public const TRANSACTION_FEE = 0.01;
-
     /**
      * {@inheritdoc}
      */
