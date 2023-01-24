@@ -400,7 +400,6 @@ class WalletController extends Controller
             }
         }
 
-        $fromUser = $this->getTelegramUser();
         $toUser = User::findOne(['id' => $toUserId]);
         $currency = Currency::findOne(['id' => $id]);
 
