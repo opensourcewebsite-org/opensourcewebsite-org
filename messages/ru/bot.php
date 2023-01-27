@@ -645,6 +645,5 @@ return [
     'Irreversible operation' => 'Необратимая операция',
     'Delete the group and all settings?' => 'Удалить группу и все настройки?',
     'Delete the channel and all settings?' => 'Удалить канал и все настройки?',
-    'User changed name' => 'Пользователь изменил имя',
-    'User changed username' => 'Пользователь изменил username',
+    'User changed account information' => 'Пользователь изменил данные аккаунта',
 ];
