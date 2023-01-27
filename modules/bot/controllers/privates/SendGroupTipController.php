@@ -75,7 +75,7 @@ class SendGroupTipController extends Controller
             return $this->actionSetAmount($state->chatId, $state->toUserId, $currency->code, $state->replyMessageId, $state->messageId);
         }
 
-        $query = $this->getTelegramUser()->getWalletWithPositiveBalance();
+        $query = $this->getGlobalUser()->getWalletsWithPositiveBalance();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
@@ -153,7 +153,7 @@ class SendGroupTipController extends Controller
         ]);
 
         if ($currency) {
-            $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($currency->id);
+            $fromUserWallet = $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
 
             if ($this->getUpdate()->getMessage()) {
                 if ((float)$this->getUpdate()->getMessage()->getText()) {
@@ -250,110 +250,107 @@ class SendGroupTipController extends Controller
         ]);
 
         if ($currency) {
-            $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($currency->id);
+            $fromUserWallet = $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
             $toUserWallet = $toUser->getWalletByCurrencyId($currency->id);
 
-            $transaction = ActiveRecord::getDb()->beginTransaction();
-            try {
-                $walletTransaction = new WalletTransaction();
-                $walletTransaction->currency_id = $fromUserWallet->getCurrencyId();
-                $walletTransaction->from_user_id = $fromUserWallet->getUserId();
-                $walletTransaction->to_user_id = $toUserWallet->getUserId();
-                $walletTransaction->amount = $state->amount + WalletTransaction::TRANSACTION_FEE;
-                $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
-                $walletTransaction->type = 0;
-                $walletTransaction->anonymity = 0;
-                $walletTransaction->created_at = time();
+            $walletTransaction = new WalletTransaction();
+            $walletTransaction->currency_id = $fromUserWallet->getCurrencyId();
+            $walletTransaction->from_user_id = $fromUserWallet->getUserId();
+            $walletTransaction->to_user_id = $toUserWallet->getUserId();
+            $walletTransaction->amount = $state->amount + WalletTransaction::TRANSACTION_FEE;
+            $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
+            $walletTransaction->type = 0;
+            $walletTransaction->anonymity = 0;
+            $walletTransaction->created_at = time();
 
-                if ($walletTransaction->save()) {
-                    $toUserWallet->amount += $state->amount;
-                    $toUserWallet->save();
-                    $fromUserWallet->amount -= $state->amount + WalletTransaction::TRANSACTION_FEE;
-                    $fromUserWallet->save();
+            $this->getGlobalUser()->createTransaction($walletTransaction);
+
+            $thisChat = $this->getTelegramChat();
+
+            $module = Yii::$app->getModule('bot');
+            $module->setChat(Chat::findOne($state->chatId));
+
+            if (isset($state->messageId)) {
+                // find ChatTip record
+                $chatTip = ChatTip::findOne(['message_id' => $state->messageId]);
+                if (!isset($chatTip)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery()
+                        ->build();
                 }
 
-                $transaction->commit();
+                // create new ChatTipWalletTransaction record
+                $newChatTipWalletTransaction = new ChatTipWalletTransaction([
+                    'chat_tip_id' => $chatTip->id,
+                    'transaction_id' => $walletTransaction->id,
+                ]);
 
-                $thisChat = $this->getTelegramChat();
-                $module = Yii::$app->getModule('bot');
-                $module->setChat(Chat::findOne($state->chatId));
-                if (isset($state->messageId)) {
-                    // find ChatTip record
-                    $chatTip = ChatTip::findOne(['message_id' => $state->messageId]);
-                    if (!isset($chatTip)) {
-                        return $this->getResponseBuilder()
-                            ->answerCallbackQuery()
-                            ->build();
-                    }
+                $newChatTipWalletTransaction->save();
+
+                // update tip message
+                $response = $module->runAction('tip/update-tip-message', [
+                    'newChatTipWalletTransactionId' => $newChatTipWalletTransaction->id,
+                ]);
+            } else {
+                $transaction = ActiveRecord::getDb()->beginTransaction();
+                try {
+                    // create new ChatTip record
+                    $newChatTip = new ChatTip([
+                        'chat_id' => $state->chatId,
+                        'message_id' => null,
+                    ]);
+
+                    $newChatTip->save();
 
                     // create new ChatTipWalletTransaction record
                     $newChatTipWalletTransaction = new ChatTipWalletTransaction([
-                        'chat_tip_id' => $chatTip->id,
+                        'chat_tip_id' => $newChatTip->id,
                         'transaction_id' => $walletTransaction->id,
                     ]);
 
                     $newChatTipWalletTransaction->save();
 
-                    // update tip message
-                    $response = $module->runAction('tip/update-tip-message', [
-                        'newChatTipWalletTransactionId' => $newChatTipWalletTransaction->id,
+                    $transaction->commit();
+
+                    // send tip message
+                    $response = $module->runAction('tip/show-tip-message', [
+                        'newChatTipWalletTransaction' => $newChatTipWalletTransaction,
+                        'replyMessageId' => $state->replyMessageId,
                     ]);
-                } else {
-                    $tipTransaction = ActiveRecord::getDb()->beginTransaction();
-                    try {
-                        // create new ChatTip record
-                        $newChatTip = new ChatTip([
-                            'chat_id' => $state->chatId,
-                            'message_id' => null,
-                        ]);
 
-                        $newChatTip->save();
-
-                        // create new ChatTipWalletTransaction record
-                        $newChatTipWalletTransaction = new ChatTipWalletTransaction([
-                            'chat_tip_id' => $newChatTip->id,
-                            'transaction_id' => $walletTransaction->id,
-                        ]);
-
-                        $newChatTipWalletTransaction->save();
-
-                        $tipTransaction->commit();
-
-                        // send tip message
-                        $response = $module->runAction('tip/show-tip-message', [
-                            'newChatTipWalletTransaction' => $newChatTipWalletTransaction,
-                            'replyMessageId' => $state->replyMessageId,
-                        ]);
-
-                    } catch (\Throwable $e) {
-                        $tipTransaction->rollBack();
-                        Yii::error($e->getMessage());
-                    }
+                } catch (\Throwable $e) {
+                    $transaction->rollBack();
+                    Yii::error($e->getMessage());
                 }
+            }
 
-                $module->setChat($thisChat);
+            $module->setChat($thisChat);
 
-                // send response to private chat
-                if ($response) {
-                    return $this->getResponseBuilder()
-                        ->editMessageTextOrSendMessage(
-                            $this->render('success', [
-                                'walletTransaction' => $walletTransaction,
-                            ]),
+            // send response to private chat
+            if ($response) {
+                $toUser->sendMessage(
+                    $this->render('receiver-privates-success', [
+                        'walletTransaction' => $walletTransaction,
+                        'toUserWallet' => $toUserWallet,
+                    ]),
+                    []
+                );
+
+                return $this->getResponseBuilder()
+                    ->editMessageTextOrSendMessage(
+                        $this->render('success', [
+                            'walletTransaction' => $walletTransaction,
+                        ]),
+                        [
                             [
                                 [
-                                    [
-                                        'callback_data' => MenuController::createRoute(),
-                                        'text' => Emoji::MENU,
-                                    ],
+                                    'callback_data' => MenuController::createRoute(),
+                                    'text' => Emoji::MENU,
                                 ],
-                            ]
-                        )
-                        ->build();
-                }
-            } catch (\Throwable $e) {
-                $transaction->rollBack();
-                Yii::error($e->getMessage());
+                            ],
+                        ]
+                    )
+                    ->build();
             }
         }
 

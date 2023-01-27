@@ -11,13 +11,11 @@ use app\models\queries\WalletQuery;
 use app\models\User as GlobalUser;
 use app\models\UserLocation;
 use app\models\Wallet;
-use app\models\WalletTransaction;
 use app\modules\bot\components\helpers\MessageText;
 use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\models\queries\UserQuery;
 use Yii;
-use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -486,31 +484,19 @@ class User extends ActiveRecord
      */
     public function getWalletByCurrencyId($currencyId)
     {
-        $wallet = Wallet::findOne([
-            'currency_id' => $currencyId,
-            'user_id' => $this->user_id,
-        ]);
-
-        if (!isset($wallet)) {
-            $wallet = new Wallet();
-            $wallet->currency_id = $currencyId;
-            $wallet->user_id = $this->user_id;
-            $wallet->save();
-        }
-
-        return $wallet;
+        return $this->globalUser->getWalletByCurrencyId($currencyId);
     }
 
     /**
      * @return WalletQuery
      */
-    public function getWalletWithPositiveBalance()
+    public function getWalletsWithPositiveBalance()
     {
-        $walletQuery = Wallet::find()
-            ->where(['user_id' => $this->user_id])
-            ->andWhere(['>', Wallet::tableName() . '.amount', 0])
-            ->orderByCurrencyCode();
+        return $this->globalUser->getWalletsWithPositiveBalance();
+    }
 
-        return $walletQuery;
+    public function createTransaction($walletTransaction)
+    {
+        $this->globalUser->createTransaction($walletTransaction);
     }
 }

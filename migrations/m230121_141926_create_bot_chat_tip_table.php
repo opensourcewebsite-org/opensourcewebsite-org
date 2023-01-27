@@ -15,8 +15,8 @@ class m230121_141926_create_bot_chat_tip_table extends Migration
         $this->createTable('{{%bot_chat_tip}}', [
             'id' => $this->primaryKey()->unsigned(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
-            'message_id' => $this->integer()->unsigned()->notNull(),
-            'sent_at' => $this->integer()->unsigned()->notNull(),
+            'message_id' => $this->integer()->unsigned(),
+            'sent_at' => $this->integer()->unsigned(),
         ]);
 
         $this->addForeignKey(

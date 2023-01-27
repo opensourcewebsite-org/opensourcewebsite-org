@@ -7,6 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\controllers\privates\SendGroupTipController;
 use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTip;
 use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
@@ -47,7 +48,15 @@ class TipController extends Controller
                     'is_bot' => 0,
                 ]);
 
-                $replyMessageId = $replyMessage->getMessageId();
+                $chatMember = ChatMember::findOne([
+                    'chat_id' => $chat->id,
+                    'user_id' => $toUser->id,
+                ]);
+
+                if (!$chatMember->isAnonymousAdministrator()) {
+                    $replyMessageId = $replyMessage->getMessageId();
+                }
+
             }
         } else {
             $chat = Chat::findOne($chatId);
@@ -131,6 +140,7 @@ class TipController extends Controller
             // add message_id to $chatTip record
             $chatTip = $newChatTipWalletTransaction->chatTip;
             $chatTip->message_id = $response->getMessageId();
+            $chatTip->sent_at = $response->getDate();
             $chatTip->save();
         }
 

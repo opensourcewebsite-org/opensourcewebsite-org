@@ -167,18 +167,7 @@ class WalletController extends Controller
             ]);
 
             if ($currency) {
-                $wallet = Wallet::findOne([
-                    'currency_id' => $currency->id,
-                    'user_id' => $this->globalUser->id,
-                ]);
-
-                if (!$wallet) {
-                    $wallet = new Wallet();
-                    $wallet->currency_id = $currency->id;
-                    $wallet->user_id = $this->globalUser->id;
-                    $wallet->save();
-                }
-
+                $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
                 return $this->actionView($currency->id);
             }
         }
@@ -196,18 +185,7 @@ class WalletController extends Controller
                 }
 
                 if ($currency) {
-                    $wallet = Wallet::findOne([
-                        'currency_id' => $currency->id,
-                        'user_id' => $this->globalUser->id,
-                    ]);
-
-                    if (!$wallet) {
-                        $wallet = new Wallet();
-                        $wallet->currency_id = $currency->id;
-                        $wallet->user_id = $this->globalUser->id;
-                        $wallet->save();
-                    }
-
+                    $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
                     return $this->actionView($currency->id);
                 }
             }
@@ -391,7 +369,7 @@ class WalletController extends Controller
                 $amount  = $amount < 0.01 ? 0 : $amount;
 
                 if ($amount > 0) {
-                    if (($this->getTelegramUser()->getWalletByCurrencyId($id)->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
+                    if (($this->getGlobalUser()->getWalletByCurrencyId($id)->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
                         return $this->getResponseBuilder()
                             ->answerCallbackQuery()
                             ->build();
@@ -450,34 +428,17 @@ class WalletController extends Controller
      */
     public function actionConfirmTransaction($id = null, $toUserId = null, $amount = null)
     {
-        $fromUserWallet = $this->getTelegramUser()->getWalletByCurrencyId($id);
-        $toUser = User::findOne(['id' => $toUserId]);
-        $toUserWallet = $toUser->getWalletByCurrencyId($id);
+        $walletTransaction = new WalletTransaction();
+        $walletTransaction->currency_id = $id;
+        $walletTransaction->from_user_id = $this->globalUser->id;
+        $walletTransaction->to_user_id = $toUserId;
+        $walletTransaction->amount = $amount + WalletTransaction::TRANSACTION_FEE;
+        $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
+        $walletTransaction->type = 0;
+        $walletTransaction->anonymity = 0;
+        $walletTransaction->created_at = time();
 
-        $transaction = ActiveRecord::getDb()->beginTransaction();
-        try {
-            $walletTransaction = new WalletTransaction();
-            $walletTransaction->currency_id = $id;
-            $walletTransaction->from_user_id = $this->globalUser->id;
-            $walletTransaction->to_user_id = $toUserId;
-            $walletTransaction->amount = $amount + WalletTransaction::TRANSACTION_FEE;
-            $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
-            $walletTransaction->type = 0;
-            $walletTransaction->anonymity = 0;
-            $walletTransaction->created_at = time();
-
-            if ($walletTransaction->save()) {
-                $toUserWallet->amount += $amount;
-                $toUserWallet->save();
-                $fromUserWallet->amount -= $amount + WalletTransaction::TRANSACTION_FEE;
-                $fromUserWallet->save();
-            }
-
-            $transaction->commit();
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-            Yii::error($e->getMessage());
-        }
+        $this->getGlobalUser()->createTransaction($walletTransaction);
 
         return $this->actionView($id);
     }

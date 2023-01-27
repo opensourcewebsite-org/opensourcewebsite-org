@@ -14,7 +14,7 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property int $chat_id
- * @property int $message_id
+ * @property int|null $message_id
  * @property int|null $sent_at
  *
  * @property Chat $chat
@@ -64,8 +64,8 @@ class ChatTip extends ActiveRecord
         return [
             [
                 'class' => TimestampBehavior::class,
-                'createdAtAttribute' => 'sent_at',
-                'updatedAtAttribute' => false,
+                'createdAtAttribute' => false,
+                'updatedAtAttribute' => 'sent_at',
             ],
         ];
     }

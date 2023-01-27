@@ -1,5 +1,6 @@
 <?php
 
+// add new values to the end
 return [
     'view',
     'index',
@@ -66,7 +67,6 @@ return [
     'section_new_matches',
     'set_member_messages_limit',
     'set_member_messages_skip_days',
-    'set_member_messages_skip_hours',
     'delete_member_messages_skip_days',
     'delete_member_messages_skip_hours',
     'delete_member',
@@ -79,6 +79,7 @@ return [
     'set_member_messages_now',
     'delete_member_messages_now',
     'confirm',
+    'set_member_messages_skip_hours',
     'word_view_list',
     'word_select',
     'word_enter',
