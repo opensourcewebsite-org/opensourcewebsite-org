@@ -1265,11 +1265,16 @@ class User extends ActiveRecord implements IdentityInterface
             ->orderByCurrencyCode();
     }
 
+    /**
+     * @param WalletTransaction  $walletTransaction
+     *
+     * @return bool
+     */
     public function createTransaction($walletTransaction)
     {
         $transaction = ActiveRecord::getDb()->beginTransaction();
         try {
-            if ($walletTransaction->save()) {
+            if ($walletTransaction->validate()) {
                 $fromUserWallet = $this->getWalletByCurrencyId($walletTransaction->currency_id);
                 $toUserWallet = $walletTransaction->toUser->getWalletByCurrencyId($walletTransaction->currency_id);
 
@@ -1282,6 +1287,8 @@ class User extends ActiveRecord implements IdentityInterface
 
                 $fromUserWallet->amount -= $walletTransaction->amount + $walletTransaction->fee;
                 $fromUserWallet->save();
+
+                $walletTransaction->save();
             }
 
             $transaction->commit();
