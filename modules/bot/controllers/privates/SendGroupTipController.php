@@ -257,13 +257,17 @@ class SendGroupTipController extends Controller
             $walletTransaction->currency_id = $fromUserWallet->getCurrencyId();
             $walletTransaction->from_user_id = $fromUserWallet->getUserId();
             $walletTransaction->to_user_id = $toUserWallet->getUserId();
-            $walletTransaction->amount = $state->amount + WalletTransaction::TRANSACTION_FEE;
+            $walletTransaction->amount = $state->amount;
             $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
             $walletTransaction->type = 0;
             $walletTransaction->anonymity = 0;
             $walletTransaction->created_at = time();
 
-            $this->getGlobalUser()->createTransaction($walletTransaction);
+            if (!$this->getGlobalUser()->createTransaction($walletTransaction)) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
+            }
 
             $thisChat = $this->getTelegramChat();
 

@@ -1259,12 +1259,10 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getWalletsWithPositiveBalance()
     {
-        $walletQuery = Wallet::find()
+        return Wallet::find()
             ->where(['user_id' => $this->id])
             ->andWhere(['>', Wallet::tableName() . '.amount', 0])
             ->orderByCurrencyCode();
-
-        return $walletQuery;
     }
 
     public function createTransaction($walletTransaction)
@@ -1275,14 +1273,19 @@ class User extends ActiveRecord implements IdentityInterface
                 $fromUserWallet = $this->getWalletByCurrencyId($walletTransaction->currency_id);
                 $toUserWallet = $walletTransaction->toUser->getWalletByCurrencyId($walletTransaction->currency_id);
 
-                $toUserWallet->amount += $walletTransaction->amount - $walletTransaction->fee;
+                if (($fromUserWallet->amount - $walletTransaction->amount - $walletTransaction->fee) < 0) {
+                    return false;
+                }
+
+                $toUserWallet->amount += $walletTransaction->amount;
                 $toUserWallet->save();
 
-                $fromUserWallet->amount -= $walletTransaction->amount;
+                $fromUserWallet->amount -= $walletTransaction->amount + $walletTransaction->fee;
                 $fromUserWallet->save();
             }
 
             $transaction->commit();
+            return true;
         } catch (\Throwable $e) {
             $transaction->rollBack();
             Yii::error($e->getMessage());

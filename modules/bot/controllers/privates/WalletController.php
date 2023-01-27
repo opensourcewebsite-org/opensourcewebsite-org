@@ -432,15 +432,19 @@ class WalletController extends Controller
         $walletTransaction->currency_id = $id;
         $walletTransaction->from_user_id = $this->globalUser->id;
         $walletTransaction->to_user_id = $toUserId;
-        $walletTransaction->amount = $amount + WalletTransaction::TRANSACTION_FEE;
+        $walletTransaction->amount = $amount;
         $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
         $walletTransaction->type = 0;
         $walletTransaction->anonymity = 0;
         $walletTransaction->created_at = time();
 
-        $this->getGlobalUser()->createTransaction($walletTransaction);
+        if ($this->getGlobalUser()->createTransaction($walletTransaction)) {
+            return $this->actionView($id);
+        }
 
-        return $this->actionView($id);
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
+            ->build();
     }
 
     /**
