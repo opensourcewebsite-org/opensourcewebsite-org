@@ -19,9 +19,6 @@ use yii\db\ActiveRecord;
  */
 class Wallet extends ActiveRecord
 {
-    // fee for internal transactions in source currency
-    public const TRANSACTION_FEE = 0.01;
-
     /**
      * {@inheritdoc}
      */
@@ -101,5 +98,18 @@ class Wallet extends ActiveRecord
     public function getInTransactions(): ActiveQuery
     {
         return $this->hasMany(WalletTransaction::class, ['currency_id' => 'currency_id', 'to_user_id' => 'user_id']);
+    }
+
+    public function hasAmount($amount = null): bool
+    {
+        if (!isset($amount) || ($amount < WalletTransaction::MIN_AMOUNT)) {
+            $amount = WalletTransaction::MIN_AMOUNT;
+        }
+
+        if ($this->amount >= ($amount + WalletTransaction::TRANSACTION_FEE)) {
+            return true;
+        }
+
+        return false;
     }
 }
