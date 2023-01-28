@@ -21,12 +21,11 @@ use Yii;
 class TipController extends Controller
 {
     /**
-     * @param int|null $chatId Chat->id
-     * @param int|null $toUserId User->id
+     * @param int|null $chatTipId ChatTip->id
      *
      * @return array
      */
-    public function actionIndex($chatId = null, $toUserId = null)
+    public function actionIndex($chatTipId = null)
     {
         // delete /tip message
         if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
@@ -36,11 +35,9 @@ class TipController extends Controller
         }
 
         $fromUser = $this->getTelegramUser();
-        $toUser = null;
         $replyMessageId = null;
-        $messageId = null;
 
-        if (!isset($chatId) && !isset($toUserId)) {
+        if (!isset($chatTipId)) {
             $chat = $this->getTelegramChat();
             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                 $toUser = User::findOne([
@@ -57,16 +54,24 @@ class TipController extends Controller
                     $replyMessageId = $replyMessage->getMessageId();
                 }
 
+                $chatTip = new ChatTip([
+                    'chat_id' => $chat->id,
+                    'to_user_id' => $toUser->getId(),
+                ]);
+
+                $chatTip->save();
+
+                $chatTipId = $chatTip->id;
             }
         } else {
-            $chat = Chat::findOne($chatId);
-            $toUser = User::findOne($toUserId);
-            $messageId = $this->getUpdate()->getRequestMessage()->getMessageId();
+            $chatTip = ChatTip::findOne($chatTipId);
+            $chat = $chatTip->chat;
+            $toUser = $chatTip->toUser;
         }
 
         // check if $fromUser is a chat member && $fromUser is not tipping himself
         $fromChatMember = $chat->getChatMemberByUser($fromUser);
-        if (isset($toUser) && isset($fromChatMember) && ($toUser->getUserId()) != $fromUser->getUserId()) {
+        if (isset($toUser) && isset($fromChatMember) && ($toUser->getId()) != $fromUser->getId()) {
             $fromUser->sendMessage(
                 $this->render('/privates/tip', [
                     'chat' => $chat,
@@ -76,10 +81,8 @@ class TipController extends Controller
                     [
                         [
                             'callback_data' => SendGroupTipController::createRoute('index', [
-                                'chatId' => $chat->id,
-                                'toUserId' => $toUser->getUserId(),
+                                'chatTipId' => $chatTipId,
                                 'replyMessageId' => $replyMessageId,
-                                'messageId' => $messageId,
                             ]),
                             'text' => Yii::t('bot', 'Tip'),
                         ],
@@ -98,14 +101,15 @@ class TipController extends Controller
     }
 
     /**
-     * @param ChatTipWalletTransaction $newChatTipWalletTransaction
+     * @param int $chatTipWalletTransactionId
      * @param int $replyMessageId Message->id
      *
      * @return array
      */
-    public function actionShowTipMessage($newChatTipWalletTransaction = null, $replyMessageId = null)
+    public function actionShowTipMessage($chatTipWalletTransactionId = null, $replyMessageId = null)
     {
-        $walletTransaction = $newChatTipWalletTransaction->walletTransaction;
+        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['id' => $chatTipWalletTransactionId]);
+        $walletTransaction = $chatTipWalletTransaction->walletTransaction;
         $toUser = $walletTransaction->toUser->botUser;
         $currency = $walletTransaction->currency;
 
@@ -121,8 +125,7 @@ class TipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $newChatTipWalletTransaction->chatTip->chat_id,
-                                'toUserId' => $walletTransaction->getToUserId(),
+                                'chatTipId' => $chatTipWalletTransaction->chatTip->id,
                             ]),
                             'text' => Yii::t('bot', 'Tip'),
                         ],
@@ -138,7 +141,7 @@ class TipController extends Controller
 
         if ($response) {
             // add message_id to $chatTip record
-            $chatTip = $newChatTipWalletTransaction->chatTip;
+            $chatTip = $chatTipWalletTransaction->chatTip;
             $chatTip->message_id = $response->getMessageId();
             $chatTip->sent_at = $response->getDate();
             $chatTip->save();
@@ -150,13 +153,13 @@ class TipController extends Controller
     }
 
     /**
-     * @param int $newChatTipWalletTransactionId Chat->id
+     * @param int $chatTipWalletTransactionId
      *
      * @return array
      */
-    public function actionUpdateTipMessage($newChatTipWalletTransactionId)
+    public function actionUpdateTipMessage($chatTipWalletTransactionId)
     {
-        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['id' => $newChatTipWalletTransactionId]);
+        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['id' => $chatTipWalletTransactionId]);
         $chatTip = $chatTipWalletTransaction->chatTip;
         $toUser = $chatTipWalletTransaction->walletTransaction->toUser->botUser;
 
@@ -185,8 +188,7 @@ class TipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('index', [
-                                'chatId' => $chatTip->chat_id,
-                                'toUserId' => $chatTipWalletTransaction->walletTransaction->getToUserId(),
+                                'chatTipId' => $chatTip->id,
                             ]),
                             'text' => Yii::t('bot', 'Tip'),
                         ],

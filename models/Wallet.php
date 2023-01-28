@@ -99,4 +99,17 @@ class Wallet extends ActiveRecord
     {
         return $this->hasMany(WalletTransaction::class, ['currency_id' => 'currency_id', 'to_user_id' => 'user_id']);
     }
+
+    public function hasAmount($amount = null): bool
+    {
+        if (!isset($amount) || ($amount < WalletTransaction::MIN_AMOUNT)) {
+            $amount = WalletTransaction::MIN_AMOUNT;
+        }
+
+        if ($this->amount >= ($amount + WalletTransaction::TRANSACTION_FEE)) {
+            return true;
+        }
+
+        return false;
+    }
 }

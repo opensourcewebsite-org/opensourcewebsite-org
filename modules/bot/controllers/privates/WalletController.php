@@ -281,17 +281,6 @@ class WalletController extends Controller
      */
     public function actionSendTransaction($id = null)
     {
-        $wallet = Wallet::findOne([
-            'currency_id' => $id,
-            'user_id' => $this->globalUser->id,
-        ]);
-
-        if (!$wallet) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setName(self::createRoute('input-to-user', [
             'id' => $id,
         ]));
@@ -345,7 +334,7 @@ class WalletController extends Controller
                 ->build();
         }
 
-        return $this->actionInputAmount($toUser->getId(), $id);
+        return $this->actionInputAmount($toUser->getUserId(), $id);
     }
 
     /**
@@ -366,14 +355,15 @@ class WalletController extends Controller
             if ((float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = (float)$this->getUpdate()->getMessage()->getText();
                 $amount = number_format($amount, 2, '.', '');
-                $amount  = $amount < 0.01 ? 0 : $amount;
 
-                if ($amount > 0) {
-                    if (($this->getGlobalUser()->getWalletByCurrencyId($id)->amount - $amount - WalletTransaction::TRANSACTION_FEE) < 0) {
-                        return $this->getResponseBuilder()
-                            ->answerCallbackQuery()
-                            ->build();
-                    }
+                if (!$this->getGlobalUser()->getWalletByCurrencyId($id)->hasAmount($amount)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery()
+                        ->build();
+                }
+
+                if ($amount < WalletTransaction::MIN_AMOUNT) {
+                    $amount = WalletTransaction::MIN_AMOUNT;
                 }
             }
         }
@@ -433,7 +423,6 @@ class WalletController extends Controller
         $walletTransaction->from_user_id = $this->globalUser->id;
         $walletTransaction->to_user_id = $toUserId;
         $walletTransaction->amount = $amount;
-        $walletTransaction->fee = WalletTransaction::TRANSACTION_FEE;
         $walletTransaction->type = 0;
         $walletTransaction->anonymity = 0;
         $walletTransaction->created_at = time();
@@ -482,6 +471,9 @@ class WalletController extends Controller
 
         $walletTransactions = $query->offset($pagination->offset)
             ->limit($pagination->limit)
+            ->orderBy([
+                'created_at' => SORT_DESC,
+            ])
             ->all();
 
         $currency = $wallet->currency;
@@ -546,9 +538,15 @@ class WalletController extends Controller
 
         $this->getState()->setName(null);
 
-        $fromUser = $walletTransaction->fromUser->botUser;
         $toUser = $walletTransaction->toUser->botUser;
         $currency = $walletTransaction->currency;
+        $fromUser = $walletTransaction->fromUser->botUser;
+
+        if ($fromUser->getUserId() != $this->getGlobalUser()->id) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
