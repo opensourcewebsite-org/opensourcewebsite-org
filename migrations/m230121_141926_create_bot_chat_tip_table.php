@@ -17,6 +17,7 @@ class m230121_141926_create_bot_chat_tip_table extends Migration
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'to_user_id' => $this->integer()->unsigned()->notNull(),
             'message_id' => $this->integer()->unsigned(),
+            'reply_message_id' => $this->integer()->unsigned(),
             'sent_at' => $this->integer()->unsigned(),
         ]);
 

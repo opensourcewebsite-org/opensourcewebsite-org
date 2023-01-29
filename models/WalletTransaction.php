@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\modules\bot\models\ChatTipWalletTransaction;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -26,7 +27,7 @@ use yii\db\ActiveRecord;
 class WalletTransaction extends ActiveRecord
 {
     // fee for internal transactions in source currency
-    public const TRANSACTION_FEE = 0.01;
+    public const FEE = 0.01;
     public const MIN_AMOUNT = 0.01;
 
     /**
@@ -43,7 +44,7 @@ class WalletTransaction extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'anonymity', 'created_at'], 'required'],
+            [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'anonymity'], 'required'],
             [['currency_id', 'from_user_id', 'to_user_id', 'type', 'anonymity', 'created_at'], 'integer'],
             ['amount', 'double', 'min' => 0, 'max' => 9999999999999.99],
             ['fee', 'double', 'min' => 0, 'max' => 9999999999999.99],
@@ -69,6 +70,19 @@ class WalletTransaction extends ActiveRecord
             'type' => 'Type',
             'anonymity' => 'Anonymity',
             'created_at' => 'Created At',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'updatedAtAttribute' => false,
+            ],
         ];
     }
 

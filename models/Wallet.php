@@ -106,7 +106,7 @@ class Wallet extends ActiveRecord
             $amount = WalletTransaction::MIN_AMOUNT;
         }
 
-        if ($this->amount >= ($amount + WalletTransaction::TRANSACTION_FEE)) {
+        if ($this->amount >= ($amount + WalletTransaction::FEE)) {
             return true;
         }
 

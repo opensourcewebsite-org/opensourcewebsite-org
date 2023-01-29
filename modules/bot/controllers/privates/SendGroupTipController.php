@@ -23,39 +23,39 @@ class SendGroupTipController extends Controller
 {
     /**
      * @param int $chatTipId ChatTip->id
-     * @param int $replyMessageId Message->id
      *
      * @return array
      */
-    public function actionIndex($chatTipId = null, $replyMessageId = null)
+    public function actionIndex($chatTipId = null)
     {
         $chatTip = ChatTip::findOne($chatTipId);
-        $chat = Chat::findOne($chatTip->chat_id);
-        $toUser = User::findOne($chatTip->to_user_id);
 
-        if (!isset($chat) || !$chat->isGroup() || !isset($toUser)) {
+        if (!isset($chatTip) || !$chatTip->chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
 
-        $this->getState()->setName(json_encode([
-            'chatTipId' => $chatTipId,
-            'replyMessageId' => $replyMessageId,
-        ]));
+        $this->getState()->setIntermediateFieldArray('WalletTransaction', [
+            'from_user_id' => $this->getTelegramUser()->getUserId(),
+            'to_user_id' => $chatTip->toUser->getUserId(),
+            'type' => 0,
+            'anonymity' => 0,
+        ]);
 
-        return $this->actionChooseWallet();
+        return $this->actionChooseWallet($chatTipId);
     }
 
     /**
+     * @param int $chatTipId ChatTip->id
      * @param int|null $currencyId Currency->id
      * @param int $page
      *
      * @return array
      */
-    public function actionChooseWallet($currencyId = null, $page = 1)
+    public function actionChooseWallet($chatTipId = null, $currencyId = null, $page = 1)
     {
-        $state = json_decode($this->getState()->getName());
+        $walletTransactionModel = $this->getState()->getIntermediateFieldArray('WalletTransaction');
 
         if ($currencyId) {
             $currency = Currency::findOne([
@@ -68,7 +68,10 @@ class SendGroupTipController extends Controller
                     ->build();
             }
 
-            return $this->actionSetAmount($state->chatTipId, $currency->code, $state->replyMessageId);
+            $walletTransactionModel['currency_id'] = $currency->id;
+            $this->getState()->setIntermediateFieldArray('WalletTransaction', $walletTransactionModel);
+
+            return $this->actionSetAmount($chatTipId);
         }
 
         $query = $this->getGlobalUser()->getWalletsWithPositiveBalance();
@@ -93,14 +96,16 @@ class SendGroupTipController extends Controller
             foreach ($wallets as $wallet) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('choose-wallet', [
+                        'chatTipId' => $chatTipId,
                         'currencyId' => $wallet->getCurrencyId(),
                     ]),
                     'text' => $wallet->amount . ' ' . $wallet->currency->code,
                 ];
             }
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatTipId) {
                 return self::createRoute('choose-wallet', [
+                    'chatTipId' => $chatTipId,
                     'page' => $page,
                 ]);
             });
@@ -127,22 +132,17 @@ class SendGroupTipController extends Controller
 
     /**
      * @param int $chatTipId ChatTip->id
-     * @param string $code Currency->code
-     * @param int $replyMessageId Message->id
      *
      * @return array
      */
-    public function actionSetAmount($chatTipId = null, $code = null, $replyMessageId = null)
+    public function actionSetAmount($chatTipId = null)
     {
         $this->getState()->setName(self::createRoute('set-amount', [
             'chatTipId' => $chatTipId,
-            'code' => $code,
-            'replyMessageId' => $replyMessageId,
         ]));
 
-        $currency = Currency::findOne([
-            'code' => $code,
-        ]);
+        $walletTransactionModel = $this->getState()->getIntermediateField('WalletTransaction');
+        $currency = Currency::findOne($walletTransactionModel['currency_id']);
 
         if ($currency) {
             $fromUserWallet = $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
@@ -162,26 +162,24 @@ class SendGroupTipController extends Controller
                         $amount = WalletTransaction::MIN_AMOUNT;
                     }
 
-                    $this->getState()->setName(json_encode([
-                        'chatTipId' => $chatTipId,
-                        'code' => $code,
-                        'amount' => $amount,
-                        'replyMessageId' => $replyMessageId,
-                    ]));
+                    $walletTransactionModel['amount'] = $amount;
+                    $this->getState()->setIntermediateFieldArray('WalletTransaction', $walletTransactionModel);
 
-                    $toUser = ChatTip::findOne($chatTipId)->toUser;
+                    $toUser = User::findOne($walletTransactionModel['to_user_id']);
 
                     return $this->getResponseBuilder()
                         ->editMessageTextOrSendMessage(
                             $this->render('confirm-transaction', [
                                 'toUser' => $toUser,
                                 'amount' => $amount,
-                                'code' => $code,
+                                'code' => $currency->code,
                             ]),
                             [
                                 [
                                     [
-                                        'callback_data' => self::createRoute('confirm-transaction'),
+                                        'callback_data' => self::createRoute('confirm-transaction', [
+                                            'chatTipId' => $chatTipId,
+                                        ]),
                                         'text' => 'Confirm',
                                     ],
                                 ],
@@ -205,15 +203,14 @@ class SendGroupTipController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('set-amount', [
-                    'maxAmount' => $fromUserWallet->amount - WalletTransaction::TRANSACTION_FEE,
-                    'code' => $code,
+                    'maxAmount' => $fromUserWallet->amount - WalletTransaction::FEE,
+                    'code' => $currency->code,
                 ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('index', [
                                 'chatTipId' => $chatTipId,
-                                'replyMessageId' => $replyMessageId,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -228,30 +225,25 @@ class SendGroupTipController extends Controller
     }
 
     /**
+     * @param int $chatTipId ChatTip->id
+     *
      * @return array
      */
-    public function actionConfirmTransaction()
+    public function actionConfirmTransaction($chatTipId = null)
     {
-        $state = json_decode($this->getState()->getName());
-        $chatTip = ChatTip::findOne($state->chatTipId);
+        $walletTransactionModel = $this->getState()->getIntermediateField('WalletTransaction');
+        $chatTip = ChatTip::findOne($chatTipId);
         $toUser = $chatTip->toUser;
-
-        $currency = Currency::findOne([
-            'code' => $state->code,
-        ]);
+        $currency = Currency::findOne($walletTransactionModel['currency_id']);
 
         if ($currency) {
-            $fromUserWallet = $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
-            $toUserWallet = $toUser->getWalletByCurrencyId($currency->id);
-
             $walletTransaction = new WalletTransaction();
-            $walletTransaction->currency_id = $fromUserWallet->getCurrencyId();
-            $walletTransaction->from_user_id = $fromUserWallet->getUserId();
-            $walletTransaction->to_user_id = $toUserWallet->getUserId();
-            $walletTransaction->amount = $state->amount;
-            $walletTransaction->type = 0;
-            $walletTransaction->anonymity = 0;
-            $walletTransaction->created_at = time();
+            $walletTransaction->currency_id =  $walletTransactionModel['currency_id'];
+            $walletTransaction->from_user_id =  $walletTransactionModel['from_user_id'];
+            $walletTransaction->to_user_id =  $walletTransactionModel['to_user_id'];
+            $walletTransaction->amount = $walletTransactionModel['amount'];
+            $walletTransaction->type = $walletTransactionModel['type'];
+            $walletTransaction->anonymity = $walletTransactionModel['anonymity'];
 
             if (!$this->getGlobalUser()->createTransaction($walletTransaction)) {
                 return $this->getResponseBuilder()
@@ -281,18 +273,18 @@ class SendGroupTipController extends Controller
                 // send tip message
                 $response = $module->runAction('tip/show-tip-message', [
                     'chatTipWalletTransactionId' => $chatTipWalletTransaction->id,
-                    'replyMessageId' => $state->replyMessageId,
                 ]);
             }
 
             $module->setChat($thisChat);
+            $this->getState()->setIntermediateFieldArray('WalletTransaction', null);
 
             // send response to private chat
             if ($response) {
                 $toUser->sendMessage(
                     $this->render('receiver-privates-success', [
                         'walletTransaction' => $walletTransaction,
-                        'toUserWallet' => $toUserWallet,
+                        'toUserWallet' => $toUser->getWalletByCurrencyId($currency->id),
                     ]),
                     []
                 );
