@@ -64,6 +64,13 @@ class PremiumMembersController extends Controller
 
                 if ($paginationButtons) {
                     $buttons[] = $paginationButtons;
+                } else {
+                    $buttons[] = [
+                        [
+                            'callback_data' => self::createRoute(),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ];
                 }
             }
 
@@ -77,6 +84,7 @@ class PremiumMembersController extends Controller
                     [
                         'disablePreview' => true,
                         'disableNotification' => true,
+                        'replyToMessageId' => $this->getMessage()->getMessageThreadId(),
                     ]
                 )
                 ->send();
