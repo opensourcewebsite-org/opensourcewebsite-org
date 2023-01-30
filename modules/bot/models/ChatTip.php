@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace app\modules\bot\models;
 
+use app\models\WalletTransaction;
 use Yii;
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -79,5 +79,11 @@ class ChatTip extends ActiveRecord
     public function getToUser()
     {
         return $this->hasOne(User::class, ['id' => 'to_user_id']);
+    }
+
+    public function getWalletTransactions()
+    {
+        return $this->hasMany(WalletTransaction::class, ['id' => 'transaction_id'])
+            ->viaTable(ChatTipWalletTransaction::tableName(), ['chat_tip_id' => 'id']);
     }
 }

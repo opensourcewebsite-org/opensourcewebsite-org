@@ -283,12 +283,12 @@ class WalletController extends Controller
     {
         $this->getState()->setName(self::createRoute('input-to-user'));
 
-        $this->getState()->setIntermediateFieldArray('WalletTransaction', [
+        $this->getState()->setIntermediateModel(new WalletTransaction([
             'from_user_id' => $this->getTelegramUser()->getUserId(),
             'currency_id' => $id,
             'type' => 0,
             'anonymity' => 0,
-        ]);
+        ]));
 
         $buttons[] = [
             [
@@ -316,7 +316,7 @@ class WalletController extends Controller
      */
     public function actionInputToUser()
     {
-        $walletTransactionModel = $this->getState()->getIntermediateFieldArray('WalletTransaction');
+        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
         if ($text = $this->getMessage()->getText()) {
             if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
@@ -339,8 +339,8 @@ class WalletController extends Controller
                 ->build();
         }
 
-        $walletTransactionModel['to_user_id'] = $toUser->getId();
-        $this->getState()->setIntermediateFieldArray('WalletTransaction', $walletTransactionModel);
+        $walletTransaction->to_user_id = $toUser->getId();
+        $this->getState()->setIntermediateModel($walletTransaction);
 
         return $this->actionInputAmount();
     }
@@ -350,9 +350,8 @@ class WalletController extends Controller
      */
     public function actionInputAmount()
     {
-        $walletTransactionModel = $this->getState()->getIntermediateFieldArray('WalletTransaction');
-
         $this->getState()->setName(self::createRoute('input-amount'));
+        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
         $amount = 0;
         if ($this->getUpdate()->getMessage()) {
@@ -360,7 +359,7 @@ class WalletController extends Controller
                 $amount = (float)$this->getUpdate()->getMessage()->getText();
                 $amount = number_format($amount, 2, '.', '');
 
-                if (!$this->getGlobalUser()->getWalletByCurrencyId($walletTransactionModel['currency_id'])->hasAmount($amount)) {
+                if (!$this->getGlobalUser()->getWalletByCurrencyId($walletTransaction->currency_id)->hasAmount($amount)) {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery()
                         ->build();
@@ -370,21 +369,15 @@ class WalletController extends Controller
                     $amount = WalletTransaction::MIN_AMOUNT;
                 }
 
-                $walletTransactionModel['amount'] = $amount;
-                $this->getState()->setIntermediateFieldArray('WalletTransaction', $walletTransactionModel);
+                $walletTransaction->amount = $amount;
+                $this->getState()->setIntermediateModel($walletTransaction);
             }
         }
-
-        $toUser = User::findOne($walletTransactionModel['to_user_id']);
-        $currency = Currency::findOne($walletTransactionModel['currency_id']);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('confirm-transaction', [
-                    'amount' => $amount,
-                    'toUser' => $toUser,
-                    'currency' => $currency,
-
+                    'walletTransaction' => $walletTransaction,
                 ]),
                 [
                     [
@@ -397,7 +390,7 @@ class WalletController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('view', [
-                                'id' => $walletTransactionModel['currency_id'],
+                                'id' => $walletTransaction->currency_id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -416,20 +409,10 @@ class WalletController extends Controller
      */
     public function actionConfirmTransaction()
     {
-        $walletTransactionModel = $this->getState()->getIntermediateFieldArray('WalletTransaction');
-
-        $walletTransaction = new WalletTransaction();
-        $walletTransaction->currency_id = $walletTransactionModel['currency_id'];
-        $walletTransaction->from_user_id = $walletTransactionModel['from_user_id'];
-        $walletTransaction->to_user_id = $walletTransactionModel['to_user_id'];
-        $walletTransaction->amount = $walletTransactionModel['amount'];
-        $walletTransaction->type = $walletTransactionModel['type'];
-        $walletTransaction->anonymity = $walletTransactionModel['anonymity'];
+        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
         if ($this->getGlobalUser()->createTransaction($walletTransaction)) {
-            $this->getState()->setIntermediateFieldArray('WalletTransaction', null);
-
-            return $this->actionView($walletTransactionModel['currency_id']);
+            return $this->actionView($walletTransaction->currency_id);
         }
 
         return $this->getResponseBuilder()

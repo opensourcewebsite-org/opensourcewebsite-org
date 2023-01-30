@@ -62,8 +62,6 @@ class TipController extends Controller
                 ]);
 
                 $chatTip->save();
-
-                $chatTipId = $chatTip->id;
             }
         } else {
             $chatTip = ChatTip::findOne($chatTipId);
@@ -90,7 +88,7 @@ class TipController extends Controller
                     [
                         [
                             'callback_data' => SendGroupTipController::createRoute('index', [
-                                'chatTipId' => $chatTipId,
+                                'chatTipId' => $chatTip->id,
                             ]),
                             'text' => Yii::t('bot', 'Tip'),
                         ],
@@ -171,7 +169,7 @@ class TipController extends Controller
         $toUser = $chatTipWalletTransaction->walletTransaction->toUser->botUser;
 
         // find all transactions for tip message
-        $walletTransactions = $chatTipWalletTransaction->getWalletTransactionsByChatTipId($chatTip->id);
+        $walletTransactions = $chatTip->getWalletTransactions()->all();
 
         // calculate amount according to currency
         $totalAmounts = [];
