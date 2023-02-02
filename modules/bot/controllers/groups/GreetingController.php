@@ -87,6 +87,7 @@ class GreetingController extends Controller
                         [
                             'disablePreview' => true,
                             'disableNotification' => true,
+                            'replyToMessageId' => $this->getMessage()->getMessageThreadId(),
                         ]
                     )
                     ->send();
