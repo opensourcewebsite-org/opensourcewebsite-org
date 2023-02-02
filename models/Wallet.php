@@ -112,4 +112,8 @@ class Wallet extends ActiveRecord
 
         return false;
     }
+
+    public function getAmountWithFee(): float {
+        return $this->amount - WalletTransaction::FEE;
+    }
 }

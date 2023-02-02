@@ -38,7 +38,8 @@ class TipController extends Controller
 
         if (!isset($chatTipId)) {
             $chat = $this->getTelegramChat();
-            if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
+
+            if ($chat->isGroup() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
                 $toUser = User::findOne([
                     'provider_user_id' => $replyMessage->getFrom()->getId(),
                     'is_bot' => 0,
@@ -73,6 +74,13 @@ class TipController extends Controller
             }
 
             $chat = $chatTip->chat;
+
+            if ($this->getTelegramChat()->getChatId() != $chat->getChatId()) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
+            }
+
             $toUser = $chatTip->toUser;
         }
 
@@ -107,25 +115,68 @@ class TipController extends Controller
     }
 
     /**
-     * @param int $chatTipWalletTransactionId
+     * @param int $chatTipId ChatTip->id
      *
      * @return array
      */
-    public function actionShowTipMessage($chatTipWalletTransactionId = null)
+    public function actionTipMessage($chatTipId = null)
     {
-        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['id' => $chatTipWalletTransactionId]);
-        $chatTip = $chatTipWalletTransaction->chatTip;
-        $walletTransaction = $chatTipWalletTransaction->walletTransaction;
-        $toUser = $walletTransaction->toUser->botUser;
-        $currency = $walletTransaction->currency;
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if (!isset($chatTip)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $toUser = $chatTip->toUser;
+
+        // find all transactions for tip message
+        $walletTransactions = $chatTip->getWalletTransactions()->all();
+
+        // calculate amount according to currency
+        $totalAmounts = [];
+        foreach ($walletTransactions as $transaction) {
+            if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
+                $totalAmounts[$transaction->currency->code] = $transaction->amount;
+            } else {
+                $totalAmounts[$transaction->currency->code] += $transaction->amount;
+            }
+        }
+
+        if ($chatTip->message_id) {
+            // edit message
+            return $this->getResponseBuilder()
+                ->editMessage(
+                    $chatTip->message_id,
+                    $this->render('tip-message', [
+                        'totalAmounts' => $totalAmounts,
+                        'toUser' => $toUser,
+                    ]),
+                    [
+                        [
+                            [
+                                'callback_data' => self::createRoute('index', [
+                                    'chatTipId' => $chatTip->id,
+                                ]),
+                                'text' => Yii::t('bot', 'Tip'),
+                            ],
+                        ],
+                    ],
+                    [
+                        'disablePreview' => true,
+                        'disableNotification' => true,
+                    ]
+                )
+                ->build();
+        }
 
         // send message
         $response = $this->getResponseBuilder()
             ->sendMessage(
-                $this->render('show-tip-message', [
+                $this->render('tip-message', [
+                    'totalAmounts' => $totalAmounts,
                     'toUser' => $toUser,
-                    'amount' => $walletTransaction->getAmount(),
-                    'code' => $currency->code,
                 ]),
                 [
                     [
@@ -154,56 +205,6 @@ class TipController extends Controller
 
         return $this->getResponseBuilder()
             ->answerCallbackQuery()
-            ->build();
-    }
-
-    /**
-     * @param int $chatTipWalletTransactionId
-     *
-     * @return array
-     */
-    public function actionUpdateTipMessage($chatTipWalletTransactionId)
-    {
-        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['id' => $chatTipWalletTransactionId]);
-        $chatTip = $chatTipWalletTransaction->chatTip;
-        $toUser = $chatTipWalletTransaction->walletTransaction->toUser->botUser;
-
-        // find all transactions for tip message
-        $walletTransactions = $chatTip->getWalletTransactions()->all();
-
-        // calculate amount according to currency
-        $totalAmounts = [];
-        foreach ($walletTransactions as $transaction) {
-            if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
-                $totalAmounts[$transaction->currency->code] = $transaction->amount;
-            } else {
-                $totalAmounts[$transaction->currency->code] += $transaction->amount;
-            }
-        }
-
-        // edit message
-        return $this->getResponseBuilder()
-            ->editMessage(
-                $chatTip->message_id,
-                $this->render('update-tip-message', [
-                    'totalAmounts' => $totalAmounts,
-                    'toUser' => $toUser,
-                ]),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('index', [
-                                'chatTipId' => $chatTip->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Tip'),
-                        ],
-                    ],
-                ],
-                [
-                    'disablePreview' => true,
-                    'disableNotification' => true,
-                ]
-            )
             ->build();
     }
 }

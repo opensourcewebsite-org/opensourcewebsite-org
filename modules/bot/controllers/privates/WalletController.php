@@ -318,6 +318,12 @@ class WalletController extends Controller
     {
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         if ($text = $this->getMessage()->getText()) {
             if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
                 $username = ltrim($matches[0], '@');
@@ -351,12 +357,18 @@ class WalletController extends Controller
     public function actionInputAmount()
     {
         $this->getState()->setName(self::createRoute('input-amount'));
+
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         $amount = 0;
         if ($this->getUpdate()->getMessage()) {
-            if ((float)$this->getUpdate()->getMessage()->getText()) {
-                $amount = (float)$this->getUpdate()->getMessage()->getText();
+            if ($amount = (float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = number_format($amount, 2, '.', '');
 
                 if (!$this->getGlobalUser()->getWalletByCurrencyId($walletTransaction->currency_id)->hasAmount($amount)) {
@@ -411,7 +423,15 @@ class WalletController extends Controller
     {
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         if ($this->getGlobalUser()->createTransaction($walletTransaction)) {
+            $this->getState()->clearIntermediateModel(WalletTransaction::class);
+
             return $this->actionView($walletTransaction->currency_id);
         }
 

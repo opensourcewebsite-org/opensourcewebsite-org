@@ -29,7 +29,7 @@ class SendGroupTipController extends Controller
     {
         $chatTip = ChatTip::findOne($chatTipId);
 
-        if (!isset($chatTip) || !$chatTip->chat->isGroup()) {
+        if (!isset($chatTip)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -54,7 +54,21 @@ class SendGroupTipController extends Controller
      */
     public function actionChooseWallet($chatTipId = null, $currencyId = null, $page = 1)
     {
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if (!isset($chatTip)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         if ($currencyId) {
             $currency = Currency::findOne([
@@ -136,69 +150,80 @@ class SendGroupTipController extends Controller
      */
     public function actionSetAmount($chatTipId = null)
     {
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if (!isset($chatTip)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         $this->getState()->setName(self::createRoute('set-amount', [
             'chatTipId' => $chatTipId,
         ]));
 
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
         $currency = $walletTransaction->currency;
+        $fromUserWallet = $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
 
-        if ($currency) {
-            $fromUserWallet = $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
+        if ($this->getUpdate()->getMessage()) {
+            if ($amount = (float)$this->getUpdate()->getMessage()->getText()) {
+                $amount = number_format($amount, 2, '.', '');
 
-            if ($this->getUpdate()->getMessage()) {
-                if ((float)$this->getUpdate()->getMessage()->getText()) {
-                    $amount = (float)$this->getUpdate()->getMessage()->getText();
-                    $amount = number_format($amount, 2, '.', '');
-
-                    if (!$fromUserWallet->hasAmount($amount)) {
-                        return $this->getResponseBuilder()
-                            ->answerCallbackQuery()
-                            ->build();
-                    }
-
-                    if ($amount < WalletTransaction::MIN_AMOUNT) {
-                        $amount = WalletTransaction::MIN_AMOUNT;
-                    }
-
-                    $walletTransaction->amount = $amount;
-                    $this->getState()->setIntermediateModel($walletTransaction);
-
+                if (!$fromUserWallet->hasAmount($amount)) {
                     return $this->getResponseBuilder()
-                        ->editMessageTextOrSendMessage(
-                            $this->render('confirm-transaction', [
-                                'walletTransaction' => $walletTransaction,
-                            ]),
-                            [
-                                [
-                                    [
-                                        'callback_data' => self::createRoute('confirm-transaction', [
-                                            'chatTipId' => $chatTipId,
-                                        ]),
-                                        'text' => 'Confirm',
-                                    ],
-                                ],
-                                [
-                                    [
-                                        'callback_data' => self::createRoute('choose-wallet'),
-                                        'text' => Emoji::BACK,
-                                    ],
-                                    [
-                                        'callback_data' => MenuController::createRoute(),
-                                        'text' => Emoji::MENU,
-                                    ],
-                                ],
-                            ]
-                        )
+                        ->answerCallbackQuery()
                         ->build();
                 }
+
+                if ($amount < WalletTransaction::MIN_AMOUNT) {
+                    $amount = WalletTransaction::MIN_AMOUNT;
+                }
+
+                $walletTransaction->amount = $amount;
+                $this->getState()->setIntermediateModel($walletTransaction);
+
+                return $this->getResponseBuilder()
+                    ->editMessageTextOrSendMessage(
+                        $this->render('confirm-transaction', [
+                            'walletTransaction' => $walletTransaction,
+                        ]),
+                        [
+                            [
+                                [
+                                    'callback_data' => self::createRoute('confirm-transaction', [
+                                        'chatTipId' => $chatTipId,
+                                    ]),
+                                    'text' => 'Confirm',
+                                ],
+                            ],
+                            [
+                                [
+                                    'callback_data' => self::createRoute('choose-wallet'),
+                                    'text' => Emoji::BACK,
+                                ],
+                                [
+                                    'callback_data' => MenuController::createRoute(),
+                                    'text' => Emoji::MENU,
+                                ],
+                            ],
+                        ]
+                    )
+                    ->build();
             }
         }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('set-amount', [
-                    'maxAmount' => $fromUserWallet->amount - WalletTransaction::FEE,
+                    'maxAmount' => $fromUserWallet->getAmountWithFee(),
                     'code' => $currency->code,
                 ]),
                 [
@@ -234,71 +259,69 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $toUser = $chatTip->toUser;
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $toUser = $chatTip->toUser;
         $currency = $walletTransaction->currency;
 
-        if ($currency) {
-            if (!$this->getGlobalUser()->createTransaction($walletTransaction)) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
-            }
+        if (!$this->getGlobalUser()->createTransaction($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
-            $thisChat = $this->getTelegramChat();
+        $thisChat = $this->getTelegramChat();
 
-            $module = Yii::$app->getModule('bot');
-            $module->setChat(Chat::findOne($chatTip->chat_id));
+        $module = Yii::$app->getModule('bot');
+        $module->setChat(Chat::findOne($chatTip->chat_id));
 
-            // create new ChatTipWalletTransaction record
-            $chatTipWalletTransaction = new ChatTipWalletTransaction([
-                'chat_tip_id' => $chatTip->id,
-                'transaction_id' => $walletTransaction->id,
-            ]);
+        // create new ChatTipWalletTransaction record
+        $chatTipWalletTransaction = new ChatTipWalletTransaction([
+            'chat_tip_id' => $chatTip->id,
+            'transaction_id' => $walletTransaction->id,
+        ]);
 
-            $chatTipWalletTransaction->save();
+        $chatTipWalletTransaction->save();
 
-            if (isset($chatTip->message_id)) {
-                // update tip message
-                $response = $module->runAction('tip/update-tip-message', [
-                    'chatTipWalletTransactionId' => $chatTipWalletTransaction->id,
-                ]);
-            } else {
-                // send tip message
-                $response = $module->runAction('tip/show-tip-message', [
-                    'chatTipWalletTransactionId' => $chatTipWalletTransaction->id,
-                ]);
-            }
+        $response = $module->runAction('tip/tip-message', [
+            'chatTipId' => $chatTip->id,
+        ]);
 
-            $module->setChat($thisChat);
-            $this->getState()->setIntermediateFieldArray('WalletTransaction', null);
+        $module->setChat($thisChat);
+        $this->getState()->clearIntermediateModel(WalletTransaction::class);
+        $this->getState()->setName(null);
 
-            // send response to private chat
-            if ($response) {
-                $toUser->sendMessage(
-                    $this->render('receiver-privates-success', [
+        // send response to private chat
+        if ($response) {
+            $toUser->sendMessage(
+                $this->render('receiver-privates-success', [
+                    'walletTransaction' => $walletTransaction,
+                    'toUserWallet' => $toUser->getWalletByCurrencyId($currency->id),
+                ]),
+                []
+            );
+
+            return $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('success', [
                         'walletTransaction' => $walletTransaction,
-                        'toUserWallet' => $toUser->getWalletByCurrencyId($currency->id),
                     ]),
-                    []
-                );
-
-                return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('success', [
-                            'walletTransaction' => $walletTransaction,
-                        ]),
+                    [
                         [
                             [
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => Emoji::MENU,
-                                ],
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => Emoji::MENU,
                             ],
-                        ]
-                    )
-                    ->build();
-            }
+                        ],
+                    ]
+                )
+                ->build();
         }
 
         return $this->getResponseBuilder()

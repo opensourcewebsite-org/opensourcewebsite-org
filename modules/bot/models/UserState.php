@@ -111,14 +111,11 @@ class UserState
 
     public function setIntermediateModel($model, $modelName = null)
     {
-        $attributes = [
-            'currency_id' => $model->currency_id,
-            'from_user_id' => $model->from_user_id,
-            'to_user_id' => $model->to_user_id,
-            'amount' => $model->amount,
-            'type' => $model->type,
-            'anonymity' => $model->anonymity,
-        ];
+        $attributes = [];
+
+        foreach ($model as $key => $value) {
+            $attributes[$key] = $value;
+        }
 
         if (!isset($modelName)) {
             $modelName = $this->getModelName(get_class($model));
@@ -126,6 +123,15 @@ class UserState
 
         $this->setIntermediateFieldArray($modelName, $attributes);
         $this->model = $model;
+    }
+
+    public function clearIntermediateModel($modelClass = null)
+    {
+        $this->model = null;
+
+        if (isset($modelClass)) {
+            unset($this->fields['intermediate'][$this->getModelName($modelClass)]);
+        }
     }
 
     private function getModelName($modelClass): string
