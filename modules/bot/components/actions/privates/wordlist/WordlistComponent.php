@@ -74,6 +74,7 @@ class WordlistComponent extends \yii\base\Component
         $prefix = isset($this->actionGroupName) ? $this->actionGroupName . '-' : '';
 
         $listActionId = $prefix . ($this->short ? 'w-l' : 'word-list');
+        $viewListActionId = $prefix . ($this->short ? 'w-v-l' : 'word-view-list');
         $viewActionId = $prefix . ($this->short ? 'w-v' : 'word-view');
         $selectActionId = $prefix . ($this->short ? 'w-s' : 'word-select');
         $enterActionId = $prefix . ($this->short ? 'w-e' : 'word-enter');
@@ -89,11 +90,19 @@ class WordlistComponent extends \yii\base\Component
             $listActionId => [
                 'class' => ListAction::class,
                 'wordModelClass' => $this->wordModelClass,
+                'viewListActionId' => $viewListActionId,
                 'viewActionId' => $viewActionId,
                 'selectActionId' => $selectActionId,
                 'enterActionId' => $enterActionId,
                 'modelAttributes' => $this->modelAttributes,
                 'options' => $this->options,
+            ],
+            // word view list
+            $viewListActionId => [
+                'class' => ViewListAction::class,
+                'wordModelClass' => $this->wordModelClass,
+                'listActionId' => $listActionId,
+                'modelAttributes' => $this->modelAttributes,
             ],
             // word view
             $viewActionId => [
