@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\helpers\Number;
 use app\models\Currency;
 use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
@@ -183,7 +184,7 @@ class SendGroupTipController extends Controller
                         ->build();
                 }
 
-                if ($amount < WalletTransaction::MIN_AMOUNT) {
+                if (Number::isFloatLower($amount, WalletTransaction::MIN_AMOUNT)) {
                     $amount = WalletTransaction::MIN_AMOUNT;
                 }
 
@@ -206,7 +207,9 @@ class SendGroupTipController extends Controller
                             ],
                             [
                                 [
-                                    'callback_data' => self::createRoute('choose-wallet'),
+                                    'callback_data' => self::createRoute('choose-wallet', [
+                                        'chatTipId' => $chatTipId,
+                                    ]),
                                     'text' => Emoji::BACK,
                                 ],
                                 [
@@ -223,7 +226,7 @@ class SendGroupTipController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('set-amount', [
-                    'maxAmount' => $fromUserWallet->getAmountWithFee(),
+                    'maxAmount' => $fromUserWallet->getAmountMinusFee(),
                     'code' => $currency->code,
                 ]),
                 [

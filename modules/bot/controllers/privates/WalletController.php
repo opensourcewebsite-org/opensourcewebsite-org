@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\helpers\Number;
 use app\models\Currency;
 use app\models\Wallet;
 use app\models\WalletTransaction;
@@ -96,16 +97,7 @@ class WalletController extends Controller
      */
     public function actionView($id = null)
     {
-        $wallet = Wallet::findOne([
-            'currency_id' => $id,
-            'user_id' => $this->globalUser->id,
-        ]);
-
-        if (!$wallet) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $wallet = $this->getGlobalUser()->getWalletByCurrencyId($id);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -119,7 +111,7 @@ class WalletController extends Controller
                                 'id' => $wallet->getCurrencyId(),
                             ]),
                             'text' => Yii::t('bot', 'Send'),
-                            'visible' => $wallet->amount > 0,
+                            'visible' => Number::isFloatGreater($wallet->amount, 0),
                         ],
                     ],
                     [
@@ -145,7 +137,7 @@ class WalletController extends Controller
                                 'id' => $wallet->getCurrencyId(),
                             ]),
                             'text' => Emoji::DELETE,
-                            'visible' => ($wallet->amount == 0) && !$wallet->getTransactions()->exists(),
+                            'visible' => (Number::isFloatEqual($wallet->amount, 0)) && !$wallet->getTransactions()->exists(),
                         ],
                     ],
                 ]
@@ -168,6 +160,7 @@ class WalletController extends Controller
 
             if ($currency) {
                 $this->getGlobalUser()->getWalletByCurrencyId($currency->id);
+
                 return $this->actionView($currency->id);
             }
         }
@@ -377,7 +370,7 @@ class WalletController extends Controller
                         ->build();
                 }
 
-                if ($amount < WalletTransaction::MIN_AMOUNT) {
+                if (Number::isFloatLower($amount, WalletTransaction::MIN_AMOUNT)) {
                     $amount = WalletTransaction::MIN_AMOUNT;
                 }
 

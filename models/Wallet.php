@@ -2,8 +2,9 @@
 
 namespace app\models;
 
+use app\helpers\Number;
 use app\models\queries\WalletQuery;
-use Yii;
+use app\models\traits\FloatAttributeTrait;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -19,6 +20,8 @@ use yii\db\ActiveRecord;
  */
 class Wallet extends ActiveRecord
 {
+    use FloatAttributeTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -102,18 +105,18 @@ class Wallet extends ActiveRecord
 
     public function hasAmount($amount = null): bool
     {
-        if (!isset($amount) || ($amount < WalletTransaction::MIN_AMOUNT)) {
+        if (!isset($amount) || (Number::isFloatLower($amount, WalletTransaction::MIN_AMOUNT))) {
             $amount = WalletTransaction::MIN_AMOUNT;
         }
 
-        if ($this->amount >= ($amount + WalletTransaction::FEE)) {
+        if (Number::isFloatGreaterE($this->amount, $amount + WalletTransaction::FEE)) {
             return true;
         }
 
         return false;
     }
 
-    public function getAmountWithFee(): float {
-        return $this->amount - WalletTransaction::FEE;
+    public function getAmountMinusFee(): float {
+        return Number::floatSub($this->amount, WalletTransaction::FEE);
     }
 }

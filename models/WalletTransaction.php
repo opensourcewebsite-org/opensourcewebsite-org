@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\helpers\Number;
+use app\models\traits\FloatAttributeTrait;
 use app\modules\bot\models\ChatTipWalletTransaction;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -26,6 +28,8 @@ use yii\db\ActiveRecord;
  */
 class WalletTransaction extends ActiveRecord
 {
+    use FloatAttributeTrait;
+
     // fee for internal transactions in source currency
     public const FEE = 0.01;
     public const MIN_AMOUNT = 0.01;
@@ -144,5 +148,9 @@ class WalletTransaction extends ActiveRecord
     public function getAnonymity()
     {
         return $this->anonymity;
+    }
+
+    public function getAmountPlusFee(): float {
+        return Number::floatAdd($this->amount, self::FEE);
     }
 }

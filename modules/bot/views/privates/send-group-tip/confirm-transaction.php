@@ -9,5 +9,5 @@ use app\models\WalletTransaction;
 <?php if ($walletTransaction->amount && $walletTransaction->currency->code) : ?>
 <?= Yii::t('bot', 'Amount') ?>: <?= $walletTransaction->amount ?> <?= $walletTransaction->currency->code ?><br/>
 <?= Yii::t('bot', 'Fee') ?>: <?= WalletTransaction::FEE ?> <?= $walletTransaction->currency->code ?><br/>
-<?= Yii::t('bot', 'Total amount') ?>: <?= WalletTransaction::FEE + $walletTransaction->amount ?> <?= $walletTransaction->currency->code ?><br/>
+<?= Yii::t('bot', 'Total amount') ?>: <?= $walletTransaction->getAmountPlusFee() ?> <?= $walletTransaction->currency->code ?><br/>
 <?php endif; ?>

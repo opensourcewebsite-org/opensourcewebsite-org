@@ -2,14 +2,12 @@
 
 namespace app\modules\bot\controllers\groups;
 
-use app\models\WalletTransaction;
+use app\helpers\Number;
 use app\modules\bot\components\Controller;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\controllers\privates\SendGroupTipController;
-use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTip;
-use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
 use Yii;
 
@@ -140,7 +138,7 @@ class TipController extends Controller
             if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
                 $totalAmounts[$transaction->currency->code] = $transaction->amount;
             } else {
-                $totalAmounts[$transaction->currency->code] += $transaction->amount;
+                $totalAmounts[$transaction->currency->code] = Number::floatAdd($totalAmounts[$transaction->currency->code], $transaction->amount);
             }
         }
 
