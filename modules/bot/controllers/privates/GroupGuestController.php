@@ -43,6 +43,16 @@ class GroupGuestController extends Controller
         if ($chatMember) {
             $buttons[] = [
                 [
+                    'callback_data' => self::createRoute('remove-membership', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'Remove membership'),
+                    'visible' => !$chatMember->checkMembership()
+                ],
+            ];
+
+            $buttons[] = [
+                [
                     'callback_data' => self::createRoute('input-intro-text', [
                         'id' => $chatMember->id,
                     ]),
@@ -489,6 +499,35 @@ class GroupGuestController extends Controller
                 $this->render('members-with-reviews'),
                 $buttons
             )
+            ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     *
+     * @return array
+     */
+    public function actionRemoveMembership($id = null)
+    {
+        $chatMember = ChatMember::findOne($id);
+
+        if (isset($chatMember) && $chatMember->getUserId() == $this->getTelegramUser()->getId()) {
+            // remove membership
+            $chatMember->membership_date = null;
+            $chatMember->membership_note = null;
+            $chatMember->membership_tariff_price = null;
+            $chatMember->membership_tariff_days = null;
+
+            // remove limiter
+            $chatMember->limiter_date = null;
+
+            $chatMember->save();
+
+            return $this->actionView($chatMember->chat_id);
+        }
+
+        return $this->getResponseBuilder()
+            ->answerCallbackQuery()
             ->build();
     }
 }
