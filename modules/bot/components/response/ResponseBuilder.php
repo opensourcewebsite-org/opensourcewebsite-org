@@ -284,12 +284,12 @@ class ResponseBuilder
     ): array {
         foreach ($replyMarkup as $key1 => $array1) {
             foreach ($array1 as $key2 => $array2) {
-                // remove all items vith visible = 0
+                // remove all items with visible = 0
                 if (isset($array2['visible'])) {
                     if ($array2['visible']) {
                         unset($replyMarkup[$key1][$key2]['visible']);
                     } else {
-                        unset($replyMarkup[$key1][$key2]);
+                        array_splice($replyMarkup[$key1], $key2, 1);
                     }
                 }
             }

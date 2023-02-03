@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace app\modules\bot\models;
 
+use yii\db\ActiveRecord;
+
 /**
  * Class UserState
  *
@@ -12,6 +14,8 @@ namespace app\modules\bot\models;
 class UserState
 {
     private $fields = [];
+    /** @var object */
+    private $model = null;
 
     private function __construct()
     {
@@ -74,6 +78,67 @@ class UserState
     public function setIntermediateFieldArray(string $name, ?array $value)
     {
         $this->fields['intermediate'][$name] = $value;
+    }
+
+    public function getIntermediateModel($modelClass = null)
+    {
+        if (isset($this->model)) {
+            return $this->model;
+        }
+
+        if (isset($this->fields['intermediate'])) {
+            $intermediate = $this->fields['intermediate'];
+            if (isset($modelClass)) {
+                try {
+                    $this->model = \Yii::createObject([
+                        'class' => $modelClass,
+                    ]);
+
+                    if ($this->model instanceof ActiveRecord) {
+                        $this->model->setAttributes($intermediate[$this->getModelName($modelClass)]);
+
+                        return $this->model;
+                    }
+                } catch (\Throwable $e) {
+                    \Yii::error($e->getMessage());
+                    return null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function setIntermediateModel($model, $modelName = null)
+    {
+        $attributes = [];
+
+        foreach ($model as $key => $value) {
+            $attributes[$key] = $value;
+        }
+
+        if (!isset($modelName)) {
+            $modelName = $this->getModelName(get_class($model));
+        }
+
+        $this->setIntermediateFieldArray($modelName, $attributes);
+        $this->model = $model;
+    }
+
+    public function clearIntermediateModel($modelClass = null)
+    {
+        $this->model = null;
+
+        if (isset($modelClass)) {
+            unset($this->fields['intermediate'][$this->getModelName($modelClass)]);
+        }
+    }
+
+    private function getModelName($modelClass): string
+    {
+        $parts = explode('\\', $modelClass);
+
+        return strtolower(array_pop($parts));
     }
 
     public function save(User $user)

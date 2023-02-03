@@ -5,8 +5,8 @@ namespace app\models;
 use app\components\Converter;
 use app\components\helpers\Html;
 use app\models\queries\ContactQuery;
-use app\models\queries\DebtRedistributionQuery;
 use app\models\queries\UserQuery;
+use app\models\queries\WalletQuery;
 use app\modules\bot\models\User as BotUser;
 use Yii;
 use yii\base\NotSupportedException;
@@ -1220,5 +1220,82 @@ class User extends ActiveRecord implements IdentityInterface
     public function getWallets(): ActiveQuery
     {
         return $this->hasMany(Wallet::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * @param int $currencyId Currency->id
+     *
+     * @return ActiveRecord
+     */
+    public function getWalletByCurrencyId($currencyId)
+    {
+        $transaction = ActiveRecord::getDb()->beginTransaction();
+        try {
+            $wallet = Wallet::findOne([
+                'currency_id' => $currencyId,
+                'user_id' => $this->id,
+            ]);
+
+            if (!isset($wallet)) {
+                $wallet = new Wallet();
+                $wallet->currency_id = $currencyId;
+                $wallet->user_id = $this->id;
+                $wallet->save();
+            }
+
+            $transaction->commit();
+
+            return $wallet;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Yii::error($e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * @return WalletQuery
+     */
+    public function getWalletsWithPositiveBalance()
+    {
+        return Wallet::find()
+            ->where(['user_id' => $this->id])
+            ->andWhere(['>', Wallet::tableName() . '.amount', 0])
+            ->orderByCurrencyCode();
+    }
+
+    /**
+     * @param WalletTransaction  $walletTransaction
+     *
+     * @return bool
+     */
+    public function createTransaction($walletTransaction)
+    {
+        $transaction = ActiveRecord::getDb()->beginTransaction();
+        try {
+            if ($walletTransaction->validate()) {
+                $fromUserWallet = $this->getWalletByCurrencyId($walletTransaction->currency_id);
+                $toUserWallet = $walletTransaction->toUser->getWalletByCurrencyId($walletTransaction->currency_id);
+
+                if (($fromUserWallet->amount - $walletTransaction->amount - $walletTransaction->fee) < 0) {
+                    return false;
+                }
+
+                $toUserWallet->amount += $walletTransaction->amount;
+                $toUserWallet->save();
+
+                $fromUserWallet->amount -= $walletTransaction->amount + $walletTransaction->fee;
+                $fromUserWallet->save();
+
+                $walletTransaction->save();
+            }
+
+            $transaction->commit();
+            return true;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Yii::error($e->getMessage());
+        }
     }
 }

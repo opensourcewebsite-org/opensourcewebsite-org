@@ -21,6 +21,7 @@ abstract class BaseAction extends Action
     public $wordModelClass;
     public $modelAttributes = [];
     public $listActionId = 'w-l';
+    public $viewListActionId = 'w-v-l';
     public $viewActionId = 'w-v';
     public $selectActionId = 'w-s';
     public $enterActionId = 'w-e';
