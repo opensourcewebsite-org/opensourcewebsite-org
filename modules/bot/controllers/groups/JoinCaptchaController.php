@@ -75,6 +75,7 @@ class JoinCaptchaController extends Controller
                         ],
                         [
                             'disableNotification' => true,
+                            'replyToMessageId' => $this->getMessage()->getMessageThreadId(),
                         ]
                     )
                     ->send();
