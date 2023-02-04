@@ -43,6 +43,16 @@ class GroupGuestController extends Controller
         if ($chatMember) {
             $buttons[] = [
                 [
+                    'callback_data' => self::createRoute('remove-membership', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'Remove membership'),
+                    'visible' => !$chatMember->checkMembership()
+                ],
+            ];
+
+            $buttons[] = [
+                [
                     'callback_data' => self::createRoute('input-intro-text', [
                         'id' => $chatMember->id,
                     ]),
@@ -490,5 +500,39 @@ class GroupGuestController extends Controller
                 $buttons
             )
             ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     *
+     * @return array
+     */
+    public function actionRemoveMembership($id = null)
+    {
+        $chatMember = ChatMember::findOne($id);
+
+        if (!isset($chatMember) || ($chatMember->getUserId() != $this->getTelegramUser()->getId())) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        // remove membership
+        $chatMember->membership_date = null;
+        $chatMember->membership_note = null;
+        $chatMember->membership_tariff_price = null;
+        $chatMember->membership_tariff_days = null;
+
+        // remove slow mode
+        $chatMember->slow_mode_messages_limit = null;
+        $chatMember->slow_mode_messages_skip_days = null;
+        $chatMember->slow_mode_messages_skip_hours = null;
+
+        // remove limiter
+        $chatMember->limiter_date = null;
+
+        $chatMember->save();
+
+        return $this->actionView($chatMember->chat_id);
     }
 }
