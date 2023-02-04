@@ -135,38 +135,41 @@ class MessageController extends Controller
                     if ($chat->filter_status == ChatSetting::STATUS_ON) {
                         if (($this->getMessage()->getText() !== null) || ($this->getMessage()->getLocation() !== null)) {
                             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
-                                $replyUser = User::findOne([
-                                    'provider_user_id' => $replyMessage->getFrom()->getId(),
-                                ]);
-
-                                if ($replyUser) {
-                                    $replyChatMember = ChatMember::findOne([
-                                        'chat_id' => $chat->id,
-                                        'user_id' => $replyUser->id,
+                                if (!$replyMessage->getForumTopicCreated()) {
+                                    $replyUser = User::findOne([
+                                        'provider_user_id' => $replyMessage->getFrom()->getId(),
                                     ]);
-                                }
 
-                                if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
-                                        $deleteMessage = true;
+                                    if ($replyUser) {
+                                        $replyChatMember = ChatMember::findOne([
+                                            'chat_id' => $chat->id,
+                                            'user_id' => $replyUser->id,
+                                        ]);
+                                    }
 
-                                        $telegramUser->sendMessage(
-                                            $this->render('/privates/warning-filter-remove-reply', [
-                                                'chat' => $chat,
-                                            ]),
-                                            [
+                                    if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
+                                        if (!isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
+                                            $deleteMessage = true;
+
+                                            $telegramUser->sendMessage(
+                                                $this->render('/privates/warning-filter-remove-reply', [
+                                                    'chat' => $chat,
+                                                ]),
                                                 [
                                                     [
-                                                        'callback_data' => GroupGuestController::createRoute('view', [
-                                                            'id' => $chat->id,
-                                                        ]),
-                                                        'text' => Yii::t('bot', 'Group View'),
+                                                        [
+                                                            'callback_data' => GroupGuestController::createRoute('view', [
+                                                                'id' => $chat->id,
+                                                            ]),
+                                                            'text' => Yii::t('bot', 'Group View'),
+                                                        ],
                                                     ],
-                                                ],
-                                            ]
-                                        );
+                                                ]
+                                            );
+                                        }
                                     }
                                 }
+
                             }
 
                             if (!$deleteMessage) {
@@ -179,7 +182,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_username == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if (mb_stripos($this->getMessage()->getText(), '@') !== false) {
                                             $deleteMessage = true;
 
@@ -205,7 +208,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if (preg_match('/(?:(\n\s))/i', $this->getMessage()->getText())) {
                                             // removes empty lines and indents, ignores spaces at the end of lines
                                             $deleteMessage = true;
@@ -251,7 +254,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_emoji == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if ($this->getMessage()->hasEmojis() || $this->getMessage()->hasCustomEmojis()) {
                                             $deleteMessage = true;
 
@@ -277,7 +280,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_locations == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if ($this->getMessage()->getLocation() !== null) {
                                             $deleteMessage = true;
 
@@ -303,7 +306,7 @@ class MessageController extends Controller
 
                             if (!$deleteMessage) {
                                 if ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON) {
-                                    if (!isset($replyMessage) || !isset($replyChatMember) || !$replyChatMember->isAdministrator()) {
+                                    if (!isset($replyMessage) || !isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                         if ($this->getMessage()->hasStyledTexts()) {
                                             $deleteMessage = true;
 
