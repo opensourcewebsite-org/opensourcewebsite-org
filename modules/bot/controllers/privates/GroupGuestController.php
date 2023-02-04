@@ -511,23 +511,28 @@ class GroupGuestController extends Controller
     {
         $chatMember = ChatMember::findOne($id);
 
-        if (isset($chatMember) && $chatMember->getUserId() == $this->getTelegramUser()->getId()) {
-            // remove membership
-            $chatMember->membership_date = null;
-            $chatMember->membership_note = null;
-            $chatMember->membership_tariff_price = null;
-            $chatMember->membership_tariff_days = null;
-
-            // remove limiter
-            $chatMember->limiter_date = null;
-
-            $chatMember->save();
-
-            return $this->actionView($chatMember->chat_id);
+        if (!isset($chatMember) || ($chatMember->getUserId() != $this->getTelegramUser()->getId())) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
-            ->build();
+        // remove membership
+        $chatMember->membership_date = null;
+        $chatMember->membership_note = null;
+        $chatMember->membership_tariff_price = null;
+        $chatMember->membership_tariff_days = null;
+
+        // remove slow mode
+        $chatMember->slow_mode_messages_limit = null;
+        $chatMember->slow_mode_messages_skip_days = null;
+        $chatMember->slow_mode_messages_skip_hours = null;
+
+        // remove limiter
+        $chatMember->limiter_date = null;
+
+        $chatMember->save();
+
+        return $this->actionView($chatMember->chat_id);
     }
 }

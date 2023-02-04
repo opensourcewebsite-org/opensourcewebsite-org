@@ -36,13 +36,6 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setIntermediateModel(new WalletTransaction([
-            'from_user_id' => $this->getTelegramUser()->getUserId(),
-            'to_user_id' => $chatTip->toUser->getUserId(),
-            'type' => 0,
-            'anonymity' => 0,
-        ]));
-
         return $this->actionChooseWallet($chatTipId);
     }
 
@@ -63,8 +56,6 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
-
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
@@ -82,13 +73,36 @@ class SendGroupTipController extends Controller
                     ->build();
             }
 
-            $walletTransaction->currency_id = $currency->id;
+            $walletTransaction = new WalletTransaction([
+                'from_user_id' => $this->getTelegramUser()->getUserId(),
+                'to_user_id' => $chatTip->toUser->getUserId(),
+                'type' => 0,
+                'anonymity' => 0,
+                'currency_id' => $currency->id,
+            ]);
+
             $this->getState()->setIntermediateModel($walletTransaction);
 
             return $this->actionSetAmount($chatTipId);
         }
 
         $query = $this->getGlobalUser()->getWalletsWithPositiveBalance();
+
+        if (!$query->count()) {
+            return $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('warning-no-wallets'),
+                    [
+                        [
+                            [
+                                'callback_data' => MenuController::createRoute(),
+                                'text' => 'OK',
+                            ],
+                        ],
+                    ]
+                )
+                ->build();
+        }
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),

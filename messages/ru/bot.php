@@ -646,4 +646,5 @@ return [
     'Delete the group and all settings?' => 'Удалить группу и все настройки?',
     'Delete the channel and all settings?' => 'Удалить канал и все настройки?',
     'User changed account information' => 'Пользователь изменил данные аккаунта',
+    'Remove membership' => 'Убрать членство',
 ];

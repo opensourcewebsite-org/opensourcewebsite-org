@@ -150,7 +150,8 @@ class WalletTransaction extends ActiveRecord
         return $this->anonymity;
     }
 
-    public function getAmountPlusFee(): float {
+    public function getAmountPlusFee(): float
+    {
         return Number::floatAdd($this->amount, self::FEE);
     }
 }
