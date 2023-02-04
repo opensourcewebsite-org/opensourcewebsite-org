@@ -2,8 +2,9 @@
 
 namespace app\models;
 
+use app\helpers\Number;
 use app\models\queries\WalletQuery;
-use Yii;
+use app\models\traits\FloatAttributeTrait;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -19,8 +20,7 @@ use yii\db\ActiveRecord;
  */
 class Wallet extends ActiveRecord
 {
-    // fee for internal transactions in source currency
-    public const TRANSACTION_FEE = 0.01;
+    use FloatAttributeTrait;
 
     /**
      * {@inheritdoc}
@@ -101,5 +101,23 @@ class Wallet extends ActiveRecord
     public function getInTransactions(): ActiveQuery
     {
         return $this->hasMany(WalletTransaction::class, ['currency_id' => 'currency_id', 'to_user_id' => 'user_id']);
+    }
+
+    public function hasAmount($amount = null): bool
+    {
+        if (!isset($amount) || (Number::isFloatLower($amount, WalletTransaction::MIN_AMOUNT))) {
+            $amount = WalletTransaction::MIN_AMOUNT;
+        }
+
+        if (Number::isFloatGreaterE($this->amount, $amount + WalletTransaction::FEE)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getAmountMinusFee(): float
+    {
+        return Number::floatSub($this->amount, WalletTransaction::FEE);
     }
 }
