@@ -18,11 +18,13 @@ class ChatIdController extends Controller
     public function actionIndex()
     {
         $chat = $this->getTelegramChat();
+        $topicId = $this->getMessage()->getMessageThreadId();
 
         return $this->getResponseBuilder()
             ->sendMessage(
                 $this->render('index', [
                     'chat' => $chat,
+                    'topicId' => $topicId,
                 ]),
                 [],
                 [
