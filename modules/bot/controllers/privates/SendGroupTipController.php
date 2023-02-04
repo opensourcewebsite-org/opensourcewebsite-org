@@ -56,12 +56,6 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        if (!isset($walletTransaction)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         if ($currencyId) {
             $currency = Currency::findOne([
                 'id' => $currencyId,
