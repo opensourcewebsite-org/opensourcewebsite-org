@@ -9,10 +9,10 @@ use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatMarketplacePost;
+use app\modules\bot\models\ChatPublisherPost;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\console\Controller;
-use yii\console\Exception;
 
 /**
  * Class TelegramBotController
@@ -29,6 +29,8 @@ class TelegramBotController extends Controller implements CronChainedInterface
         //$this->actionRemoveGreetingMessages();
         $this->actionUpdateMarketplacePostsNextSendAt();
         $this->actionSendMarketplaceMessages();
+        $this->actionUpdatePublisherPostsNextSendAt();
+        $this->actionSendPublisherMessages();
     }
 
     /**
@@ -266,6 +268,106 @@ class TelegramBotController extends Controller implements CronChainedInterface
 
         if ($sentCount) {
             $this->output('Marketplace. Posts sent to telegram groups: ' . $sentCount);
+        }
+
+        return true;
+    }
+
+    public function actionUpdatePublisherPostsNextSendAt()
+    {
+        $updatedCount = 0;
+
+        $models = ChatPublisherPost::find()
+            ->andWhere([
+                ChatPublisherPost::tableName() . '.status' => ChatPublisherPost::STATUS_ON,
+                ChatPublisherPost::tableName() . '.next_sent_at' => null,
+            ])
+            ->joinWith('chat.settings')
+            ->andWhere([
+                'and',
+                [ChatSetting::tableName() . '.setting' => 'publisher_status'],
+                [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+            ])
+            ->all();
+
+        if ($models) {
+            foreach ($models as $post) {
+                $this->debug('Post ID: ' . $post->id);
+
+                $post->setNextSendAt();
+                $post->save(false);
+
+                $this->debug('Next Send At: ' . $post->getNextSendAt());
+
+                $updatedCount++;
+            }
+
+        }
+
+        if ($updatedCount) {
+            $this->output('Publisher. Posts (nextSendAt) updated: ' . $updatedCount);
+        }
+
+        return true;
+    }
+
+    public function actionSendPublisherMessages()
+    {
+        $sentCount = 0;
+        $skipChatIds = [];
+
+        do {
+            $post = ChatPublisherPost::find()
+                ->andWhere([
+                    ChatPublisherPost::tableName() . '.status' => ChatPublisherPost::STATUS_ON,
+                ])
+                ->andWhere([
+                    '<', ChatPublisherPost::tableName() . '.next_sent_at', time(),
+                ])
+                ->andWhere([
+                    'not', [ChatPublisherPost::tableName() . '.next_sent_at' => null],
+                ])
+                ->andWhere([
+                    'not', [ChatPublisherPost::tableName() . '.chat_id' => $skipChatIds],
+                ])
+                ->joinWith('chat.settings')
+                ->andWhere([
+                    'and',
+                    [ChatSetting::tableName() . '.setting' => 'publisher_status'],
+                    [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                ])
+                ->one();
+
+            if ($post) {
+                $this->debug('Post ID: ' . $post->id);
+                $chat = $post->chat;
+
+                if (!isset($module)) {
+                    $module = Yii::$app->getModule('bot');
+                    $bot = new Bot();
+                    $module->setBot($bot);
+                }
+
+                $module->setChat($chat);
+                $response = $module->runAction('publisher/send-message', [
+                    'id' => $post->id,
+                ]);
+
+                if ($response) {
+                    $skipChatIds[] = $chat->id;
+                    $sentCount++;
+                    sleep(1);
+                }
+
+                $post->setNextSendAt();
+                $post->save(false);
+
+                $this->debug('Next Send At: ' . $post->getNextSendAt());
+            }
+        } while ($post);
+
+        if ($sentCount) {
+            $this->output('Publisher. Posts sent to telegram groups: ' . $sentCount);
         }
 
         return true;

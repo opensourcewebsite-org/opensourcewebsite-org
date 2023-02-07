@@ -179,6 +179,16 @@ class Setting extends ActiveRecord
             'default' => 1,
             'min' => 0,
         ],
+        'active_bot_group_publisher_quantity_value_per_one_rating' => [
+            'type' => 'float',
+            'default' => 1,
+            'more' => 0,
+        ],
+        'active_bot_group_publisher_min_quantity_value_per_one_user' => [
+            'type' => 'integer',
+            'default' => 1,
+            'min' => 0,
+        ],
         'company_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,

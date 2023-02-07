@@ -61,4 +61,5 @@ return [
     'public_channel_refresh',
     'group_notify_name_change',
     'group_tip',
+    'group_publisher',
 ];
