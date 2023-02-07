@@ -15,7 +15,6 @@ class m230205_133014_create_bot_chat_publisher_post_table extends Migration
         $this->createTable('{{%bot_chat_publisher_post}}', [
             'id' => $this->primaryKey()->unsigned(),
             'status' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
-            'title' => $this->string(),
             'text' => $this->text()->notNull(),
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'time' => $this->smallInteger()->unsigned()->notNull()->defaultValue(0),
