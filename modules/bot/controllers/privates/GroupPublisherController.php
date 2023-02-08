@@ -134,7 +134,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -142,7 +142,6 @@ class GroupPublisherController extends Controller
 
         $query = $chat->getPublisherPosts()
             ->orderBy([
-                'title' => SORT_ASC,
                 'id' => SORT_ASC,
             ]);
 
@@ -175,7 +174,7 @@ class GroupPublisherController extends Controller
                     'callback_data' => self::createRoute('post', [
                         'id' => $post->id,
                     ]),
-                    'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $post->id . ' ' . $post->title,
+                    'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $post->id,
                 ];
             }
 
@@ -234,7 +233,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -296,7 +295,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -399,7 +398,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -440,7 +439,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -501,7 +500,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -560,7 +559,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -627,7 +626,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -687,7 +686,7 @@ class GroupPublisherController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

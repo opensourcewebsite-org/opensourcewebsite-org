@@ -18,6 +18,8 @@ use yii\db\ActiveRecord;
  * @property string $text
  * @property int $time minutes (time of day)
  * @property int $chat_id Chat->id
+ * @property int topic_id
+ * @property int $status
  * @property int $skip_days
  * @property int $created_at
  * @property string|null $title
@@ -52,8 +54,7 @@ class ChatPublisherPost extends ActiveRecord
     {
         return [
             [['chat_id', 'text'], 'required'],
-            [['chat_id','status', 'time', 'skip_days', 'created_at', 'sent_at', 'next_sent_at', 'provider_message_id', 'processed_at'], 'integer'],
-            [['title'], 'string', 'max' => 255],
+            [['chat_id', 'topic_id','status', 'time', 'skip_days', 'created_at', 'sent_at', 'next_sent_at', 'provider_message_id', 'processed_at'], 'integer'],
             [['text'], 'string', 'max' => 10000],
             [['time'], 'default', 'value' => rand(0, 1439)],
             [['time'], 'integer', 'min' => 0, 'max' => 1439],
@@ -72,8 +73,8 @@ class ChatPublisherPost extends ActiveRecord
         return [
             'id' => 'ID',
             'chat_id' => 'Chat ID',
+            'topic_id' => 'Topic ID',
             'status' => Yii::t('app', 'Status'),
-            'title' => Yii::t('app', 'Title'),
             'text' => Yii::t('app', 'Text'),
             'time' => Yii::t('app', 'Time of day'),
             'skip_days' => Yii::t('app', 'Skip days'),
@@ -90,7 +91,6 @@ class ChatPublisherPost extends ActiveRecord
         return [
             [
                 'class' => TimestampBehavior::class,
-                'updatedAtAttribute' => false,
             ],
         ];
     }

@@ -59,13 +59,14 @@ class PublisherController extends Controller
         }
 
         $response = $this->getResponseBuilder()
-            ->sendMessage(
+            ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'post' => $post,
                 ]),
                 [],
                 [
                     'disablePreview' => true,
+                    'replyToMessageId' => $post->topic_id,
                 ]
             )
             ->send();

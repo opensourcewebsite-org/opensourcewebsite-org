@@ -32,7 +32,7 @@ class RepeatController extends Controller
         }
 
         if (!isset($time)) {
-            $offset = $this->getGlobalUser()->timezone;
+            $offset = $this->getTelegramChat()->timezone;
             $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($offset));
             $time = new DateTime('now', $dateTimeZone);
             $time = $time->format('H:i');
@@ -78,25 +78,23 @@ class RepeatController extends Controller
             $post = ChatPublisherPost::findOne([
                 'chat_id' => $chat->id,
                 'text'=>$replyMessage->getText(),
-                'status' => 1,
                 'time' => $postTime,
-                'skip_days' => $skipDays,
+                'topic_id' => $this->getMessage()->getMessageThreadId(),
             ]);
 
             if (isset($post)) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
+                $post->status = ChatPublisherPost::STATUS_ON;
+                $post->skip_days = $skipDays;
+            } else {
+                $post = new ChatPublisherPost([
+                    'chat_id' => $chat->id,
+                    'text'=>$replyMessage->getText(),
+                    'status' => ChatPublisherPost::STATUS_ON,
+                    'time' => $postTime,
+                    'skip_days' => $skipDays,
+                    'topic_id' => $this->getMessage()->getMessageThreadId(),
+                ]);
             }
-
-            // create new ChatPublisherPost
-            $post = new ChatPublisherPost([
-                'chat_id' => $chat->id,
-                'text'=>$replyMessage->getText(),
-                'status' => 1,
-                'time' => $postTime,
-                'skip_days' => $skipDays,
-            ]);
 
             $post->save();
 
@@ -113,7 +111,7 @@ class RepeatController extends Controller
                             'text' => Yii::t('bot', 'Post'),
                         ],
                     ],
-                ]
+                ],
             );
         }
 
