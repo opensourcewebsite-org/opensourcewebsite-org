@@ -65,6 +65,9 @@ class ChatSetting extends ActiveRecord
         'notify_name_change_status' => [
             'default' => self::STATUS_OFF,
         ],
+        'publisher_status' => [
+            'default' => self::STATUS_OFF,
+        ],
         'greeting_status' => [
             'default' => self::STATUS_OFF,
         ],
