@@ -83,14 +83,14 @@ class TipController extends Controller
 
             $toUser = $chatTip->toUser;
         }
-
         // check if $fromUser is a chat member && $fromUser is not tipping himself
         $fromChatMember = $chat->getChatMemberByUser($fromUser);
+
         if (isset($toUser) && isset($fromChatMember) && ($toUser->getId()) != $fromUser->getId()) {
             $fromUser->sendMessage(
                 $this->render('/privates/tip', [
                     'chat' => $chat,
-                    'toUser' => $toUser,
+                    'user' => $toUser,
                 ]),
                 [
                     [
@@ -98,13 +98,13 @@ class TipController extends Controller
                             'callback_data' => SendGroupTipController::createRoute('index', [
                                 'chatTipId' => $chatTip->id,
                             ]),
-                            'text' => Yii::t('bot', 'Tip'),
+                            'text' => Yii::t('bot', 'Send a Tip'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => DeleteMessageController::createRoute(),
-                            'text' => 'CANCEL',
+                            'text' => Yii::t('bot', 'CANCEL'),
                         ],
                     ],
                 ]
@@ -130,12 +130,11 @@ class TipController extends Controller
         }
 
         $toUser = $chatTip->toUser;
-
         // find all transactions for tip message
         $walletTransactions = $chatTip->getWalletTransactions()->all();
-
         // calculate amount according to currency
         $totalAmounts = [];
+
         foreach ($walletTransactions as $transaction) {
             if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
                 $totalAmounts[$transaction->currency->code] = $transaction->amount;
@@ -151,7 +150,7 @@ class TipController extends Controller
                     $chatTip->message_id,
                     $this->render('tip-message', [
                         'totalAmounts' => $totalAmounts,
-                        'toUser' => $toUser,
+                        'user' => $toUser,
                     ]),
                     [
                         [
@@ -173,7 +172,7 @@ class TipController extends Controller
                                 'callback_data' => self::createRoute('index', [
                                     'chatTipId' => $chatTip->id,
                                 ]),
-                                'text' => Yii::t('bot', 'Tip'),
+                                'text' => Yii::t('bot', 'Add a Tip'),
                             ],
                         ],
                     ],
@@ -212,7 +211,7 @@ class TipController extends Controller
                             'callback_data' => self::createRoute('index', [
                                 'chatTipId' => $chatTip->id,
                             ]),
-                            'text' => Yii::t('bot', 'Tip'),
+                            'text' => Yii::t('bot', 'Add a Tip'),
                         ],
                     ],
                 ],

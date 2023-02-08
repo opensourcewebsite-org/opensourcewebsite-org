@@ -34,6 +34,13 @@ class WalletTransaction extends ActiveRecord
     public const FEE = 0.01;
     public const MIN_AMOUNT = 0.01;
 
+    public function __construct()
+    {
+        $this->fee = self::FEE;
+
+        parent::__construct(...func_get_args());
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -115,6 +122,11 @@ class WalletTransaction extends ActiveRecord
         return $this->amount;
     }
 
+    public function getFee()
+    {
+        return $this->fee;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -152,6 +164,6 @@ class WalletTransaction extends ActiveRecord
 
     public function getAmountPlusFee(): float
     {
-        return Number::floatAdd($this->amount, self::FEE);
+        return $this->fee ? Number::floatAdd($this->amount, $this->fee) : $this->amount;
     }
 }

@@ -1,2 +1,1 @@
-<?= Yii::t('bot', 'Transactions') ?>.<br/>
-————————————————<br/>
+<b><?= Yii::t('bot', 'Transactions') ?></b><br/>

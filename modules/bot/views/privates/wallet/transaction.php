@@ -1,13 +1,7 @@
-<?php
-
-use app\models\WalletTransaction;
-
-?>
-<?= $date->format('Y-m-d H:i:s'); ?><br/>
+<b><?= Yii::t('bot', 'Transaction') ?> <?= Yii::$app->formatter->asDateTime($walletTransaction->getCreatedAt()); ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Sender') ?>: @<?= $walletTransaction->fromUser->botUser->getUsername() ?><br/>
 <?= Yii::t('bot', 'Receiver') ?>: @<?= $walletTransaction->toUser->botUser->getUsername() ?><br/>
+<br/>
 <?= Yii::t('bot', 'Amount') ?>: <?= $walletTransaction->getAmount() ?> <?= $walletTransaction->currency->code ?><br/>
-<?= Yii::t('bot', 'Fee') ?>: <?= $walletTransaction->fee ?: WalletTransaction::FEE  ?> <?= $walletTransaction->currency->code ?><br/>
-<?= Yii::t('bot', 'Type') ?>: <?= $walletTransaction->getType() ?><br/>
-<?= Yii::t('bot', 'Anonymity') ?>: <?= $walletTransaction->getAnonymity() ?>
+<?= Yii::t('bot', 'Fee') ?>: <?= $walletTransaction->fee ?> <?= $walletTransaction->currency->code ?><br/>

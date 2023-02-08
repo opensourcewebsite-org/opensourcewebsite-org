@@ -1,3 +1,3 @@
-<?= Yii::t('bot', 'Maximum tip size'); ?>: <?= $maxAmount . ' ' . $code; ?><br/>
-<br/>
-<?= Yii::t('bot', 'Enter amount'); ?>:
+<b><?= Yii::t('bot', 'Send amount for transfer'); ?>:</b><br/>
+————<br/>
+<i><?= Yii::t('bot', 'Available amount'); ?>: <?= $maxAmount . ' ' . $code; ?></i><br/>

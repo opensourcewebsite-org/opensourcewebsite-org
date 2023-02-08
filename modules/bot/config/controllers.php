@@ -62,4 +62,5 @@ return [
     'group_notify_name_change',
     'group_tip',
     'group_publisher',
+    'send_group_tip',
 ];

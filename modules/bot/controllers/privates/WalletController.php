@@ -2,9 +2,6 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\components\helpers\TimeHelper;
-use DateTime;
-use DateTimeZone;
 use app\helpers\Number;
 use app\models\Currency;
 use app\models\Wallet;
@@ -471,15 +468,11 @@ class WalletController extends Controller
 
         if ($walletTransactions) {
             foreach ($walletTransactions as $transaction) {
-                $date = new DateTime();
-                $date->setTimezone(new DateTimeZone(TimeHelper::getTimezoneByOffset($this->getGlobalUser()->timezone)));
-                $date->setTimestamp($transaction->getCreatedAt());
-
                 $buttons[][] = [
                     'callback_data' => self::createRoute('transaction', [
                         'id' => $transaction->getId(),
                     ]),
-                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' / ' . $date->format('Y/m/d H:i:s'),
+                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAt()),
                 ];
             }
 
@@ -539,15 +532,10 @@ class WalletController extends Controller
                 ->build();
         }
 
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(TimeHelper::getTimezoneByOffset($this->getGlobalUser()->timezone)));
-        $date->setTimestamp($walletTransaction->getCreatedAt());
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('transaction', [
                     'walletTransaction' => $walletTransaction,
-                    'date' => $date,
                 ]),
                 [
                     [

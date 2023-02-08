@@ -4,10 +4,10 @@ use app\components\helpers\Html;
 use app\modules\bot\components\helpers\Emoji;
 
 ?>
-<?php if (!$chat->membership_tag) : ?>
-<b><?= Yii::t('bot', 'Premium members') ?></b><br/>
+<?php if ($chat->membership_tag) : ?>
+<b>#<?= $chat->membership_tag ?><br/>
 <?php else : ?>
-<b><?= Yii::t('bot', 'Members status') ?></b>: #<?= $chat->membership_tag ?><br/>
+<b><?= Yii::t('bot', 'Premium members') ?></b><br/>
 <?php endif; ?>
 <br/>
 <?php foreach ($members as $member) : ?>
