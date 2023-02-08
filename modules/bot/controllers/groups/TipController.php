@@ -4,6 +4,8 @@ namespace app\modules\bot\controllers\groups;
 
 use app\helpers\Number;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\controllers\privates\SendGroupTipController;
 use app\modules\bot\models\ChatMember;
@@ -153,6 +155,20 @@ class TipController extends Controller
                     [
                         [
                             [
+                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
+                                'text' => Yii::t('bot', 'User View'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('tip-message', [
+                                    'chatTipId' => $chatTipId,
+                                ]),
+                                'text' => Emoji::REFRESH,
+                            ],
+                        ],
+                        [
+                            [
                                 'callback_data' => self::createRoute('index', [
                                     'chatTipId' => $chatTip->id,
                                 ]),
@@ -173,9 +189,23 @@ class TipController extends Controller
             ->sendMessage(
                 $this->render('tip-message', [
                     'totalAmounts' => $totalAmounts,
-                    'toUser' => $toUser,
+                    'user' => $toUser,
                 ]),
                 [
+                    [
+                        [
+                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
+                            'text' => Yii::t('bot', 'User View'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('tip-message', [
+                                'chatTipId' => $chatTipId,
+                            ]),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('index', [

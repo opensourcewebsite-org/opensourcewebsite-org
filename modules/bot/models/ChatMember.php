@@ -92,6 +92,10 @@ class ChatMember extends ActiveRecord
             'active_bot_group_notify_name_change_quantity_value_per_one_rating',
             'active_bot_group_notify_name_change_min_quantity_value_per_one_user',
         ],
+        'publisher_status' => [
+            'active_bot_group_publisher_quantity_value_per_one_rating',
+            'active_bot_group_publisher_min_quantity_value_per_one_user',
+        ],
     ];
 
     public $membership_tariff_price_balance;

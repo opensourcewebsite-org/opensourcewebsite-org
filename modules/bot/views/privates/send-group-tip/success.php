@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Transaction') ?> <?= Yii::$app->formatter->asDateTime($walletTransaction->getCreatedAt()); ?></b><br/>
+<b><?= Yii::t('bot', 'Transaction') ?> <?= $walletTransaction->getCreatedAtByTimezone($timezone); ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Receiver') ?>: @<?= $walletTransaction->toUser->botUser->getUsername() ?><br/>
 <br/>
