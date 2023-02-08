@@ -49,7 +49,7 @@ class PublisherController extends Controller
         if ($user) {
             $chatMember = $chat->getChatMemberByUserId();
 
-            if (!isset($chatMember) || !$chatMember->isAdministrator()) {
+            if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
                 return [];
             }
         }
@@ -72,10 +72,6 @@ class PublisherController extends Controller
             ->send();
 
         if ($response) {
-            if (isset($isSlowModeOn) && $isSlowModeOn) {
-                $chatMember->updateSlowMode($response->getDate());
-            }
-
             $post->sent_at = $response->getDate();
             $post->provider_message_id = $response->getMessageId();
             $post->save(false);

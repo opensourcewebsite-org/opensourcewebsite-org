@@ -287,7 +287,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if (!($chat = $post->chat) || !$chat->isGroup() || ($chat->publisher_status != ChatSetting::STATUS_ON)) {
+        if (!($chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -323,7 +323,7 @@ class GroupPublisherController extends Controller
                             'callback_data' => self::createRoute('set-time', [
                                 'id' => $post->id,
                             ]),
-                            'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay() . ' (' . TimeHelper::getNameByOffset($chat->timezone) . ')',
+                            'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay(),
                         ],
                     ],
                     [
