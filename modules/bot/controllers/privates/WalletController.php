@@ -2,6 +2,9 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\components\helpers\TimeHelper;
+use DateTime;
+use DateTimeZone;
 use app\helpers\Number;
 use app\models\Currency;
 use app\models\Wallet;
@@ -468,11 +471,15 @@ class WalletController extends Controller
 
         if ($walletTransactions) {
             foreach ($walletTransactions as $transaction) {
+                $date = new DateTime();
+                $date->setTimezone(new DateTimeZone(TimeHelper::getTimezoneByOffset($this->getGlobalUser()->timezone)));
+                $date->setTimestamp($transaction->getCreatedAt());
+
                 $buttons[][] = [
                     'callback_data' => self::createRoute('transaction', [
                         'id' => $transaction->getId(),
                     ]),
-                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' / ' . date('Y-m-d H:i:s', $transaction->getCreatedAt()),
+                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' / ' . $date->format('Y/m/d H:i:s'),
                 ];
             }
 
