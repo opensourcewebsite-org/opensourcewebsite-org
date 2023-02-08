@@ -539,10 +539,15 @@ class WalletController extends Controller
                 ->build();
         }
 
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone(TimeHelper::getTimezoneByOffset($this->getGlobalUser()->timezone)));
+        $date->setTimestamp($walletTransaction->getCreatedAt());
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('transaction', [
                     'walletTransaction' => $walletTransaction,
+                    'date' => $date,
                 ]),
                 [
                     [

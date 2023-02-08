@@ -3,7 +3,7 @@
 use app\models\WalletTransaction;
 
 ?>
-<?= date('Y-m-d H:i:s', $walletTransaction->getCreatedAt()); ?><br/>
+<?= $date->format('Y-m-d H:i:s'); ?><br/>
 <br/>
 <?= Yii::t('bot', 'Sender') ?>: @<?= $walletTransaction->fromUser->botUser->getUsername() ?><br/>
 <?= Yii::t('bot', 'Receiver') ?>: @<?= $walletTransaction->toUser->botUser->getUsername() ?><br/>
