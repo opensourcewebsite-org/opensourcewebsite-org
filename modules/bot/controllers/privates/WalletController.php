@@ -472,7 +472,7 @@ class WalletController extends Controller
                     'callback_data' => self::createRoute('transaction', [
                         'id' => $transaction->getId(),
                     ]),
-                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' / ' . date('Y-m-d H:i:s', $transaction->getCreatedAt()),
+                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAt()),
                 ];
             }
 

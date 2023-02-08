@@ -210,7 +210,7 @@ class SendGroupTipController extends Controller
                                     'callback_data' => self::createRoute('confirm-transaction', [
                                         'chatTipId' => $chatTipId,
                                     ]),
-                                    'text' => 'Confirm',
+                                    'text' => Yii::t('bot', 'CONFIRM'),
                                 ],
                             ],
                             [
@@ -240,10 +240,10 @@ class SendGroupTipController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('index', [
+                            'callback_data' => self::createRoute('choose-wallet', [
                                 'chatTipId' => $chatTipId,
                             ]),
-                            'text' => Emoji::DELETE,
+                            'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => MenuController::createRoute(),
