@@ -242,7 +242,7 @@ class GroupController extends Controller
                             'callback_data' => GroupNotifyNameChangeController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->notify_name_change_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' Notify name change',
+                            'text' => ($chat->notify_name_change_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notifier'),
                         ],
                     ],
                     [

@@ -22,20 +22,17 @@ class MessageController extends Controller
      */
     public function actionIndex()
     {
-        $telegramUser = $this->getTelegramUser();
+        $user = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
 
-        $chatMember = ChatMember::findOne([
-            'chat_id' => $chat->id,
-            'user_id' => $telegramUser->id,
-        ]);
+        $chatMember = $chat->getChatMemberByUserId();
 
-        if (!$chatMember->isCreator() && !$telegramUser->isBot()) {
+        if (!$chatMember->isCreator() && !$user->isBot()) {
             if (!$chatMember->isAdministrator()) {
-                if ($chat->isJoinCaptchaOn() && !$telegramUser->captcha_confirmed_at) {
+                if ($chat->isJoinCaptchaOn() && !$user->captcha_confirmed_at) {
                     if ($chatMember->role == JoinCaptchaController::ROLE_VERIFIED) {
-                        $telegramUser->captcha_confirmed_at = time();
-                        $telegramUser->save(false);
+                        $user->captcha_confirmed_at = time();
+                        $user->save(false);
                     } else {
                         if ($this->getMessage()) {
                             $this->getBotApi()->deleteMessage(
@@ -47,7 +44,7 @@ class MessageController extends Controller
                         $botCaptcha = ChatCaptcha::find()
                             ->where([
                                 'chat_id' => $chat->id,
-                                'provider_user_id' => $telegramUser->provider_user_id,
+                                'provider_user_id' => $user->provider_user_id,
                             ])
                             ->one();
                         // Forward to captcha if a new member
@@ -63,7 +60,7 @@ class MessageController extends Controller
             if ($chat->isLimiterOn() && !$chatMember->checkLimiter()) {
                 $deleteMessage = true;
 
-                $telegramUser->sendMessage(
+                $user->sendMessage(
                     $this->render('/privates/warning-limiter', [
                         'chat' => $chat,
                         'chatMember' => $chatMember,
@@ -85,7 +82,7 @@ class MessageController extends Controller
                 if ($chatMember->isAdministrator() && $chat->isMembershipOn() && !$chatMember->checkMembership()) {
                     $deleteMessage = true;
 
-                    $telegramUser->sendMessage(
+                    $user->sendMessage(
                         $this->render('/privates/warning-membership', [
                             'chat' => $chat,
                             'chatMember' => $chatMember,
@@ -109,7 +106,7 @@ class MessageController extends Controller
                     if (!$chatMember->checkSlowMode()) {
                         $deleteMessage = true;
 
-                        $telegramUser->sendMessage(
+                        $user->sendMessage(
                             $this->render('/privates/warning-slow-mode', [
                                 'chat' => $chat,
                             ]),
@@ -151,7 +148,7 @@ class MessageController extends Controller
                                         if (!isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasMembership())) {
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-reply', [
                                                     'chat' => $chat,
                                                 ]),
@@ -186,7 +183,7 @@ class MessageController extends Controller
                                         if (mb_stripos($this->getMessage()->getText(), '@') !== false) {
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-username', [
                                                     'chat' => $chat,
                                                 ]),
@@ -213,7 +210,7 @@ class MessageController extends Controller
                                             // removes empty lines and indents, ignores spaces at the end of lines
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-empty-line', [
                                                     'chat' => $chat,
                                                 ]),
@@ -232,7 +229,7 @@ class MessageController extends Controller
                                             // removes double spaces
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-double-spaces', [
                                                     'chat' => $chat,
                                                 ]),
@@ -258,7 +255,7 @@ class MessageController extends Controller
                                         if ($this->getMessage()->hasEmojis() || $this->getMessage()->hasCustomEmojis()) {
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-emoji', [
                                                     'chat' => $chat,
                                                 ]),
@@ -284,7 +281,7 @@ class MessageController extends Controller
                                         if ($this->getMessage()->getLocation() !== null) {
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-locations', [
                                                     'chat' => $chat,
                                                 ]),
@@ -310,7 +307,7 @@ class MessageController extends Controller
                                         if ($this->getMessage()->hasStyledTexts()) {
                                             $deleteMessage = true;
 
-                                            $telegramUser->sendMessage(
+                                            $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-styled-texts', [
                                                     'chat' => $chat,
                                                 ]),
@@ -341,7 +338,7 @@ class MessageController extends Controller
                                             if (mb_stripos($this->getMessage()->getText(), $phrase->text) !== false) {
                                                 $deleteMessage = true;
 
-                                                $telegramUser->sendMessage(
+                                                $user->sendMessage(
                                                     $this->render('/privates/warning-filter-blacklist', [
                                                         'chat' => $chat,
                                                         'text' => $phrase->text,

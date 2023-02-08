@@ -637,6 +637,9 @@ return [
     'Irreversible operation' => 'Необратимая операция',
     'Delete the group and all settings?' => 'Удалить группу и все настройки?',
     'Delete the channel and all settings?' => 'Удалить канал и все настройки?',
-    'User changed account information' => 'Пользователь изменил данные аккаунта',
+    'User changed account details' => 'Пользователь изменил данные аккаунта',
     'Remove membership' => 'Убрать членство',
+    'Notifier' => 'Уведомитель',
+    'tracks changes in information in member accounts and sends notifications to the group' => 'отслеживает изменения информации в аккаунтах участников и отправляет уведомления в группу',
+    'Tracked data' => 'Отслеживаемые данные',
 ];
