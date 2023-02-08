@@ -189,7 +189,7 @@ class TipController extends Controller
             ->sendMessage(
                 $this->render('tip-message', [
                     'totalAmounts' => $totalAmounts,
-                    'toUser' => $toUser,
+                    'user' => $toUser,
                 ]),
                 [
                     [
