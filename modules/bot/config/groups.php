@@ -16,6 +16,7 @@ $config = [
                 '/(fake_cat|cat)(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-cat/index',
                 '/(fake_art|art)(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-art/index',
                 '/(fake_horse|horse)(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-horse/index',
+                '/norepeat(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'repeat/off',
                 '/<controller:\w+>__<action:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(@<botname:[\w_]+bot>)?(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],

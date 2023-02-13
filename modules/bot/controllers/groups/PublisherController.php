@@ -54,10 +54,6 @@ class PublisherController extends Controller
             }
         }
 
-        if (!$post->canRepost()) {
-            return [];
-        }
-
         $response = $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [

@@ -36,8 +36,6 @@ class ChatPublisherPost extends ActiveRecord
 {
     public const STATUS_OFF = 0;
     public const STATUS_ON = 1;
-    // minimum seconds between re-posting a post
-    public const REPOST_SECONDS_LIMIT = 1 * 60; // seconds
 
     /**
      * {@inheritdoc}
@@ -127,20 +125,6 @@ class ChatPublisherPost extends ActiveRecord
     public function getProviderMessageId()
     {
         return $this->provider_message_id;
-    }
-
-    public function canRepost()
-    {
-        if (!$this->sent_at || (($this->sent_at + self::REPOST_SECONDS_LIMIT) < time())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function getRepostSecondsLimit()
-    {
-        return self::REPOST_SECONDS_LIMIT;
     }
 
     public function getTime()

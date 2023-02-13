@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\components\helpers\TimeHelper;
+use Codeception\PHPUnit\ResultPrinter\UI;
 use DateTime;
 use DateTimeZone;
 use app\modules\bot\components\Controller;
@@ -39,9 +40,7 @@ class RepeatController extends Controller
         }
 
         if (($postTime = TimeHelper::getMinutesByTimeOfDay($time)) === null) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
+            return [];
         }
 
         if (!isset($skipDays) || !is_numeric($skipDays)) {
@@ -52,15 +51,13 @@ class RepeatController extends Controller
         $chat = $this->getTelegramChat();
         $chatMember = $chat->getChatMemberByUser($user);
 
-        if ($chat->isGroup() && $chatMember->isActiveAdministrator() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
+        if ($chat->isGroup() && $chat->isPublisherOn() && $chatMember->isActiveAdministrator() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
             $replyUser = User::findOne([
                 'provider_user_id' => $replyMessage->getFrom()->getId(),
             ]);
 
             if (!isset($replyUser)) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
+                return [];
             }
 
             $replyChatMember = ChatMember::findOne([
@@ -69,15 +66,12 @@ class RepeatController extends Controller
             ]);
 
             if (!isset($replyChatMember)) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
+                return [];
             }
 
-            // check is post exist
             $post = ChatPublisherPost::findOne([
                 'chat_id' => $chat->id,
-                'text'=>$replyMessage->getText(),
+                'text' => $replyMessage->getText(),
                 'time' => $postTime,
                 'topic_id' => $this->getMessage()->getMessageThreadId(),
             ]);
@@ -88,7 +82,7 @@ class RepeatController extends Controller
             } else {
                 $post = new ChatPublisherPost([
                     'chat_id' => $chat->id,
-                    'text'=>$replyMessage->getText(),
+                    'text' => $replyMessage->getText(),
                     'status' => ChatPublisherPost::STATUS_ON,
                     'time' => $postTime,
                     'skip_days' => $skipDays,
@@ -99,7 +93,66 @@ class RepeatController extends Controller
             $post->save();
 
             $user->sendMessage(
-                $this->render('/privates/repeat', [
+                $this->render('/privates/post', [
+                    'post' => $post,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => GroupPublisherController::createRoute('post', [
+                                'id' => $post->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Post'),
+                        ],
+                    ],
+                ],
+            );
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function actionOff()
+    {
+        $user = $this->getTelegramUser();
+        $chat = $this->getTelegramChat();
+        $chatMember = $chat->getChatMemberByUser($user);
+
+        if ($chat->isGroup() && $chatMember->isActiveAdministrator() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
+            $replyUser = User::findOne([
+                'provider_user_id' => $replyMessage->getFrom()->getId(),
+            ]);
+
+            if (!isset($replyUser) || !$replyUser->isBot()) {
+                return [];
+            }
+
+            $replyChatMember = ChatMember::findOne([
+                'chat_id' => $chat->id,
+                'user_id' => $replyUser->id,
+            ]);
+
+            if (!isset($replyChatMember)) {
+                return [];
+            }
+
+            $post = ChatPublisherPost::findOne([
+                'chat_id' => $chat->id,
+                'text' => $replyMessage->getText(),
+            ]);
+
+            if (!isset($post)) {
+                return [];
+            }
+
+            $post->status = ChatPublisherPost::STATUS_OFF;
+            $post->save();
+
+            $user->sendMessage(
+                $this->render('/privates/post', [
                     'post' => $post,
                 ]),
                 [
