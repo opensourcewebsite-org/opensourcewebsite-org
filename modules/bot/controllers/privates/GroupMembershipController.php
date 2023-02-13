@@ -479,6 +479,7 @@ class GroupMembershipController extends Controller
         }
 
         $member->membership_date = null;
+        $member->membership_note = null;
         $member->save(false);
 
         return $this->runAction('members', [
