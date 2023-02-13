@@ -170,16 +170,20 @@ class WalletTransaction extends ActiveRecord
         return $this->fee ? Number::floatAdd($this->amount, $this->fee) : $this->amount;
     }
 
-    public function getCreatedAtByTimezone($timezone, $format = null): string
+    public function getCreatedAtByUser($user = null)
     {
-        if (!isset($format)) {
-            $format = 'Y/m/d H:i:s';
+        if (!isset($user)){
+            $user = $this->fromUser;
         }
 
         $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(TimeHelper::getTimezoneByOffset($timezone)));
+        $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($user->timezone));
+
+        $date->setTimezone($dateTimeZone);
         $date->setTimestamp($this->getCreatedAt());
 
-        return $date->format($format);
+        $timeOffset = $dateTimeZone->getOffset($date);
+
+        return $date->getTimestamp() + $timeOffset;
     }
 }

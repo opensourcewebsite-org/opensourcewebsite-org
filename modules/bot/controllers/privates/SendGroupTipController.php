@@ -348,7 +348,6 @@ class SendGroupTipController extends Controller
                 ->editMessageTextOrSendMessage(
                     $this->render('success', [
                         'walletTransaction' => $walletTransaction,
-                        'timezone' => $this->getGlobalUser()->timezone,
                     ]),
                     [
                         [

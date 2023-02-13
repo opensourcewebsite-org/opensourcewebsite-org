@@ -274,7 +274,7 @@ class WalletController extends Controller
      */
     public function actionSendTransaction($id = null)
     {
-        $this->getState()->setName(self::createRoute('input-to-user'));
+        $this->getState()->setName(self::createRoute('set-to-user'));
 
         $currency = Currency::findOne($id);
 
@@ -480,7 +480,7 @@ class WalletController extends Controller
                     'callback_data' => self::createRoute('transaction', [
                         'id' => $transaction->getId(),
                     ]),
-                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . $transaction->getCreatedAtByTimezone($this->getGlobalUser()->timezone),
+                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAtByUser()),
                 ];
             }
 
