@@ -223,6 +223,14 @@ class GroupController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => GroupPublisherController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->isPublisherOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Publisher'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => GroupFaqController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),

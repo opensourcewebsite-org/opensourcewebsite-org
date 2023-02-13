@@ -4,8 +4,10 @@ namespace app\modules\bot\controllers\groups;
 
 use app\helpers\Number;
 use app\modules\bot\components\Controller;
+use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\controllers\privates\DeleteMessageController;
-use app\modules\bot\controllers\privates\SendGroupTipController;
+use app\modules\bot\controllers\privates\MemberController;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTip;
 use app\modules\bot\models\User;
@@ -49,9 +51,7 @@ class TipController extends Controller
                 ]);
 
                 if ($chatMember->isAnonymousAdministrator()) {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery()
-                        ->build();
+                    return [];
                 }
 
                 $chatTip = new ChatTip([
@@ -66,17 +66,13 @@ class TipController extends Controller
             $chatTip = ChatTip::findOne($chatTipId);
 
             if (!isset($chatTip)) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
+                return [];
             }
 
             $chat = $chatTip->chat;
 
             if ($this->getTelegramChat()->getChatId() != $chat->getChatId()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
+                return [];
             }
 
             $toUser = $chatTip->toUser;
@@ -85,6 +81,8 @@ class TipController extends Controller
         $fromChatMember = $chat->getChatMemberByUser($fromUser);
 
         if (isset($toUser) && isset($fromChatMember) && ($toUser->getId()) != $fromUser->getId()) {
+            $this->getState()->setName(json_encode($chatTip->id));
+
             $fromUser->sendMessage(
                 $this->render('/privates/tip', [
                     'chat' => $chat,
@@ -93,7 +91,8 @@ class TipController extends Controller
                 [
                     [
                         [
-                            'callback_data' => SendGroupTipController::createRoute('index', [
+                            'callback_data' => MemberController::createRoute('id', [
+                                'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
                                 'chatTipId' => $chatTip->id,
                             ]),
                             'text' => Yii::t('bot', 'Send a Tip'),
@@ -122,9 +121,7 @@ class TipController extends Controller
         $chatTip = ChatTip::findOne($chatTipId);
 
         if (!isset($chatTip)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
+            return [];
         }
 
         $toUser = $chatTip->toUser;
@@ -153,6 +150,20 @@ class TipController extends Controller
                     [
                         [
                             [
+                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
+                                'text' => Yii::t('bot', 'User View'),
+                            ],
+                        ],
+                        [
+                            [
+                                'callback_data' => self::createRoute('tip-message', [
+                                    'chatTipId' => $chatTipId,
+                                ]),
+                                'text' => Emoji::REFRESH,
+                            ],
+                        ],
+                        [
+                            [
                                 'callback_data' => self::createRoute('index', [
                                     'chatTipId' => $chatTip->id,
                                 ]),
@@ -173,9 +184,23 @@ class TipController extends Controller
             ->sendMessage(
                 $this->render('tip-message', [
                     'totalAmounts' => $totalAmounts,
-                    'toUser' => $toUser,
+                    'user' => $toUser,
                 ]),
                 [
+                    [
+                        [
+                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
+                            'text' => Yii::t('bot', 'User View'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('tip-message', [
+                                'chatTipId' => $chatTipId,
+                            ]),
+                            'text' => Emoji::REFRESH,
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('index', [
@@ -198,10 +223,10 @@ class TipController extends Controller
             $chatTip->message_id = $response->getMessageId();
             $chatTip->sent_at = $response->getDate();
             $chatTip->save();
+
+            return $response;
         }
 
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
-            ->build();
+        return [];
     }
 }

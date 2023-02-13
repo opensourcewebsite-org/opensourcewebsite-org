@@ -10,6 +10,7 @@ use app\modules\bot\models\queries\ChatQuery;
 use DateTime;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -446,6 +447,11 @@ class Chat extends ActiveRecord
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
+    public function getPublisherPosts(): ActiveQuery
+    {
+        return $this->hasMany(ChatPublisherPost::class, ['chat_id' => 'id']);
+    }
+
     public function isMarketplaceOn()
     {
         if ($this->isGroup() || $this->isChannel()) {
@@ -527,6 +533,17 @@ class Chat extends ActiveRecord
     {
         if ($this->isGroup() || $this->isChannel()) {
             if ($this->notify_name_change_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isPublisherOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->publisher_status == ChatSetting::STATUS_ON) {
                 return true;
             }
         }
