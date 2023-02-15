@@ -519,7 +519,6 @@ class GroupGuestController extends Controller
 
         // remove membership
         $chatMember->membership_date = null;
-        $chatMember->membership_note = null;
         $chatMember->membership_tariff_price = null;
         $chatMember->membership_tariff_days = null;
 
