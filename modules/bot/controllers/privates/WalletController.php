@@ -274,7 +274,15 @@ class WalletController extends Controller
      */
     public function actionSendTransaction($id = null)
     {
-        $this->getState()->setName(self::createRoute('input-to-user'));
+        $this->getState()->setName(self::createRoute('set-to-user'));
+
+        $currency = Currency::findOne($id);
+
+        if (!$currency) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
         $this->getState()->setIntermediateModel(new WalletTransaction([
             'from_user_id' => $this->getTelegramUser()->getUserId(),
@@ -307,7 +315,7 @@ class WalletController extends Controller
     /**
      * @return array
      */
-    public function actionInputToUser()
+    public function actionSetToUser()
     {
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
@@ -472,7 +480,7 @@ class WalletController extends Controller
                     'callback_data' => self::createRoute('transaction', [
                         'id' => $transaction->getId(),
                     ]),
-                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAt()),
+                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAtByUser()),
                 ];
             }
 
@@ -536,6 +544,7 @@ class WalletController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('transaction', [
                     'walletTransaction' => $walletTransaction,
+                    'timezone' => $this->getGlobalUser()->timezone,
                 ]),
                 [
                     [

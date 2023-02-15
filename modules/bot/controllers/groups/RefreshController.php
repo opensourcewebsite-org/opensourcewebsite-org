@@ -3,6 +3,8 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\modules\bot\components\Controller;
+use app\modules\bot\controllers\privates\DeleteMessageController;
+use app\modules\bot\controllers\privates\GroupController;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
 use Yii;
@@ -112,6 +114,35 @@ class RefreshController extends Controller
 
                 $chatMember->save(false);
             }
+        }
+
+        $chatMember = ChatMember::findOne([
+            'chat_id' => $chat->id,
+            'user_id' => $this->getTelegramUser()->id,
+        ]);
+
+        if ($chatMember->isActiveAdministrator()) {
+            $this->getTelegramUser()->sendMessage(
+                $this->render('/privates/refresh', [
+                    'chat' => $chat,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => GroupController::createRoute('view', [
+                                'chatId' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'OK'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => DeleteMessageController::createRoute(),
+                            'text' => 'CANCEL',
+                        ],
+                    ],
+                ]
+            );
         }
 
         return [];

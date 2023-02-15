@@ -72,10 +72,6 @@ class ChatMember extends ActiveRecord
             'active_bot_group_filter_quantity_value_per_one_rating',
             'active_bot_group_filter_min_quantity_value_per_one_user',
         ],
-        'limiter_status' => [
-            'active_bot_group_limiter_quantity_value_per_one_rating',
-            'active_bot_group_limiter_min_quantity_value_per_one_user',
-        ],
         'faq_status' => [
             'active_bot_group_faq_quantity_value_per_one_rating',
             'active_bot_group_faq_min_quantity_value_per_one_user',
@@ -84,13 +80,13 @@ class ChatMember extends ActiveRecord
             'active_bot_group_stellar_quantity_value_per_one_rating',
             'active_bot_group_stellar_min_quantity_value_per_one_user',
         ],
-        'marketplace_status' => [
-            'active_bot_group_marketplace_quantity_value_per_one_rating',
-            'active_bot_group_marketplace_min_quantity_value_per_one_user',
-        ],
         'notify_name_change_status' => [
             'active_bot_group_notify_name_change_quantity_value_per_one_rating',
             'active_bot_group_notify_name_change_min_quantity_value_per_one_user',
+        ],
+        'publisher_status' => [
+            'active_bot_group_publisher_quantity_value_per_one_rating',
+            'active_bot_group_publisher_min_quantity_value_per_one_user',
         ],
     ];
 
@@ -242,53 +238,20 @@ class ChatMember extends ActiveRecord
     }
 
     /**
-    * @return bool
-    */
-    public function hasLimiter()
-    {
-        if ($chat = $this->chat) {
-            if ($this->limiter_date) {
-                $date = new DateTime($this->limiter_date);
-
-                if (($date->getTimestamp() - ($chat->timezone * 60)) > time()) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-    * @return bool
-    */
-    public function checkLimiter()
-    {
-        if ($chat = $this->chat) {
-            if ($this->limiter_date) {
-                $date = new DateTime($this->limiter_date);
-
-                if (($date->getTimestamp() - ($chat->timezone * 60)) <= time()) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-    * @return bool
-    */
+     * @return bool
+     */
     public function hasMembership()
     {
         if ($chat = $this->chat) {
-            if ($this->membership_date) {
-                $date = new DateTime($this->membership_date);
+            if ($this->membership_date && $this->limiter_date) {
+                $verificationDate = new DateTime($this->limiter_date);
+                $membershipDateDate = new DateTime($this->membership_date);
 
-                if (($date->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                if ((($verificationDate->getTimestamp() - ($chat->timezone * 60)) > time())
+                    && ($membershipDateDate->getTimestamp() - ($chat->timezone * 60) > time())) {
                     return true;
                 }
+
             }
         }
 
@@ -296,8 +259,8 @@ class ChatMember extends ActiveRecord
     }
 
     /**
-    * @return bool
-    */
+     * @return bool
+     */
     public function checkMembership()
     {
         if ($chat = $this->chat) {
@@ -423,16 +386,6 @@ class ChatMember extends ActiveRecord
             ->count();
     }
 
-    public function getMarketplacePosts(): ActiveQuery
-    {
-        return $this->hasMany(ChatMarketplacePost::class, ['member_id' => 'id']);
-    }
-
-    public function getMarketplaceLinks(): ActiveQuery
-    {
-        return $this->hasMany(ChatMarketplaceLink::class, ['member_id' => 'id']);
-    }
-
     public function getIntro()
     {
         return $this->intro;
@@ -480,20 +433,6 @@ class ChatMember extends ActiveRecord
         }
 
         return $query;
-    }
-
-    public function canUseMarketplace()
-    {
-        $chat = $this->chat;
-
-        if (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_ALL)
-            || (($chat->marketplace_mode == ChatSetting::MARKETPLACE_MODE_MEMBERSHIP)
-                && ($chat->isMembershipOn() && $this->hasMembership()))
-            || $this->isCreator()) {
-            return true;
-        }
-
-        return false;
     }
 
     public function getMembershipTag()
