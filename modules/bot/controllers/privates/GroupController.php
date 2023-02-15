@@ -7,12 +7,9 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
-use yii\helpers\ArrayHelper;
 
 /**
  * Class GroupController
@@ -207,18 +204,10 @@ class GroupController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => GroupLimiterController::createRoute('index', [
+                            'callback_data' => GroupPublisherController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->isLimiterOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Time Limiter'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => GroupMarketplaceController::createRoute('index', [
-                                'id' => $chat->id,
-                            ]),
-                            'text' => ($chat->isMarketplaceOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
+                            'text' => ($chat->isPublisherOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Publisher'),
                         ],
                     ],
                     [

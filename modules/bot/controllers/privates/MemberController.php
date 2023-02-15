@@ -8,6 +8,7 @@ use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatMemberReview;
+use app\modules\bot\models\ChatTip;
 use app\modules\bot\models\User;
 use Yii;
 
@@ -73,7 +74,7 @@ class MemberController extends Controller
     /**
      * @return array
      */
-    public function actionId($id = null)
+    public function actionId($id = null, $chatTipId = null)
     {
         if ($id) {
             $memberId = $id;
@@ -115,7 +116,7 @@ class MemberController extends Controller
             }
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->setName(json_encode($chatTipId));
 
         $chatMemberReview = ChatMemberReview::findOne([
             'user_id' => $user->id,
@@ -132,6 +133,14 @@ class MemberController extends Controller
                     'review' => $chatMemberReview,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => self::createRoute('send-tip', [
+                                'id' => $chatMember->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Send a Tip'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => MemberReviewController::createRoute('index', [
@@ -167,6 +176,40 @@ class MemberController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     *
+     * @return array
+     */
+    public function actionSendTip($id = null)
+    {
+        $chatMember = ChatMember::findOne([
+            'id' => $id,
+        ]);
+
+        if (!isset($chatMember)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatTipId = json_decode($this->getState()->getName());
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if (!isset($chatTip)) {
+            $chatTip = new ChatTip([
+                'chat_id' => $chatMember->chat_id,
+                'to_user_id' => $chatMember->user_id,
+            ]);
+
+            $chatTip->save();
+        }
+
+        return $this->run('send-group-tip/index', [
+            'chatTipId' => $chatTip->id,
+        ]);
     }
 
     /**

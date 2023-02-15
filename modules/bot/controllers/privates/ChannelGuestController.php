@@ -36,21 +36,6 @@ class ChannelGuestController extends Controller
 
         $buttons = [];
 
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if ($chatMember) {
-            if ($chat->isMarketplaceOn() && $chatMember->canUseMarketplace()) {
-                $buttons[] = [
-                    [
-                        'callback_data' => ChannelGuestMarketplaceController::createRoute('index', [
-                            'id' => $chat->id,
-                        ]),
-                        'text' => Yii::t('bot', 'My posts'),
-                    ],
-                ];
-            }
-        }
-
         $buttons[] = [
             [
                 'callback_data' => MenuController::createRoute(),

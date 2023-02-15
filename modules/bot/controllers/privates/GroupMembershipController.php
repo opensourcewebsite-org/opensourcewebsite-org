@@ -357,6 +357,14 @@ class GroupMembershipController extends Controller
                 [
                     [
                         [
+                            'callback_data' => self::createRoute('set-member-verification_date', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Verification Date'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('set-member-note', [
                                 'id' => $member->id,
                             ]),
@@ -457,6 +465,70 @@ class GroupMembershipController extends Controller
     }
 
     /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberVerificationDate($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $this->getState()->setName(self::createRoute('set-member-verification-date', [
+            'id' => $member->id,
+        ]));
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                $dateValidator = new DateValidator();
+
+                if ($dateValidator->validate($text)) {
+                    $member->membership_verification_date = Yii::$app->formatter->format($text, 'date');
+                    $member->save(false);
+
+                    return $this->runAction('member', [
+                        'id' => $member->id,
+                    ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-member-verification-date'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => self::createRoute('delete-member-verification-date', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::DELETE,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
     * @param int $id ChatMember->id
     * @return array
     */
@@ -484,6 +556,36 @@ class GroupMembershipController extends Controller
         return $this->runAction('members', [
              'id' => $chat->id,
          ]);
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberVerificationDate($id = null)
+    {
+        $member = ChatMember::findOne($id);
+
+        if (!isset($member)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chat = $member->chat;
+
+        if (!isset($chat) || !$chat->isGroup()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $member->membership_verification_date = null;
+        $member->save(false);
+
+        return $this->runAction('members', [
+            'id' => $chat->id,
+        ]);
     }
 
     /**

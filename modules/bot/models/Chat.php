@@ -10,6 +10,7 @@ use app\modules\bot\models\queries\ChatQuery;
 use DateTime;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -205,17 +206,6 @@ class Chat extends ActiveRecord
             ]);
     }
 
-    public function getMarketplaceTags()
-    {
-        return $this->getPhrases()
-            ->where([
-                'type' =>ChatPhrase::TYPE_MARKETPLACE_TAGS,
-            ])
-            ->orderBy([
-                'text' => SORT_ASC,
-            ]);
-    }
-
     public function getQuestionPhrases()
     {
         return $this->hasMany(ChatFaqQuestion::class, ['chat_id' => 'id']);
@@ -343,19 +333,6 @@ class Chat extends ActiveRecord
         ];
     }
 
-    public function getMarketplaceModeLabel(): string
-    {
-        return static::getMarketplaceModeLabels()[$this->marketplace_mode];
-    }
-
-    public static function getMarketplaceModeLabels(): array
-    {
-        return [
-            ChatSetting::MARKETPLACE_MODE_ALL => Yii::t('bot', 'All members'),
-            ChatSetting::MARKETPLACE_MODE_MEMBERSHIP => Yii::t('bot', 'Premium members'),
-        ];
-    }
-
     /**
      * @param int|null $userId
      *
@@ -395,21 +372,14 @@ class Chat extends ActiveRecord
     {
         $today = new DateTime('@' . (time() + ($this->timezone * 60)));
 
-        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+        return $this->hasMany(ChatMember::class, ['chat_id' => 'id'])
             ->andWhere([
                 '>', ChatMember::tableName() . '.membership_date', $today->format('Y-m-d'),
             ])
-            ->orderByRank();
-    }
-
-    public function getPremiumChatMembersWithLimiter()
-    {
-        $today = new DateTime('@' . (time() + ($this->timezone * 60)));
-
-        return $this->getPremiumChatMembers()
             ->andWhere([
-                '>', ChatMember::tableName() . '.limiter_date', $today->format('Y-m-d'),
-            ]);
+                '>', ChatMember::tableName() . '.membership_verification_date', $today->format('Y-m-d'),
+            ])
+            ->orderByRank();
     }
 
     public function getChatMembersWithIntro()
@@ -430,14 +400,6 @@ class Chat extends ActiveRecord
             ->orderByRank();
     }
 
-    public function getChatMembersWithMarketplaceLinks()
-    {
-        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
-            ->joinWith('marketplaceLinks', $eagerLoading = true, $joinType = 'INNER JOIN')
-            ->groupBy(ChatMember::tableName() . '.id')
-            ->orderByRank();
-    }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -446,32 +408,15 @@ class Chat extends ActiveRecord
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
-    public function isMarketplaceOn()
+    public function getPublisherPosts(): ActiveQuery
     {
-        if ($this->isGroup() || $this->isChannel()) {
-            if ($this->marketplace_status == ChatSetting::STATUS_ON) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->hasMany(ChatPublisherPost::class, ['chat_id' => 'id']);
     }
 
     public function isMembershipOn()
     {
         if ($this->isGroup() || $this->isChannel()) {
             if ($this->membership_status == ChatSetting::STATUS_ON) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function isLimiterOn()
-    {
-        if ($this->isGroup() || $this->isChannel()) {
-            if ($this->limiter_status == ChatSetting::STATUS_ON) {
                 return true;
             }
         }
@@ -527,6 +472,17 @@ class Chat extends ActiveRecord
     {
         if ($this->isGroup() || $this->isChannel()) {
             if ($this->notify_name_change_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isPublisherOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->publisher_status == ChatSetting::STATUS_ON) {
                 return true;
             }
         }
