@@ -31,9 +31,6 @@ class ChatSetting extends ActiveRecord
     public const STELLAR_MODE_HOLDERS = 1;
     public const STELLAR_MODE_SIGNERS = 2;
 
-    public const MARKETPLACE_MODE_ALL = 1;
-    public const MARKETPLACE_MODE_MEMBERSHIP = 2;
-
     public static array $settings = [
         'basic_commands_status' => [
             'default' => self::STATUS_ON,
@@ -121,9 +118,6 @@ class ChatSetting extends ActiveRecord
         'filter_remove_styled_texts' => [
             'default' => self::STATUS_OFF,
         ],
-        'limiter_status' => [
-            'default' => self::STATUS_OFF,
-        ],
         'faq_status' => [
             'default' => self::STATUS_OFF,
         ],
@@ -141,23 +135,6 @@ class ChatSetting extends ActiveRecord
             'min' => 0.00000001,
         ],
         'stellar_invite_link' => [],
-        'marketplace_status' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'marketplace_mode' => [
-            'default' => self::MARKETPLACE_MODE_ALL,
-        ],
-        // TODO switch to Setting
-        'marketplace_active_post_limit_per_member' => [
-            'default' => 1,
-            'min' => 1,
-            'max' => 100,
-        ],
-        'marketplace_text_hint' => [
-            'type' => 'string',
-            'min' => 1,
-            'max' => 10000,
-        ],
     ];
 
     /**

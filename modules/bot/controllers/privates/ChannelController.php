@@ -131,14 +131,6 @@ class ChannelController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => ChannelMarketplaceController::createRoute('index', [
-                                'id' => $chat->id,
-                            ]),
-                            'text' => ($chat->isMarketplaceOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Marketplace'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => ChannelController::createRoute(),
                             'text' => Emoji::BACK,
                         ],
