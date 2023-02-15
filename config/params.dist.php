@@ -9,6 +9,17 @@ return [
         //'proxy' => '', // Examples: 'socks5://user:password@address:port', 'socks5://address:port', 'https://address:port'
         'username' => '',
         'token' => '',
+        'chats' => [
+            'osw_server_logs' => [
+                'chat_id' => '',
+            ],
+            'osw_group' => [
+                'chat_id' => '',
+            ],
+            'osw_channel' => [
+                'chat_id' => '',
+            ],
+        ],
     ],
     //'stellar' => [ // Used for stellar features and Telegram bot
     //    'testNet' => true, // https://developers.stellar.org/docs/glossary/testnet/

@@ -15,6 +15,7 @@ class ChatJoinRequest extends \TelegramBot\Api\Types\ChatJoinRequest
     protected static $map = [
          'chat' => Chat::class,
          'from' => User::class,
+         'user_chat_id' => true,
          'date' => true,
          'bio' => true,
          'invite_link' => ChatInviteLink::class,

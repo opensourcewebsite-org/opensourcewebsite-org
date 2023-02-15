@@ -18,6 +18,8 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use TelegramBot\Api\Types\Location;
 use TelegramBot\Api\Types\MessageAutoDeleteTimerChanged;
 use TelegramBot\Api\Types\MessageEntity;
+use TelegramBot\Api\Types\UserShared;
+use TelegramBot\Api\Types\ChatShared;
 use TelegramBot\Api\Types\Payments\Invoice;
 use TelegramBot\Api\Types\Payments\SuccessfulPayment;
 use TelegramBot\Api\Types\Poll;
@@ -95,6 +97,8 @@ class Message extends \TelegramBot\Api\Types\Message
         'pinned_message' => Message::class,
         'invoice' => Invoice::class,
         'successful_payment' => SuccessfulPayment::class,
+        'user_shared' => UserShared::class,
+        'chat_shared' => ChatShared::class,
         'connected_website' => true,
         'forum_topic_created' => ForumTopicCreated::class,
         'forum_topic_edited' => ForumTopicEdited::class,
