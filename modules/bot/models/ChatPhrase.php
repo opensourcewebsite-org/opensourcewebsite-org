@@ -21,7 +21,6 @@ class ChatPhrase extends ActiveRecord
 {
     public const TYPE_WHITELIST = 'whitelist';
     public const TYPE_BLACKLIST = 'blacklist';
-    public const TYPE_MARKETPLACE_TAGS = 'marketplace-tags';
 
     /**
      * {@inheritdoc}

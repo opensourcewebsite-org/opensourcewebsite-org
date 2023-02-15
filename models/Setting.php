@@ -139,16 +139,6 @@ class Setting extends ActiveRecord
             'default' => 1,
             'min' => 0,
         ],
-        'active_bot_group_limiter_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 1,
-            'more' => 0,
-        ],
-        'active_bot_group_limiter_min_quantity_value_per_one_user' => [
-            'type' => 'integer',
-            'default' => 1,
-            'min' => 0,
-        ],
         'active_bot_group_faq_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
@@ -169,12 +159,12 @@ class Setting extends ActiveRecord
             'default' => 1,
             'min' => 0,
         ],
-        'active_bot_group_marketplace_quantity_value_per_one_rating' => [
+        'active_bot_group_publisher_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
             'more' => 0,
         ],
-        'active_bot_group_marketplace_min_quantity_value_per_one_user' => [
+        'active_bot_group_publisher_min_quantity_value_per_one_user' => [
             'type' => 'integer',
             'default' => 1,
             'min' => 0,
