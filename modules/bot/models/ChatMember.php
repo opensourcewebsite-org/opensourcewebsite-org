@@ -26,8 +26,8 @@ use yii\db\ActiveRecord;
  * @property int $slow_mode_messages_skip_days
  * @property int $slow_mode_messages_skip_hours
  * @property int|null $last_message_at
+ * @property string|null $limiter_date
  * @property string|null $membership_date
- * @property string|null $membership_verification_date
  * @property string $membership_note
  * @property float $membership_tariff_price
  * @property int $membership_tariff_days
@@ -118,7 +118,7 @@ class ChatMember extends ActiveRecord
             [['membership_tariff_days_balance'], 'integer', 'min' => 0],
             [['membership_tariff_price', 'membership_tariff_price_balance'], 'double', 'min' => 0, 'max' => 9999999999999.99],
             [['status', 'membership_note'], 'string'],
-            [['membership_verification_date', 'membership_date'], 'date'],
+            [['limiter_date', 'membership_date'], 'date'],
             [['intro'], 'string', 'max' => 10000],
         ];
     }
@@ -243,18 +243,37 @@ class ChatMember extends ActiveRecord
     public function hasMembership()
     {
         if ($chat = $this->chat) {
-            if ($this->membership_date && $this->membership_verification_date) {
-                $verificationDate = new DateTime($this->membership_verification_date);
+            if ($this->membership_date && $this->limiter_date) {
+                $verificationDate = new DateTime($this->limiter_date);
                 $membershipDateDate = new DateTime($this->membership_date);
 
                 if ((($verificationDate->getTimestamp() - ($chat->timezone * 60)) > time())
                     && ($membershipDateDate->getTimestamp() - ($chat->timezone * 60) > time())) {
                     return true;
                 }
+
             }
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->membership_date) {
+                $date = new DateTime($this->membership_date);
+
+                if (($date->getTimestamp() - ($chat->timezone * 60)) <= time()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public function updateSlowMode($timestamp = null)

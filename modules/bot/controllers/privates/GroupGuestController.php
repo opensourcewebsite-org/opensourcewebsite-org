@@ -47,7 +47,7 @@ class GroupGuestController extends Controller
                         'id' => $chatMember->id,
                     ]),
                     'text' => Yii::t('bot', 'Remove membership'),
-                    'visible' => !$chatMember->hasMembership()
+                    'visible' => !$chatMember->checkMembership()
                 ],
             ];
 

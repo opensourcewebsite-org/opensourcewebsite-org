@@ -15,7 +15,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <br/>
 <?= nl2br($chatMember->intro) ?><br/>
 <?php endif; ?>
-<?php if ($chatMember->membership_date || $chatMember->membership_verification_date || $chat->isSlowModeOn() || ($chat->getUsername() && $user->getUsername())) : ?>
+<?php if ($chatMember->membership_date || $chatMember->limiter_date || $chat->isSlowModeOn() || ($chat->getUsername() && $user->getUsername())) : ?>
 ————
 <?php if ($chatMember->membership_date) : ?>
 <br/>
@@ -29,9 +29,9 @@ use app\modules\bot\components\helpers\ExternalLink;
   • <?= Yii::t('bot', 'Tariff, days') ?>: <?= $chatMember->membership_tariff_days ?><br/>
 <?php endif; ?>
 <?php endif; ?>
-<?php if ($chatMember->membership_verification_date) : ?>
+<?php if ($chatMember->limiter_date) : ?>
 <br/>
-<?= Yii::t('bot', 'Your verification is valid until') ?>: <?= $chatMember->membership_verification_date ?><br/>
+<?= Yii::t('bot', 'Your verification is valid until') ?>: <?= $chatMember->limiter_date ?><br/>
 <?php endif; ?>
 <?php if ($chat->isSlowModeOn()) : ?>
 <br/>

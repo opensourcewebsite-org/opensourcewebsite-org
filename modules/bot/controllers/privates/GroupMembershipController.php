@@ -495,7 +495,7 @@ class GroupMembershipController extends Controller
                 $dateValidator = new DateValidator();
 
                 if ($dateValidator->validate($text)) {
-                    $member->membership_verification_date = Yii::$app->formatter->format($text, 'date');
+                    $member->limiter_date = Yii::$app->formatter->format($text, 'date');
                     $member->save(false);
 
                     return $this->runAction('member', [
@@ -580,7 +580,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $member->membership_verification_date = null;
+        $member->limiter_date = null;
         $member->save(false);
 
         return $this->runAction('members', [
