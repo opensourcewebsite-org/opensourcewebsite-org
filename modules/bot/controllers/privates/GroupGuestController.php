@@ -47,7 +47,7 @@ class GroupGuestController extends Controller
                         'id' => $chatMember->id,
                     ]),
                     'text' => Yii::t('bot', 'Remove membership'),
-                    'visible' => !$chatMember->checkMembership()
+                    'visible' => !$chatMember->hasMembership()
                 ],
             ];
 
@@ -69,17 +69,6 @@ class GroupGuestController extends Controller
                     'visible' => $chatMember->getActiveReviews()->exists(),
                 ],
             ];
-
-            if ($chat->isMarketplaceOn() && $chatMember->canUseMarketplace()) {
-                $buttons[] = [
-                    [
-                        'callback_data' => GroupGuestMarketplaceController::createRoute('index', [
-                            'id' => $chat->id,
-                        ]),
-                        'text' => Yii::t('bot', 'My posts'),
-                    ],
-                ];
-            }
         }
 
         if ($chat->faq_status == ChatSetting::STATUS_ON) {
@@ -526,9 +515,6 @@ class GroupGuestController extends Controller
         $chatMember->slow_mode_messages_limit = null;
         $chatMember->slow_mode_messages_skip_days = null;
         $chatMember->slow_mode_messages_skip_hours = null;
-
-        // remove limiter
-        $chatMember->limiter_date = null;
 
         $chatMember->save();
 
