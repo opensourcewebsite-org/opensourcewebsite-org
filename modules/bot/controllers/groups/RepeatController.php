@@ -142,6 +142,7 @@ class RepeatController extends Controller
             $post = ChatPublisherPost::findOne([
                 'chat_id' => $chat->id,
                 'text' => $replyMessage->getText(),
+                'topic_id' => $replyMessage->getMessageThreadId(),
             ]);
 
             if (!isset($post)) {

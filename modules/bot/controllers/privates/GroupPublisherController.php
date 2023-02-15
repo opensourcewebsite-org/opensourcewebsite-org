@@ -242,7 +242,7 @@ class GroupPublisherController extends Controller
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
                 $post = new ChatPublisherPost();
-                $post->chat_id = $id;
+                $post->chat_id = $chat->id;
                 $post->text = $text;
 
                 if ($post->save()) {
