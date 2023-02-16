@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use app\components\helpers\TimeHelper;
 use app\helpers\Number;
+use DateTime;
+use DateTimeZone;
 use app\models\traits\FloatAttributeTrait;
 use app\modules\bot\models\ChatTipWalletTransaction;
 use yii\behaviors\TimestampBehavior;
@@ -165,5 +168,22 @@ class WalletTransaction extends ActiveRecord
     public function getAmountPlusFee(): float
     {
         return $this->fee ? Number::floatAdd($this->amount, $this->fee) : $this->amount;
+    }
+
+    public function getCreatedAtByUser($user = null)
+    {
+        if (!isset($user)){
+            $user = $this->fromUser;
+        }
+
+        $date = new DateTime();
+        $dateTimeZone = new DateTimeZone(TimeHelper::getTimezoneByOffset($user->timezone));
+
+        $date->setTimezone($dateTimeZone);
+        $date->setTimestamp($this->getCreatedAt());
+
+        $timeOffset = $dateTimeZone->getOffset($date);
+
+        return $date->getTimestamp() + $timeOffset;
     }
 }

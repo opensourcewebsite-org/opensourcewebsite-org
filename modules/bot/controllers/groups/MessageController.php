@@ -57,29 +57,8 @@ class MessageController extends Controller
 
             $deleteMessage = false;
 
-            if ($chat->isLimiterOn() && !$chatMember->checkLimiter()) {
-                $deleteMessage = true;
-
-                $user->sendMessage(
-                    $this->render('/privates/warning-limiter', [
-                        'chat' => $chat,
-                        'chatMember' => $chatMember,
-                    ]),
-                    [
-                        [
-                            [
-                                'callback_data' => GroupGuestController::createRoute('view', [
-                                    'id' => $chat->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Group View'),
-                            ],
-                        ],
-                    ]
-                );
-            }
-
             if (!$deleteMessage) {
-                if ($chatMember->isAdministrator() && $chat->isMembershipOn() && !$chatMember->checkMembership()) {
+                if ($chatMember->isAdministrator() && $chat->isMembershipOn() && !$chatMember->hasMembership()) {
                     $deleteMessage = true;
 
                     $user->sendMessage(
