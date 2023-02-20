@@ -87,4 +87,7 @@ return [
     'word_update',
     'word_change',
     'word_delete',
+    'choose_wallet',
+    'set_amount',
+    'confirm_transaction',
 ];

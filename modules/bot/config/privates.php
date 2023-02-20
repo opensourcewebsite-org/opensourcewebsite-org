@@ -17,6 +17,7 @@ $config = [
                 '/hello' => 'start/index',
                 '/sos' => 'start/index',
                 '/my_rank' => 'my-rating/index',
+                '/group_reload(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'group-refresh/index',
                 '/<controller:\w+>__<action:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/<action>',
                 '/<controller:\w+>(\?<query:(&?\w+=[^&]*)*>)?( <message:.+>)?' => '<controller>/index',
             ],
