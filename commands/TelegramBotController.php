@@ -90,9 +90,9 @@ class TelegramBotController extends Controller implements CronChainedInterface
                 }
 
                 try {
-                    $botApi->kickChatMember($record->chat->chat_id, $record->provider_user_id);
+                    $botApi->banChatMember($record->chat->chat_id, $record->provider_user_id);
                 } catch (\Exception $e) {
-                    echo 'ERROR: ChatCaptcha #' . $record->id . ' (kickChatMember): ' . $e->getMessage() . "\n";
+                    echo 'ERROR: ChatCaptcha #' . $record->id . ' (banChatMember): ' . $e->getMessage() . "\n";
                 }
 
                 $updatesCount++;

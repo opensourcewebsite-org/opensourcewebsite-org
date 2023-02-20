@@ -54,7 +54,7 @@ class BanController extends Controller
                         $this->getMessage()->getReplyToMessage()->getMessageId()
                     );
                     // Kick member from the group
-                    $this->getBotApi()->kickChatMember(
+                    $this->getBotApi()->banChatMember(
                         $chat->chat_id,
                         $replyUser->provider_user_id
                     );
