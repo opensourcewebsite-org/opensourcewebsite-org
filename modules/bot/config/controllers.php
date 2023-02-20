@@ -1,6 +1,8 @@
 <?php
 
 // add new values to the end
+// erase instead deleting 'controllerName' -> ''
+// so that the index is not violated
 return [
     'start',
     'help',
@@ -16,7 +18,12 @@ return [
     'member',
     'group_timezone',
     'group_currency',
+    '',
+    '',
+    '',
+    '',
     'group_membership',
+    '',
     'group_slow_mode',
     'channel',
     'group',
