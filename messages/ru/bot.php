@@ -659,4 +659,6 @@ return [
     'Notifier' => 'Уведомитель',
     'tracks changes in information in member accounts and sends notifications to the group' => 'отслеживает изменения информации в аккаунтах участников и отправляет уведомления в группу',
     'Tracked data' => 'Отслеживаемые данные',
+    'The administrators removed your message for violating the group rules' => 'Администраторы удалили ваше сообщение за нарушение правил группы',
+    'The next violation may result in a mute or ban in the group' => 'Следующее нарушение может привести к мюту или бану в этой группе'
 ];

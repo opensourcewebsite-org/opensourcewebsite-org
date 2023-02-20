@@ -16,7 +16,7 @@ use yii\db\ActiveRecord;
  * @property int $chat_id
  * @property int $to_user_id
  * @property int|null $message_id
- * @property int $reply_message_id
+ * @property int|null $reply_message_id
  * @property int|null $sent_at
  *
  * @property Chat $chat
@@ -40,7 +40,7 @@ class ChatTip extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'to_user_id', 'reply_message_id'], 'required'],
+            [['chat_id', 'to_user_id'], 'required'],
             [['chat_id', 'to_user_id', 'message_id', 'reply_message_id', 'sent_at'], 'integer'],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['to_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['to_user_id' => 'id']],

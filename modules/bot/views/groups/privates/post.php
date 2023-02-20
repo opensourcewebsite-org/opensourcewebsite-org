@@ -1,0 +1,1 @@
+<?= Yii::t('bot', 'Press button to go to post settings'); ?>.

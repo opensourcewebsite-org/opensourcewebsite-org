@@ -32,11 +32,7 @@ class PremiumMembersController extends Controller
         $chat = $this->getTelegramChat();
 
         if ($chat->isMembershipOn()) {
-            if ($chat->isLimiterOn()) {
-                $query = $chat->getPremiumChatMembersWithLimiter();
-            } else {
-                $query = $chat->getPremiumChatMembers();
-            }
+            $query = $chat->getPremiumChatMembers();
 
             $pagination = new Pagination([
                 'totalCount' => $query->count(),
