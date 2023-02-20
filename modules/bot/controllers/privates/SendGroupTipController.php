@@ -199,35 +199,7 @@ class SendGroupTipController extends Controller
                 $walletTransaction->amount = $amount;
                 $this->getState()->setIntermediateModel($walletTransaction);
 
-                return $this->getResponseBuilder()
-                    ->editMessageTextOrSendMessage(
-                        $this->render('confirm-transaction', [
-                            'walletTransaction' => $walletTransaction,
-                        ]),
-                        [
-                            [
-                                [
-                                    'callback_data' => self::createRoute('confirm-transaction', [
-                                        'chatTipId' => $chatTipId,
-                                    ]),
-                                    'text' => Yii::t('bot', 'CONFIRM'),
-                                ],
-                            ],
-                            [
-                                [
-                                    'callback_data' => self::createRoute('choose-wallet', [
-                                        'chatTipId' => $chatTipId,
-                                    ]),
-                                    'text' => Emoji::BACK,
-                                ],
-                                [
-                                    'callback_data' => MenuController::createRoute(),
-                                    'text' => Emoji::MENU,
-                                ],
-                            ],
-                        ]
-                    )
-                    ->build();
+                return $this->actionConfirmTransaction($chatTipId);
             }
         }
 
@@ -261,6 +233,60 @@ class SendGroupTipController extends Controller
      * @return array
      */
     public function actionConfirmTransaction($chatTipId = null)
+    {
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if (!isset($chatTip)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+
+        if (!isset($walletTransaction)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('confirm-transaction', [
+                    'walletTransaction' => $walletTransaction,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('send-tip', [
+                                'chatTipId' => $chatTipId,
+                            ]),
+                            'text' => 'CONFIRM',
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-amount', [
+                                'chatTipId' => $chatTipId,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $chatTipId ChatTip->id
+     *
+     * @return array
+     */
+    public function actionSendTip($chatTipId = null)
     {
         $chatTip = ChatTip::findOne($chatTipId);
 

@@ -5,7 +5,7 @@ use app\modules\bot\components\helpers\Emoji;
 
 ?>
 <?php if ($chat->membership_tag) : ?>
-<b>#<?= $chat->membership_tag ?><br/>
+<b>#<?= $chat->membership_tag ?></b><br/>
 <?php else : ?>
 <b><?= Yii::t('bot', 'Premium members') ?></b><br/>
 <?php endif; ?>
