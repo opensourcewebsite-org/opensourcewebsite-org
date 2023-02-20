@@ -1,3 +1,1 @@
-<b><?= Yii::t('bot', 'Send transaction') ?></b><br/>
-<?= Yii::t('bot', 'Send @username of person to send money') ?>.<br/>
-
+<b><?= Yii::t('bot', 'Send @username or Telegram ID of the recipient') ?>:</b><br/>

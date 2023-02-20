@@ -118,7 +118,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/Inputmask.git",
+                "url": "git@github.com:RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -139,7 +139,7 @@
             "version": "3.6.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:jquery/jquery-dist.git",
+                "url": "https://github.com/jquery/jquery-dist.git",
                 "reference": "da0f228131a578aea168b799fe4d7fe01764c98b"
             },
             "dist": {
@@ -193,7 +193,7 @@
             "version": "v1.9.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:Leaflet/Leaflet.git",
+                "url": "https://github.com/Leaflet/Leaflet.git",
                 "reference": "2892e7c852cf44cb5b4bdf3a0cf428eddadd3e9b"
             },
             "dist": {
@@ -1474,10 +1474,10 @@
         },
         {
             "name": "npm-asset/ace-builds",
-            "version": "1.15.0",
+            "version": "1.15.2",
             "dist": {
                 "type": "tar",
-                "url": "https://registry.npmjs.org/ace-builds/-/ace-builds-1.15.0.tgz"
+                "url": "https://registry.npmjs.org/ace-builds/-/ace-builds-1.15.2.tgz"
             },
             "type": "npm-asset",
             "license": [
@@ -1577,16 +1577,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-telegram-sdk.git",
-                "reference": "3970e085da063e8da0e56f0d01b5c944136d1816"
+                "reference": "a03b32c465d2d4a650ff0ada29da3b3cba21920e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/3970e085da063e8da0e56f0d01b5c944136d1816",
-                "reference": "3970e085da063e8da0e56f0d01b5c944136d1816",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/a03b32c465d2d4a650ff0ada29da3b3cba21920e",
+                "reference": "a03b32c465d2d4a650ff0ada29da3b3cba21920e",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
+                "ext-json": "*",
                 "php": ">=7.4"
             },
             "require-dev": {
@@ -1634,7 +1635,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-telegram-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-telegram-sdk"
             },
-            "time": "2023-02-15T16:02:13+00:00"
+            "time": "2023-02-20T15:07:03+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",

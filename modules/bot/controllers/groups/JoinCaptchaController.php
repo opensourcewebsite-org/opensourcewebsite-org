@@ -152,7 +152,7 @@ class JoinCaptchaController extends Controller
                         break;
                     case self::BAN:
                         // Kick member from the group
-                        $this->getBotApi()->kickChatMember(
+                        $this->getBotApi()->banChatMember(
                             $chat->chat_id,
                             $telegramUser->provider_user_id
                         );

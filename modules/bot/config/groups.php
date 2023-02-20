@@ -12,6 +12,7 @@ $config = [
             'rules' => [
                 '/start(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'hello/index',
                 '/help(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'hello/index',
+                '/reload(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'refresh/index',
                 '/(fake_face|face)(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-face/index',
                 '/(fake_cat|cat)(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-cat/index',
                 '/(fake_art|art)(@<botname:[\w_]+bot>)?( <message:.+>)?' => 'my-fake-art/index',

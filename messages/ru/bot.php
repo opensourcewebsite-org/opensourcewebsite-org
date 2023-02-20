@@ -646,6 +646,7 @@ return [
     'CANCEL' => 'ОТМЕНИТЬ',
     'Transfer received' => 'Перевод получен',
     'You have no wallets with positive balance' => 'У вас нет кошельков с положительным балансом',
+    'Send @username or Telegram ID of the recipient' => 'Отправьте @username или Телеграм ID получателя',
     'Send any @username or Telegram ID to view information about the user or group' => 'Отправьте любой @username или Телеграм ID для просмотра информации о пользователе или группе',
     'If you select «{0}» then this user will receive a notification' => 'Если вы выберете «{0}», то этот пользователь получит уведомление',
     'The user has made the folowing changes to your account' => 'Пользователь внес следующие изменения для вашего аккаунта',
