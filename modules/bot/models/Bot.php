@@ -5,16 +5,6 @@ declare(strict_types=1);
 namespace app\modules\bot\models;
 
 use app\modules\bot\components\api\BotApi;
-use TelegramBot\Api\Types\CallbackQuery;
-use TelegramBot\Api\Types\ChatJoinRequest;
-use TelegramBot\Api\Types\ChatMemberUpdated;
-use TelegramBot\Api\Types\Inline\ChosenInlineResult;
-use TelegramBot\Api\Types\Inline\InlineQuery;
-use TelegramBot\Api\Types\Message;
-use TelegramBot\Api\Types\Payments\Query\PreCheckoutQuery;
-use TelegramBot\Api\Types\Payments\Query\ShippingQuery;
-use TelegramBot\Api\Types\Poll;
-use TelegramBot\Api\Types\PollAnswer;
 use Yii;
 
 /**

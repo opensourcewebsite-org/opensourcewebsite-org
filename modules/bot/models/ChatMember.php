@@ -243,58 +243,50 @@ class ChatMember extends ActiveRecord
     public function hasExpiredMembership()
     {
         if ($chat = $this->chat) {
-            if ($this->limiter_date) {
-                $verificationDate = new DateTime($this->limiter_date);
-
-                if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) <= time()) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasMembership()
-    {
-        if ($chat = $this->chat) {
             if ($this->membership_date) {
-                $membershipDateDate = new DateTime($this->membership_date);
-
-                if (($membershipDateDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                $membershipDate = new DateTime($this->membership_date);
+                if (($membershipDate->getTimestamp() - ($chat->timezone * 60)) <= time()) {
                     return true;
                 }
 
-                if (!$this->hasExpiredMembership()) {
-                    return true;
+                if ($this->limiter_date) {
+                    $verificationDate = new DateTime($this->limiter_date);
+                    if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) <= time()) {
+                        return true;
+                    }
                 }
-            }
-        }
 
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    public function checkMembership()
-    {
-        if ($chat = $this->chat) {
-            if ($this->membership_date) {
-                $date = new DateTime($this->membership_date);
-
-                if (($date->getTimestamp() - ($chat->timezone * 60)) <= time()) {
-                    return false;
-                }
+                return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasActiveMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->membership_date) {
+                $membershipDate = new DateTime($this->membership_date);
+                if (($membershipDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                    return true;
+                }
+
+                if (!$this->limiter_date) {
+                    return true;
+                }
+
+                $verificationDate = new DateTime($this->limiter_date);
+                if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function updateSlowMode($timestamp = null)
@@ -462,7 +454,7 @@ class ChatMember extends ActiveRecord
 
         if ($chat->isGroup() || $chat->isChannel()) {
             if ($chat->isMembershipOn() && $chat->membership_tag) {
-                if ($this->hasMembership()) {
+                if ($this->hasActiveMembership()) {
                     return $chat->membership_tag;
                 }
             }
