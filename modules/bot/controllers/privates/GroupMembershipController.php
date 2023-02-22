@@ -584,7 +584,7 @@ class GroupMembershipController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
+            'id' => $member->id,
         ]);
     }
 
