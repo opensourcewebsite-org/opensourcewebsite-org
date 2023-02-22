@@ -25,5 +25,9 @@ use app\modules\bot\components\helpers\Emoji;
 <?= Yii::t('bot', 'Tariff, days') ?>: <?= $chatMember->membership_tariff_days ?> (<?= $chatMember->getMembershipTariffDaysBalance() ?>)<br/>
 <?php endif; ?>
 <?php endif; ?>
+<?php if ($chatMember->limiter_date) : ?>
+<br/>
+<?= Yii::t('bot', 'Verification is valid until') ?>: <?= $chatMember->limiter_date ?><br/>
+<?php endif; ?>
 ————<br/>
 <?= Yii::t('bot', 'Send any date in format «YYYY-MM-DD» to change the date') ?>.<br/>
