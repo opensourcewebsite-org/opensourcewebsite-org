@@ -377,6 +377,9 @@ class Chat extends ActiveRecord
                 '>', ChatMember::tableName() . '.membership_date', $today->format('Y-m-d'),
             ])
             ->andWhere([
+                ChatMember::tableName() . '.limiter_date' => null,
+            ])
+            ->orWhere([
                 '>', ChatMember::tableName() . '.limiter_date', $today->format('Y-m-d'),
             ])
             ->orderByRank();

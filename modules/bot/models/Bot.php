@@ -45,6 +45,7 @@ class Bot
     {
         $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram-bot/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);
+
         $response = $this->botApi->setWebhook($url);
 
         return $response;
