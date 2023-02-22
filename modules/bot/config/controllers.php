@@ -1,6 +1,8 @@
 <?php
 
 // add new values to the end
+// erase instead deleting 'controllerName' -> ''
+// so that the index is not violated
 return [
     'start',
     'help',
@@ -16,12 +18,12 @@ return [
     'member',
     'group_timezone',
     'group_currency',
-    'channel_guest_marketplace',
-    'group_guest_marketplace',
-    'channel_marketplace',
-    'group_marketplace',
+    '',
+    '',
+    '',
+    '',
     'group_membership',
-    'group_limiter',
+    '',
     'group_slow_mode',
     'channel',
     'group',
@@ -61,5 +63,6 @@ return [
     'public_channel_refresh',
     'group_notify_name_change',
     'group_tip',
+    'group_publisher',
     'send_group_tip',
 ];
