@@ -240,18 +240,39 @@ class ChatMember extends ActiveRecord
     /**
      * @return bool
      */
+    public function hasExpiredMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->limiter_date) {
+                $verificationDate = new DateTime($this->limiter_date);
+
+                if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) <= time()) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
     public function hasMembership()
     {
         if ($chat = $this->chat) {
-            if ($this->membership_date && $this->limiter_date) {
-                $verificationDate = new DateTime($this->limiter_date);
+            if ($this->membership_date) {
                 $membershipDateDate = new DateTime($this->membership_date);
 
-                if ((($verificationDate->getTimestamp() - ($chat->timezone * 60)) > time())
-                    && ($membershipDateDate->getTimestamp() - ($chat->timezone * 60) > time())) {
+                if (($membershipDateDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
                     return true;
                 }
 
+                if (!$this->hasExpiredMembership()) {
+                    return true;
+                }
             }
         }
 
