@@ -319,7 +319,7 @@ class GroupMembershipController extends Controller
 
         return $this->runAction('member', [
             'id' => $member->id,
-         ]);
+        ]);
     }
 
     /**
@@ -357,14 +357,6 @@ class GroupMembershipController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('set-member-verification_date', [
-                                'id' => $member->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Verification Date'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => self::createRoute('set-member-note', [
                                 'id' => $member->id,
                             ]),
@@ -397,6 +389,14 @@ class GroupMembershipController extends Controller
                                 'id' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Balance, days'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-member-verification_date', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Verification date'),
                         ],
                     ],
                     [
@@ -454,7 +454,7 @@ class GroupMembershipController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -555,7 +555,7 @@ class GroupMembershipController extends Controller
 
         return $this->runAction('members', [
              'id' => $chat->id,
-         ]);
+        ]);
     }
 
     /**
@@ -583,8 +583,8 @@ class GroupMembershipController extends Controller
         $member->limiter_date = null;
         $member->save(false);
 
-        return $this->runAction('members', [
-            'id' => $chat->id,
+        return $this->runAction('member', [
+            'id' => $member->id,
         ]);
     }
 
@@ -623,7 +623,7 @@ class GroupMembershipController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -679,7 +679,7 @@ class GroupMembershipController extends Controller
 
         return $this->runAction('member', [
              'id' => $member->id,
-         ]);
+        ]);
     }
 
     /**
@@ -717,7 +717,7 @@ class GroupMembershipController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -773,7 +773,7 @@ class GroupMembershipController extends Controller
 
         return $this->runAction('member', [
              'id' => $member->id,
-         ]);
+        ]);
     }
 
     /**
@@ -809,7 +809,7 @@ class GroupMembershipController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -866,7 +866,7 @@ class GroupMembershipController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }
@@ -922,7 +922,7 @@ class GroupMembershipController extends Controller
 
         return $this->runAction('member', [
              'id' => $member->id,
-         ]);
+        ]);
     }
 
     /**
@@ -958,7 +958,7 @@ class GroupMembershipController extends Controller
 
                     return $this->runAction('member', [
                         'id' => $member->id,
-                     ]);
+                    ]);
                 }
             }
         }

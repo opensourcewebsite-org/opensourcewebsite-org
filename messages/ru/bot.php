@@ -523,6 +523,7 @@ return [
     'Good luck' => 'Удачи',
     'Marketplace' => 'Торговая площадка',
     'Post' => 'Обьявление',
+    'Posts' => 'Обьявления',
     'Your posts' => 'Ваши обьявления',
     'My posts' => 'Мои обьявления',
     'allows members to post ads to the channel' => 'позволяет участникам размещать объявления в этом канале',
@@ -578,6 +579,7 @@ return [
     'Your verification is valid until {0}' => 'Ваша верификация действительна до {0}',
     'Your verification is valid until' => 'Ваша верификация действительна до',
     'Verification is valid until' => 'Верификация действительна до',
+    'Verification date' => 'Дата верификации',
     'Your premium membership is valid until {0}' => 'Ваше премиум членство действительно до {0}',
     'Your premium membership is valid until' => 'Ваше премиум членство действительно до',
     'Premium membership is valid until' => 'Премиум членство действительно до',
@@ -660,5 +662,6 @@ return [
     'tracks changes in information in member accounts and sends notifications to the group' => 'отслеживает изменения информации в аккаунтах участников и отправляет уведомления в группу',
     'Tracked data' => 'Отслеживаемые данные',
     'The administrators removed your message for violating the group rules' => 'Администраторы удалили ваше сообщение за нарушение правил группы',
-    'The next violation may result in a mute or ban in the group' => 'Следующее нарушение может привести к мюту или бану в этой группе'
+    'The next violation may result in a mute or ban in the group' => 'Следующее нарушение может привести к мюту или бану в этой группе',
+    'sends posts to the group at the specified time' => 'Отправляет обьявления в группу в заданное время',
 ];

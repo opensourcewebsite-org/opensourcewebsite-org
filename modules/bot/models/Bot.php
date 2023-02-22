@@ -5,6 +5,16 @@ declare(strict_types=1);
 namespace app\modules\bot\models;
 
 use app\modules\bot\components\api\BotApi;
+use TelegramBot\Api\Types\CallbackQuery;
+use TelegramBot\Api\Types\ChatJoinRequest;
+use TelegramBot\Api\Types\ChatMemberUpdated;
+use TelegramBot\Api\Types\Inline\ChosenInlineResult;
+use TelegramBot\Api\Types\Inline\InlineQuery;
+use TelegramBot\Api\Types\Message;
+use TelegramBot\Api\Types\Payments\Query\PreCheckoutQuery;
+use TelegramBot\Api\Types\Payments\Query\ShippingQuery;
+use TelegramBot\Api\Types\Poll;
+use TelegramBot\Api\Types\PollAnswer;
 use Yii;
 
 /**
@@ -45,7 +55,23 @@ class Bot
     {
         $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram-bot/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);
-        $response = $this->botApi->setWebhook($url);
+        $allowedUpdates = [
+            'message',
+            'edited_message',
+            'channel_post',
+            'edited_channel_post',
+            'inline_query',
+            'chosen_inline_result',
+            'callback_query',
+            'shipping_query',
+            'pre_checkout_query',
+            'poll_answer',
+            'poll',
+            'my_chat_member',
+            'chat_member',
+            'chat_join_request',
+        ];
+        $response = $this->botApi->setWebhook($url, null, json_encode($allowedUpdates));
 
         return $response;
     }
