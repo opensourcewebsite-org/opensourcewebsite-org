@@ -124,7 +124,7 @@ class GroupPublisherController extends Controller
     {
         $chat = Chat::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -221,7 +221,7 @@ class GroupPublisherController extends Controller
     {
         $chat = Chat::findOne($id);
 
-        if (!isset($chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -287,7 +287,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if (!($chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if (!($chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -390,7 +390,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if ((!$chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -431,7 +431,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if ((!$chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -492,7 +492,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if ((!$chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -551,7 +551,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if ((!$chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -618,7 +618,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if ((!$chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -667,7 +667,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup() || !$chat->isPublisherOn()) {
+        if ((!$chat = $post->chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

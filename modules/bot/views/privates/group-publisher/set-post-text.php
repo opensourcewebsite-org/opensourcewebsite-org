@@ -5,5 +5,3 @@
 <?php endif; ?>
 ————<br/>
 <?= $this->render('../formatting-options') ?>
-<br/>
-<i><?= Yii::t('bot', 'Tags and @username will be automatically added to the end of the text') ?>.</i><br/>

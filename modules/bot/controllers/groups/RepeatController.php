@@ -25,7 +25,6 @@ class RepeatController extends Controller
      */
     public function actionIndex($time = null, $skipDays = null)
     {
-        // delete /repeat message
         if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
             $this->getResponseBuilder()
                 ->deleteMessage()
@@ -73,23 +72,20 @@ class RepeatController extends Controller
                 'chat_id' => $chat->id,
                 'text' => $replyMessage->getText(),
                 'time' => $postTime,
-                'topic_id' => $this->getMessage()->getMessageThreadId(),
+                'topic_id' => $this->getMessage()->isTopicMessage() ? $this->getMessage()->getMessageThreadId() : null,
             ]);
 
-            if (isset($post)) {
-                $post->status = ChatPublisherPost::STATUS_ON;
-                $post->skip_days = $skipDays;
-            } else {
+            if (!isset($post)) {
                 $post = new ChatPublisherPost([
                     'chat_id' => $chat->id,
                     'text' => $replyMessage->getText(),
-                    'status' => ChatPublisherPost::STATUS_ON,
                     'time' => $postTime,
-                    'skip_days' => $skipDays,
-                    'topic_id' => $this->getMessage()->getMessageThreadId(),
+                    'topic_id' => $this->getMessage()->isTopicMessage() ? $this->getMessage()->getMessageThreadId() : null,
                 ]);
             }
 
+            $post->status = ChatPublisherPost::STATUS_ON;
+            $post->skip_days = $skipDays;
             $post->save();
 
             $user->sendMessage(
