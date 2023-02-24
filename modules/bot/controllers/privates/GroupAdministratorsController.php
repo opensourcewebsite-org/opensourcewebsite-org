@@ -75,7 +75,7 @@ class GroupAdministratorsController extends Controller
                         'id' => $chat->id,
                         'administratorId' => $administrator->id,
                     ]),
-                    'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . $administrator->getDisplayName(),
+                    'text' => ($administratorChatMember->status == ChatMember::STATUS_CREATOR ? Emoji::CROWN : ($administratorChatMember->role == ChatMember::ROLE_ADMINISTRATOR ? Emoji::STATUS_ON : Emoji::STATUS_OFF)) . ' ' . ($administratorChatMember->hasMembership() ? '+' : '') . $administrator->getDisplayName(),
                 ];
             }
 

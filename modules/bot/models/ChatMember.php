@@ -240,6 +240,20 @@ class ChatMember extends ActiveRecord
     /**
      * @return bool
      */
+    public function hasMembership()
+    {
+        if ($chat = $this->chat) {
+            if ($this->membership_date) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
     public function hasExpiredMembership()
     {
         if ($chat = $this->chat) {

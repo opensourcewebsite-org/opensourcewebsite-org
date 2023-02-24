@@ -50,7 +50,7 @@ class RepeatController extends Controller
         $chat = $this->getTelegramChat();
         $chatMember = $chat->getChatMemberByUser($user);
 
-        if ($chat->isGroup() && $chat->isPublisherOn() && $chatMember->isActiveAdministrator() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
+        if ($chat->isPublisherOn() && ($chatMember->isActiveAdministrator() || $chatMember->isAnonymousAdministrator()) && $replyMessage = $this->getMessage()->getReplyToMessage()) {
             $replyUser = User::findOne([
                 'provider_user_id' => $replyMessage->getFrom()->getId(),
             ]);
@@ -113,11 +113,17 @@ class RepeatController extends Controller
      */
     public function actionOff()
     {
+        if ($this->getUpdate() && $this->getUpdate()->getMessage() && !$this->getUpdate()->getCallbackQuery()) {
+            $this->getResponseBuilder()
+                ->deleteMessage()
+                ->send();
+        }
+
         $user = $this->getTelegramUser();
         $chat = $this->getTelegramChat();
         $chatMember = $chat->getChatMemberByUser($user);
 
-        if ($chat->isGroup() && $chatMember->isActiveAdministrator() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
+        if ($chat->isGroup() && ($chatMember->isActiveAdministrator() || $chatMember->isAnonymousAdministrator()) && $replyMessage = $this->getMessage()->getReplyToMessage()) {
             $replyUser = User::findOne([
                 'provider_user_id' => $replyMessage->getFrom()->getId(),
             ]);
@@ -138,7 +144,7 @@ class RepeatController extends Controller
             $post = ChatPublisherPost::findOne([
                 'chat_id' => $chat->id,
                 'text' => $replyMessage->getText(),
-                'topic_id' => $replyMessage->getMessageThreadId(),
+                'topic_id' => $this->getMessage()->isTopicMessage() ? $this->getMessage()->getMessageThreadId() : null,
             ]);
 
             if (!isset($post)) {

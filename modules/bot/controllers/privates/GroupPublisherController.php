@@ -174,7 +174,7 @@ class GroupPublisherController extends Controller
                     'callback_data' => self::createRoute('post', [
                         'id' => $post->id,
                     ]),
-                    'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $post->id,
+                    'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $post->id . ' ' . $post->getTimeOfDay(),
                 ];
             }
 
