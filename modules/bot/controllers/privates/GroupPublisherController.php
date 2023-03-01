@@ -681,13 +681,6 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ($post->getProviderMessageId()) {
-            $this->getBotApi()->deleteMessage(
-                $chat->getChatId(),
-                $post->getProviderMessageId()
-            );
-        }
-
         $post->delete();
 
         return $this->actionPosts($chat->id);

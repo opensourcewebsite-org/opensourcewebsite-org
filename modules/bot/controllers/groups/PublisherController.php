@@ -70,6 +70,7 @@ class PublisherController extends Controller
         if ($response) {
             $post->sent_at = $response->getDate();
             $post->provider_message_id = $response->getMessageId();
+            $post->setNextSendAt();
             $post->save(false);
         }
 

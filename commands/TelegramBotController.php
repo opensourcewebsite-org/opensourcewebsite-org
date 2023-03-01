@@ -227,8 +227,7 @@ class TelegramBotController extends Controller implements CronChainedInterface
                     sleep(1);
                 }
 
-                $post->setNextSendAt();
-                $post->save(false);
+                $post->refresh();
 
                 $this->debug('Next Send At: ' . $post->getNextSendAt());
             }
