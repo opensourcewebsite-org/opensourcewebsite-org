@@ -29,10 +29,6 @@ class HelloController extends Controller
                 '/my_id',
                 '/my_rank',
                 '/my_stellar',
-                '/fake_face',
-                '/fake_cat',
-                '/fake_art',
-                '/fake_horse',
                 '/chat_id',
                 '/id',
             ];
