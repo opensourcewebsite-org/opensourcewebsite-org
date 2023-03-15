@@ -279,17 +279,15 @@ class ChatMember extends ActiveRecord
                 $membershipDate = new DateTime($this->membership_date);
 
                 if (($membershipDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
-                    return true;
-                }
+                    if (!$this->limiter_date) {
+                        return true;
+                    }
 
-                if (!$this->limiter_date) {
-                    return true;
-                }
+                    $verificationDate = new DateTime($this->limiter_date);
 
-                $verificationDate = new DateTime($this->limiter_date);
-
-                if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
-                    return true;
+                    if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) > time()) {
+                        return true;
+                    }
                 }
             }
         }
