@@ -27,7 +27,20 @@ class MessageController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
-        if (!$chatMember->isCreator() && !$user->isBot()) {
+        if ($user->isBot()) {
+            if ($chat->filter_status == ChatSetting::STATUS_ON) {
+                if ($chat->filter_remove_channels == ChatSetting::STATUS_ON) {
+                    if ($chatMember->isAnonymousChannel()) {
+                        if ($this->getMessage()) {
+                            $this->getBotApi()->deleteMessage(
+                                $chat->getChatId(),
+                                $this->getMessage()->getMessageId()
+                            );
+                        }
+                    }
+                }
+            }
+        } elseif (!$chatMember->isCreator()) {
             if (!$chatMember->isAdministrator()) {
                 if ($chat->isJoinCaptchaOn() && !$user->captcha_confirmed_at) {
                     if ($chatMember->role == JoinCaptchaController::ROLE_VERIFIED) {
@@ -105,7 +118,7 @@ class MessageController extends Controller
             }
 
             if (!$deleteMessage) {
-                if (!$chatMember->isAnonymousAdministrator() && !$chatMember->isActiveAdministrator() && (!$chat->isMembershipOn() || ($chat->isMembershipOn() && !$chatMember->hasActiveMembership()))) {
+                if (!$chatMember->isActiveAdministrator() && (!$chat->isMembershipOn() || ($chat->isMembershipOn() && !$chatMember->hasActiveMembership()))) {
                     if ($chat->filter_status == ChatSetting::STATUS_ON) {
                         if (($this->getMessage()->getText() !== null) || ($this->getMessage()->getLocation() !== null)) {
                             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
@@ -144,14 +157,6 @@ class MessageController extends Controller
                                     }
                                 }
 
-                            }
-
-                            if (!$deleteMessage) {
-                                if ($chat->filter_remove_channels == ChatSetting::STATUS_ON) {
-                                    if ($chatMember->isAnonymousChannel()) {
-                                        $deleteMessage = true;
-                                    }
-                                }
                             }
 
                             if (!$deleteMessage) {
