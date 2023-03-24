@@ -12,7 +12,7 @@ use Yii;
  */
 class Bot
 {
-    public ?string $name = null;
+    public ?string $username = null;
 
     public ?string $token = null;
 
@@ -46,9 +46,7 @@ class Bot
         $url = Yii::$app->urlManager->createAbsoluteUrl(['/webhook/telegram-bot/' . $this->token]);
         $url = str_replace('http:', 'https:', $url);
 
-        $response = $this->botApi->setWebhook($url);
-
-        return $response;
+        return $this->botApi->setWebhook($url);
     }
 
     /**
@@ -63,9 +61,7 @@ class Bot
      */
     public function deleteWebhook()
     {
-        $response = $this->botApi->deleteWebhook();
-
-        return $response;
+        return $this->botApi->deleteWebhook();
     }
 
     public function getUsername()
