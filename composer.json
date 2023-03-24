@@ -48,6 +48,7 @@
         "2amigos/yii2-leaflet-extension": "^1.1",
         "npm-asset/leaflet.locatecontrol": "^0.76",
         "lstrojny/functional-php": "^1.17",
+        "symfony/mailer": "^5.0",
         "opensourcewebsite-org/php-stellar-sdk": "dev-master",
         "opensourcewebsite-org/php-telegram-sdk": "dev-master"
     },
@@ -64,6 +65,11 @@
         "friendsofphp/php-cs-fixer": "^3.0",
         "phpunit/php-code-coverage": "^9.0"
     },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        }
+    },
     "config": {
         "process-timeout": 1800,
         "fxp-asset": {
@@ -73,6 +79,7 @@
             "php": "7.4"
         },
         "allow-plugins": {
+            "cweagans/composer-patches": true,
             "yiisoft/yii2-composer": true
         }
     },
