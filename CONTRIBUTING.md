@@ -84,17 +84,21 @@ Recommended IDE:
     - [Atom-Beautify](https://atom.io/packages/atom-beautify)
       - [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer). The beautifier uses `.php_cs` file.
         - Go to "File > Settings > Packages > atom-beautify > Settings > PHP". To automatically beautify PHP code on file save toggle `Beautify On Save` option and select `PHP-CS-Fixer` as Default Beautifier.
-        - Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add Binary/Script Path like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
+        - Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add `Binary/Script Path` like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
     - [EditorConfig](https://atom.io/packages/editorconfig)
     - [PHP Linter](https://atom.io/packages/linter-php)
     - [Yii Framework 2](https://atom.io/packages/atom-yii2)
   - [VS Code](https://code.visualstudio.com)
     - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
-    - [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
-    - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-debug)
-    - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-pack)
-    - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-intellisense)
+    - [PHP](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.phptools-vscode)
+    - [PHP-CS-Fixer](https://marketplace.visualstudio.com/items?itemName=junstyle.php-cs-fixer)
+        - Go to "Code > Settings > Extensions > php cs fixer > Extension Settings". To automatically beautify PHP code on file go to `PHP-cs-fixer: Onsave` and turn on `Execute PHP CS Fixer on save` checkbox.
+        - Go to "Code > Settings > Extensions > php cs fixer > Extension Settings". Add `PHP-cs-fixer: Executable Path` like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
+    - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
+    - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)
+    - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
+    - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
     - [SonarLint](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
@@ -144,9 +148,9 @@ JavaScript Code MUST adhere to [JavaScript Standard Style](https://standardjs.co
 
 Recommended IDE:
   - [Atom](https://atom.io)
+  - [VS Code](https://code.visualstudio.com)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
   - [Eclipse](https://www.eclipse.org)
-  - [VS Code](https://code.visualstudio.com)
   - [Sublime Text](https://www.sublimetext.com)
 
 - Prefer the object spread operator (`{...anotherObj}`) to `Object.assign()`

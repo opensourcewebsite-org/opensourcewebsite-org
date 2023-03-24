@@ -90,11 +90,15 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [Yii Framework 2](https://atom.io/packages/atom-yii2)
   - [VS Code](https://code.visualstudio.com)
     - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
-    - [PHP-CS-Fixer](https://github.com/junstyle/vscode-php-cs-fixer)
-    - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-debug)
-    - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-pack)
-    - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=felixfbecker.php-intellisense)
+    - [PHP](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.phptools-vscode)
+    - [PHP-CS-Fixer](https://marketplace.visualstudio.com/items?itemName=junstyle.php-cs-fixer)
+        - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Для автоматического запуска beautify для PHP-кода при сохранении файла, перейдите к `PHP-cs-fixer: Onsave` в включите чекбокс `Execute PHP CS Fixer on save`.
+        - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Добавьте `PHP-cs-fixer: Executable Path`, например `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
+    - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
+    - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)
+    - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
+    - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
     - [SonarLint](https://www.sonarlint.org/intellij). Для автоматической проверки стиля кода и его форматирования, включите настройки в окне коммита `Before commit > Perform SonarLint analysis`.
@@ -144,9 +148,9 @@ JavaScript код ДОЛЖЕН придерживаться [JavaScript Standard
 
 Рекомендуемые IDE:
   - [Atom](https://atom.io)
+  - [VS Code](https://code.visualstudio.com)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
   - [Eclipse](https://www.eclipse.org)
-  - [VS Code](https://code.visualstudio.com)
   - [Sublime Text](https://www.sublimetext.com)
 
 - Предпочтительнее использовать spread-оператор (`{...anotherObj}`) вместо `Object.assign()`
