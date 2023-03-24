@@ -9,6 +9,10 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// Define custom constants
+define('REQUIRED_PHP_VERSION', '7.4');
+define('MIN_MEMORY_LIMIT', '64M');
+
 use Dotenv\Dotenv;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -149,10 +153,23 @@ $requirements = [
         'by' => 'Email sending',
         'memo' => 'PHP mail SMTP server required',
     ],
+    'safeMode' => [
+        'name' => 'Safe Mode disabled',
+        'mandatory' => false,
+        'condition' => !$requirementsChecker->checkPhpIniOn("safe_mode"),
+        'by' => 'Security reasons',
+        'memo' => '"safe_mode" should be disabled at php.ini',
+    ],
+    'memoryLimit' => [
+        'name' => 'Memory limit (' . MIN_MEMORY_LIMIT . ')',
+        'mandatory' => false,
+        'condition' => $requirementsChecker->compareByteSize(ini_get('memory_limit'), MIN_MEMORY_LIMIT, '>='),
+        'by' => 'Performance reasons',
+        'memo' => 'Memory limit should be at least ' . MIN_MEMORY_LIMIT . ' for better performance',
+    ],
 ];
-
 // OPcache check
-if (!version_compare(phpversion(), '7.4', '>=')) {
+if (!version_compare(phpversion(), REQUIRED_PHP_VERSION, '>=')) {
     $requirements[] = [
         'name' => 'APC extension',
         'mandatory' => false,
