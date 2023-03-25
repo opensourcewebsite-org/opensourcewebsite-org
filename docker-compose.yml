@@ -1,6 +1,7 @@
 version: '2'
 services:
   php:
+    container_name: php
     image: yiisoftware/yii2-php:7.4-apache
     volumes:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
@@ -13,12 +14,14 @@ services:
       XDEBUG_MODE: ${XDEBUG_MODE:-off}
 
   adminer:
+    container_name: adminer
     image: adminer
-    restart: always
+    restart: unless-stopped
     ports:
       - 8080:8080
 
   db:
+    container_name: db
     image: mysql:8
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -27,6 +30,12 @@ services:
       MYSQL_ROOT_HOST: '%'
     volumes:
       - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      start_period: 60s
+      interval: 120s
+      timeout: 10s
+      retries: 5
 
 volumes:
   db:
