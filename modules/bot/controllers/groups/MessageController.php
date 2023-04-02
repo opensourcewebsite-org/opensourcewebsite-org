@@ -70,25 +70,46 @@ class MessageController extends Controller
 
             $deleteMessage = false;
 
-            if ($chatMember->isAdministrator() && $chat->isMembershipOn() && $chatMember->hasExpiredMembership()) {
-                $deleteMessage = true;
+            if ($chatMember->isAdministrator() && $chat->isMembershipOn()) {
+                if ($chatMember->hasExpiredMembership()) {
+                    $deleteMessage = true;
 
-                $user->sendMessage(
-                    $this->render('/privates/warning-membership', [
-                        'chat' => $chat,
-                        'chatMember' => $chatMember,
-                    ]),
-                    [
+                    $user->sendMessage(
+                        $this->render('/privates/warning-membership', [
+                            'chat' => $chat,
+                            'chatMember' => $chatMember,
+                        ]),
                         [
                             [
-                                'callback_data' => GroupGuestController::createRoute('view', [
-                                    'id' => $chat->id,
-                                ]),
-                                'text' => Yii::t('bot', 'Group View'),
+                                [
+                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                        'id' => $chat->id,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Group View'),
+                                ],
                             ],
-                        ],
-                    ]
-                );
+                        ]
+                    );
+                } elseif ($chatMember->hasExpiredVerification()) {
+                    $deleteMessage = true;
+
+                    $user->sendMessage(
+                        $this->render('/privates/warning-verification', [
+                            'chat' => $chat,
+                            'chatMember' => $chatMember,
+                        ]),
+                        [
+                            [
+                                [
+                                    'callback_data' => GroupGuestController::createRoute('view', [
+                                        'id' => $chat->id,
+                                    ]),
+                                    'text' => Yii::t('bot', 'Group View'),
+                                ],
+                            ],
+                        ]
+                    );
+                }
             }
 
             if (!$deleteMessage) {
@@ -156,7 +177,6 @@ class MessageController extends Controller
                                         }
                                     }
                                 }
-
                             }
 
                             if (!$deleteMessage) {

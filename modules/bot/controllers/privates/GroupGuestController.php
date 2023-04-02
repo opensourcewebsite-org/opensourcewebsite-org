@@ -505,12 +505,10 @@ class GroupGuestController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
-
         // remove membership
         $chatMember->membership_date = null;
         $chatMember->membership_tariff_price = null;
         $chatMember->membership_tariff_days = null;
-
         // remove slow mode
         $chatMember->slow_mode_messages_limit = null;
         $chatMember->slow_mode_messages_skip_days = null;

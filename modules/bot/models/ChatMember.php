@@ -295,6 +295,24 @@ class ChatMember extends ActiveRecord
         return false;
     }
 
+    /**
+     * @return bool
+     */
+    public function hasExpiredVerification()
+    {
+        if ($chat = $this->chat) {
+            if ($this->limiter_date) {
+                $verificationDate = new DateTime($this->limiter_date);
+
+                if (($verificationDate->getTimestamp() - ($chat->timezone * 60)) <= time()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function updateSlowMode($timestamp = null)
     {
         if (!$timestamp) {
