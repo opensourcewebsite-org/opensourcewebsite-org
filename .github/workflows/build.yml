@@ -21,7 +21,5 @@ jobs:
         extensions: mbstring, pdo_mysql
     - name: Composer Install
       run: composer install
-    - name: Database Migrations
-      run: php tests/bin/yii migrate
     - name: PHPUnit Tests
       run: ./vendor/bin/phpunit
