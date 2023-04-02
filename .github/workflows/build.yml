@@ -13,13 +13,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: 7.4
-        extensions: mbstring, pdo_mysql
-    - name: Composer Install
-      run: composer install
     - name: PHPUnit Tests
-      run: ./vendor/bin/phpunit
+      run: /vendor/bin/phpunit
