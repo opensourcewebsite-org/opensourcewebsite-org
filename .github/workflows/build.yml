@@ -1,4 +1,4 @@
-name: Build and Test
+name: PHPUnit Tests for Yii
 
 on:
   push:
@@ -9,9 +9,19 @@ on:
       - master
 
 jobs:
-  build:
+  phpunit:
     runs-on: ubuntu-latest
 
     steps:
-    - name: PHPUnit Tests
-      run: /vendor/bin/phpunit
+      - uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: pdo_mysql
+      - name: Install Yii and dependencies
+        run: |
+          composer install --no-progress --no-suggest --no-interaction
+          php yii migrate/up --interactive=0
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit tests/
