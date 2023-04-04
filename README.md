@@ -10,9 +10,11 @@
 [![MySQL Version](https://img.shields.io/badge/MySQL-8-blue.svg?style=flat-square&logo=mysql)](https://www.mysql.com)
 [![Yii Framework Version](https://img.shields.io/badge/Yii_Framework-2.0-blue.svg?style=flat-square)](https://www.yiiframework.com)
 
-<h1 align="center">OpenSourceWebsite</h1>
+<h1 align="center">OpenSourceWebsite (OSW) - Creating an Open and Democratic Online Community</h1>
 
-OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code. Welcome developers, activists, volunteers, sponsors. Join us and let’s build the future together!
+We promote a free society where everyone can participate in decision-making through electronic voting and where open source guarantees data security.
+
+We welcome everyone who shares our mission and is ready to contribute to the development of the community - developers, activists, volunteers, employees, partners, sponsors. Join us and together we will create our future!
 
 Welcome to our website https://opensourcewebsite.org and telegram bot https://t.me/opensourcewebsite_bot.
 
