@@ -51,6 +51,12 @@ class ResponseBuilder
         array $replyMarkup = [],
         array $optionalParams = []
     ) {
+        $_SESSION['lastMessage'] = [
+            'messageText' => $messageText,
+            'replyMarkup' => $replyMarkup,
+            'optionalParams' => $optionalParams,
+        ];
+
         if ($this->getUpdate()) {
             if ($this->getChat()->isPrivate()) {
                 // Delete messages, sent earlier by bot in private chat
@@ -503,7 +509,15 @@ class ResponseBuilder
         }
 
         if ($privateMessageIds) {
-            $this->getUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
+            $currentList = $this->getUserState()->getIntermediateField('private_message_ids', []);
+
+            // fix previous invalid saving
+            if(is_string($currentList))
+            {
+                $currentList = json_decode($currentList, true);
+            }
+
+            $this->getUserState()->setIntermediateField('private_message_ids', array_unique(array_merge($currentList, $privateMessageIds)));
             $this->getUserState()->save($this->getUser());
         }
 

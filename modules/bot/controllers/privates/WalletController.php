@@ -307,7 +307,7 @@ class WalletController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('send-transaction'),
-                $buttons
+                $buttons,
             )
             ->build();
     }
@@ -325,28 +325,49 @@ class WalletController extends Controller
                 ->build();
         }
 
-        if ($text = $this->getMessage()->getText()) {
-            if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
-                $username = ltrim($matches[0], '@');
-            }
+        $text = $this->getMessage()->getText();
+
+        if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
+            $username = ltrim($matches[0], '@');
+            $toBotUser = User::findOne(['provider_user_name' => $username]);
+        }
+        else if(preg_match('/^\d+$/', $text))
+        {
+            $toBotUser = User::findOne(['provider_user_id' => $text]);
         }
 
-        if (!isset($username)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        if ($toBotUser->getUserId() == $this->getTelegramUser()->getUserId()) {
 
-        $toUser = User::findOne(['provider_user_name' => $username]);
+            $replyMarkup = @$_SESSION['lastMessage']['replyMarkup'];
+
+            $mess = $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('send-transaction', [
+                        'error' => Yii::t('bot', 'You can not send money to yourself'),
+                    ]),
+                    $replyMarkup,
+                );
+
+            return $mess->build();
+        }
 
         // check if user exists or user is bot
-        if (!isset($toUser) || $toUser->isBot()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
+        if (!isset($toBotUser) || $toBotUser->isBot()) {
+
+            $replyMarkup = @$_SESSION['lastMessage']['replyMarkup'];
+
+            $mess = $this->getResponseBuilder()
+                ->editMessageTextOrSendMessage(
+                    $this->render('send-transaction', [
+                        'error' => Yii::t('bot', 'User not found. Please repeat input'),
+                    ]),
+                    $replyMarkup,
+                );
+
+            return $mess->build();
         }
 
-        $walletTransaction->to_user_id = $toUser->getId();
+        $walletTransaction->to_user_id = $toBotUser->getUserId();
         $this->getState()->setIntermediateModel($walletTransaction);
 
         return $this->actionInputAmount();
@@ -360,22 +381,20 @@ class WalletController extends Controller
         $this->getState()->setName(self::createRoute('input-amount'));
 
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
-
+        
+        $error = null;
+        
         if (!isset($walletTransaction)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
+            $error = Yii::t('bot', 'Something strange happened. Please repeat input');
         }
-
+        
         $amount = 0;
         if ($this->getUpdate()->getMessage()) {
             if ($amount = (float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = number_format($amount, 2, '.', '');
 
                 if (!$this->getGlobalUser()->getWalletByCurrencyId($walletTransaction->currency_id)->hasAmount($amount)) {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery()
-                        ->build();
+                    $error = Yii::t('bot', 'Not enought money on your wallet. Please make your sum lower');
                 }
 
                 if (Number::isFloatLower($amount, WalletTransaction::MIN_AMOUNT)) {
@@ -391,13 +410,14 @@ class WalletController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('confirm-transaction', [
                     'walletTransaction' => $walletTransaction,
+                    'error' => $error,
                 ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('confirm-transaction'),
                             'text' => 'Confirm',
-                            'visible' => $amount > 0,
+                            'visible' => !$error && $amount > 0,
                         ],
                     ],
                     [
