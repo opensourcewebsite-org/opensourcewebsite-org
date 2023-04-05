@@ -77,6 +77,8 @@ class ResponseBuilder
                     foreach ($messageIds as $key => $messageId) {
                         $this->deleteMessage($messageId)->send();
                     }
+
+                    $this->getUserState()->setIntermediateField('private_message_ids', []);
                 }
             }
 
@@ -137,6 +139,8 @@ class ResponseBuilder
             foreach ($messageIds as $messageId) {
                 $this->deleteMessage($messageId)->send();
             }
+
+            $this->getUserState()->setIntermediateField('private_message_ids', []);
 
             $this->command = new SendMessageCommand(
                 $this->getChatId(),
