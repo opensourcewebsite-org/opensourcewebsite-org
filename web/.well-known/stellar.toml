@@ -1,5 +1,8 @@
 # OpenSourceWebsite Stellar Anchor <https://opensourcewebsite.org>
 # https://github.com/stellar/stellar-protocol/tree/master/ecosystem
+VERSION="2.5.0"
+
+NETWORK_PASSPHRASE="Public Global Stellar Network ; September 2015"
 
 ACCOUNTS=[
 "GC45AYPXRDYKK75HFWH5CUANMDFLQW34ZAXD5ZRTIAGS262XSBTFTCLH",
@@ -15,7 +18,7 @@ ORG_NAME="OpenSourceWebsite"
 ORG_DBA="OpenSourceWebsite"
 ORG_URL="https://opensourcewebsite.org"
 ORG_LOGO="https://opensourcewebsite.org/images/logo/osw-circle-white-logo.png"
-ORG_DESCRIPTION="OpenSourceWebsite (OSW) - online community managed by users using electronic voting and modifying source code"
+ORG_DESCRIPTION="OpenSourceWebsite (OSW) - Creating an Open and Democratic Online Community. We promote a free society where everyone can participate in decision-making through electronic voting and where open source guarantees data security. We welcome everyone who shares our mission and is ready to contribute to the development of the community - developers, activists, volunteers, employees, partners, sponsors. Join us and together we will create our future!"
 ORG_GITHUB="opensourcewebsite-org"
 ORG_OFFICIAL_EMAIL="hello@opensourcewebsite.org"
 ORG_SUPPORT_EMAIL="hello@opensourcewebsite.org"

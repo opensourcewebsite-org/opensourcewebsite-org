@@ -10,26 +10,11 @@ use app\components\helpers\ExternalLink;
   <div class="container">
     <div class="intro-text">
       <div class="intro-heading">Open Source Website</div>
-      <div class="intro-lead-in"><?= Yii::t('app', 'online community') ?></div>
+      <div class="intro-lead-in"><?= Yii::t('app', 'Creating an Open and Democratic Online Community') ?></div>
       <?= Html::a(Yii::t('app', 'Join us'), Yii::$app->urlManager->createUrl(['site/login']), ['class' => 'btn btn-primary btn-xl text-uppercase js-scroll-trigger']) ?>
     </div>
   </div>
 </header>
-
-<section class="page-section" id="about">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <h2 class="section-heading text-uppercase"><?= Yii::t('app', 'How It Works') ?></h2>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <p class="text-muted">OpenSourceWebsite (OSW) - <?= Yii::t('app', 'online community managed by users using electronic voting and modifying source code') ?>.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="page-section" id="features">
   <div class="container">
@@ -39,6 +24,14 @@ use app\components\helpers\ExternalLink;
       </div>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <p>
+                <b>Telegram</b>
+            </p>
+            <ul>
+                <li><?= Html::a(Yii::t('app', 'Telegram Bot'), ExternalLink::getBotLink()) ?></li>
+            </ul>
+        </div>
         <div class="col-md-12">
             <p>
                 <b>Social</b>
@@ -174,7 +167,7 @@ use app\components\helpers\ExternalLink;
           <p class="text-muted"><?= Yii::t('app', 'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas') ?>: <?= Yii::t('app', 'open source development, open data, editorial and translation work, UI/UX web design, social media and communications') ?>.</p>
         </div>
         <div class="col-md-12">
-          <ul>
+              <li><?= Html::a('Source Code', ExternalLink::getGithubLink()) ?></li>
               <li><?= Html::a('How to Contribute', 'https://opensource.guide/how-to-contribute/') ?></li>
               <li><?= Html::a('Contributing Guidelines', ExternalLink::getGithubContributionLink()) ?></li>
               <li><?= Html::a('Code of Conduct', ExternalLink::getGithubCodeOfConductLink()) ?></li>
