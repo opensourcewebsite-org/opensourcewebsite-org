@@ -14,10 +14,10 @@
  */
 return [
     'online community managed by users using electronic voting and modifying source code' => 'онлайн сообщество которым управляют пользователи используя электронные голосования и изменяя исходный код',
-    'Welcome developers, activists, volunteers, sponsors' => 'Приветствуем разработчиков, активистов, волонтеров, спонсоров',
-    'Join and build the digital future' => 'Присоединяйтесь и создавайте цифровое будущее',
-    'Join us and be part of the digital future' => 'Присоединяйтесь к нам и станьте частью цифрового будущего',
-    'Join us and let’s build the future together' => 'Присоединяйтесь к нам и давайте создавать это будущее вместе',
+    'Creating an Open and Democratic Online Community' => 'Создаем открытое и демократичное онлайн сообщество',
+    'We promote a free society where everyone can participate in decision-making through electronic voting and where open source guarantees data security' => 'Мы продвигаем свободное общество, в котором каждый может участвовать в принятии решений посредством электронного голосования и где открытый исходный код гарантирует безопасность данных',
+    'We welcome everyone who shares our mission and is ready to contribute to the development of the community - developers, activists, volunteers, employees, partners, sponsors' => 'Мы приветствуем всех, кто разделяет нашу миссию и готов внести свой вклад в развитие сообщества - разработчиков, активистов, волонтеров, сотрудников, партнеров, спонсоров',
+    'Join us and together we will create our future' => 'Присоединяйтесь к нам и вместе мы создадим наше будущее',
     'Hello' => 'Здравствуйте',
     'Welcome' => 'Добро пожаловать',
     'More information' => 'Больше информации',
