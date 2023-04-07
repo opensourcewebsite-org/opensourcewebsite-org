@@ -487,6 +487,15 @@ class WalletController extends Controller
                 $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
 
                 if ($chatTip) {
+
+                    // create new ChatTipWalletTransaction record
+                    $chatTipWalletTransaction = new ChatTipWalletTransaction([
+                        'chat_tip_id' => $chatTip->id,
+                        'transaction_id' => $walletTransaction->id,
+                    ]);
+
+                    $chatTipWalletTransaction->save();
+
                     $thisChat = $this->chat;
                     $module = Yii::$app->getModule('bot');
                     $module->setChat(Chat::findOne($chatTip->chat_id));
