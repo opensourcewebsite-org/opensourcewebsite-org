@@ -4,11 +4,14 @@ namespace app\modules\bot\controllers\privates;
 
 use app\helpers\Number;
 use app\models\Currency;
+use app\models\User as GlobalUser;
 use app\models\Wallet;
 use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\Chat;
+use app\modules\bot\models\ChatTip;
 use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
 use Yii;
@@ -27,7 +30,7 @@ class WalletController extends Controller
      *
      * @return array
      */
-    public function actionIndex($page = 1)
+    public function actionIndex($page = 1, $useState = false)
     {
         $this->getState()->setName(null);
 
@@ -55,14 +58,16 @@ class WalletController extends Controller
                 $buttons[][] = [
                     'callback_data' => self::createRoute('view', [
                         'id' => $wallet->getCurrencyId(),
+                        'useState' => $useState,
                     ]),
                     'text' => $wallet->amount . ' ' . $wallet->currency->code,
                 ];
             }
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($useState) {
                 return self::createRoute('index', [
                     'page' => $page,
+                    'useState' => $useState,
                 ]);
             });
 
@@ -77,7 +82,9 @@ class WalletController extends Controller
                 'text' => Emoji::MENU,
             ],
             [
-                'callback_data' => self::createRoute('add'),
+                'callback_data' => self::createRoute('add', [
+                    'useState' => $useState,
+                ]),
                 'text' => Emoji::ADD,
             ],
         ];
@@ -95,7 +102,7 @@ class WalletController extends Controller
      *
      * @return array
      */
-    public function actionView($id = null)
+    public function actionView($id = null, $useState = false)
     {
         $wallet = $this->getGlobalUser()->getWalletByCurrencyId($id);
 
@@ -109,6 +116,7 @@ class WalletController extends Controller
                         [
                             'callback_data' => self::createRoute('send-transaction', [
                                 'id' => $wallet->getCurrencyId(),
+                                'useState' => $useState,
                             ]),
                             'text' => Yii::t('bot', 'Send'),
                             'visible' => Number::isFloatGreater($wallet->amount, 0),
@@ -118,6 +126,7 @@ class WalletController extends Controller
                         [
                             'callback_data' => self::createRoute('transactions', [
                                 'id' => $wallet->getCurrencyId(),
+                                'useState' => $useState,
                             ]),
                             'text' => Yii::t('bot', 'Transactions'),
                             'visible' => $wallet->getTransactions()->exists(),
@@ -125,7 +134,9 @@ class WalletController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute(),
+                            'callback_data' => self::createRoute('index', [
+                                'useState' => $useState,
+                            ]),
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -135,6 +146,7 @@ class WalletController extends Controller
                         [
                             'callback_data' => self::createRoute('delete', [
                                 'id' => $wallet->getCurrencyId(),
+                                'useState' => $useState,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => (Number::isFloatEqual($wallet->amount, 0)) && !$wallet->getTransactions()->exists(),
@@ -151,7 +163,7 @@ class WalletController extends Controller
      *
      * @return array
      */
-    public function actionAdd($code = null, $page = 1)
+    public function actionAdd($code = null, $page = 1, $useState = false)
     {
         if ($code) {
             $currency = Currency::findOne([
@@ -184,7 +196,9 @@ class WalletController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('add'));
+        $this->getState()->setName(self::createRoute('add', [
+            'useState' => $useState,
+        ]));
 
         $query = Currency::find()
             ->orderBy([
@@ -212,14 +226,16 @@ class WalletController extends Controller
                 $buttons[][] = [
                     'callback_data' => self::createRoute('add', [
                         'code' => $currency->code,
+                        'useState' => $useState,
                     ]),
                     'text' => $currency->code . ' - ' . $currency->name,
                 ];
             }
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($useState) {
                 return self::createRoute('add', [
                     'page' => $page,
+                    'useState' => $useState,
                 ]);
             });
 
@@ -230,7 +246,9 @@ class WalletController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute(),
+                'callback_data' => self::createRoute('index', [
+                    'useState' => $useState,
+                ]),
                 'text' => Emoji::BACK,
             ],
         ];
@@ -248,7 +266,7 @@ class WalletController extends Controller
      *
      * @return array
      */
-    public function actionDelete($id = null)
+    public function actionDelete($id = null, $useState = false)
     {
         $wallet = Wallet::findOne([
             'currency_id' => $id,
@@ -259,7 +277,7 @@ class WalletController extends Controller
         if ($wallet) {
             $wallet->delete();
 
-            return $this->actionIndex();
+            return $this->actionIndex(1, $useState);
         }
 
         return $this->getResponseBuilder()
@@ -272,7 +290,7 @@ class WalletController extends Controller
      *
      * @return array
      */
-    public function actionSendTransaction($id = null)
+    public function actionSendTransaction($id = null, $useState = false)
     {
         $this->getState()->setName(self::createRoute('set-to-user'));
 
@@ -284,12 +302,30 @@ class WalletController extends Controller
                 ->build();
         }
 
-        $this->getState()->setIntermediateModel(new WalletTransaction([
+        $transactionData = [
             'from_user_id' => $this->getTelegramUser()->getUserId(),
             'currency_id' => $id,
             'type' => 0,
             'anonymity' => 0,
-        ]));
+        ];
+
+        if ($useState) {
+            $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
+
+            if ($chatTip) {
+                $toUser = $chatTip->toUser->globalUser;
+            }
+        }
+
+        if ($toUser) {
+            $transactionData['to_user_id'] = $toUser->id;
+        }
+
+        $this->getState()->setIntermediateModel(new WalletTransaction($transactionData));
+
+        if ($toUser) {
+            return $this->actionInputAmount($useState);
+        }
 
         $buttons[] = [
             [
@@ -330,41 +366,21 @@ class WalletController extends Controller
         if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
             $username = ltrim($matches[0], '@');
             $toBotUser = User::findOne(['provider_user_name' => $username]);
-        }
-        else if(preg_match('/^\d+$/', $text))
-        {
+        } elseif (preg_match('/^\d+$/', $text)) {
             $toBotUser = User::findOne(['provider_user_id' => $text]);
-        }
-
-        if ($toBotUser->getUserId() == $this->getTelegramUser()->getUserId()) {
-
-            $replyMarkup = @$_SESSION['lastMessage']['replyMarkup'];
-
-            $mess = $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('send-transaction', [
-                        'error' => Yii::t('bot', 'You can not send money to yourself'),
-                    ]),
-                    $replyMarkup,
-                );
-
-            return $mess->build();
         }
 
         // check if user exists or user is bot
         if (!isset($toBotUser) || $toBotUser->isBot()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
 
-            $replyMarkup = @$_SESSION['lastMessage']['replyMarkup'];
-
-            $mess = $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('send-transaction', [
-                        'error' => Yii::t('bot', 'User not found. Please repeat input'),
-                    ]),
-                    $replyMarkup,
-                );
-
-            return $mess->build();
+        if ($toBotUser->getUserId() == $this->getTelegramUser()->getUserId()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
         $walletTransaction->to_user_id = $toBotUser->getUserId();
@@ -376,25 +392,29 @@ class WalletController extends Controller
     /**
      * @return array
      */
-    public function actionInputAmount()
+    public function actionInputAmount($useState = false)
     {
-        $this->getState()->setName(self::createRoute('input-amount'));
+        $this->getState()->setName(self::createRoute('input-amount', [
+            'useState' => $useState,
+        ]));
 
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
-        
-        $error = null;
-        
+
         if (!isset($walletTransaction)) {
-            $error = Yii::t('bot', 'Something strange happened. Please repeat input');
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
-        
+
         $amount = 0;
         if ($this->getUpdate()->getMessage()) {
             if ($amount = (float)$this->getUpdate()->getMessage()->getText()) {
                 $amount = number_format($amount, 2, '.', '');
 
                 if (!$this->getGlobalUser()->getWalletByCurrencyId($walletTransaction->currency_id)->hasAmount($amount)) {
-                    $error = Yii::t('bot', 'Not enought money on your wallet. Please make your sum lower');
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery()
+                        ->build();
                 }
 
                 if (Number::isFloatLower($amount, WalletTransaction::MIN_AMOUNT)) {
@@ -410,20 +430,22 @@ class WalletController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('confirm-transaction', [
                     'walletTransaction' => $walletTransaction,
-                    'error' => $error,
                 ]),
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('confirm-transaction'),
+                            'callback_data' => self::createRoute('confirm-transaction', [
+                                'useState' => $useState,
+                            ]),
                             'text' => 'Confirm',
-                            'visible' => !$error && $amount > 0,
+                            'visible' => $amount > 0,
                         ],
                     ],
                     [
                         [
                             'callback_data' => self::createRoute('view', [
                                 'id' => $walletTransaction->currency_id,
+                                'useState' => $useState,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -440,7 +462,7 @@ class WalletController extends Controller
     /**
      * @return array
      */
-    public function actionConfirmTransaction()
+    public function actionConfirmTransaction($useState = false)
     {
         $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
 
@@ -453,7 +475,31 @@ class WalletController extends Controller
         if ($this->getGlobalUser()->createTransaction($walletTransaction)) {
             $this->getState()->clearIntermediateModel(WalletTransaction::class);
 
-            return $this->actionView($walletTransaction->currency_id);
+            $walletTransaction->toUser->botUser->sendMessage(
+                $this->render('receiver-privates-success', [
+                    'walletTransaction' => $walletTransaction,
+                    'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
+                ]),
+                []
+            );
+
+            if ($useState) {
+                $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
+
+                if ($chatTip) {
+                    $thisChat = $this->chat;
+                    $module = Yii::$app->getModule('bot');
+                    $module->setChat(Chat::findOne($chatTip->chat_id));
+
+                    $response = $module->runAction('tip/tip-message', [
+                        'chatTipId' => $chatTip->id,
+                    ]);
+
+                    $module->setChat($thisChat);
+                }
+            }
+
+            return $this->actionTransaction($walletTransaction->id);
         }
 
         return $this->getResponseBuilder()

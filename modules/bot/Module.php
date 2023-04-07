@@ -73,12 +73,6 @@ class Module extends \yii\base\Module
         if ($this->getUpdate()->getChat()) {
             if ($this->getUpdate()->getFrom()) {
 
-                $chatId = $this->getUpdate()->getChat()->getId();
-                $fromId = $this->getUpdate()->getFrom()->getId();
-
-                session_id("{$chatId}-{$fromId}");
-                session_start();
-
                 $isNewUser = false;
 
                 $user = User::findOne([

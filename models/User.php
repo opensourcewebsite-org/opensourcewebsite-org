@@ -1292,7 +1292,7 @@ class User extends ActiveRecord implements IdentityInterface
             }
 
             $transaction->commit();
-            return true;
+            return $transaction;
         } catch (\Throwable $e) {
             $transaction->rollBack();
             Yii::error($e->getMessage());

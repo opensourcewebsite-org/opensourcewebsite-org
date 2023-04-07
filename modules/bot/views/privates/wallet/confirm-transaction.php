@@ -14,8 +14,5 @@ use app\modules\bot\components\helpers\Emoji;
 <?php else : ?>
 <?= Yii::t('bot', 'Enter amount of money to send') ?>:<br/>
 ————<br/>
-<i><?= Yii::t('bot', 'Available amount'); ?>: <?= $walletTransaction->fromUser->getWalletByCurrencyId(@$walletTransaction->currency->id)->amount . ' ' . @$walletTransaction->currency->code; ?></i><br/>
-<?php endif; ?>
-<?php if (isset($error)): ?>
-<br/><i><?=Emoji::WARNING?> <?= $error ?>.</i><br/>
+<i><?= Yii::t('bot', 'Available amount'); ?>: <?= $walletTransaction->fromUser->getWalletByCurrencyId(@$walletTransaction->currency->id)->getAmountMinusFee() . ' ' . @$walletTransaction->currency->code; ?></i><br/>
 <?php endif; ?>

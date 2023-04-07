@@ -123,6 +123,13 @@ class MemberController extends Controller
             'member_id' => $chatMember->id,
         ]);
 
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if ($chatTip) {
+            $state = $this->getState();
+            $state->setIntermediateModel($chatTip);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
@@ -135,8 +142,8 @@ class MemberController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('send-tip', [
-                                'id' => $chatMember->id,
+                            'callback_data' => WalletController::createRoute('index', [
+                                'useState' => true,
                             ]),
                             'text' => Yii::t('bot', 'Send a Tip'),
                         ],
@@ -368,8 +375,8 @@ class MemberController extends Controller
             }
 
             return $this->runAction('my-review', [
-                 'id' => $counterChatMember->id,
-             ]);
+                'id' => $counterChatMember->id,
+            ]);
         }
 
         return $this->getResponseBuilder()
@@ -418,8 +425,8 @@ class MemberController extends Controller
                     $chatMemberReview->save(false);
 
                     return $this->runAction('my-review', [
-                         'id' => $chatMember->id,
-                     ]);
+                        'id' => $chatMember->id,
+                    ]);
                 }
             }
         }
@@ -433,12 +440,12 @@ class MemberController extends Controller
                     [
                         [
                             'callback_data' => $chatMemberReview->isNewRecord
-                            ? self::createRoute('id', [
-                                'id' => $chatMember->id,
-                            ])
-                            : self::createRoute('my-review', [
-                                'id' => $chatMember->id,
-                            ]),
+                                ? self::createRoute('id', [
+                                    'id' => $chatMember->id,
+                                ])
+                                : self::createRoute('my-review', [
+                                    'id' => $chatMember->id,
+                                ]),
                             'text' => Emoji::BACK,
                         ],
                     ],
@@ -478,7 +485,7 @@ class MemberController extends Controller
         }
 
         return $this->runAction('id', [
-             'id' => $chatMember->id,
-         ]);
+            'id' => $chatMember->id,
+        ]);
     }
 }
