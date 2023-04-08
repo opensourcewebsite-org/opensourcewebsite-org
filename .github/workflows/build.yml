@@ -1,0 +1,57 @@
+name: build
+
+on: [push, pull_request]
+
+env:
+  DEFAULT_COMPOSER_FLAGS: "--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi"
+  PHPUNIT_EXCLUDE_GROUP: mssql,oci,wincache,xcache,zenddata,cubrid
+  XDEBUG_MODE: coverage, develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpunit:
+    name: PHP ${{ matrix.php }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: yiitest
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php: [7.4]
+
+    steps:
+      - name: Generate english locale
+        run:  sudo locale-gen en_US.UTF-8
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: pecl
+          extensions: apc, curl, dom, imagick, intl, mbstring, mcrypt, memcached, mysql, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pgsql, sqlite
+          ini-values: date.timezone='UTC', session.save_path="${{ runner.temp }}"
+      - name: Install Memcached
+        uses: niden/actions-memcached@v7
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install dependencies
+        run: composer update $DEFAULT_COMPOSER_FLAGS
