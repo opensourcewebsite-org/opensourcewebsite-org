@@ -255,6 +255,9 @@ class GroupController extends Controller
                             'visible' => (bool)$chat->getUsername(),
                         ],
                     ],
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();

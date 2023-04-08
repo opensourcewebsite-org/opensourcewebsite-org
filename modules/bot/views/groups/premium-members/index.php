@@ -11,6 +11,6 @@ use app\modules\bot\components\helpers\Emoji;
 <?php endif; ?>
 <br/>
 <?php foreach ($members as $member) : ?>
-<?= ($count = $member->getPositiveReviewsCount()) ? Html::a(Emoji::LIKE . ' ' . $count . ' ', $member->getReviewsLink()) : '' ?>
+<?= ($count = $member->getPositiveReviewsCount()) ? Html::a(Emoji::LIKE . ' ' . $count, $member->getReviewsLink()) . ' ' : '' ?>
 • <?= $member->user->getFullLink(); ?><br/>
 <?php endforeach; ?>
