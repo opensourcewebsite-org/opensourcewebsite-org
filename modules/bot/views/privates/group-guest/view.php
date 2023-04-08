@@ -39,7 +39,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endif; ?>
 <?php if ($user->getUsername()) : ?>
 <br/>
-<?= Yii::t('bot', 'Your public link for reviews') ?>: <?= $chatMember->getReviewsLink() ?><br/>
+<?= Yii::t('bot', 'Public link for reviews from other group members') ?>: <?= $chatMember->getReviewsLink() ?><br/>
 <?php endif; ?>
 <?php endif; ?>
 <?php endif; ?>
