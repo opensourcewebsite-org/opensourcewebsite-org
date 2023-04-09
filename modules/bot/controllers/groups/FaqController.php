@@ -18,7 +18,7 @@ class FaqController extends Controller
 {
     public function actionIndex()
     {
-        return $this->runAction('show-chat-link');
+        return [];
     }
 
     /**
@@ -57,29 +57,6 @@ class FaqController extends Controller
                     )
                     ->send();
             }
-        }
-
-        return [];
-    }
-
-    public function actionShowChatLink()
-    {
-        $chat = $this->getTelegramChat();
-
-        if ($chat->faq_status == ChatSetting::STATUS_ON) {
-            return $this->getResponseBuilder()
-                ->sendMessage(
-                    $this->render('show-chat-link', [
-                        'chat' => $chat,
-                    ]),
-                    [],
-                    [
-                        'disablePreview' => true,
-                        'disableNotification' => true,
-                        'replyToMessageId' => $this->getMessage()->getMessageId(),
-                    ]
-                )
-                ->send();
         }
 
         return [];

@@ -33,10 +33,6 @@ class HelloController extends Controller
                 '/id',
             ];
 
-            if ($chat->faq_status == ChatSetting::STATUS_ON) {
-                $commands[] = '/faq';
-            }
-
             if ($chat->stellar_status == ChatSetting::STATUS_ON) {
                 $commands[] = '/stellar';
             }
