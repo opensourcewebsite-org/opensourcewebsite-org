@@ -2,14 +2,14 @@
 
 namespace models;
 
-use Yii;
-use app\models\User;
 use app\models\Contact;
 use app\models\Currency;
+use app\models\User;
 use app\models\Wallet;
 use app\models\WalletTransaction;
-use app\tests\fixtures\UserFixture;
 use app\tests\fixtures\ContactFixture;
+use app\tests\fixtures\UserFixture;
+use Yii;
 
 class WalletTest extends \Codeception\Test\Unit
 {

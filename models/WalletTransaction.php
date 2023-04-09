@@ -4,10 +4,10 @@ namespace app\models;
 
 use app\components\helpers\TimeHelper;
 use app\helpers\Number;
-use DateTime;
-use DateTimeZone;
 use app\models\traits\FloatAttributeTrait;
 use app\modules\bot\models\ChatTipWalletTransaction;
+use DateTime;
+use DateTimeZone;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
