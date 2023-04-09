@@ -71,6 +71,8 @@ class ResponseBuilder
                     foreach ($messageIds as $key => $messageId) {
                         $this->deleteMessage($messageId)->send();
                     }
+
+                    $this->getUserState()->setIntermediateField('private_message_ids', []);
                 }
             }
 
@@ -131,6 +133,8 @@ class ResponseBuilder
             foreach ($messageIds as $messageId) {
                 $this->deleteMessage($messageId)->send();
             }
+
+            $this->getUserState()->setIntermediateField('private_message_ids', []);
 
             $this->command = new SendMessageCommand(
                 $this->getChatId(),
@@ -493,7 +497,7 @@ class ResponseBuilder
                 $answer = $this->command->send();
                 // Remember ids of all bot messages in private chat to delete them later
                 if ($isPrivateChat && ($messageId = $this->command->getMessageId())) {
-                    $privateMessageIds []= $messageId;
+                    $privateMessageIds[] = $messageId;
                 }
 
                 $this->command = null;
@@ -503,10 +507,17 @@ class ResponseBuilder
         }
 
         if ($privateMessageIds) {
-            $this->getUserState()->setIntermediateField('private_message_ids', json_encode($privateMessageIds));
-            $this->getUserState()->save($this->getUser());
+            $currentList = $this->getUserState()->getIntermediateField('private_message_ids', []);
+
+            // fix previous invalid saving
+            if (is_string($currentList)) {
+                $currentList = json_decode($currentList, true);
+            }
+
+            $this->getUserState()->setIntermediateField('private_message_ids', array_unique(array_merge($currentList, $privateMessageIds)));
         }
 
+        $this->getUserState()->save($this->getUser());
         return $answer;
     }
 

@@ -72,6 +72,7 @@ class Module extends \yii\base\Module
     {
         if ($this->getUpdate()->getChat()) {
             if ($this->getUpdate()->getFrom()) {
+
                 $isNewUser = false;
 
                 $user = User::findOne([

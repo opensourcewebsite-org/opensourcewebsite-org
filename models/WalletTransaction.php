@@ -4,10 +4,10 @@ namespace app\models;
 
 use app\components\helpers\TimeHelper;
 use app\helpers\Number;
-use DateTime;
-use DateTimeZone;
 use app\models\traits\FloatAttributeTrait;
 use app\modules\bot\models\ChatTipWalletTransaction;
+use DateTime;
+use DateTimeZone;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -60,7 +60,7 @@ class WalletTransaction extends ActiveRecord
         return [
             [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'anonymity'], 'required'],
             [['currency_id', 'from_user_id', 'to_user_id', 'type', 'anonymity', 'created_at'], 'integer'],
-            ['amount', 'double', 'min' => 0, 'max' => 9999999999999.99],
+            ['amount', 'double', 'min' => 0.01, 'max' => 9999999999999.99],
             ['fee', 'double', 'min' => 0, 'max' => 9999999999999.99],
             ['fee', 'default', 'value' => 0.01],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
@@ -172,7 +172,7 @@ class WalletTransaction extends ActiveRecord
 
     public function getCreatedAtByUser($user = null)
     {
-        if (!isset($user)){
+        if (!isset($user)) {
             $user = $this->fromUser;
         }
 
