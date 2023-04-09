@@ -665,8 +665,4 @@ return [
     'The next violation may result in a mute or ban in the group' => 'Следующее нарушение может привести к мюту или бану в этой группе',
     'sends posts to the group at the specified time' => 'отправляет обьявления в группу в заданное время',
     'Next publish' => 'Следующая публикация',
-    'User not found. Please repeat input' => 'Не получилось найти пользователя, пожалуйста, повторите ввод',
-    'Something strange happened. Please repeat input' => 'Произошло нечто странное, пожалуйста, повторите ввод',
-    'Not enought money on your wallet. Please make your sum lower' => 'На вашем кошельке недостаточно средств. Пожалуйста, уменьшите сумму',
-    'You can not send money to yourself' => 'Вы не можете отправить деньги себе',
 ];
