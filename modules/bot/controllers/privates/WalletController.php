@@ -317,13 +317,13 @@ class WalletController extends Controller
             }
         }
 
-        if ($toUser) {
+        if (isset($toUser)) {
             $transactionData['to_user_id'] = $toUser->id;
         }
 
         $this->getState()->setIntermediateModel(new WalletTransaction($transactionData));
 
-        if ($toUser) {
+        if (isset($toUser)) {
             return $this->actionInputAmount($useState);
         }
 
