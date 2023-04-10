@@ -92,8 +92,11 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
     - [PHP](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.phptools-vscode)
     - [PHP-CS-Fixer](https://marketplace.visualstudio.com/items?itemName=junstyle.php-cs-fixer)
+      - Unix-like
         - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Для автоматического запуска beautify для PHP-кода при сохранении файла, перейдите к `PHP-cs-fixer: Onsave` в включите чекбокс `Execute PHP CS Fixer on save`.
-        - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Добавьте `PHP-cs-fixer: Executable Path`, например `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
+        - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Добавьте `PHP-cs-fixer: Executable Path`, например `${workspaceRoot}/vendor/bin/php-cs-fixer`.
+      - Windows
+        - Перейдите в "Code > Settings > Extensions > php cs fixer > Windows Extension Settings". Добавьте `PHP-cs-fixer: Windows Executable Path`, например `${workspaceRoot}/vendor/bin/php-cs-fixer.bat`.
     - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
     - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)
     - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)

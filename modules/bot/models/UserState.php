@@ -95,7 +95,7 @@ class UserState
                     ]);
 
                     if ($this->model instanceof ActiveRecord) {
-                        $this->model->setAttributes($intermediate[$this->getModelName($modelClass)]);
+                        $this->model->setAttributes($intermediate[$this->getModelName($modelClass)], false);
 
                         return $this->model;
                     }

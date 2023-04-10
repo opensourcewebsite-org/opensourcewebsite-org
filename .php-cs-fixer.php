@@ -1,7 +1,7 @@
 <?php
 
 # https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/usage.rst
-# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.15
+# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.16
 
 declare(strict_types=1);
 
@@ -18,6 +18,7 @@ return $config
         '@PSR12' => true, // PSR12 coding style: https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/ruleSets/PSR12.rst
         '@PSR12:risky' => true, // PSR12Risky coding style: https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/ruleSets/PSR12Risky.rst
         '@DoctrineAnnotation' => true, // Format Doctrine annotations: https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/ruleSets/DoctrineAnnotation.rst
+        'single_space_around_construct' => true, // Format Doctrine annotations: https://cs.symfony.com/doc/rules/language_construct/single_space_around_construct.html
         'ordered_imports' => [
             'imports_order' => [
                 'class',

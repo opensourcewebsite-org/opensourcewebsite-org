@@ -12,4 +12,6 @@ use app\models\WalletTransaction;
 <?= Yii::t('bot', 'Total amount') ?>: <?= $walletTransaction->getAmountPlusFee() ?> <?= $walletTransaction->currency->code ?><br/>
 <?php else : ?>
 <?= Yii::t('bot', 'Enter amount of money to send') ?>:<br/>
+————<br/>
+<i><?= Yii::t('bot', 'Available amount'); ?>: <?= $walletTransaction->fromUser->getWalletByCurrencyId(@$walletTransaction->currency->id)->getAmountMinusFee() . ' ' . @$walletTransaction->currency->code; ?></i><br/>
 <?php endif; ?>
