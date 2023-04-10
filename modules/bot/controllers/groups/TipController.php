@@ -178,18 +178,10 @@ class TipController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('tip-message', [
-                                'chatTipId' => $chatTipId,
-                            ]),
-                            'text' => Emoji::REFRESH,
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => self::createRoute('index', [
                                 'chatTipId' => $chatTip->id,
                             ]),
-                            'text' => Emoji::ADD . Yii::t('bot', 'Tip'),
+                            'text' => Emoji::ADD . Emoji::GIFT,
                         ],
                     ],
                     [
