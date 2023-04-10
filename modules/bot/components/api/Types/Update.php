@@ -73,8 +73,7 @@ class Update extends \TelegramBot\Api\Types\Update
         $privateMessageIds = $state->getIntermediateField('private_message_ids', []);
 
         // fix previous invalid saving
-        if(is_string($privateMessageIds))
-        {
+        if (is_string($privateMessageIds)) {
             $privateMessageIds = json_decode($privateMessageIds, true);
         }
 

@@ -343,7 +343,7 @@ class WalletController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('send-transaction'),
-                $buttons,
+                $buttons
             )
             ->build();
     }
@@ -366,8 +366,6 @@ class WalletController extends Controller
         if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
             $username = ltrim($matches[0], '@');
             $toBotUser = User::findOne(['provider_user_name' => $username]);
-        } elseif (preg_match('/^\d+$/', $text)) {
-            $toBotUser = User::findOne(['provider_user_id' => $text]);
         }
 
         // check if user exists or user is bot
