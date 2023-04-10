@@ -8,6 +8,7 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\controllers\privates\MemberController;
+use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTip;
 use app\modules\bot\models\User;
@@ -83,29 +84,21 @@ class TipController extends Controller
         if (isset($toUser) && isset($fromChatMember) && ($toUser->getId()) != $fromUser->getId()) {
             $this->getState()->setName(json_encode($chatTip->id));
 
-            $fromUser->sendMessage(
-                $this->render('/privates/tip', [
-                    'chat' => $chat,
-                    'user' => $toUser,
-                ]),
-                [
-                    [
-                        [
-                            'callback_data' => MemberController::createRoute('id', [
-                                'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
-                                'chatTipId' => $chatTip->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Send a Tip'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => DeleteMessageController::createRoute(),
-                            'text' => Yii::t('bot', 'CANCEL'),
-                        ],
-                    ],
-                ]
-            );
+            $thisChat = $this->getTelegramChat();
+
+            $chat = Chat::findOne([
+                'chat_id' => $fromUser->provider_user_id,
+            ]);
+
+            $module = Yii::$app->getModule('bot');
+            $module->setChat($chat);
+
+            $module->runAction('member/id', [
+                'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
+                'chatTipId' => $chatTip->id,
+            ]);
+
+            $module->setChat($thisChat);
         }
 
         return [];

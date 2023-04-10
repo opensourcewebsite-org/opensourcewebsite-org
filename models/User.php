@@ -637,14 +637,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function getRank()
     {
         $subQuery = (new Query())
-           ->select([
-               'ROW_NUMBER() OVER(ORDER BY rating DESC, created_at ASC) `rank`',
-               'id',
-           ])
-           ->from(self::tableName())
-           ->andWhere([
-               'status' => self::STATUS_ACTIVE,
-           ]);
+            ->select([
+                'ROW_NUMBER() OVER(ORDER BY rating DESC, created_at ASC) `rank`',
+                'id',
+            ])
+            ->from(self::tableName())
+            ->andWhere([
+                'status' => self::STATUS_ACTIVE,
+            ]);
 
         $query = (new Query())
             ->select([
@@ -811,7 +811,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getCurrency(): ActiveQuery
     {
-        return $this->hasOne(Currency::class, [ 'id' => 'currency_id' ]);
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     public function getLanguages(): ActiveQuery
@@ -1153,10 +1153,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function getBasicIncomePositiveVotesCount()
     {
         return $this->getCounterContacts()
-                ->where([
-                    'is_basic_income_candidate' => 1,
-                ])
-                ->count();
+            ->where([
+                'is_basic_income_candidate' => 1,
+            ])
+            ->count();
     }
 
     /**
@@ -1292,10 +1292,11 @@ class User extends ActiveRecord implements IdentityInterface
             }
 
             $transaction->commit();
-            return true;
+            return $walletTransaction->id ?? false;
         } catch (\Throwable $e) {
             $transaction->rollBack();
             Yii::error($e->getMessage());
+            return false;
         }
     }
 }
