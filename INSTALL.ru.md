@@ -138,8 +138,8 @@ P.S. Тестировалось только в PHPStorm.
 Также вы можете воспользоваться [Localtunnel](https://localtunnel.me) и [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/) для того, чтобы принимать Telegram webhooks с помощью вашего локального сервера.
 
 - Используйте [Telegram BotFather](https://t.me/BotFather) для создания нового бота и получения его токена.
-- Установите опцию Bot Settings > Group Admin Rights > Manage chat в настройках бота. Это даст возможность боту отвечать на сообщения.
-- Если устанавливаете бота в группе, дайте ему административные права, он сможет удалять лишние сообщения.
+  - Перейдите в "Bot Settings > Group Admin Rights" и активируйте все права для вашего бота.
+  - Перейдите в "Bot Settings > Channel Admin Rights" и активируйте все права для вашего бота.
 - Установите `['baseUrl']` в `config/params.php` для вашего открытого URL с HTTPS.
 - Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `['bot']['proxy']` в `config/params.php`.
 - Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду:

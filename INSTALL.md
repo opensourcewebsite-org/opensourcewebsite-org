@@ -140,8 +140,8 @@ We recommend use [ngrok - secure introspectable tunnels to localhost](https://ng
 Also, you can use [Localtunnel](https://localtunnel.me) and [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/) to receive Telegram webhooks by your local server.
 
 - Use [Telegram BotFather](https://t.me/BotFather) to create new bot and get a bot token.
-- Switch on setting in Bot Settings > Group Admin Rights > Manage chat in bot settings. With this feature bot will can answer to users messages.
-- If you need to add bot to group, you need allow admin rights to your bot. With this feature bot will can remove unnecessary messages.
+  - Go to "Bot Settings > Group Admin Rights" and activate all rights for your bot.
+  - Go to "Bot Settings > Channel Admin Rights" and activate all rights for your bot.
 - Set `['baseUrl']` in `config/params.php` for your public URL with HTTPS.
 - In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `['bot']['proxy']` in `config/params.php`.
 - Set `['bot']['username']` and `['bot']['token']` in `config/params.php` for your bot.

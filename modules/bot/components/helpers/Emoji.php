@@ -47,4 +47,5 @@ class Emoji
     public const SOON = '🔜';
     public const NEW1 = '🆕';
     public const LIST = '📖';
+    public const GIFT = '🎁';
 }

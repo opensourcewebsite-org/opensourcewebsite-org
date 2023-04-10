@@ -92,10 +92,10 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
     - [PHP](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.phptools-vscode)
     - [PHP-CS-Fixer](https://marketplace.visualstudio.com/items?itemName=junstyle.php-cs-fixer)
-      - Unix-like
+      - Unix-like:
         - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Для автоматического запуска beautify для PHP-кода при сохранении файла, перейдите к `PHP-cs-fixer: Onsave` в включите чекбокс `Execute PHP CS Fixer on save`.
         - Перейдите в "Code > Settings > Extensions > php cs fixer > Extension Settings". Добавьте `PHP-cs-fixer: Executable Path`, например `${workspaceRoot}/vendor/bin/php-cs-fixer`.
-      - Windows
+      - Windows:
         - Перейдите в "Code > Settings > Extensions > php cs fixer > Windows Extension Settings". Добавьте `PHP-cs-fixer: Windows Executable Path`, например `${workspaceRoot}/vendor/bin/php-cs-fixer.bat`.
     - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
     - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)

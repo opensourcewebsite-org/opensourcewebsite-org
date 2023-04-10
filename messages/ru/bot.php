@@ -662,6 +662,7 @@ return [
     'Tracked data' => 'Отслеживаемые данные',
     'The administrators removed your message for violating the group rules' => 'Администраторы удалили ваше сообщение за нарушение правил группы',
     'The next violation may result in a mute or ban in the group' => 'Следующее нарушение может привести к мюту или бану в этой группе',
+    'Publisher' => 'Публикатор',
     'sends posts to the group at the specified time' => 'отправляет обьявления в группу в заданное время',
     'Next publish' => 'Следующая публикация',
 ];
