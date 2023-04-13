@@ -641,6 +641,7 @@ return [
     'Receiver' => 'Получатель',
     'Check transfer details' => 'Проверить детали перевода',
     'Tips' => 'Чаевые',
+    'Any member of the group can add financial thanks to this author using this bot' => 'Любой участник группы может добавить финансовую благодарность этому автору используя этого бота',
     'Send a Tip' => 'Отправить чаевые',
     'Add a Tip' => 'Добавить чаевые',
     'Cancel' => 'Отменить',
@@ -662,6 +663,7 @@ return [
     'Tracked data' => 'Отслеживаемые данные',
     'The administrators removed your message for violating the group rules' => 'Администраторы удалили ваше сообщение за нарушение правил группы',
     'The next violation may result in a mute or ban in the group' => 'Следующее нарушение может привести к мюту или бану в этой группе',
+    'Publisher' => 'Публикатор',
     'sends posts to the group at the specified time' => 'отправляет обьявления в группу в заданное время',
     'Next publish' => 'Следующая публикация',
 ];

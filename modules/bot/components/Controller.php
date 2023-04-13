@@ -15,6 +15,9 @@ use Yii;
  * Class Controller
  *
  * @package app\modules\bot
+ *
+ * @property GlobalUser $globalUser
+ * @property Update $update
  */
 class Controller extends \yii\web\Controller
 {
@@ -101,7 +104,7 @@ class Controller extends \yii\web\Controller
 
     // TODO refactoring, maybe remove
     /**
-     * @return TelegramBot\Api\Types\Message
+     * @return \TelegramBot\Api\Types\Message
      */
     public function getMessage()
     {

@@ -89,6 +89,10 @@ class TipController extends Controller
             $chat = Chat::findOne([
                 'chat_id' => $fromUser->provider_user_id,
             ]);
+            // TODO fast fix for Anonymous Administrator
+            if (!isset($chat)) {
+                return [];
+            }
 
             $module = Yii::$app->getModule('bot');
             $module->setChat($chat);
@@ -143,24 +147,16 @@ class TipController extends Controller
                     [
                         [
                             [
-                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
-                                'text' => Yii::t('bot', 'User View'),
-                            ],
-                        ],
-                        [
-                            [
-                                'callback_data' => self::createRoute('tip-message', [
-                                    'chatTipId' => $chatTipId,
-                                ]),
-                                'text' => Emoji::REFRESH,
-                            ],
-                        ],
-                        [
-                            [
                                 'callback_data' => self::createRoute('index', [
                                     'chatTipId' => $chatTip->id,
                                 ]),
-                                'text' => Yii::t('bot', 'Add a Tip'),
+                                'text' => Emoji::ADD . Emoji::GIFT,
+                            ],
+                        ],
+                        [
+                            [
+                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
+                                'text' => Yii::t('bot', 'User View'),
                             ],
                         ],
                     ],
@@ -182,24 +178,16 @@ class TipController extends Controller
                 [
                     [
                         [
-                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
-                            'text' => Yii::t('bot', 'User View'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('tip-message', [
-                                'chatTipId' => $chatTipId,
-                            ]),
-                            'text' => Emoji::REFRESH,
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => self::createRoute('index', [
                                 'chatTipId' => $chatTip->id,
                             ]),
-                            'text' => Yii::t('bot', 'Add a Tip'),
+                            'text' => Emoji::ADD . Emoji::GIFT,
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
+                            'text' => Yii::t('bot', 'User View'),
                         ],
                     ],
                 ],

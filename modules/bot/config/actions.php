@@ -92,4 +92,5 @@ return [
     'choose_wallet',
     'set_amount',
     'confirm_transaction',
+    'tip_message',
 ];

@@ -92,10 +92,10 @@ Recommended IDE:
     - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
     - [PHP](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.phptools-vscode)
     - [PHP-CS-Fixer](https://marketplace.visualstudio.com/items?itemName=junstyle.php-cs-fixer)
-      - Unix like
+      - Unix like:
         - Go to "Code > Settings > Extensions > php cs fixer > Extension Settings". To automatically beautify PHP code on file go to `PHP-cs-fixer: Onsave` and turn on `Execute PHP CS Fixer on save` checkbox.
         - Go to "Code > Settings > Extensions > php cs fixer > Extension Settings". Add `PHP-cs-fixer: Executable Path` like `${workspaceRoot}/vendor/bin/php-cs-fixer`.
-      - Windows
+      - Windows:
         - Go to "Code > Settings > Extensions > php cs fixer > Extension Settings". Add `PHP-cs-fixer: Windows Executable Path` like `${workspaceRoot}/vendor/bin/php-cs-fixer.bat`.
     - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
     - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)

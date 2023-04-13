@@ -435,7 +435,7 @@ class WalletController extends Controller
                             'callback_data' => self::createRoute('confirm-transaction', [
                                 'useState' => $useState,
                             ]),
-                            'text' => 'Confirm',
+                            'text' => Yii::t('bot', 'CONFIRM'),
                             'visible' => $amount > 0,
                         ],
                     ],
@@ -505,8 +505,6 @@ class WalletController extends Controller
                     $module->setChat($thisChat);
                 }
             }
-
-            $this->getState()->clearIntermediateModel(ChatTip::class);
 
             return $this->actionTransaction($walletTransaction->id);
         }
