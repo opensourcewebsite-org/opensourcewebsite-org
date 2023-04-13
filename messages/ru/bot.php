@@ -641,6 +641,7 @@ return [
     'Receiver' => 'Получатель',
     'Check transfer details' => 'Проверить детали перевода',
     'Tips' => 'Чаевые',
+    'Any member of the group can add financial thanks to this author using this bot' => 'Любой участник группы может добавить финансовую благодарность этому автору используя этого бота',
     'Send a Tip' => 'Отправить чаевые',
     'Add a Tip' => 'Добавить чаевые',
     'Cancel' => 'Отменить',
