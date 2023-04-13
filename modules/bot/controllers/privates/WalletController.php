@@ -506,6 +506,8 @@ class WalletController extends Controller
                 }
             }
 
+            $this->getState()->clearIntermediateModel(ChatTip::class);
+
             return $this->actionTransaction($walletTransaction->id);
         }
 
