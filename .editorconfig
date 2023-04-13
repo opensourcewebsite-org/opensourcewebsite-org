@@ -16,3 +16,7 @@ indent_size = 2
 
 [*.yml]
 indent_size = 2
+
+[*.php]
+#php_diagnostic_php0416 = false
+php_diagnostic = true
