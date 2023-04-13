@@ -150,10 +150,9 @@ class MemberController extends Controller
                         ],
                         [
                             'callback_data' => WalletController::createRoute('index', [
-                                // 'useState' => true,
+                                'useState' => false,
                             ]),
                             'text' => Yii::t('bot', 'Send money'),
-                            'visible' => !empty($chatTip),
                         ],
                     ],
                     [

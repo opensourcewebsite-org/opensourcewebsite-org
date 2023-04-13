@@ -46,9 +46,9 @@ class ExternalLink extends \app\components\helpers\ExternalLink
     /**
      * {@inheritdoc}
      */
-    public static function getBotStartLink($text)
+    public static function getBotStartLink($text, $text2 = null)
     {
-        return self::getBotLink() . '?start=' . $text;
+        return self::getBotLink() . '?start=' . $text . ($text2 ? $text2 : '');
     }
 
     /**
