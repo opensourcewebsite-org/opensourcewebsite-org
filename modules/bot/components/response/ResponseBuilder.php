@@ -515,7 +515,9 @@ class ResponseBuilder
             }
 
             $this->getUserState()->setIntermediateField('private_message_ids', array_unique(array_merge($currentList, $privateMessageIds)));
+        }
 
+        if ($isPrivateChat) {
             $this->getUserState()->save($this->getUser());
         }
 
