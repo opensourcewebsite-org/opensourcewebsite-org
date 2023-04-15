@@ -123,12 +123,15 @@ class MemberController extends Controller
             'member_id' => $chatMember->id,
         ]);
 
+        $state = $this->getState();
+
         $chatTip = ChatTip::findOne($chatTipId);
 
         if ($chatTip) {
-            $state = $this->getState();
             $state->setIntermediateModel($chatTip);
         }
+
+        $state->setIntermediateModel($chatMember);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -143,9 +146,16 @@ class MemberController extends Controller
                     [
                         [
                             'callback_data' => WalletController::createRoute('index', [
-                                'useState' => true,
+                                'useState' => WalletController::SEND_TIP_STATE,
                             ]),
                             'text' => Yii::t('bot', 'Send a Tip'),
+                            'visible' => !empty($chatTip),
+                        ],
+                        [
+                            'callback_data' => WalletController::createRoute('index', [
+                                'useState' => WalletController::SEND_MONEY_STATE,
+                            ]),
+                            'text' => Yii::t('bot', 'Send money'),
                         ],
                     ],
                     [
