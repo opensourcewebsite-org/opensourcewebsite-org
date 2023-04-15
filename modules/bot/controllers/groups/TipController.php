@@ -103,6 +103,12 @@ class TipController extends Controller
             ]);
 
             $module->setChat($thisChat);
+
+            if ($this->getUpdate()->getCallbackQuery()) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
+            }
         }
 
         return [];
