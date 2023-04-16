@@ -1,1 +1,1 @@
-<b><?= Yii::t('bot', 'Select your wallet') ?></b><br/>
+<b><?= Yii::t('bot', 'Choose a wallet') ?>:</b>
