@@ -515,8 +515,12 @@ class ResponseBuilder
             }
 
             $this->getUserState()->setIntermediateField('private_message_ids', array_unique(array_merge($currentList, $privateMessageIds)));
+        }
 
-            $this->getUserState()->save($this->getUser());
+        $state = $this->getUserState();
+
+        if ($state) {
+            $state->save($this->getUser());
         }
 
         return $answer;

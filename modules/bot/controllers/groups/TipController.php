@@ -103,6 +103,12 @@ class TipController extends Controller
             ]);
 
             $module->setChat($thisChat);
+
+            if ($this->getUpdate()->getCallbackQuery()) {
+                return $this->getResponseBuilder()
+                    ->answerCallbackQuery()
+                    ->build();
+            }
         }
 
         return [];
@@ -155,8 +161,8 @@ class TipController extends Controller
                         ],
                         [
                             [
-                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
-                                'text' => Yii::t('bot', 'User View'),
+                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id, $chatTip->chat->getChatId()),
+                                'text' => Yii::t('bot', 'Member View'),
                             ],
                         ],
                     ],
@@ -186,8 +192,8 @@ class TipController extends Controller
                     ],
                     [
                         [
-                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id),
-                            'text' => Yii::t('bot', 'User View'),
+                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id, $chatTip->chat->getChatId()),
+                            'text' => Yii::t('bot', 'Member View'),
                         ],
                     ],
                 ],

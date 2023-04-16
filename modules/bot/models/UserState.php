@@ -82,7 +82,7 @@ class UserState
 
     public function getIntermediateModel($modelClass = null)
     {
-        if (isset($this->model)) {
+        if (isset($this->model) && $modelClass == get_class($this->model)) {
             return $this->model;
         }
 
