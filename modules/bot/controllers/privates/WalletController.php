@@ -377,7 +377,6 @@ class WalletController extends Controller
             [
                 'callback_data' => self::createRoute('view', [
                     'id' => $id,
-                    'useState' => $useState,
                 ]),
                 'text' => Emoji::BACK,
             ],
@@ -612,7 +611,7 @@ class WalletController extends Controller
                         'id' => $transaction->getId(),
                         'useState' => $useState,
                     ]),
-                    'text' => $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAtByUser()),
+                    'text' => ($this->getTelegramUser()->getUserId() == $transaction->getFromUserID() ? '-' : '+') . $transaction->getAmount() . ' ' . $currency->code . ' - ' . Yii::$app->formatter->asDateTime($transaction->getCreatedAtByUser()),
                 ];
             }
 
