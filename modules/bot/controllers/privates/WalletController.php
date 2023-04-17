@@ -351,11 +351,12 @@ class WalletController extends Controller
         switch ($useState) {
             case self::SEND_MONEY_STATE:
                 $chatMember = $this->getState()->getIntermediateModel(ChatMember::class);
-                $toUser = $chatMember->user->globalUser;
+                if ($chatMember) {
+                    $toUser = $chatMember->user->globalUser;
+                }
                 break;
             case self::SEND_TIP_STATE:
                 $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
-
                 if ($chatTip) {
                     $toUser = $chatTip->toUser->globalUser;
                 }

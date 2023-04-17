@@ -32,6 +32,16 @@ class UserState
         $this->fields['name'] = $value;
     }
 
+    public function getBackRoute()
+    {
+        return $this->fields['backRoute'] ?? null;
+    }
+
+    public function setBackRoute(?string $value)
+    {
+        $this->fields['backRoute'] = $value;
+    }
+
     /**
      * @param string $name
      * @param null $defaultValue
