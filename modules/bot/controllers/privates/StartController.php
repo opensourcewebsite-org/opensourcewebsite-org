@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\models\Language;
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;

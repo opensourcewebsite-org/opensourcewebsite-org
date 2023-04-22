@@ -21,11 +21,11 @@ class PaymentMethodCurrencyByCurrency extends PaymentMethodCurrency
     {   
         if (isset($params)) {
             $params = $params[0];
-            if ($params->getIntermediateField('currencyexchangeorderattributeName') == 'sellingPaymentMethods') {
-                $currency = $params->getIntermediateField('currencyexchangeorderselling_currency_id');
+            if ($params->getItem('currencyexchangeorderattributeName') == 'sellingPaymentMethods') {
+                $currency = $params->getItem('currencyexchangeorderselling_currency_id');
             }
-            elseif ($params->getIntermediateField('currencyexchangeorderattributeName') == 'buyingPaymentMethods') {
-                $currency = $params->getIntermediateField('currencyexchangeorderbuying_currency_id');
+            elseif ($params->getItem('currencyexchangeorderattributeName') == 'buyingPaymentMethods') {
+                $currency = $params->getItem('currencyexchangeorderbuying_currency_id');
             }
             return parent::find()->select('payment_method_id, name')->innerJoin('payment_method', 'payment_method.id = payment_method_id')->andWhere(['=', 'currency_id', $currency]);
         }

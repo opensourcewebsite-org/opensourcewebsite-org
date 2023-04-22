@@ -72,7 +72,7 @@ class ResponseBuilder
                         $this->deleteMessage($messageId)->send();
                     }
 
-                    $this->getUserState()->setIntermediateField('private_message_ids', []);
+                    $this->getUserState()->setItem('private_message_ids', []);
                 }
             }
 
@@ -134,7 +134,7 @@ class ResponseBuilder
                 $this->deleteMessage($messageId)->send();
             }
 
-            $this->getUserState()->setIntermediateField('private_message_ids', []);
+            $this->getUserState()->setItem('private_message_ids', []);
 
             $this->command = new SendMessageCommand(
                 $this->getChatId(),
@@ -507,20 +507,9 @@ class ResponseBuilder
         }
 
         if ($privateMessageIds) {
-            $currentList = $this->getUserState()->getIntermediateField('private_message_ids', []);
+            $currentList = $this->getUserState()->getItem('private_message_ids', []);
 
-            // fix previous invalid saving
-            if (is_string($currentList)) {
-                $currentList = json_decode($currentList, true);
-            }
-
-            $this->getUserState()->setIntermediateField('private_message_ids', array_unique(array_merge($currentList, $privateMessageIds)));
-        }
-
-        $state = $this->getUserState();
-
-        if ($state) {
-            $state->save($this->getUser());
+            $this->getUserState()->setItem('private_message_ids', array_unique(array_merge($currentList, $privateMessageIds)));
         }
 
         return $answer;

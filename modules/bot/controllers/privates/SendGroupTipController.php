@@ -75,7 +75,7 @@ class SendGroupTipController extends Controller
                 'currency_id' => $currency->id,
             ]);
 
-            $this->getState()->setIntermediateModel($walletTransaction);
+            $this->getState()->setItem($walletTransaction);
 
             return $this->actionSetAmount($chatTipId);
         }
@@ -167,7 +167,7 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+        $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
@@ -197,7 +197,7 @@ class SendGroupTipController extends Controller
                 }
 
                 $walletTransaction->amount = $amount;
-                $this->getState()->setIntermediateModel($walletTransaction);
+                $this->getState()->setItem($walletTransaction);
 
                 return $this->actionConfirmTransaction($chatTipId);
             }
@@ -242,7 +242,7 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+        $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
@@ -296,7 +296,7 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+        $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
@@ -331,7 +331,7 @@ class SendGroupTipController extends Controller
         ]);
 
         $module->setChat($thisChat);
-        $this->getState()->clearIntermediateModel(WalletTransaction::class);
+        $this->getState()->clearItem(WalletTransaction::class);
         $this->getState()->setName(null);
 
         // send response to private chat
