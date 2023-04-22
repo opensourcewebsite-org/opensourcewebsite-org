@@ -128,10 +128,10 @@ class MemberController extends Controller
         $chatTip = ChatTip::findOne($chatTipId);
 
         if ($chatTip) {
-            $state->setIntermediateModel($chatTip);
+            $state->setItem($chatTip);
         }
 
-        $state->setIntermediateModel($chatMember);
+        $state->setItem($chatMember);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace app\modules\bot\models;
 
+use app\behaviors\JsonBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -11,25 +13,76 @@ use yii\db\ActiveRecord;
  *
  * @package app\modules\bot\models
  */
-class UserState
+class UserState extends ActiveRecord
 {
-    private $fields = [];
-    /** @var object */
-    private $model = null;
-
-    private function __construct()
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName(): string
     {
-        $fields['intermediate'] = [];
+        return '{{%bot_user_state}}';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules(): array
+    {
+        return [
+            [['user_id', 'name'], 'required'],
+            [['user_id'], 'integer'],
+            [['name'], 'string', 'max' => 255],
+            [['value'], 'string'],
+            [['user_id', 'name'], 'unique', 'targetAttribute' => ['user_id', 'name']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => JsonBehavior::class,
+                'attributes' => [
+                      'obj' => 'value',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'user_id' => 'User ID',
+            'name' => 'Name',
+            'value' => 'Value',
+        ];
+    }
+
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    public function getUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     public function getName()
     {
-        return $this->fields['name'] ?? null;
+        return $this->getItem('name');
     }
 
     public function setName(?string $value)
     {
-        $this->fields['name'] = $value;
+        $this->setItem('name', $value);
     }
 
     /**
@@ -37,149 +90,110 @@ class UserState
      * @param null $defaultValue
      * @return mixed|null
      */
-    public function getIntermediateField(string $name, $defaultValue = null)
+    public function getItem(string $name, $defaultValue = null)
     {
-        return $this->fields['intermediate'][$name] ?? $defaultValue;
+        $this->name = $name;
+        $this->setIsNewRecord(true);
+        $this->refresh();
+
+        if (is_subclass_of($name, ActiveRecord::class)) {
+            try {
+
+                $model = \Yii::createObject([
+                    'class' => $name,
+                ]);
+
+                $model->setAttributes($this->obj, false);
+
+                return $model;
+            } catch (\Throwable $e) {
+                \Yii::error($e->getMessage());
+                return null;
+            }
+        }
+
+        return $this->obj ?? $defaultValue;
+    }
+
+    /**
+     * @param mixed $name
+     * @param mixed $value
+     */
+    public function setItem($name, $value = null)
+    {
+        $this->name = $name;
+        $attributes = $value;
+
+        if ($name instanceof ActiveRecord) {
+            $this->name = get_class($name);
+        }
+
+        $this->setIsNewRecord(true);
+        $this->refresh();
+
+        // This condition for different way to save model
+        // first valiant is setItem(<instance_of_ActiveRecord>, null)
+        // second variant is setItem(<classname_of_ActiveRecord_instance>, <object_of_subclass_of_ActiveRecord>)
+        // in this cases we need iterate it attributes
+        if ($name instanceof ActiveRecord || (is_subclass_of($name, ActiveRecord::class) && get_class($value) == $name)) {
+            $attributes = [];
+
+            foreach ($name as $key => $value) {
+                $attributes[$key] = $value;
+            }
+        }
+
+        $this->obj = $attributes;
+        $this->save();
     }
 
     /**
      * @param array $values
+     * {@inheritdoc}
      */
-    public function setIntermediateFields($values)
+    public function setItems($values)
     {
-        foreach ($values as $name => $value) {
-            $this->fields['intermediate'][$name] = $value;
+        foreach ($values as $key => $value) {
+            if (is_int($key) && $value instanceof ActiveRecord) {
+                $this->setItem($value);
+                continue;
+            }
+            $this->setItem($key, $value);
         }
     }
 
     /**
      * @param string $name
-     * @param $value
      */
-    public function setIntermediateField(string $name, $value)
+    public function clearItem(string $name)
     {
-        $this->fields['intermediate'][$name] = $value;
+        $this->name = $name;
+        $this->setIsNewRecord(true);
+        $this->refresh();
+        $this->delete();
     }
 
     /**
      * @param string $name
      * @return bool
      */
-    public function isIntermediateFieldExists(string $name)
+    public function isItemExists(string $name)
     {
-        return array_key_exists($name, $this->fields['intermediate']);
+        $this->name = $name;
+        $this->setIsNewRecord(true);
+        $this->refresh();
+        return isset($this->obj);
     }
 
-    public function getIntermediateFieldArray(string $name, $defaultValue = null)
+    public function reset(string $name = null)
     {
-        return $this->fields['intermediate'][$name] ?? $defaultValue;
-    }
-
-    public function setIntermediateFieldArray(string $name, ?array $value)
-    {
-        $this->fields['intermediate'][$name] = $value;
-    }
-
-    public function getIntermediateModel($modelClass = null)
-    {
-        if (isset($this->model) && $modelClass == get_class($this->model)) {
-            return $this->model;
-        }
-
-        if (isset($this->fields['intermediate'])) {
-            $intermediate = $this->fields['intermediate'];
-            if (isset($modelClass)) {
-                try {
-                    $this->model = \Yii::createObject([
-                        'class' => $modelClass,
-                    ]);
-
-                    if ($this->model instanceof ActiveRecord) {
-                        $this->model->setAttributes($intermediate[$this->getModelName($modelClass)], false);
-
-                        return $this->model;
-                    }
-                } catch (\Throwable $e) {
-                    \Yii::error($e->getMessage());
-                    return null;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public function setIntermediateModel($model, $modelName = null)
-    {
-        $attributes = [];
-
-        foreach ($model as $key => $value) {
-            $attributes[$key] = $value;
-        }
-
-        if (!isset($modelName)) {
-            $modelName = $this->getModelName(get_class($model));
-        }
-
-        $this->setIntermediateFieldArray($modelName, $attributes);
-        $this->model = $model;
-    }
-
-    public function clearIntermediateModel($modelClass = null)
-    {
-        $this->model = null;
-
-        if (isset($modelClass)) {
-            unset($this->fields['intermediate'][$this->getModelName($modelClass)]);
-        }
-    }
-
-    private function getModelName($modelClass): string
-    {
-        $parts = explode('\\', $modelClass);
-
-        return strtolower(array_pop($parts));
-    }
-
-    public function save(User $user)
-    {
-        $user->state = json_encode($this->fields);
-
-        return $user->save();
-    }
-
-    public function reset($modelName = null)
-    {
-        if (isset($this->fields['intermediate'])) {
-            $intermediate = $this->fields['intermediate'];
-            if (isset($modelName)) {
-                foreach ($intermediate as $k => $v) {
-                    if (strpos($k, $modelName) !== false) {
-                        unset($intermediate[$k]); // Delete only fields related to the current model
-                    }
-                }
-            }
-
-            if (!empty($intermediate)) {
-                $this->fields = [
-                    'intermediate' => $intermediate
-                ];
-            } else {
-                $this->fields = [];
-            }
-        } else {
-            $this->fields = [];
-        }
+        $this->deleteAll(['user_id' => $this->user_id]);
     }
 
     public static function fromUser(User $user)
     {
         $state = new UserState();
-
-        if (!empty($user->state)) {
-            $state->fields = json_decode($user->state, true);
-        }
-
+        $state->user_id = $user->id;
         return $state;
     }
 }

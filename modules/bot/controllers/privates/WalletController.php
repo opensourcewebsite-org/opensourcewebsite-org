@@ -86,8 +86,8 @@ class WalletController extends Controller
         }
 
         if ($useState) {
-            $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
-            $chatMember = $this->getState()->getIntermediateModel(ChatMember::class);
+            $chatTip = $this->getState()->getItem(ChatTip::class);
+            $chatMember = $this->getState()->getItem(ChatMember::class);
         }
 
         $buttons[] = [
@@ -350,13 +350,13 @@ class WalletController extends Controller
 
         switch ($useState) {
             case self::SEND_MONEY_STATE:
-                $chatMember = $this->getState()->getIntermediateModel(ChatMember::class);
+                $chatMember = $this->getState()->getItem(ChatMember::class);
                 if ($chatMember) {
                     $toUser = $chatMember->user->globalUser;
                 }
                 break;
             case self::SEND_TIP_STATE:
-                $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
+                $chatTip = $this->getState()->getItem(ChatTip::class);
                 if ($chatTip) {
                     $toUser = $chatTip->toUser->globalUser;
                 }
@@ -367,7 +367,7 @@ class WalletController extends Controller
             $transactionData['to_user_id'] = $toUser->id;
         }
 
-        $this->getState()->setIntermediateModel(new WalletTransaction($transactionData));
+        $this->getState()->setItem(new WalletTransaction($transactionData));
 
         if (isset($toUser)) {
             return $this->actionInputAmount($useState);
@@ -399,7 +399,7 @@ class WalletController extends Controller
      */
     public function actionSetToUser($useState = 0)
     {
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+        $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
@@ -428,7 +428,7 @@ class WalletController extends Controller
         }
 
         $walletTransaction->to_user_id = $toBotUser->getUserId();
-        $this->getState()->setIntermediateModel($walletTransaction);
+        $this->getState()->setItem($walletTransaction);
 
         return $this->actionInputAmount($useState);
     }
@@ -442,7 +442,7 @@ class WalletController extends Controller
             'useState' => $useState,
         ]));
 
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+        $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
@@ -466,7 +466,7 @@ class WalletController extends Controller
                 }
 
                 $walletTransaction->amount = $amount;
-                $this->getState()->setIntermediateModel($walletTransaction);
+                $this->getState()->setItem($walletTransaction);
             }
         }
 
@@ -516,7 +516,7 @@ class WalletController extends Controller
      */
     public function actionConfirmTransaction($useState = 0)
     {
-        $walletTransaction = $this->getState()->getIntermediateModel(WalletTransaction::class);
+        $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
         if (!isset($walletTransaction)) {
             return $this->getResponseBuilder()
@@ -525,7 +525,7 @@ class WalletController extends Controller
         }
 
         if ($this->getGlobalUser()->createTransaction($walletTransaction)) {
-            $this->getState()->clearIntermediateModel(WalletTransaction::class);
+            $this->getState()->clearItem(WalletTransaction::class);
 
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
@@ -536,7 +536,7 @@ class WalletController extends Controller
             );
 
             if ($useState == self::SEND_TIP_STATE) {
-                $chatTip = $this->getState()->getIntermediateModel(ChatTip::class);
+                $chatTip = $this->getState()->getItem(ChatTip::class);
 
                 if ($chatTip) {
 
@@ -560,8 +560,8 @@ class WalletController extends Controller
                 }
             }
 
-            $this->getState()->clearIntermediateModel(ChatTip::class);
-            $this->getState()->clearIntermediateModel(ChatMember::class);
+            $this->getState()->clearItem(ChatTip::class);
+            $this->getState()->clearItem(ChatMember::class);
 
             return $this->actionTransaction($walletTransaction->id);
         }
@@ -615,7 +615,7 @@ class WalletController extends Controller
                 ];
             }
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page, $useState) use ($id) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($id, $useState) {
                 return self::createRoute('transactions', [
                     'id' => $id,
                     'page' => $page,

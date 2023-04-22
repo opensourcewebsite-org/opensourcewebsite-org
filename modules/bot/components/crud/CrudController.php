@@ -1136,7 +1136,7 @@ abstract class CrudController extends Controller
                 ]);
             }
         }
-        if ($state->isIntermediateFieldExists($this->field->createName($modelName, $attributeName))) {
+        if ($state->isItemExists($this->field->createName($modelName, $attributeName))) {
             $relation = $this->modelRelation->getRelation($attributeConfig);
             if (isset($relation)) {
                 $relationAttributes = $relation['attributes'];

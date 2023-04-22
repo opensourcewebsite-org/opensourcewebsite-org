@@ -1,6 +1,5 @@
 <?php
 
-
 namespace app\modules\bot\components\crud\services;
 
 use app\modules\bot\components\Controller;
@@ -13,7 +12,7 @@ use app\modules\bot\models\UserState;
  */
 class BackRouteService
 {
-    const ROUTE_NAME = 'back-route';
+    public const ROUTE_NAME = 'back-route';
 
     /** @var UserState */
     public $state;
@@ -26,7 +25,7 @@ class BackRouteService
      */
     public function make($actionName, $params)
     {
-        $this->state->setIntermediateField(
+        $this->state->setItem(
             self::ROUTE_NAME,
             $this->controller::createRoute($actionName, $params)
         );
@@ -37,7 +36,7 @@ class BackRouteService
      */
     public function set($route)
     {
-        $this->state->setIntermediateField(
+        $this->state->setItem(
             self::ROUTE_NAME,
             $route
         );
@@ -48,6 +47,6 @@ class BackRouteService
      */
     public function get()
     {
-        return $this->state->getIntermediateField(self::ROUTE_NAME);
+        return $this->state->getItem(self::ROUTE_NAME);
     }
 }
