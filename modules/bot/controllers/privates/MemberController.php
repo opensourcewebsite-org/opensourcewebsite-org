@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
@@ -123,15 +124,22 @@ class MemberController extends Controller
             'member_id' => $chatMember->id,
         ]);
 
-        $state = $this->getState();
-
         $chatTip = ChatTip::findOne($chatTipId);
 
         if ($chatTip) {
-            $state->setItem($chatTip);
+            $this->getState()->setItem($chatTip);
         }
 
-        $state->setItem($chatMember);
+        $this->getState()->setItem(new WalletTransaction([
+            'from_user_id' => $this->getTelegramUser()->getUserId(),
+            'to_user_id' => $chatMember->user->globalUser->id,
+            'type' => WalletTransaction::SEND_MONEY_TYPE,
+        ]));
+
+        $this->getState()->setBackRoute(self::createRoute('id', [
+            'id' => $id,
+            'chatTipId' => $chatTipId,
+        ]));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -145,15 +153,17 @@ class MemberController extends Controller
                 [
                     [
                         [
-                            'callback_data' => WalletController::createRoute('index', [
-                                'useState' => WalletController::SEND_TIP_STATE,
+                            'callback_data' => TransactionController::createRoute('index', [
+                                'page' => 1,
+                                'type' => WalletTransaction::SEND_TIP_TYPE,
                             ]),
                             'text' => Yii::t('bot', 'Send a Tip'),
                             'visible' => !empty($chatTip),
                         ],
                         [
-                            'callback_data' => WalletController::createRoute('index', [
-                                'useState' => WalletController::SEND_MONEY_STATE,
+                            'callback_data' => TransactionController::createRoute('index', [
+                                'page' => 1,
+                                'type' => WalletTransaction::SEND_MONEY_TYPE,
                             ]),
                             'text' => Yii::t('bot', 'Send money'),
                         ],

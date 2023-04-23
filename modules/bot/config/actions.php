@@ -93,4 +93,7 @@ return [
     'set_amount',
     'confirm_transaction',
     'tip_message',
+    'input_amount',
+    'confirmation',
+    'set_to_user',
 ];
