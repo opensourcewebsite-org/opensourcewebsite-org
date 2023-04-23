@@ -77,6 +77,8 @@ class WalletTransaction extends ActiveRecord
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
             [['from_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['from_user_id' => 'id']],
             [['to_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['to_user_id' => 'id']],
+            [['type'], 'default', 'value'=> self::WALLET_TYPE],
+            [['anonymity'], 'default', 'value'=> 0],
         ];
     }
 
@@ -177,12 +179,12 @@ class WalletTransaction extends ActiveRecord
 
     public function getType()
     {
-        return $this->type ?: WalletTransaction::WALLET_TYPE;
+        return $this->type ?? WalletTransaction::WALLET_TYPE;
     }
 
     public function getAnonymity()
     {
-        return $this->anonymity ?: 0;
+        return $this->anonymity ?? 0;
     }
 
     public function getAmountPlusFee(): float
