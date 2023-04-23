@@ -85,6 +85,21 @@ class UserState extends ActiveRecord
         $this->setItem('name', $value);
     }
 
+    public function getBackRoute()
+    {
+        return $this->getItem('backRoute');
+    }
+
+    public function setBackRoute(?string $value)
+    {
+        $this->setItem('backRoute', $value);
+    }
+
+    public function clearBackRoute()
+    {
+        $this->clearItem('backRoute');
+    }
+
     /**
      * @param string $name
      * @param null $defaultValue
