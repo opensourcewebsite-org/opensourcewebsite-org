@@ -213,7 +213,7 @@ class JoVacancyController extends CrudController
                             ],
                             'attribute' => 'company_id',
                             'value' => $this->getState()
-                                ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
+                                ->getItem(IntermediateFieldService::SAFE_ATTRIBUTE),
                         ],
                     ],
                     'hidden' => true,
@@ -244,7 +244,7 @@ class JoVacancyController extends CrudController
     public function actionIndex($companyId = null, $page = 1)
     {
         $this->getState()->setName(null);
-        $this->state->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
+        $this->state->setItem(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
 
         $globalUser = $this->getUser();
 
@@ -871,7 +871,7 @@ class JoVacancyController extends CrudController
         return !is_null($id)
             ? Vacancy::findOne($id)
             : new Vacancy([
-                'company_id' => $this->getState()->getIntermediateField('companyId', null),
+                'company_id' => $this->getState()->getItem('companyId', null),
                 'currency_id' => Currency::findOne(['code' => 'USD'])->id,
             ]);
     }

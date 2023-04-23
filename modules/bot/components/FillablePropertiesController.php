@@ -43,7 +43,7 @@ abstract class FillablePropertiesController extends Controller
         }
 
         $propertyValue = $this->getUpdate()->getMessage()->getText();
-        $this->getState()->setIntermediateField($property, $propertyValue);
+        $this->getState()->setItem($property, $propertyValue);
         $isEndOfProperties = count(static::$properties) == $currentPropertyIndex + 1;
 
         if (!$isCreateAction || $isEndOfProperties) {
@@ -80,7 +80,7 @@ abstract class FillablePropertiesController extends Controller
         $model = $this->getModel($id);
 
         foreach (static::$properties as $property) {
-            $propertyValue = $this->getState()->getIntermediateField($property, null);
+            $propertyValue = $this->getState()->getItem($property, null);
             if (!is_null($propertyValue)) {
                 $model->{$property} = $propertyValue;
             }

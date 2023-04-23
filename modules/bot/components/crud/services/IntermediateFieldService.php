@@ -30,7 +30,7 @@ class IntermediateFieldService
         if (is_array($attributeName) && !$value) {
             $this->setArray($modelName, $attributeName);
         } else {
-            $this->state->setIntermediateField($this->createName($modelName, $attributeName), $value);
+            $this->state->setItem($this->createName($modelName, $attributeName), $value);
         }
     }
 
@@ -45,7 +45,7 @@ class IntermediateFieldService
     {
         $name = $this->createName($modelName, $attributeName);
 
-        return $this->state->getIntermediateField($name, $defaultValue);
+        return $this->state->getItem($name, $defaultValue);
     }
 
     /**
@@ -54,18 +54,18 @@ class IntermediateFieldService
      */
     private function setArray($modelName, $values)
     {
-        $this->state->setIntermediateFields($this->createName($modelName, $values));
+        $this->state->setItems($this->createName($modelName, $values));
     }
 
     public function reset($modelName = null)
     {
         $backRoute = $this->controller->backRoute->get();
         $endRoute = $this->controller->endRoute->get();
-        $safeAttribute = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE);
+        $safeAttribute = $this->state->getItem(self::SAFE_ATTRIBUTE);
         $this->state->reset($modelName);
         $this->controller->backRoute->set($backRoute);
         $this->controller->endRoute->set($endRoute);
-        $this->state->setIntermediateField(self::SAFE_ATTRIBUTE, $safeAttribute);
+        $this->state->setItem(self::SAFE_ATTRIBUTE, $safeAttribute);
     }
 
     /**
@@ -93,8 +93,8 @@ class IntermediateFieldService
      */
     public function hasFlag()
     {
-        $flag = $this->state->getIntermediateField(self::SAFE_ATTRIBUTE_FLAG, null);
-        $this->state->setIntermediateField(self::SAFE_ATTRIBUTE_FLAG, null);
+        $flag = $this->state->getItem(self::SAFE_ATTRIBUTE_FLAG, null);
+        $this->state->setItem(self::SAFE_ATTRIBUTE_FLAG, null);
 
         return $flag;
     }
@@ -104,6 +104,6 @@ class IntermediateFieldService
      */
     public function enableFlag()
     {
-        $this->state->setIntermediateField(self::SAFE_ATTRIBUTE_FLAG, true);
+        $this->state->setItem(self::SAFE_ATTRIBUTE_FLAG, true);
     }
 }

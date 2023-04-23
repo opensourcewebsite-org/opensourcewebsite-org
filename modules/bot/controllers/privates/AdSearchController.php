@@ -74,7 +74,7 @@ class AdSearchController extends CrudController
                             ],
                             'attribute' => 'section',
                             'value' => $this->getState()
-                                ->getIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE),
+                                ->getItem(IntermediateFieldService::SAFE_ATTRIBUTE),
                         ],
                     ],
                     'hidden' => true,
@@ -189,7 +189,7 @@ class AdSearchController extends CrudController
     public function actionIndex($adSection = null, $page = 1)
     {
         $this->getState()->setName(null);
-        $this->state->setIntermediateField(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
+        $this->state->setItem(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
 
         $globalUser = $this->getUser();
 

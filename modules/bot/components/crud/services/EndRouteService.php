@@ -12,7 +12,7 @@ use app\modules\bot\models\UserState;
  */
 class EndRouteService
 {
-    const ROUTE_NAME = 'end-route';
+    public const ROUTE_NAME = 'end-route';
 
     /** @var UserState */
     public $state;
@@ -25,7 +25,7 @@ class EndRouteService
      */
     public function make($actionName, $params)
     {
-        $this->state->setIntermediateField(
+        $this->state->setItem(
             self::ROUTE_NAME,
             $this->controller::createRoute($actionName, $params)
         );
@@ -36,7 +36,7 @@ class EndRouteService
      */
     public function set($route)
     {
-        $this->state->setIntermediateField(
+        $this->state->setItem(
             self::ROUTE_NAME,
             $route
         );
@@ -47,6 +47,6 @@ class EndRouteService
      */
     public function get()
     {
-        return $this->state->getIntermediateField(self::ROUTE_NAME);
+        return $this->state->getItem(self::ROUTE_NAME);
     }
 }
