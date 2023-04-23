@@ -108,6 +108,7 @@ class UserState extends ActiveRecord
     public function getItem(string $name, $defaultValue = null)
     {
         $this->name = $name;
+        $this->obj = null;
         $this->setIsNewRecord(true);
         $this->refresh();
 
