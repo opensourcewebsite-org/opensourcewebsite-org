@@ -36,6 +36,17 @@ class WalletTransaction extends ActiveRecord
     // fee for internal transactions in source currency
     public const FEE = 0.01;
     public const MIN_AMOUNT = 0.01;
+    public const MAX_AMOUNT = 9999999999999.99;
+
+    public const WALLET_TYPE = 0;
+    public const SEND_TIP_TYPE = 1;
+    public const SEND_MONEY_TYPE = 2;
+    public const SEND_ANONYMOUS_ADMIN_TIP_TYPE = 3;
+
+    public const FROM_USER_CHECK_FLAG = 1;
+    public const TO_USER_CHECK_FLAG = 2;
+    public const CURRENCY_CHECK_FLAG = 4;
+    public const AMOUNT_CHECK_FLAG = 8;
 
     public function __construct()
     {
@@ -60,13 +71,22 @@ class WalletTransaction extends ActiveRecord
         return [
             [['currency_id', 'from_user_id', 'to_user_id', 'amount', 'type', 'anonymity'], 'required'],
             [['currency_id', 'from_user_id', 'to_user_id', 'type', 'anonymity', 'created_at'], 'integer'],
-            ['amount', 'double', 'min' => 0.01, 'max' => 9999999999999.99],
-            ['fee', 'double', 'min' => 0, 'max' => 9999999999999.99],
-            ['fee', 'default', 'value' => 0.01],
+            ['amount', 'double', 'min' => self::MIN_AMOUNT, 'max' => self::MAX_AMOUNT],
+            ['fee', 'double', 'min' => 0, 'max' => self::MAX_AMOUNT],
+            ['fee', 'default', 'value' => self::MIN_AMOUNT],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
             [['from_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['from_user_id' => 'id']],
             [['to_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['to_user_id' => 'id']],
         ];
+    }
+
+    public function init()
+    {
+        parent::init();
+        if ($this->isNewRecord) {
+            $this->type = self::WALLET_TYPE;
+            $this->anonymity = 0;
+        }
     }
 
     /**
@@ -157,12 +177,12 @@ class WalletTransaction extends ActiveRecord
 
     public function getType()
     {
-        return $this->type;
+        return $this->type ?: WalletTransaction::WALLET_TYPE;
     }
 
     public function getAnonymity()
     {
-        return $this->anonymity;
+        return $this->anonymity ?: 0;
     }
 
     public function getAmountPlusFee(): float
@@ -185,5 +205,38 @@ class WalletTransaction extends ActiveRecord
         $timeOffset = $dateTimeZone->getOffset($date);
 
         return $date->getTimestamp() + $timeOffset;
+    }
+
+    public function check($flag = self::FROM_USER_CHECK_FLAG | self::CURRENCY_CHECK_FLAG)
+    {
+        if ($flag & self::FROM_USER_CHECK_FLAG) {
+            $chekItem = $this->getFromUser()->one();
+            if (empty($chekItem->id)) {
+                return false;
+            }
+        }
+
+        if ($flag & self::TO_USER_CHECK_FLAG) {
+            $chekItem = $this->getToUser()->one();
+            if (empty($chekItem->id)) {
+                return false;
+            }
+        }
+
+        if ($flag & self::CURRENCY_CHECK_FLAG) {
+            $chekItem = $this->getCurrency()->one();
+            if (empty($chekItem->id)) {
+                return false;
+            }
+        }
+
+        if ($flag & self::AMOUNT_CHECK_FLAG) {
+            $chekItem = $this->getAmountPlusFee();
+            if ($chekItem < (self::MIN_AMOUNT + $this->getFee())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
