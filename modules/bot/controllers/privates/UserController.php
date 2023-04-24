@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\privates;
 
 use app\models\Contact;
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -75,6 +76,16 @@ class UserController extends Controller
                 ->build();
         }
 
+        $this->getState()->setItem(new WalletTransaction([
+            'from_user_id' => $this->getTelegramUser()->getUserId(),
+            'to_user_id' => $viewUser->globalUser->id,
+            'type' => WalletTransaction::SEND_MONEY_TYPE,
+        ]));
+
+        $this->getState()->setBackRoute(self::createRoute('id', [
+            'id' => $id,
+        ]));
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
@@ -82,6 +93,15 @@ class UserController extends Controller
                     'contact' => $viewUser->globalUser->contact ?: $viewUser->globalUser->newContact,
                 ]),
                 [
+                    [
+                        [
+                            'callback_data' => TransactionController::createRoute('index', [
+                                'page' => 1,
+                                'type' => WalletTransaction::SEND_MONEY_TYPE,
+                            ]),
+                            'text' => Yii::t('bot', 'Send money'),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => self::createRoute('public-groups', [
