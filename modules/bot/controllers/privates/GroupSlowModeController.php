@@ -33,7 +33,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -133,7 +133,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-messages-limit', [
+        $this->getState()->setInputRoute(self::createRoute('set-messages-limit', [
             'id' => $chat->id,
         ]));
 
@@ -181,7 +181,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-member', [
+        $this->getState()->setInputRoute(self::createRoute('input-member', [
             'id' => $chat->id,
         ]));
 
@@ -331,7 +331,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -417,7 +417,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-messages-now', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-messages-now', [
             'id' => $member->id,
         ]));
 
@@ -481,7 +481,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-messages-limit', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-messages-limit', [
             'id' => $member->id,
         ]));
 
@@ -545,7 +545,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-messages-skip-days', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-messages-skip-days', [
             'id' => $member->id,
         ]));
 
@@ -609,7 +609,7 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-messages-skip-hours', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-messages-skip-hours', [
             'id' => $member->id,
         ]));
 

@@ -25,7 +25,7 @@ class ListAction extends BaseAction
             return [];
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $this->wordModelClass::find()
             ->where(array_merge($this->modelAttributes, [

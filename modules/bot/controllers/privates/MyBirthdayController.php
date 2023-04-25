@@ -24,7 +24,7 @@ class MyBirthdayController extends Controller
             return $this->actionSet();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -66,7 +66,7 @@ class MyBirthdayController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('set'));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

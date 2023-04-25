@@ -25,7 +25,7 @@ class MyLanguagesController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $this->globalUser->getLanguages();
 
@@ -115,7 +115,7 @@ class MyLanguagesController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('add'));
+        $this->getState()->setInputRoute(self::createRoute('add'));
 
         $query = Language::find()
             ->orderBy([
@@ -189,7 +189,7 @@ class MyLanguagesController extends Controller
                  ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = LanguageLevel::find()
             ->orderBy([

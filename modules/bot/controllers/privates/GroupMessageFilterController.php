@@ -7,8 +7,8 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\ChatPhrase;
+use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\data\Pagination;
 
@@ -67,7 +67,7 @@ class GroupMessageFilterController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

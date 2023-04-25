@@ -188,7 +188,7 @@ class AdSearchController extends CrudController
      */
     public function actionIndex($adSection = null, $page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
         $this->state->setItem(IntermediateFieldService::SAFE_ATTRIBUTE, $adSection);
 
         $globalUser = $this->getUser();
@@ -311,7 +311,7 @@ class AdSearchController extends CrudController
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $buttons[] = [
             [
@@ -419,7 +419,7 @@ class AdSearchController extends CrudController
             return $this->actionView($search->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $offer = $searchMatch->adOffer;
 
@@ -502,7 +502,7 @@ class AdSearchController extends CrudController
             return $this->actionMatches($search->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $offer = $searchMatch->adOffer;
 
@@ -588,7 +588,7 @@ class AdSearchController extends CrudController
             return $this->actionIndex($adSection);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $search = $searchMatch->adSearch;
         $offer = $searchMatch->adOffer;
@@ -659,7 +659,7 @@ class AdSearchController extends CrudController
             return $this->actionIndex($adSection);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $search = $searchMatch->adSearch;
         $offer = $searchMatch->adOffer;

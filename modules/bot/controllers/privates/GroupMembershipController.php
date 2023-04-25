@@ -36,7 +36,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -145,7 +145,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-tag', [
+        $this->getState()->setInputRoute(self::createRoute('set-tag', [
             'id' => $chat->id,
         ]));
 
@@ -193,7 +193,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-member', [
+        $this->getState()->setInputRoute(self::createRoute('input-member', [
             'id' => $chat->id,
         ]));
 
@@ -344,7 +344,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-member-date', [
+        $this->getState()->setInputRoute(self::createRoute('input-member-date', [
             'id' => $member->id,
         ]));
 
@@ -486,7 +486,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-verification-date', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-verification-date', [
             'id' => $member->id,
         ]));
 
@@ -610,7 +610,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-note', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-note', [
             'id' => $member->id,
         ]));
 
@@ -704,7 +704,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-tariff-price', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-tariff-price', [
             'id' => $member->id,
         ]));
 
@@ -798,7 +798,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-tariff-price-balance', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-tariff-price-balance', [
             'id' => $member->id,
         ]));
 
@@ -853,7 +853,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-tariff-days', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-tariff-days', [
             'id' => $member->id,
         ]));
 
@@ -947,7 +947,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-member-tariff-days-balance', [
+        $this->getState()->setInputRoute(self::createRoute('set-member-tariff-days-balance', [
             'id' => $member->id,
         ]));
 

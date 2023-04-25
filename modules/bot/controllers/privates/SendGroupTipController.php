@@ -175,7 +175,7 @@ class SendGroupTipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-amount', [
+        $this->getState()->setInputRoute(self::createRoute('set-amount', [
             'chatTipId' => $chatTipId,
         ]));
 
@@ -332,7 +332,7 @@ class SendGroupTipController extends Controller
 
         $module->setChat($thisChat);
         $this->getState()->clearItem(WalletTransaction::class);
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         // send response to private chat
         if ($response) {
