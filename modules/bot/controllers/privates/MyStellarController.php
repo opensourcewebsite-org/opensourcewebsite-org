@@ -34,7 +34,7 @@ class MyStellarController extends Controller
             return $this->actionSetPublicKey();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -102,7 +102,7 @@ class MyStellarController extends Controller
 
     public function actionSetPublicKey()
     {
-        $this->getState()->setName(self::createRoute('set-public-key'));
+        $this->getState()->setInputRoute(self::createRoute('set-public-key'));
 
         $userStellar = $this->globalUser->userStellar ?: $this->globalUser->newUserStellar;
 

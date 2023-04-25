@@ -73,7 +73,7 @@ class JoCompanyController extends CrudController
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $globalUser = $this->getUser();
 
@@ -145,7 +145,7 @@ class JoCompanyController extends CrudController
      */
     public function actionView($id = null)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $user = $this->getUser();
 

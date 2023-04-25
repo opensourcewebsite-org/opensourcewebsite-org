@@ -31,7 +31,7 @@ class WalletController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $this->globalUser->getWallets()
             ->orderByCurrencyCode();
@@ -193,7 +193,7 @@ class WalletController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('add'));
+        $this->getState()->setInputRoute(self::createRoute('add'));
 
         $query = Currency::find()
             ->orderBy([
@@ -367,7 +367,7 @@ class WalletController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         if ($walletTransaction->fromUser->id != $this->getGlobalUser()->id) {
             return $this->getResponseBuilder()

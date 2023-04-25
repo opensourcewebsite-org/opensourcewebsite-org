@@ -249,7 +249,7 @@ class Module extends \yii\base\Module
         $state = null;
 
         if ($this->getChat()->isPrivate()) {
-            $state = $this->getUserState()->getName();
+            $state = $this->getUserState()->getInputRoute();
             // Delete the user message in private chat
             if ($this->getUpdate()->getMessage()) {
                 $this->getBotApi()->deleteMessage(
@@ -272,7 +272,7 @@ class Module extends \yii\base\Module
 
         if ($this->getChat()->isPrivate()) {
             if (!$isStateRoute) {
-                $this->getUserState()->setName($state);
+                $this->getUserState()->setInputRoute($state);
             }
         // Ignore other botname if present
         } elseif ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {

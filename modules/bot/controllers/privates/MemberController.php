@@ -117,7 +117,7 @@ class MemberController extends Controller
             }
         }
 
-        $this->getState()->setName(json_encode($chatTipId));
+        $this->getState()->setInputRoute(json_encode($chatTipId));
 
         $chatMemberReview = ChatMemberReview::findOne([
             'user_id' => $user->id,
@@ -222,7 +222,7 @@ class MemberController extends Controller
                 ->build();
         }
 
-        $chatTipId = json_decode($this->getState()->getName());
+        $chatTipId = json_decode($this->getState()->getInputRoute());
         $chatTip = ChatTip::findOne($chatTipId);
 
         if (!isset($chatTip)) {
@@ -268,7 +268,7 @@ class MemberController extends Controller
             ]);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $statusButtons = [];
 
@@ -433,7 +433,7 @@ class MemberController extends Controller
             $chatMemberReview->member_id = $chatMember->id;
         }
 
-        $this->getState()->setName(self::createRoute('input-text', [
+        $this->getState()->setInputRoute(self::createRoute('input-text', [
             'id' => $chatMember->id,
         ]));
 

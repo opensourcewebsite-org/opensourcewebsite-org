@@ -19,7 +19,7 @@ class ChangeFieldAction extends BaseAction
             return [];
         }
 
-        $this->getState()->setName($this->createRoute($this->updateFieldActionId, [
+        $this->getState()->setInputRoute($this->createRoute($this->updateFieldActionId, [
             'id' => $id,
             'field' => $field,
         ]));

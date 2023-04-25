@@ -41,7 +41,7 @@ class MyLocationController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('index'));
+        $this->getState()->setInputRoute(self::createRoute('index'));
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

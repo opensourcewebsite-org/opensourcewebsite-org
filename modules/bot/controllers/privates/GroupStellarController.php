@@ -32,7 +32,7 @@ class GroupStellarController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $isModeSigners = ($chat->stellar_mode == ChatSetting::STELLAR_MODE_SIGNERS);
 
@@ -182,7 +182,7 @@ class GroupStellarController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-asset', [
+        $this->getState()->setInputRoute(self::createRoute('set-asset', [
                 'id' => $chat->id,
             ]));
 
@@ -199,7 +199,7 @@ class GroupStellarController extends Controller
                         $chat->stellar_asset = $rows[0];
                         $chat->stellar_issuer = $rows[1];
 
-                        $this->getState()->setName(null);
+                        $this->getState()->clearInputRoute();
 
                         return $this->runAction('index', [
                             'id' => $chat->id,
@@ -240,7 +240,7 @@ class GroupStellarController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-threshold', [
+        $this->getState()->setInputRoute(self::createRoute('set-threshold', [
                 'id' => $chat->id,
             ]));
 
@@ -249,7 +249,7 @@ class GroupStellarController extends Controller
                 if ($chat->validateSettingValue('stellar_threshold', $text)) {
                     $chat->stellar_threshold = $text;
 
-                    $this->getState()->setName(null);
+                    $this->getState()->clearInputRoute();
 
                     return $this->runAction('index', [
                         'id' => $chat->id,
@@ -289,7 +289,7 @@ class GroupStellarController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-invite-link', [
+        $this->getState()->setInputRoute(self::createRoute('set-invite-link', [
                 'id' => $chat->id,
             ]));
 
@@ -299,7 +299,7 @@ class GroupStellarController extends Controller
                 if ($urlValidator->validate($text)) {
                     $chat->stellar_invite_link = $text;
 
-                    $this->getState()->setName(null);
+                    $this->getState()->clearInputRoute();
 
                     return $this->runAction('index', [
                         'id' => $chat->id,

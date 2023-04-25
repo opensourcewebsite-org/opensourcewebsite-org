@@ -26,7 +26,7 @@ class MySexualityController extends Controller
             return $this->actionSet();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -71,7 +71,7 @@ class MySexualityController extends Controller
             }
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = Sexuality::find();
 

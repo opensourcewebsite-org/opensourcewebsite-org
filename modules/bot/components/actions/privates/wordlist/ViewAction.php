@@ -15,7 +15,7 @@ class ViewAction extends BaseAction
     */
     public function run($id = null)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $phrase = $this->wordModelClass::findOne($id);
 

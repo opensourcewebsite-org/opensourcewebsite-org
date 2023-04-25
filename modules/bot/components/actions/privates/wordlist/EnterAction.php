@@ -20,7 +20,7 @@ class EnterAction extends BaseAction
             return [];
         }
 
-        $this->getState()->setName($this->createRoute($this->insertActionId, [
+        $this->getState()->setInputRoute($this->createRoute($this->insertActionId, [
             'chatId' => $chat->id,
         ]));
 

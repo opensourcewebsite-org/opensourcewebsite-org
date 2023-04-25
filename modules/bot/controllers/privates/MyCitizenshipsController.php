@@ -25,7 +25,7 @@ class MyCitizenshipsController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $this->globalUser->getCitizenships();
 
@@ -149,7 +149,7 @@ class MyCitizenshipsController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('add'));
+        $this->getState()->setInputRoute(self::createRoute('add'));
 
         $query = Country::find();
 
@@ -223,7 +223,7 @@ class MyCitizenshipsController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

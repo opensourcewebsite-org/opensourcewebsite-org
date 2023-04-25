@@ -22,7 +22,7 @@ class MyWebsiteAccountController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

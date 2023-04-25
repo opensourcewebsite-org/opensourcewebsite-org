@@ -33,7 +33,7 @@ class GroupAdministratorsController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $user = $this->getTelegramUser();
 
@@ -130,7 +130,7 @@ class GroupAdministratorsController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $user = $this->getTelegramUser();
 

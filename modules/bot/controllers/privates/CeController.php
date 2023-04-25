@@ -398,7 +398,7 @@ class CeController extends CrudController
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $globalUser = $this->getUser();
 
@@ -504,7 +504,7 @@ class CeController extends CrudController
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $buttons = [
             [[
@@ -766,7 +766,7 @@ class CeController extends CrudController
             return $this->actionView($order->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $matchOrder = $orderMatch->matchOrder;
 
@@ -848,7 +848,7 @@ class CeController extends CrudController
             return $this->actionMatches($order->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $matchOrder = $orderMatch->matchOrder;
 
@@ -932,7 +932,7 @@ class CeController extends CrudController
             return $this->actionIndex();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $order = $orderMatch->order;
         $matchOrder = $orderMatch->matchOrder;
@@ -998,7 +998,7 @@ class CeController extends CrudController
             return $this->actionAllMatches();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $order = $orderMatch->order;
         $matchOrder = $orderMatch->matchOrder;

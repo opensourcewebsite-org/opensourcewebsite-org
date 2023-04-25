@@ -24,7 +24,7 @@ class MyCurrencyController extends Controller
             return $this->actionSet();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -92,7 +92,7 @@ class MyCurrencyController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('set'));
 
         $query = Currency::find()
             ->orderBy([
