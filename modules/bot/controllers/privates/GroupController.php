@@ -250,6 +250,12 @@ class GroupController extends Controller
                             'text' => Emoji::REFRESH,
                         ],
                         [
+                            'callback_data' => GroupGuestController::createRoute('view', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Emoji::EYE,
+                        ],
+                        [
                             'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
                             'text' => Yii::t('bot', 'Group'),
                             'visible' => (bool)$chat->getUsername(),
