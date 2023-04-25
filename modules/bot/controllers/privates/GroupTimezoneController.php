@@ -36,7 +36,7 @@ class GroupTimezoneController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input'));
+        $this->getState()->setInputRoute(self::createRoute('input'));
 
         $timezones = TimeHelper::getTimezoneNames();
 

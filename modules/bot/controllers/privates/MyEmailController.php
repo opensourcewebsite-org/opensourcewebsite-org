@@ -25,7 +25,7 @@ class MyEmailController extends Controller
             return $this->actionSet();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -59,7 +59,7 @@ class MyEmailController extends Controller
 
     public function actionSet()
     {
-        $this->getState()->setName(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('set'));
 
         $userEmail = $this->globalUser->userEmail ?: $this->globalUser->newUserEmail;
 

@@ -17,7 +17,7 @@ class SelectAction extends BaseAction
     */
     public function run($id = null, $page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $phrase = $this->wordModelClass::findOne($id);
 

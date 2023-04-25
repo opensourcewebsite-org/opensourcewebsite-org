@@ -21,7 +21,7 @@ class MyTimezoneController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -67,7 +67,7 @@ class MyTimezoneController extends Controller
 
         // TODO add text input to set timezone (Examples: 07, 06:30, -07, -06:30)
 
-        $this->getState()->setName(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('set'));
 
         $timezones = TimeHelper::getTimezoneNames();
 

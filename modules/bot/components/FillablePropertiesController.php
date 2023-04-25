@@ -30,7 +30,7 @@ abstract class FillablePropertiesController extends Controller
         $isCreateAction = is_null($id);
 
         if (is_null($this->getUpdate()->getMessage())) {
-            $this->getState()->setName(self::createRoute('set-property', [
+            $this->getState()->setInputRoute(self::createRoute('set-property', [
                 'id' => $id,
                 'property' => $property,
             ]));
@@ -53,7 +53,7 @@ abstract class FillablePropertiesController extends Controller
         }
 
         $nextProperty = static::$properties[$currentPropertyIndex + 1];
-        $this->getState()->setName(self::createRoute('set-property', [
+        $this->getState()->setInputRoute(self::createRoute('set-property', [
             'property' => $nextProperty,
         ]));
 

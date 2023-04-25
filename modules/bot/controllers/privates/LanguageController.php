@@ -74,7 +74,7 @@ class LanguageController extends Controller
             }
         }
 
-        $this->getState()->setName(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('set'));
 
         $query = Language::find()
             ->orderBy([

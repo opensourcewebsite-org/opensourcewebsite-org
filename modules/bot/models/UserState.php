@@ -75,16 +75,6 @@ class UserState extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    public function getName()
-    {
-        return $this->getItem('name');
-    }
-
-    public function setName(?string $value)
-    {
-        $this->setItem('name', $value);
-    }
-
     public function getBackRoute()
     {
         return $this->getItem('backRoute');
@@ -98,6 +88,21 @@ class UserState extends ActiveRecord
     public function clearBackRoute()
     {
         $this->clearItem('backRoute');
+    }
+
+    public function getInputRoute()
+    {
+        return $this->getItem('inputRoute');
+    }
+
+    public function setInputRoute(?string $value)
+    {
+        $this->setItem('inputRoute', $value);
+    }
+
+    public function clearInputRoute()
+    {
+        $this->clearItem('inputRoute');
     }
 
     /**

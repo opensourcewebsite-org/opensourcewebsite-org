@@ -18,7 +18,7 @@ class MyAccountController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $user = $this->getTelegramUser();
         $globalUser = $this->getUser();

@@ -36,7 +36,7 @@ class GroupCurrencyController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input', [
+        $this->getState()->setInputRoute(self::createRoute('input', [
             'chatId' => $chatId,
         ]));
 

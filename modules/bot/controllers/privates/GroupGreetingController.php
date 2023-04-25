@@ -30,7 +30,7 @@ class GroupGreetingController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $user = $this->getTelegramUser();
 
@@ -130,7 +130,7 @@ class GroupGreetingController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-message', [
+        $this->getState()->setInputRoute(self::createRoute('set-message', [
                 'id' => $chat->id,
             ]));
 

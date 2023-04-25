@@ -18,7 +18,7 @@ class MenuController extends Controller
      */
     public function actionIndex()
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $globalUser = $this->getUser();
         $user = $this->getTelegramUser();

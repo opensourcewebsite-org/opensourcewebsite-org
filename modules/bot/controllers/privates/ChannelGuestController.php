@@ -32,7 +32,7 @@ class ChannelGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $buttons = [];
 
