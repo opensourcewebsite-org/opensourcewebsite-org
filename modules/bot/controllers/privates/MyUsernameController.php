@@ -23,7 +23,7 @@ class MyUsernameController extends Controller
             return $this->actionSet();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -52,7 +52,7 @@ class MyUsernameController extends Controller
 
     public function actionSet()
     {
-        $this->getState()->setName(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('set'));
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {

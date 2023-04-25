@@ -216,7 +216,7 @@ class JoResumeController extends CrudController
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $globalUser = $this->getUser();
 
@@ -325,7 +325,7 @@ class JoResumeController extends CrudController
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $buttons[] = [
             [
@@ -431,7 +431,7 @@ class JoResumeController extends CrudController
             return $this->actionView($resume->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $vacancy = $resumeMatch->vacancy;
 
@@ -514,7 +514,7 @@ class JoResumeController extends CrudController
             return $this->actionMatches($resume->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $vacancy = $resumeMatch->vacancy;
 
@@ -599,7 +599,7 @@ class JoResumeController extends CrudController
             return $this->actionIndex();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $resume = $resumeMatch->resume;
         $vacancy = $resumeMatch->vacancy;
@@ -666,7 +666,7 @@ class JoResumeController extends CrudController
             return $this->actionAllMatches();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $resume = $resumeMatch->resume;
         $vacancy = $resumeMatch->vacancy;

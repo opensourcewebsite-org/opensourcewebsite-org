@@ -34,7 +34,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -130,7 +130,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $chatMember = $chat->getChatMemberByUserId();
 
@@ -227,7 +227,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('add', [
+        $this->getState()->setInputRoute(self::createRoute('add', [
             'id' => $chat->id,
         ]));
 
@@ -301,7 +301,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -404,7 +404,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         if ($post->isActive()) {
             $post->setInactive();
@@ -445,7 +445,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-time', [
+        $this->getState()->setInputRoute(self::createRoute('set-time', [
             'id' => $post->id,
         ]));
 
@@ -506,7 +506,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-skip-days', [
+        $this->getState()->setInputRoute(self::createRoute('set-skip-days', [
             'id' => $post->id,
         ]));
 
@@ -565,7 +565,7 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('set-text', [
+        $this->getState()->setInputRoute(self::createRoute('set-text', [
             'id' => $post->id,
         ]));
 

@@ -82,7 +82,7 @@ class TipController extends Controller
         $fromChatMember = $chat->getChatMemberByUser($fromUser);
 
         if (isset($toUser) && isset($fromChatMember) && ($toUser->getId()) != $fromUser->getId()) {
-            $this->getState()->setName(json_encode($chatTip->id));
+            $this->getState()->setInputRoute(json_encode($chatTip->id));
 
             $thisChat = $this->getTelegramChat();
 

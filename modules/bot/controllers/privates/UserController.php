@@ -56,7 +56,7 @@ class UserController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $user = $this->getTelegramUser();
 
@@ -266,7 +266,7 @@ class UserController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-name', [
+        $this->getState()->setInputRoute(self::createRoute('input-name', [
             'id' => $id,
         ]));
 
@@ -561,7 +561,7 @@ class UserController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $viewUser->getPublicGroups()
             ->orderByCreatorRank();

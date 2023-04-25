@@ -34,7 +34,7 @@ class GroupGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $buttons = [];
 
@@ -153,7 +153,7 @@ class GroupGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(self::createRoute('input-intro-text', [
+        $this->getState()->setInputRoute(self::createRoute('input-intro-text', [
                 'id' => $chatMember->id,
             ]));
 
@@ -245,7 +245,7 @@ class GroupGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $chat->getPremiumChatMembers();
 
@@ -336,7 +336,7 @@ class GroupGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $chat->getChatMembersWithIntro();
 
@@ -425,7 +425,7 @@ class GroupGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $chat->getChatMembersWithPositiveReviews();
 

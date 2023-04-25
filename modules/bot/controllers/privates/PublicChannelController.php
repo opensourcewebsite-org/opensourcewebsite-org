@@ -28,7 +28,7 @@ class PublicChannelController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = Chat::find()
             ->channel()

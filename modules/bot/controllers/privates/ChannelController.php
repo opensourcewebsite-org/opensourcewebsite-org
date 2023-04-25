@@ -27,7 +27,7 @@ class ChannelController extends Controller
      */
     public function actionIndex($page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = $this->getTelegramUser()->getActiveAdministratedChannels();
 
@@ -109,7 +109,7 @@ class ChannelController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $administrators = $chat->getActiveAdministrators()->all();
 

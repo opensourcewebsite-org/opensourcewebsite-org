@@ -243,7 +243,7 @@ class JoVacancyController extends CrudController
      */
     public function actionIndex($companyId = null, $page = 1)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
         $this->state->setItem(IntermediateFieldService::SAFE_ATTRIBUTE, $companyId);
 
         $globalUser = $this->getUser();
@@ -386,7 +386,7 @@ class JoVacancyController extends CrudController
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $buttons[] = [
             [
@@ -502,7 +502,7 @@ class JoVacancyController extends CrudController
             return $this->actionView($vacancy->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $resume = $vacancyMatch->resume;
 
@@ -584,7 +584,7 @@ class JoVacancyController extends CrudController
             return $this->actionMatches($vacancy->id);
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $resume = $vacancyMatch->resume;
 
@@ -668,7 +668,7 @@ class JoVacancyController extends CrudController
             return $this->actionIndex();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $vacancy = $vacancyMatch->vacancy;
         $resume = $vacancyMatch->resume;
@@ -734,7 +734,7 @@ class JoVacancyController extends CrudController
             return $this->actionAllMatches();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $vacancy = $vacancyMatch->vacancy;
         $resume = $vacancyMatch->resume;

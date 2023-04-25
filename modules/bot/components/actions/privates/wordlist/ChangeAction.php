@@ -15,7 +15,7 @@ class ChangeAction extends BaseAction
     {
         $phrase = $this->wordModelClass::findOne($id);
 
-        $this->getState()->setName($this->createRoute($this->updateActionId, [
+        $this->getState()->setInputRoute($this->createRoute($this->updateActionId, [
             'id' => $id,
         ]));
 

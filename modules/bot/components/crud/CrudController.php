@@ -1588,7 +1588,7 @@ abstract class CrudController extends Controller
         $editableRelationId = ArrayHelper::getValue($options, 'editableRelationId', null);
 
         $state = $this->getState();
-        $state->setName(
+        $state->setInputRoute(
             self::createRoute(
                 's-a',
                 [
@@ -1824,7 +1824,7 @@ abstract class CrudController extends Controller
         Yii::warning('generatePublicResponse: ' . $modelName);
         $error = ArrayHelper::getValue($options, 'error', null);
         $state = $this->getState();
-        $state->setName(
+        $state->setInputRoute(
             self::createRoute(
                 'en-a',
                 [
@@ -2187,7 +2187,7 @@ abstract class CrudController extends Controller
     private function isRequestValid(string $attributeName)
     {
         $state = $this->getState();
-        $stateRoute = $state->getName();
+        $stateRoute = $state->getInputRoute();
         if (isset($stateRoute)) {
             $stateRequest = Request::fromUrl($stateRoute);
         }

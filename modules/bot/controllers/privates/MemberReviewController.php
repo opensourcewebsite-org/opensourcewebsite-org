@@ -37,7 +37,7 @@ class MemberReviewController extends Controller
                 ->build();
         }
 
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $query = ChatMemberReview::find()
             ->where([

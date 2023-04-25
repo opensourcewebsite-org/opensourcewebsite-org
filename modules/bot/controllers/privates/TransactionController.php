@@ -29,7 +29,7 @@ class TransactionController extends Controller
      */
     public function actionIndex($page = 1, $type = WalletTransaction::WALLET_TYPE)
     {
-        $this->getState()->setName(null);
+        $this->getState()->clearInputRoute();
 
         $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
@@ -134,7 +134,7 @@ class TransactionController extends Controller
      */
     public function actionSetToUser($id = null)
     {
-        $this->getState()->setName(self::createRoute('set-to-user'));
+        $this->getState()->setInputRoute(self::createRoute('set-to-user'));
 
         $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
@@ -229,7 +229,7 @@ class TransactionController extends Controller
      */
     public function actionInputAmount()
     {
-        $this->getState()->setName(self::createRoute('input-amount'));
+        $this->getState()->setInputRoute(self::createRoute('input-amount'));
 
         $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
@@ -298,7 +298,7 @@ class TransactionController extends Controller
      */
     public function actionConfirmation()
     {
-        $this->getState()->setName(self::createRoute('confirmation'));
+        $this->getState()->setInputRoute(self::createRoute('confirmation'));
 
         $walletTransaction = $this->getState()->getItem(WalletTransaction::class);
 
