@@ -3,11 +3,13 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\helpers\Number;
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\controllers\privates\DeleteMessageController;
 use app\modules\bot\controllers\privates\MemberController;
+use app\modules\bot\controllers\privates\StartController;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTip;
@@ -43,7 +45,6 @@ class TipController extends Controller
             if ($chat->isGroup() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
                 $toUser = User::findOne([
                     'provider_user_id' => $replyMessage->getFrom()->getId(),
-                    'is_bot' => 0,
                 ]);
 
                 $chatMember = ChatMember::findOne([
@@ -52,6 +53,64 @@ class TipController extends Controller
                 ]);
 
                 if ($chatMember->isAnonymousAdministrator()) {
+                    $chatMember = ChatMember::findOne([
+                        'chat_id' => $chat->id,
+                        'status' => ChatMember::STATUS_CREATOR,
+                    ]);
+
+                    if (empty($chatMember)) {
+                        return [];
+                    }
+
+                    if ($chatMember->getUserId() == $this->getTelegramUser()->getId()) {
+                        return [];
+                    }
+
+                    $chatTip = new ChatTip([
+                        'chat_id' => $chat->id,
+                        'to_user_id' => $chatMember->getUserId(),
+                        'reply_message_id' => $replyMessage->getMessageId(),
+                    ]);
+
+                    $chatTip->save();
+
+                    $thisChat = $this->getTelegramChat();
+
+                    $chat = Chat::findOne([
+                        'chat_id' => $this->getTelegramUser()->getProviderUserId(),
+                    ]);
+
+                    if (!isset($chat)) {
+                        return [];
+                    }
+
+                    $module = Yii::$app->getModule('bot');
+                    $module->setChat($chat);
+
+                    if ($chatTip) {
+                        $this->getState()->setItem($chatTip);
+                    }
+
+                    $this->getState()->setItem(new WalletTransaction([
+                        'from_user_id' => $this->getTelegramUser()->getUserId(),
+                        'to_user_id' => $chatMember->user->globalUser->id,
+                        'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                        'anonymity' => 1,
+                    ]));
+
+                    $this->getState()->setBackRoute(StartController::createRoute('index'));
+
+                    $module->runAction('transaction/index', [
+                        'page' => 1,
+                        'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                    ]);
+
+                    $module->setChat($thisChat);
+
+                    return [];
+                }
+
+                if ($toUser->isBot()) {
                     return [];
                 }
 
