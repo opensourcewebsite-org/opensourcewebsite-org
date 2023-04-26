@@ -6,6 +6,7 @@ namespace app\modules\bot\models;
 
 use app\models\Currency;
 use app\models\User as GlobalUser;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\queries\ChatQuery;
 use DateTime;
 use Yii;
@@ -490,5 +491,10 @@ class Chat extends ActiveRecord
         }
 
         return false;
+    }
+
+    public function getLink()
+    {
+        return ExternalLink::getBotStartLink($this->getUsername() ?: $this->getChatId());
     }
 }
