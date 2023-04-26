@@ -8,6 +8,7 @@ use app\models\traits\FloatAttributeTrait;
 use app\modules\bot\models\ChatTipWalletTransaction;
 use DateTime;
 use DateTimeZone;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -86,9 +87,24 @@ class WalletTransaction extends ActiveRecord
     {
         parent::init();
         if ($this->isNewRecord) {
-            $this->type = self::WALLET_TYPE;
-            $this->anonymity = 0;
+            $this->type = $this->type ?? self::WALLET_TYPE;
+            $this->anonymity = $this->anonymity ?? 0;
         }
+    }
+
+    public function getTypeLabel(): string
+    {
+        return static::getTypeLabels()[(int)$this->type];
+    }
+
+    public static function getTypeLabels(): array
+    {
+        return [
+            0 => Yii::t('app', 'Wallet transaction'),
+            1 => Yii::t('app', 'Tip sending transaction'),
+            2 => Yii::t('app', 'Money sending transaction'),
+            3 => Yii::t('app', 'Tip sending to anonymous admin transaction'),
+        ];
     }
 
     /**

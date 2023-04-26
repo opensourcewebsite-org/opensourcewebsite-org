@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
@@ -10,6 +11,7 @@ use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\ChatTip;
 use Yii;
 use yii\data\Pagination;
 
@@ -24,7 +26,7 @@ class GroupGuestController extends Controller
      * @param int $id Chat->id
      * @return array
      */
-    public function actionView($id = null)
+    public function actionView($id = null, $chatTipId = null)
     {
         $chat = Chat::findOne($id);
 
@@ -75,6 +77,37 @@ class GroupGuestController extends Controller
                     'visible' => $chatMember->getActiveReviews()->exists(),
                 ],
             ];
+
+            $chatTip = ChatTip::findOne($chatTipId);
+
+            if ($chatTip) {
+
+                $this->getState()->setItem($chatTip);
+
+                $transaction = new WalletTransaction([
+                    'from_user_id' => $this->getTelegramUser()->getUserId(),
+                    'to_user_id' => $chatMember->user->globalUser->id,
+                    'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                    'anonymity' => 1,
+                ]);
+
+                $this->getState()->setItem($transaction);
+
+                $this->getState()->setBackRoute(self::createRoute('view', [
+                    'id' => $id,
+                    'chatTipId' => $chatTip->id,
+                ]));
+
+                $buttons[] = [
+                    [
+                        'callback_data' => TransactionController::createRoute('index', [
+                            'page' => $chatMember->id,
+                            'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                        ]),
+                        'text' => Yii::t('bot', 'Send a Tip'),
+                    ],
+                ];
+            }
         }
 
         if ($chat->faq_status == ChatSetting::STATUS_ON) {

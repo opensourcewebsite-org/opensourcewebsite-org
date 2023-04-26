@@ -272,10 +272,13 @@ class TransactionController extends Controller
             }
         }
 
+        $chatTip = $this->getState()->getItem(ChatTip::class);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('input-amount', [
                     'walletTransaction' => $walletTransaction,
+                    'chatTip' => $chatTip,
                 ]),
                 [
                     [
@@ -308,10 +311,13 @@ class TransactionController extends Controller
                 ->build();
         }
 
+        $chatTip = $this->getState()->getItem(ChatTip::class);
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('confirmation', [
                     'walletTransaction' => $walletTransaction,
+                    'chatTip' => $chatTip,
                 ]),
                 [
                     [
@@ -353,37 +359,38 @@ class TransactionController extends Controller
         if ($walletTransactionId) {
             $this->getState()->clearItem(WalletTransaction::class);
 
+            $chatTip = $this->getState()->getItem(ChatTip::class);
+
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
                     'walletTransaction' => $walletTransaction,
                     'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
+                    'chatTip' => $chatTip,
                 ]),
                 []
             );
 
+            if ($chatTip) {
+
+                // create new ChatTipWalletTransaction record
+                $chatTipWalletTransaction = new ChatTipWalletTransaction([
+                    'chat_tip_id' => $chatTip->id,
+                    'transaction_id' => $walletTransaction->id,
+                ]);
+
+                $chatTipWalletTransaction->save();
+            }
+
             if ($walletTransaction->type == WalletTransaction::SEND_TIP_TYPE) {
-                $chatTip = $this->getState()->getItem(ChatTip::class);
+                $thisChat = $this->chat;
+                $module = Yii::$app->getModule('bot');
+                $module->setChat(Chat::findOne($chatTip->chat_id));
 
-                if ($chatTip) {
+                $response = $module->runAction('tip/tip-message', [
+                    'chatTipId' => $chatTip->id,
+                ]);
 
-                    // create new ChatTipWalletTransaction record
-                    $chatTipWalletTransaction = new ChatTipWalletTransaction([
-                        'chat_tip_id' => $chatTip->id,
-                        'transaction_id' => $walletTransaction->id,
-                    ]);
-
-                    $chatTipWalletTransaction->save();
-
-                    $thisChat = $this->chat;
-                    $module = Yii::$app->getModule('bot');
-                    $module->setChat(Chat::findOne($chatTip->chat_id));
-
-                    $response = $module->runAction('tip/tip-message', [
-                        'chatTipId' => $chatTip->id,
-                    ]);
-
-                    $module->setChat($thisChat);
-                }
+                $module->setChat($thisChat);
             }
 
             $this->getState()->clearItem(ChatTip::class);

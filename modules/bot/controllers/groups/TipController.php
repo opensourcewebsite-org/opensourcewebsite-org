@@ -62,55 +62,9 @@ class TipController extends Controller
                         return [];
                     }
 
-                    if ($chatMember->getUserId() == $this->getTelegramUser()->getId()) {
-                        return [];
-                    }
-
-                    $chatTip = new ChatTip([
-                        'chat_id' => $chat->id,
-                        'to_user_id' => $chatMember->getUserId(),
-                        'reply_message_id' => $replyMessage->getMessageId(),
-                    ]);
-
-                    $chatTip->save();
-
-                    $thisChat = $this->getTelegramChat();
-
-                    $chat = Chat::findOne([
-                        'chat_id' => $this->getTelegramUser()->getProviderUserId(),
-                    ]);
-
-                    if (!isset($chat)) {
-                        return [];
-                    }
-
-                    $module = Yii::$app->getModule('bot');
-                    $module->setChat($chat);
-
-                    if ($chatTip) {
-                        $this->getState()->setItem($chatTip);
-                    }
-
-                    $this->getState()->setItem(new WalletTransaction([
-                        'from_user_id' => $this->getTelegramUser()->getUserId(),
-                        'to_user_id' => $chatMember->user->globalUser->id,
-                        'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
-                        'anonymity' => 1,
-                    ]));
-
-                    $this->getState()->setBackRoute(StartController::createRoute('index'));
-
-                    $module->runAction('transaction/index', [
-                        'page' => 1,
-                        'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
-                    ]);
-
-                    $module->setChat($thisChat);
-
-                    return [];
-                }
-
-                if ($toUser->isBot()) {
+                    $toUser = $chatMember->user;
+                    $actionName = 'group-guest/view';
+                } elseif ($toUser->isBot()) {
                     return [];
                 }
 
@@ -121,6 +75,11 @@ class TipController extends Controller
                 ]);
 
                 $chatTip->save();
+
+                $actionParams = [
+                    'id' => $chat->id,
+                    'chatTipId' => $chatTip->id,
+                ];
             }
         } else {
             $chatTip = ChatTip::findOne($chatTipId);
@@ -156,10 +115,15 @@ class TipController extends Controller
             $module = Yii::$app->getModule('bot');
             $module->setChat($chat);
 
-            $module->runAction('member/id', [
-                'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
-                'chatTipId' => $chatTip->id,
-            ]);
+            if (!isset($actionName)) {
+                $actionName = 'member/id';
+                $actionParams = [
+                    'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
+                    'chatTipId' => $chatTip->id,
+                ];
+            }
+
+            $module->runAction($actionName, $actionParams);
 
             $module->setChat($thisChat);
 

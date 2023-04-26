@@ -113,4 +113,8 @@ return [
     'Status' => 'Статус',
     'Title' => 'Заголовок',
     'Text' => 'Текст',
+    'Wallet transaction' => 'Операция с кошельком',
+    'Tip sending transaction' => 'Отправка чаевых',
+    'Money sending transaction' => 'Отправка денег',
+    'Tip sending to anonymous admin transaction' => 'Отправка чаевых анонимному администратору',
 ];
