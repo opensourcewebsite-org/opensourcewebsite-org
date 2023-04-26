@@ -114,14 +114,14 @@ class WalletTransaction extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'currency_id' => 'Currency ID',
-            'from_user_id' => 'From User ID',
-            'to_user_id' => 'To User ID',
-            'amount' => 'Amount',
-            'fee' => 'Fee',
-            'type' => 'Type',
-            'anonymity' => 'Anonymity',
-            'created_at' => 'Created At',
+            'currency_id' => Yii::t('app', 'Currency'),
+            'from_user_id' => Yii::t('app', 'From User'),
+            'to_user_id' => Yii::t('app', 'To User'),
+            'amount' => Yii::t('app', 'Amount'),
+            'fee' => Yii::t('app', 'Fee'),
+            'type' => Yii::t('app', 'Type'),
+            'anonymity' => Yii::t('app', 'Anonymity'),
+            'created_at' => Yii::t('app', 'Created At'),
         ];
     }
 
