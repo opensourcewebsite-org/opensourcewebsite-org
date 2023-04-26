@@ -386,10 +386,6 @@ class MessageController extends Controller
             if (!$deleteMessage) {
                 if ($chat->faq_status == ChatSetting::STATUS_ON) {
                     if (($text = $this->getMessage()->getText()) !== null) {
-                        if (strtolower($text) == 'faq') {
-                            return $this->run('faq/show-chat-link');
-                        }
-
                         $question = $chat->getQuestionPhrases()
                             ->where([
                                 'text' => $text,

@@ -1,7 +1,6 @@
 <?php
 
 use app\components\helpers\TimeHelper;
-use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
 <b><?= $chat->title ?></b><br/>
@@ -13,7 +12,7 @@ use app\modules\bot\components\helpers\ExternalLink;
 <br/>
 <?= Yii::t('bot', 'Only the owner of the group can configure the list of administrators who have access to the settings of this group') ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'Public link to view information about the group'); ?>: <?= ExternalLink::getBotGroupGuestLink($chat->getChatId()); ?><br/>
+<?= Yii::t('bot', 'Public link to view information about the group'); ?>: <?= $chat->getLink() ?><br/>
 <br/>
 <?= Yii::t('bot', 'Timezone') ?>: <?= TimeHelper::getNameByOffset($chat->timezone) ?><br/>
 <?php if ($currency = $chat->currency) : ?>
