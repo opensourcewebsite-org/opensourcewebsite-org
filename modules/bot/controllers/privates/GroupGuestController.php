@@ -36,9 +36,15 @@ class GroupGuestController extends Controller
 
         $this->getState()->clearInputRoute();
 
-        $buttons = [];
-
         $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chat->hasUsername() && !$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $buttons = [];
 
         if ($chatMember) {
             $buttons[] = [
@@ -122,7 +128,7 @@ class GroupGuestController extends Controller
                     'chatId' => $chat->id,
                 ]),
                 'text' => Emoji::MANAGE,
-                'visible' => $chatMember->isActiveAdministrator(),
+                'visible' => $chatMember && $chatMember->isActiveAdministrator(),
             ],
             [
                 'url' => ExternalLink::getTelegramAccountLink($chat->getUsername()),
