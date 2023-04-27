@@ -42,6 +42,7 @@ class TipQueueController extends Controller
         }
 
         $chatTipQueue = $this->getState()->getItem(ChatTipQueue::class);
+        $chatTipQueue->user_id = $this->getTelegramUser()->getId();
         $chatTipQueue->chat_id = $chat->id;
         $this->getState()->setItem($chatTipQueue);
 
@@ -183,7 +184,7 @@ class TipQueueController extends Controller
 
         $chatTipQueue = $this->getState()->getItem(ChatTipQueue::class);
 
-        if (!$chatTipQueue->check(ChatTipQueue::CHAT_CHECK_FLAG | ChatTipQueue::CURRENCY_CHECK_FLAG | ChatTipQueue::USER_COUNT_CHECK_FLAG)) {
+        if (!$chatTipQueue->check(ChatTipQueue::USER_CHECK_FLAG | ChatTipQueue::CHAT_CHECK_FLAG | ChatTipQueue::CURRENCY_CHECK_FLAG | ChatTipQueue::USER_COUNT_CHECK_FLAG)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -243,7 +244,7 @@ class TipQueueController extends Controller
 
         $chatTipQueue = $this->getState()->getItem(ChatTipQueue::class);
 
-        if (!$chatTipQueue->check(ChatTipQueue::CHAT_CHECK_FLAG | ChatTipQueue::CURRENCY_CHECK_FLAG | ChatTipQueue::USER_COUNT_CHECK_FLAG | ChatTipQueue::USER_AMOUNT_CHECK_FLAG)) {
+        if (!$chatTipQueue->check(ChatTipQueue::USER_CHECK_FLAG | ChatTipQueue::CHAT_CHECK_FLAG | ChatTipQueue::CURRENCY_CHECK_FLAG | ChatTipQueue::USER_COUNT_CHECK_FLAG | ChatTipQueue::USER_AMOUNT_CHECK_FLAG)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -283,7 +284,7 @@ class TipQueueController extends Controller
     {
         $chatTipQueue = $this->getState()->getItem(ChatTipQueue::class);
 
-        if (!$chatTipQueue->check(ChatTipQueue::CHAT_CHECK_FLAG | ChatTipQueue::CURRENCY_CHECK_FLAG | ChatTipQueue::USER_COUNT_CHECK_FLAG | ChatTipQueue::USER_AMOUNT_CHECK_FLAG)) {
+        if (!$chatTipQueue->check(ChatTipQueue::USER_CHECK_FLAG | ChatTipQueue::CHAT_CHECK_FLAG | ChatTipQueue::CURRENCY_CHECK_FLAG | ChatTipQueue::USER_COUNT_CHECK_FLAG | ChatTipQueue::USER_AMOUNT_CHECK_FLAG)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

@@ -33,10 +33,11 @@ class ChatTipQueue extends ActiveRecord
     public const USER_MIN_AMOUNT = 0.01;
     public const USER_MAX_AMOUNT = 9999999999999.99;
 
-    public const CHAT_CHECK_FLAG = 1;
-    public const CURRENCY_CHECK_FLAG = 2;
-    public const USER_COUNT_CHECK_FLAG = 4;
-    public const USER_AMOUNT_CHECK_FLAG = 8;
+    public const USER_CHECK_FLAG = 1;
+    public const CHAT_CHECK_FLAG = 2;
+    public const CURRENCY_CHECK_FLAG = 4;
+    public const USER_COUNT_CHECK_FLAG = 8;
+    public const USER_AMOUNT_CHECK_FLAG = 16;
 
     /**
      * {@inheritdoc}
@@ -61,11 +62,12 @@ class ChatTipQueue extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'currency_id'], 'required'],
-            [['chat_id', 'currency_id'], 'integer'],
+            [['chat_id', 'currency_id', 'user_id'], 'required'],
+            [['chat_id', 'currency_id', 'user_id'], 'integer'],
             [['message_id'], 'integer'],
             [['user_count'], 'integer', 'min' => self::USER_MIN_COUNT, 'max' => self::USER_MAX_COUNT],
             [['user_amount'], 'double', 'min' => self::USER_MIN_AMOUNT, 'max' => self::USER_MAX_AMOUNT],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
         ];
@@ -89,6 +91,21 @@ class ChatTipQueue extends ActiveRecord
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    public function getUserId()
+    {
+        return $this->user_id;
     }
 
     /**
@@ -136,8 +153,15 @@ class ChatTipQueue extends ActiveRecord
         return $this->user_amount ?? self::USER_MIN_AMOUNT;
     }
 
-    public function check($flag = self::CHAT_CHECK_FLAG)
+    public function check($flag = self::USER_CHECK_FLAG | self::CHAT_CHECK_FLAG)
     {
+        if ($flag & self::USER_CHECK_FLAG) {
+            $chekItem = $this->getUser()->one();
+            if (empty($chekItem->id)) {
+                return false;
+            }
+        }
+
         if ($flag & self::CHAT_CHECK_FLAG) {
             $chekItem = $this->getChat()->one();
             if (empty($chekItem->id)) {

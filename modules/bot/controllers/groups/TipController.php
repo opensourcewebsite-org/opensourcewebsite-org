@@ -103,6 +103,7 @@ class TipController extends Controller
                         'id' => $chat->id,
                         'chatTipId' => $chatTip->id,
                     ];
+                    break;
                 }
             }
 
