@@ -3,11 +3,7 @@
 use app\modules\bot\components\helpers\ExternalLink;
 
 ?>
-<b><?= $chat->title ?></b><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
-<?php if ($chat->description) : ?>
-<br/>
-<?= nl2br($chat->description) ?><br/>
-<?php endif; ?>
+<b><?= Yii::t('bot', 'Group') ?>: <?= $chat->title ?></b><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
 <?php if ($chatMember) : ?>
 <?php if ($chatMember->intro) : ?>
 ————<br/>

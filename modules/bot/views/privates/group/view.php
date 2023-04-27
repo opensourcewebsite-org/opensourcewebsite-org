@@ -3,7 +3,7 @@
 use app\components\helpers\TimeHelper;
 
 ?>
-<b><?= $chat->title ?></b><br/>
+<b><?= Yii::t('bot', 'Group') ?>: <?= $chat->title ?></b><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
 <br/>
 <?= Yii::t('bot', 'Administrators who can manage the group') ?>:<br/>
 <?php foreach ($administrators as $user) : ?>

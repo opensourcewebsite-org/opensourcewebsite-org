@@ -434,7 +434,7 @@ return [
     'sends a welcome message to newly joined members' => 'отправляет приветственное сообщение новым участникам',
     'Message' => 'Сообщение',
     'Send a message for the greeting' => 'Отправьте сообщение для приветствия',
-    'HTML tags are ignored' => 'HTML теги игнорируются',
+    'HTML tags and premium emoji are ignored' => 'HTML теги и премиальные эмодзи игнорируются',
     'Karma' => 'Карма',
     'Formatting options' => 'Опции форматирования',
     'bold' => 'жирный',

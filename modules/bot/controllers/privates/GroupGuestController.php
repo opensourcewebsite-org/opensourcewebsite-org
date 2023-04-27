@@ -409,7 +409,9 @@ class GroupGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('members-with-intro'),
+                $this->render('members-with-intro', [
+                    'chat' => $chat,
+                ]),
                 $buttons
             )
             ->build();
@@ -498,7 +500,9 @@ class GroupGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('members-with-reviews'),
+                $this->render('members-with-reviews', [
+                    'chat' => $chat,
+                ]),
                 $buttons
             )
             ->build();
@@ -529,6 +533,6 @@ class GroupGuestController extends Controller
 
         $chatMember->save();
 
-        return $this->actionView($chatMember->chat_id);
+        return $this->actionView($chatMember->getChatId());
     }
 }

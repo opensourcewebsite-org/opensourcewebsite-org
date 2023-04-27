@@ -1,4 +1,4 @@
-<b><?= $chat->title ?></b><br/>
+<b><?= Yii::t('bot', 'Channel') ?>: <?= $chat->title ?></b><?= $chat->username ? ' (@' . $chat->username . ')' : '' ?><br/>
 <br/>
 <?= Yii::t('bot', 'Administrators who can manage the channel') ?>:<br/>
 <?php foreach ($administrators as $user) : ?>
