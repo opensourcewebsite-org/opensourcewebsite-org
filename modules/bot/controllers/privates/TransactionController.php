@@ -370,8 +370,7 @@ class TransactionController extends Controller
                 []
             );
 
-            if ($chatTip) {
-
+            if (isset($chatTip->id)) {
                 // create new ChatTipWalletTransaction record
                 $chatTipWalletTransaction = new ChatTipWalletTransaction([
                     'chat_tip_id' => $chatTip->id,
@@ -379,21 +378,22 @@ class TransactionController extends Controller
                 ]);
 
                 $chatTipWalletTransaction->save();
+
+                if (in_array($walletTransaction->type, array(WalletTransaction::SEND_TIP_TYPE, WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE))) {
+                    $thisChat = $this->chat;
+                    $module = Yii::$app->getModule('bot');
+                    $module->setChat(Chat::findOne($chatTip->chat_id));
+
+                    $module->runAction('tip/tip-message', [
+                        'chatTipId' => $chatTip->id,
+                    ]);
+
+                    $module->setChat($thisChat);
+                }
+
+                $this->getState()->clearItem(ChatTip::class);
             }
 
-            if ($walletTransaction->type == WalletTransaction::SEND_TIP_TYPE) {
-                $thisChat = $this->chat;
-                $module = Yii::$app->getModule('bot');
-                $module->setChat(Chat::findOne($chatTip->chat_id));
-
-                $response = $module->runAction('tip/tip-message', [
-                    'chatTipId' => $chatTip->id,
-                ]);
-
-                $module->setChat($thisChat);
-            }
-
-            $this->getState()->clearItem(ChatTip::class);
             $this->getState()->clearBackRoute();
 
             return $this->run('wallet/transaction', [

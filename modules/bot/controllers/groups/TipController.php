@@ -94,6 +94,18 @@ class TipController extends Controller
                 return [];
             }
 
+            $walletTransactions = $chatTip->getWalletTransactions()->all();
+
+            foreach ($walletTransactions as $transaction) {
+                if ($transaction->anonymity) {
+                    $actionName = 'group-guest/view';
+                    $actionParams = [
+                        'id' => $chat->id,
+                        'chatTipId' => $chatTip->id,
+                    ];
+                }
+            }
+
             $toUser = $chatTip->toUser;
         }
         // check if $fromUser is a chat member && $fromUser is not tipping himself
@@ -159,12 +171,37 @@ class TipController extends Controller
         // calculate amount according to currency
         $totalAmounts = [];
 
+        $anonymity = false;
+
         foreach ($walletTransactions as $transaction) {
+            if ($transaction->anonymity) {
+                $anonymity = true;
+            }
             if (!array_key_exists($transaction->currency->code, $totalAmounts)) {
                 $totalAmounts[$transaction->currency->code] = $transaction->amount;
             } else {
                 $totalAmounts[$transaction->currency->code] = Number::floatAdd($totalAmounts[$transaction->currency->code], $transaction->amount);
             }
+        }
+
+        $buttons = [
+            [
+                [
+                    'callback_data' => self::createRoute('index', [
+                        'chatTipId' => $chatTip->id,
+                    ]),
+                    'text' => Emoji::ADD . Emoji::GIFT,
+                ],
+            ],
+        ];
+
+        if (!$anonymity) {
+            $buttons[] = [
+                [
+                    'url' => ExternalLink::getBotStartLink($toUser->provider_user_id, $chatTip->chat->getChatId()),
+                    'text' => Yii::t('bot', 'Member View'),
+                ],
+            ];
         }
 
         if ($chatTip->message_id) {
@@ -175,23 +212,9 @@ class TipController extends Controller
                     $this->render('tip-message', [
                         'totalAmounts' => $totalAmounts,
                         'user' => $toUser,
+                        'anonymity' => $anonymity,
                     ]),
-                    [
-                        [
-                            [
-                                'callback_data' => self::createRoute('index', [
-                                    'chatTipId' => $chatTip->id,
-                                ]),
-                                'text' => Emoji::ADD . Emoji::GIFT,
-                            ],
-                        ],
-                        [
-                            [
-                                'url' => ExternalLink::getBotStartLink($toUser->provider_user_id, $chatTip->chat->getChatId()),
-                                'text' => Yii::t('bot', 'Member View'),
-                            ],
-                        ],
-                    ],
+                    $buttons,
                     [
                         'disablePreview' => true,
                         'disableNotification' => true,
@@ -206,23 +229,9 @@ class TipController extends Controller
                 $this->render('tip-message', [
                     'totalAmounts' => $totalAmounts,
                     'user' => $toUser,
+                    'anonymity' => $anonymity,
                 ]),
-                [
-                    [
-                        [
-                            'callback_data' => self::createRoute('index', [
-                                'chatTipId' => $chatTip->id,
-                            ]),
-                            'text' => Emoji::ADD . Emoji::GIFT,
-                        ],
-                    ],
-                    [
-                        [
-                            'url' => ExternalLink::getBotStartLink($toUser->provider_user_id, $chatTip->chat->getChatId()),
-                            'text' => Yii::t('bot', 'Member View'),
-                        ],
-                    ],
-                ],
+                $buttons,
                 [
                     'disablePreview' => true,
                     'disableNotification' => true,

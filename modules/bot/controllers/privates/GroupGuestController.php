@@ -49,35 +49,6 @@ class GroupGuestController extends Controller
         $buttons = [];
 
         if ($chatMember) {
-            $buttons[] = [
-                [
-                    'callback_data' => self::createRoute('remove-membership', [
-                        'id' => $chatMember->id,
-                    ]),
-                    'text' => Yii::t('bot', 'Remove membership'),
-                    'visible' => $chatMember->hasExpiredMembership()
-                ],
-            ];
-
-            $buttons[] = [
-                [
-                    'callback_data' => self::createRoute('input-intro-text', [
-                        'id' => $chatMember->id,
-                    ]),
-                    'text' => Yii::t('bot', 'My public intro'),
-                ],
-            ];
-
-            $buttons[] = [
-                [
-                    'callback_data' => MemberReviewController::createRoute('index', [
-                        'id' => $chatMember->id,
-                    ]),
-                    'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
-                    'visible' => $chatMember->getActiveReviews()->exists(),
-                ],
-            ];
-
             $chatTip = ChatTip::findOne($chatTipId);
 
             if ($chatTip) {
@@ -108,6 +79,35 @@ class GroupGuestController extends Controller
                     ],
                 ];
             }
+
+            $buttons[] = [
+                [
+                    'callback_data' => self::createRoute('remove-membership', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'Remove membership'),
+                    'visible' => $chatMember->hasExpiredMembership()
+                ],
+            ];
+
+            $buttons[] = [
+                [
+                    'callback_data' => self::createRoute('input-intro-text', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'My public intro'),
+                ],
+            ];
+
+            $buttons[] = [
+                [
+                    'callback_data' => MemberReviewController::createRoute('index', [
+                        'id' => $chatMember->id,
+                    ]),
+                    'text' => Yii::t('bot', 'Reviews') . ($chatMember->getPositiveReviewsCount() ? ' ' . Emoji::LIKE . ' ' . $chatMember->getPositiveReviewsCount() : '') . ($chatMember->getNegativeReviewsCount() ? ' ' . Emoji::DISLIKE . ' ' . $chatMember->getNegativeReviewsCount() : ''),
+                    'visible' => $chatMember->getActiveReviews()->exists(),
+                ],
+            ];
         }
 
         if ($chat->faq_status == ChatSetting::STATUS_ON) {
