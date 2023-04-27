@@ -38,11 +38,11 @@ class TipController extends Controller
         }
 
         $fromUser = $this->getTelegramUser();
+        $chat = $this->getTelegramChat();
+        $replyMessage = $this->getMessage()->getReplyToMessage();
 
-        if (!isset($chatTipId)) {
-            $chat = $this->getTelegramChat();
-
-            if ($chat->isGroup() && $replyMessage = $this->getMessage()->getReplyToMessage()) {
+        if (!isset($chatTipId) && $replyMessage) {
+            if ($chat->isGroup()) {
                 $toUser = User::findOne([
                     'provider_user_id' => $replyMessage->getFrom()->getId(),
                 ]);
@@ -81,7 +81,7 @@ class TipController extends Controller
                     'chatTipId' => $chatTip->id,
                 ];
             }
-        } else {
+        } elseif (isset($chatTipId)) {
             $chatTip = ChatTip::findOne($chatTipId);
 
             if (!isset($chatTip)) {
@@ -99,42 +99,45 @@ class TipController extends Controller
         // check if $fromUser is a chat member && $fromUser is not tipping himself
         $fromChatMember = $chat->getChatMemberByUser($fromUser);
 
-        if (isset($toUser) && isset($fromChatMember) && ($toUser->getId()) != $fromUser->getId()) {
-            $this->getState()->setInputRoute(json_encode($chatTip->id));
-
-            $thisChat = $this->getTelegramChat();
-
-            $chat = Chat::findOne([
-                'chat_id' => $fromUser->provider_user_id,
-            ]);
-            // TODO fast fix for Anonymous Administrator
-            if (!isset($chat)) {
-                return [];
-            }
-
-            $module = Yii::$app->getModule('bot');
-            $module->setChat($chat);
-
-            if (!isset($actionName)) {
-                $actionName = 'member/id';
-                $actionParams = [
-                    'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
-                    'chatTipId' => $chatTip->id,
-                ];
-            }
-
-            $module->runAction($actionName, $actionParams);
-
-            $module->setChat($thisChat);
-
-            if ($this->getUpdate()->getCallbackQuery()) {
-                return $this->getResponseBuilder()
-                    ->answerCallbackQuery()
-                    ->build();
-            }
+        if (isset($fromChatMember) && $chat->isGroup() && !isset($replyMessage)) {
+            // tip without reply
+            $actionName = 'tip-queue/index';
+            $actionParams = [
+                'page' => 1,
+                'chatId' => $chat->id,
+            ];
+        } elseif (!isset($toUser) || !isset($fromChatMember) || ($toUser->getId()) == $fromUser->getId()) {
+            return [];
         }
 
-        return [];
+        $privateChat = Chat::findOne([
+            'chat_id' => $fromUser->provider_user_id,
+        ]);
+
+        if (!isset($privateChat)) {
+            return [];
+        }
+
+        $module = Yii::$app->getModule('bot');
+        $module->setChat($privateChat);
+
+        if (!isset($actionName)) {
+            $actionName = 'member/id';
+            $actionParams = [
+                'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
+                'chatTipId' => $chatTip->id,
+            ];
+        }
+
+        $module->runAction($actionName, $actionParams);
+
+        $module->setChat($chat);
+
+        if ($this->getUpdate()->getCallbackQuery()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
     }
 
     /**

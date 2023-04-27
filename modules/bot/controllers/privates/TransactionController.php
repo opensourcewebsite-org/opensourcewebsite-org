@@ -16,7 +16,7 @@ use Yii;
 use yii\data\Pagination;
 
 /**
- * Class WalletController
+ * Class TransactionController
  *
  * @package app\modules\bot\controllers\privates
  */

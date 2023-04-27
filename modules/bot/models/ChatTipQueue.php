@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace app\modules\bot\models;
 
 use app\models\Currency;
+use app\models\traits\FloatAttributeTrait;
 use app\models\WalletTransaction;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -23,11 +25,18 @@ use yii\db\ActiveRecord;
  */
 class ChatTipQueue extends ActiveRecord
 {
+    use FloatAttributeTrait;
+
     public const USER_MIN_COUNT = 1;
     public const USER_MAX_COUNT = 100;
 
     public const USER_MIN_AMOUNT = 0.01;
     public const USER_MAX_AMOUNT = 9999999999999.99;
+
+    public const CHAT_CHECK_FLAG = 1;
+    public const CURRENCY_CHECK_FLAG = 2;
+    public const USER_COUNT_CHECK_FLAG = 4;
+    public const USER_AMOUNT_CHECK_FLAG = 8;
 
     /**
      * {@inheritdoc}
@@ -52,9 +61,13 @@ class ChatTipQueue extends ActiveRecord
     public function rules()
     {
         return [
-            [['chat_id', 'currency_id', 'message_id'], 'integer', 'required'],
+            [['chat_id', 'currency_id'], 'required'],
+            [['chat_id', 'currency_id'], 'integer'],
+            [['message_id'], 'integer'],
             [['user_count'], 'integer', 'min' => self::USER_MIN_COUNT, 'max' => self::USER_MAX_COUNT],
-            [['user_amount'], 'integer', 'min' => self::USER_MIN_AMOUNT, 'max' => self::USER_MAX_AMOUNT],
+            [['user_amount'], 'double', 'min' => self::USER_MIN_AMOUNT, 'max' => self::USER_MAX_AMOUNT],
+            [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
+            [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
         ];
     }
 
@@ -71,6 +84,11 @@ class ChatTipQueue extends ActiveRecord
             'user_count' => Yii::t('app', 'User count'),
             'user_amount' => Yii::t('app', 'User amount'),
         ];
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -105,7 +123,7 @@ class ChatTipQueue extends ActiveRecord
 
     public function getMessageId()
     {
-        return $this->currency_id;
+        return $this->message_id;
     }
 
     public function getUserCount()
@@ -116,5 +134,38 @@ class ChatTipQueue extends ActiveRecord
     public function getUserAmount()
     {
         return $this->user_amount ?? self::USER_MIN_AMOUNT;
+    }
+
+    public function check($flag = self::CHAT_CHECK_FLAG)
+    {
+        if ($flag & self::CHAT_CHECK_FLAG) {
+            $chekItem = $this->getChat()->one();
+            if (empty($chekItem->id)) {
+                return false;
+            }
+        }
+
+        if ($flag & self::CURRENCY_CHECK_FLAG) {
+            $chekItem = $this->getCurrency()->one();
+            if (empty($chekItem->id)) {
+                return false;
+            }
+        }
+
+        if ($flag & self::USER_COUNT_CHECK_FLAG) {
+            $chekItem = $this->user_count;
+            if ($chekItem < self::USER_MIN_COUNT || $chekItem > self::USER_MAX_COUNT) {
+                return false;
+            }
+        }
+
+        if ($flag & self::USER_AMOUNT_CHECK_FLAG) {
+            $chekItem = $this->user_amount;
+            if ($chekItem < self::USER_MIN_AMOUNT || $chekItem > self::USER_MAX_AMOUNT) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

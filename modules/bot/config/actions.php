@@ -96,4 +96,8 @@ return [
     'input_amount',
     'confirmation',
     'set_to_user',
+    'set_user_count',
+    'set_user_amount',
+    'control',
+    'take_tip',
 ];

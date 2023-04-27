@@ -34,8 +34,12 @@ class ChatTipQueueUser extends ActiveRecord
     public function rules()
     {
         return [
-            [['queue_id', 'user_id'], 'integer', 'required'],
+            [['queue_id', 'user_id'], 'required'],
+            [['queue_id', 'user_id'], 'integer'],
+            [['queue_id', 'user_id'], 'unique', 'targetAttribute' => ['queue_id', 'user_id']],
             [['transaction_id'], 'integer'],
+            [['queue_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatTipQueue::class, 'targetAttribute' => ['queue_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -50,6 +54,11 @@ class ChatTipQueueUser extends ActiveRecord
             'user_id' => Yii::t('bot', 'User ID'),
             'transaction_id' => Yii::t('app', 'Transaction'),
         ];
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
