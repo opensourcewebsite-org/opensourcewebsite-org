@@ -560,6 +560,7 @@ return [
     'Active tags will be automatically added' => 'Активные теги будут добавлены автоматически',
     'Add the bot to group or channel' => 'Добавить бота в группу или канал',
     'Public link to view information about the group' => 'Публичная ссылка для просмотра информации о группе',
+    'Public link to view information about the channel' => 'Публичная ссылка для просмотра информации о канале',
     'Your last message in the group was deleted because' => 'Ваше последнее сообщение в группе было удалено потому что',
     'Your message cannot be sent to the group because' => 'Ваше сообщение не может быть отправлено в группу потому что',
     'The message was posted as a reply to another member\'s message' => 'Сообщение было опубликовано как ответ на сообщение другого участника',
