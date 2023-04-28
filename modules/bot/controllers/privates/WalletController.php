@@ -110,6 +110,8 @@ class WalletController extends Controller
             'id' => $wallet->getCurrencyId(),
         ]));
 
+        $p2pExchangeLink = Yii::$app->settings->link_p2p_exchange;
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
@@ -130,6 +132,13 @@ class WalletController extends Controller
                             ]),
                             'text' => Yii::t('bot', 'Transactions'),
                             'visible' => $wallet->getTransactions()->exists(),
+                        ],
+                    ],
+                    [
+                        [
+                            'url' => $p2pExchangeLink,
+                            'text' => Yii::t('bot', 'P2P Exchange'),
+                            'visible' => (bool)$p2pExchangeLink,
                         ],
                     ],
                     [

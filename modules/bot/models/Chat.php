@@ -493,6 +493,17 @@ class Chat extends ActiveRecord
         return false;
     }
 
+    public function isFaqOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->faq_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getLink()
     {
         return ExternalLink::getBotStartLink($this->getUsername() ?: $this->getChatId());

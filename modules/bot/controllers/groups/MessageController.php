@@ -384,7 +384,7 @@ class MessageController extends Controller
             }
 
             if (!$deleteMessage) {
-                if ($chat->faq_status == ChatSetting::STATUS_ON) {
+                if ($chat->isFaqOn()) {
                     if (($text = $this->getMessage()->getText()) !== null) {
                         $question = $chat->getQuestionPhrases()
                             ->where([

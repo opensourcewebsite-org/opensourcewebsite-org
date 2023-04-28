@@ -32,7 +32,7 @@ class FaqController extends Controller
     {
         $chat = $this->getTelegramChat();
 
-        if ($chat->faq_status == ChatSetting::STATUS_ON) {
+        if ($chat->isFaqOn()) {
             $question = $chat->getQuestionPhrases()
                 ->where([
                     'id' => $questionId,

@@ -25,14 +25,8 @@ use yii\helpers\ArrayHelper;
  */
 class ResponseBuilder
 {
-    /**
-     * @var null
-     */
     private $command = null;
 
-    /**
-     * @var null
-     */
     protected $chatId = null;
 
     public function __construct(string $chatId = null)

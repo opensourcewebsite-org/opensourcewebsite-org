@@ -104,7 +104,7 @@ class Controller extends \yii\web\Controller
 
     // TODO refactoring, maybe remove
     /**
-     * @return \TelegramBot\Api\Types\Message
+     * @return \app\modules\bot\components\api\Types\Message
      */
     public function getMessage()
     {
