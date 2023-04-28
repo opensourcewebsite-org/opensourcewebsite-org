@@ -110,13 +110,13 @@ class GroupGuestController extends Controller
             ];
         }
 
-        if ($chat->faq_status == ChatSetting::STATUS_ON) {
+        if ($chat->isFaqOn()) {
             $buttons[] = [
                 [
                     'callback_data' => GroupGuestFaqController::createRoute('word-list', [
                         'chatId' => $chat->id,
                     ]),
-                    'text' => Yii::t('bot', 'FAQ'),
+                    'text' => Yii::t('bot', 'Help Center'),
                 ],
             ];
         }

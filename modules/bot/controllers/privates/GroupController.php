@@ -215,7 +215,7 @@ class GroupController extends Controller
                             'callback_data' => GroupFaqController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->faq_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'FAQ'),
+                            'text' => ($chat->isFaqOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Help Center'),
                         ],
                     ],
                     [

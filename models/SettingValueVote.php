@@ -27,7 +27,7 @@ class SettingValueVote extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'setting_value_vote';
+        return '{{%setting_value_vote}}';
     }
 
     /**
@@ -38,9 +38,9 @@ class SettingValueVote extends \yii\db\ActiveRecord
         return [
             [['user_id', 'setting_value_id', 'setting_id'], 'required'],
             [['user_id', 'setting_value_id', 'setting_id', 'created_at'], 'integer'],
-            [['setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::className(), 'targetAttribute' => ['setting_id' => 'id']],
-            [['setting_value_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingValue::className(), 'targetAttribute' => ['setting_value_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::class, 'targetAttribute' => ['setting_id' => 'id']],
+            [['setting_value_id'], 'exist', 'skipOnError' => true, 'targetClass' => SettingValue::class, 'targetAttribute' => ['setting_value_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -73,7 +73,7 @@ class SettingValueVote extends \yii\db\ActiveRecord
      */
     public function getSetting()
     {
-        return $this->hasOne(Setting::className(), ['id' => 'setting_id']);
+        return $this->hasOne(Setting::class, ['id' => 'setting_id']);
     }
 
     /**
@@ -81,7 +81,7 @@ class SettingValueVote extends \yii\db\ActiveRecord
      */
     public function getSettingValue()
     {
-        return $this->hasOne(SettingValue::className(), ['id' => 'setting_value_id']);
+        return $this->hasOne(SettingValue::class, ['id' => 'setting_value_id']);
     }
 
     /**
@@ -89,7 +89,7 @@ class SettingValueVote extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**

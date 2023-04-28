@@ -56,6 +56,14 @@ class GroupGuestFaqController extends Controller
                 ->build();
         }
 
+        $chatMember = $chat->getChatMemberByUserId();
+
+        if (!$chat->hasUsername() && !$chatMember) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
         return $this->run('group-guest/view', [
             'id' => $chat->id,
         ]);

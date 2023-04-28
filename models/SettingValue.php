@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\components\Converter;
 use app\models\queries\SettingValueQuery;
+use yii\validators\UrlValidator;
 
 /**
  * This is the model class for table "setting_value".
@@ -28,7 +29,7 @@ class SettingValue extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'setting_value';
+        return '{{%setting_value}}';
     }
 
     /**
@@ -41,7 +42,7 @@ class SettingValue extends \yii\db\ActiveRecord
             [['setting_id'], 'integer'],
             ['value', 'trim'],
             ['value', 'validateValue'],
-            [['setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::className(), 'targetAttribute' => ['setting_id' => 'id']],
+            [['setting_id'], 'exist', 'skipOnError' => true, 'targetClass' => Setting::class, 'targetAttribute' => ['setting_id' => 'id']],
         ];
     }
 
@@ -79,6 +80,13 @@ class SettingValue extends \yii\db\ActiveRecord
                         $this->value = floatval($this->value);
                         if (!is_float($this->value)) {
                             $this->addError('value', 'Value must be a number.');
+                        }
+                    break;
+                    case 'url':
+                        $validator = new UrlValidator();
+
+                        if (!$validator->validate($this->value)) {
+                            $this->addError('value', 'Value must be a URL.');
                         }
                     break;
                 }
@@ -125,7 +133,7 @@ class SettingValue extends \yii\db\ActiveRecord
      */
     public function getSetting()
     {
-        return $this->hasOne(Setting::className(), ['id' => 'setting_id']);
+        return $this->hasOne(Setting::class, ['id' => 'setting_id']);
     }
 
     /**
@@ -133,7 +141,7 @@ class SettingValue extends \yii\db\ActiveRecord
      */
     public function getSettingValueVotes()
     {
-        return $this->hasMany(SettingValueVote::className(), ['setting_value_id' => 'id']);
+        return $this->hasMany(SettingValueVote::class, ['setting_value_id' => 'id']);
     }
 
     /**

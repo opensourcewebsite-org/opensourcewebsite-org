@@ -229,6 +229,9 @@ class Setting extends ActiveRecord
             'default' => 1000,
             'min' => 1,
         ],
+        'link_p2p_exchange' => [
+            'type' => 'url',
+        ],
     ];
 
     /**
@@ -236,7 +239,7 @@ class Setting extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'setting';
+        return '{{%setting}}';
     }
 
     /**
@@ -252,8 +255,8 @@ class Setting extends ActiveRecord
             [
                 'key',
                 'match',
-                'pattern' => '/(?:^(?:[A-Za-z][_]{0,1})*[A-Za-z]$)/i',
-                'message' => 'Key can contain only letters and _ symbols.',
+                'pattern' => '/(?:^(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]$)/i',
+                'message' => 'Key can contain only letters, numbers and _ symbols.',
             ],
 //            ['key', 'validateKey'],
             [['value'], 'safe'],
@@ -283,7 +286,7 @@ class Setting extends ActiveRecord
      */
     public function getSettingValues()
     {
-        return $this->hasMany(SettingValue::className(), ['setting_id' => 'id']);
+        return $this->hasMany(SettingValue::class, ['setting_id' => 'id']);
     }
 
     /**
@@ -291,7 +294,7 @@ class Setting extends ActiveRecord
      */
     public function getSettingValueVotes()
     {
-        return $this->hasMany(SettingValueVote::className(), ['setting_id' => 'id']);
+        return $this->hasMany(SettingValueVote::class, ['setting_id' => 'id']);
     }
 
     /**
@@ -370,6 +373,7 @@ class Setting extends ActiveRecord
     // TODO remove old code
     public static function getValue($key)
     {
+        Yii::warning(1);
         $setting = static::findOne(['key' => $key]);
 
         if (!$setting && isset(self::$settings[$key]['default'])) {
@@ -389,6 +393,7 @@ class Setting extends ActiveRecord
 
     public function getValidationRules()
     {
+        Yii::warning(2);
         return self::$settings[$this->key] ?? null;
     }
 
