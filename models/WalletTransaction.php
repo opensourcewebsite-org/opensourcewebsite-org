@@ -43,6 +43,7 @@ class WalletTransaction extends ActiveRecord
     public const SEND_TIP_TYPE = 1;
     public const SEND_MONEY_TYPE = 2;
     public const SEND_ANONYMOUS_ADMIN_TIP_TYPE = 3;
+    public const TIP_WITHOUT_REPLY_TYPE = 4;
 
     public const FROM_USER_CHECK_FLAG = 1;
     public const TO_USER_CHECK_FLAG = 2;

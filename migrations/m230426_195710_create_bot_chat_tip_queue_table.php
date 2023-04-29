@@ -18,7 +18,8 @@ class m230426_195710_create_bot_chat_tip_queue_table extends Migration
             'chat_id' => $this->integer()->unsigned()->notNull(),
             'currency_id' => $this->integer()->unsigned()->notNull(),
             'message_id' => $this->integer()->unsigned(),
-            'user_count' => $this->integer()->unsigned()->defaultValue(1),
+            'state' => $this->integer()->unsigned()->notNull()->defaultValue(0),
+            'user_count' => $this->integer()->unsigned()->notNull()->defaultValue(1),
             'user_amount' => $this->decimal(15, 2)->notNull()->defaultValue(0),
         ]);
 

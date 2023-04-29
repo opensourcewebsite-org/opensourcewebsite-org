@@ -105,4 +105,19 @@ class ChatTipQueueUser extends ActiveRecord
     {
         return $this->transaction_id;
     }
+
+    public static function getActiveUsers()
+    {
+        return ChatTipQueueUser::findBySql(
+            'SELECT i.*
+            FROM bot_chat_tip_queue_user i
+            JOIN bot_chat_tip_queue q ON q.id = i.queue_id AND q.state = :state
+            JOIN LATERAL (
+			    SELECT COUNT(*) AS cnt FROM bot_chat_tip_queue_user u WHERE u.queue_id = q.id AND u.transaction_id > 0
+            ) u ON u.cnt < q.user_count
+            WHERE i.transaction_id IS NULL
+            ORDER BY i.id',
+            [':state' => ChatTipQueue::OPEN_STATE]
+        );
+    }
 }

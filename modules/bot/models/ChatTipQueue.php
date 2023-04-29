@@ -6,7 +6,6 @@ namespace app\modules\bot\models;
 
 use app\models\Currency;
 use app\models\traits\FloatAttributeTrait;
-use app\models\WalletTransaction;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -39,6 +38,11 @@ class ChatTipQueue extends ActiveRecord
     public const USER_COUNT_CHECK_FLAG = 8;
     public const USER_AMOUNT_CHECK_FLAG = 16;
 
+    public const OPEN_STATE = 0;
+    public const CLOSED_STATE = 1;
+
+    public const MUTEX_KEY = 'CHAT_TIP_QUEUE_MUTEX_KEY';
+
     /**
      * {@inheritdoc}
      */
@@ -53,6 +57,7 @@ class ChatTipQueue extends ActiveRecord
         if ($this->isNewRecord) {
             $this->user_count = $this->user_count ?? self::USER_MIN_COUNT;
             $this->user_amount = $this->user_amount ?? self::USER_MIN_AMOUNT;
+            $this->state = $this->state ?? self::OPEN_STATE;
         }
     }
 
@@ -65,8 +70,12 @@ class ChatTipQueue extends ActiveRecord
             [['chat_id', 'currency_id', 'user_id'], 'required'],
             [['chat_id', 'currency_id', 'user_id'], 'integer'],
             [['message_id'], 'integer'],
+            [['state'], 'integer'],
+            [['state'], 'default', 'value' => self::OPEN_STATE],
             [['user_count'], 'integer', 'min' => self::USER_MIN_COUNT, 'max' => self::USER_MAX_COUNT],
+            [['user_count'], 'default', 'value' => self::USER_MIN_COUNT],
             [['user_amount'], 'double', 'min' => self::USER_MIN_AMOUNT, 'max' => self::USER_MAX_AMOUNT],
+            [['user_amount'], 'default', 'value' => self::USER_MIN_AMOUNT],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['chat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Chat::class, 'targetAttribute' => ['chat_id' => 'id']],
             [['currency_id'], 'exist', 'skipOnError' => true, 'targetClass' => Currency::class, 'targetAttribute' => ['currency_id' => 'id']],
@@ -153,6 +162,11 @@ class ChatTipQueue extends ActiveRecord
         return $this->user_amount ?? self::USER_MIN_AMOUNT;
     }
 
+    public function getState()
+    {
+        return $this->state ?? self::OPEN_STATE;
+    }
+
     public function check($flag = self::USER_CHECK_FLAG | self::CHAT_CHECK_FLAG)
     {
         if ($flag & self::USER_CHECK_FLAG) {
@@ -191,5 +205,22 @@ class ChatTipQueue extends ActiveRecord
         }
 
         return true;
+    }
+
+    public function getQueueUsers(): ActiveQuery
+    {
+        return $this->hasMany(ChatTipQueueUser::class, ['queue_id' => 'id']);
+    }
+
+    public function close()
+    {
+        $this->state = self::CLOSED_STATE;
+        $this->save();
+    }
+
+    public function open()
+    {
+        $this->state = self::OPEN_STATE;
+        $this->save();
     }
 }
