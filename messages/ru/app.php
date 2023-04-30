@@ -117,4 +117,5 @@ return [
     'Tip sending transaction' => 'Отправка чаевых',
     'Money sending transaction' => 'Отправка денег',
     'Tip sending to anonymous admin transaction' => 'Отправка чаевых анонимному администратору',
+    'Tip without reply transaction' => 'Отправка подарочных чаевых',
 ];

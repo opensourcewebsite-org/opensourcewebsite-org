@@ -3,6 +3,7 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\helpers\Number;
+use app\models\traits\FloatAttributeTrait;
 use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
@@ -22,6 +23,7 @@ use Yii;
  */
 class TipQueueController extends Controller
 {
+    use FloatAttributeTrait;
     /**
      * @param int $queueId ChatTipQueue->id
      *
@@ -33,6 +35,19 @@ class TipQueueController extends Controller
 
         if (!isset($chatTipQueue)) {
             return [];
+        }
+
+        $buttonVisible = true;
+
+        if ($chatTipQueue->state == ChatTipQueue::CLOSED_STATE) {
+            $buttonVisible = false;
+        }
+
+        $queueUsers = $chatTipQueue->getQueueUsers();
+        $totalUserCount = $queueUsers->count();
+
+        if ($totalUserCount >= $chatTipQueue->userCount) {
+            $buttonVisible = false;
         }
 
         if ($chatTipQueue->message_id) {
@@ -50,6 +65,7 @@ class TipQueueController extends Controller
                                     'queueId' => $chatTipQueue->id,
                                 ]),
                                 'text' => Emoji::GIFT,
+                                'visible' => $buttonVisible,
                             ],
                         ],
                     ],
@@ -74,6 +90,7 @@ class TipQueueController extends Controller
                                 'queueId' => $chatTipQueue->id,
                             ]),
                             'text' => Emoji::GIFT,
+                            'visible' => $chatTipQueue->state == ChatTipQueue::OPEN_STATE,
                         ],
                     ],
                 ],
@@ -180,14 +197,12 @@ class TipQueueController extends Controller
             $totalUserCount = $queueUsers->count();
 
             if ($totalUserCount >= $queue->userCount) {
-                $queue->close();
-                $activeUserCount = $queueUsers->where(['transaction' => null])->count();
-                if ($activeUserCount) {
-                    updateMessage($queue);
-                } else {
-                    $this->getBotApi()->deleteMessage($queue->chat_id, $queue->message_id);
+                $processedUserCount = $queueUsers->where(['>', 'transaction_id', '0'])->count();
+                if ($processedUserCount >= $queue->userCount) {
+                    goto CLOSE_QUEUE;
                 }
-                continue;
+
+                updateMessage($queue);
             }
 
             $walletTransaction = new WalletTransaction([
@@ -202,21 +217,49 @@ class TipQueueController extends Controller
 
             if (!$walletTransactionId) {
                 $wallet = $queue->user->globalUser->getWalletByCurrencyId($queue->getCurrencyId());
-                if ($wallet->hasAmount($queue->userAmount)) {
-                    $user->delete();
-                    $queue->open();
-                    updateMessage($queue);
-                    continue;
+                if (!$wallet->hasAmount($queue->userAmount)) {
+                    goto CLOSE_QUEUE;
                 }
-                $queue->close();
-                $this->getBotApi()->deleteMessage($queue->chat_id, $queue->message_id);
+
+                $user->delete();
+                updateMessage($queue);
                 continue;
             }
 
             $user->transaction_id = $walletTransactionId;
             $user->save();
 
+            $walletTransaction->toUser->botUser->sendMessage(
+                $this->render('receiver-privates-success', [
+                    'walletTransaction' => $walletTransaction,
+                    'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
+                ]),
+                []
+            );
+
+            $processedUserCount = $queueUsers->where(['>', 'transaction_id', '0'])->count();
+
+            if ($processedUserCount >= $queue->userCount) {
+                goto CLOSE_QUEUE;
+            }
+
+            $wallet = $queue->user->globalUser->getWalletByCurrencyId($queue->getCurrencyId());
+            if (!$wallet->hasAmount($queue->userAmount)) {
+                goto CLOSE_QUEUE;
+            }
+
             updateMessage($queue);
+
+            continue;
+
+            CLOSE_QUEUE:
+
+            $queue->close();
+            updateMessage($queue);
+
+            if ($queueUsers->where(['>', 'transaction_id', '0'])->count() < 1) {
+                $this->getBotApi()->deleteMessage($queue->chat->getChatId(), $queue->getMessageId());
+            }
         }
 
         Yii::$app->mutex->release(ChatTipQueue::MUTEX_KEY);

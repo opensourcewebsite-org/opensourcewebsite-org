@@ -105,6 +105,7 @@ class WalletTransaction extends ActiveRecord
             1 => Yii::t('app', 'Tip sending transaction'),
             2 => Yii::t('app', 'Money sending transaction'),
             3 => Yii::t('app', 'Tip sending to anonymous admin transaction'),
+            4 => Yii::t('app', 'Tip without reply transaction'),
         ];
     }
 

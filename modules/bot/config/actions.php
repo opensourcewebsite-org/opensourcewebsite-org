@@ -98,6 +98,6 @@ return [
     'set_to_user',
     'set_user_count',
     'set_user_amount',
-    'control',
+    'create_queue',
     'take_tip',
 ];

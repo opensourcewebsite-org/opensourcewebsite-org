@@ -217,10 +217,4 @@ class ChatTipQueue extends ActiveRecord
         $this->state = self::CLOSED_STATE;
         $this->save();
     }
-
-    public function open()
-    {
-        $this->state = self::OPEN_STATE;
-        $this->save();
-    }
 }

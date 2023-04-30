@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\components\Converter;
 use app\components\helpers\Html;
+use app\helpers\Number;
 use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
 use app\models\queries\WalletQuery;
@@ -1278,7 +1279,7 @@ class User extends ActiveRecord implements IdentityInterface
                 $fromUserWallet = $this->getWalletByCurrencyId($walletTransaction->currency_id);
                 $toUserWallet = $walletTransaction->toUser->getWalletByCurrencyId($walletTransaction->currency_id);
 
-                if (($fromUserWallet->amount - $walletTransaction->amount - $walletTransaction->fee) < 0) {
+                if (Number::floatSub($fromUserWallet->amount, Number::floatAdd($walletTransaction->amount, $walletTransaction->fee)) < 0) {
                     return false;
                 }
 

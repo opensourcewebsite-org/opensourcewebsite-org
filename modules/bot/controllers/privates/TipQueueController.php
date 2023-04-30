@@ -258,7 +258,7 @@ class TipQueueController extends Controller
                 [
                     [
                         [
-                            'callback_data' => self::createRoute('control'),
+                            'callback_data' => self::createRoute('create-queue'),
                             'text' => Yii::t('bot', 'CONFIRM'),
                         ],
                     ],
@@ -280,7 +280,7 @@ class TipQueueController extends Controller
     /**
      * @return array
      */
-    public function actionControl()
+    public function actionCreateQueue()
     {
         $chatTipQueue = $this->getState()->getItem(ChatTipQueue::class);
 
@@ -292,24 +292,38 @@ class TipQueueController extends Controller
 
         $chatTipQueue->save();
 
-        if (isset($chatTipQueue->id)) {
-            $this->getState()->clearItem(ChatTipQueue::class);
-
-            $thisChat = $this->chat;
-            $module = Yii::$app->getModule('bot');
-            $module->setChat(Chat::findOne($chatTipQueue->chat_id));
-
-            $response = $module->runAction('tip-queue/tip-message', [
-                'queueId' => $chatTipQueue->id,
-            ]);
-
-            $module->setChat($thisChat);
-
-            // check response
+        if (!isset($chatTipQueue->id)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
+        $this->getState()->clearItem(ChatTipQueue::class);
+
+        $thisChat = $this->chat;
+        $module = Yii::$app->getModule('bot');
+        $module->setChat(Chat::findOne($chatTipQueue->chat_id));
+
+        $response = $module->runAction('tip-queue/tip-message', [
+            'queueId' => $chatTipQueue->id,
+        ]);
+
+        $module->setChat($thisChat);
+
         return $this->getResponseBuilder()
-            ->answerCallbackQuery()
+            ->editMessageTextOrSendMessage(
+                $this->render('success', [
+                    'chatTipQueue' => $chatTipQueue,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
             ->build();
     }
 }
