@@ -232,6 +232,7 @@ class TipQueueController extends Controller
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
                     'walletTransaction' => $walletTransaction,
+                    'queue' => $queue,
                     'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
                 ]),
                 []
