@@ -14,7 +14,9 @@ use app\models\WalletTransaction;
 <?php else: ?>
 <?= $walletTransaction->toUser->botUser->getFullLink() ?><br />
 <?php endif; ?>
-<?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?>
+<?php if ($walletTransaction->hasTypeLabel()): ?>
+<?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <br/>
+<?php endif; ?>
 <?= Yii::t('bot', 'Amount') ?>: <?= $walletTransaction->getAmount() ?> <?= $walletTransaction->currency->code ?><br/>
 <?= Yii::t('bot', 'Fee') ?>: <?= $walletTransaction->fee ?> <?= $walletTransaction->currency->code ?><br/>

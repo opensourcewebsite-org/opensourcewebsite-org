@@ -98,16 +98,23 @@ class WalletTransaction extends ActiveRecord
         return static::getTypeLabels()[(int)$this->type];
     }
 
+    public function hasTypeLabel(): string
+    {
+        return !empty(static::getTypeLabels()[(int)$this->type]);
+    }
+
     public static function getTypeLabels(): array
     {
         return [
-            0 => Yii::t('app', 'Wallet transaction'),
-            1 => Yii::t('app', 'Tip sending transaction'),
-            2 => Yii::t('app', 'Money sending transaction'),
+            0 => '',
+            1 => Yii::t('app', 'Group Thanks'),
+            2 => '',
             3 => Yii::t('app', 'Tip sending to anonymous admin transaction'),
             4 => Yii::t('app', 'Tip without reply transaction'),
         ];
     }
+
+
 
     /**
      * {@inheritdoc}
@@ -230,29 +237,29 @@ class WalletTransaction extends ActiveRecord
     public function check($flag = self::FROM_USER_CHECK_FLAG | self::CURRENCY_CHECK_FLAG)
     {
         if ($flag & self::FROM_USER_CHECK_FLAG) {
-            $chekItem = $this->getFromUser()->one();
-            if (empty($chekItem->id)) {
+            $checkItem = $this->getFromUser()->one();
+            if (empty($checkItem->id)) {
                 return false;
             }
         }
 
         if ($flag & self::TO_USER_CHECK_FLAG) {
-            $chekItem = $this->getToUser()->one();
-            if (empty($chekItem->id)) {
+            $checkItem = $this->getToUser()->one();
+            if (empty($checkItem->id)) {
                 return false;
             }
         }
 
         if ($flag & self::CURRENCY_CHECK_FLAG) {
-            $chekItem = $this->getCurrency()->one();
-            if (empty($chekItem->id)) {
+            $checkItem = $this->getCurrency()->one();
+            if (empty($checkItem->id)) {
                 return false;
             }
         }
 
         if ($flag & self::AMOUNT_CHECK_FLAG) {
-            $chekItem = $this->getAmountPlusFee();
-            if ($chekItem < (self::MIN_AMOUNT + $this->getFee())) {
+            $checkItem = $this->getAmountPlusFee();
+            if ($checkItem < (self::MIN_AMOUNT + $this->getFee())) {
                 return false;
             }
         }

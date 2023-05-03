@@ -100,4 +100,5 @@ return [
     'set_user_amount',
     'create_queue',
     'take_tip',
+    'select-wallet',
 ];

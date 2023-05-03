@@ -14,5 +14,5 @@ use app\modules\bot\models\ChatTipQueue;
 <?php endif; ?>
 <br/>
 <?= Yii::t('bot', 'Gift size') ?>: <?= $chatTipQueue->userAmount; ?> <?= $chatTipQueue->currency->code; ?><br/>
-<?= Yii::t('bot', 'Spots') ?>: <?= $chatTipQueue->getQueueUsers()->where(['>', 'transaction_id', '0'])->count(); ?>/<?= $chatTipQueue->userCount ?><br/>
-<?= Yii::t('bot', 'Total paid') ?>: <?= Number::floatMul($chatTipQueue->getQueueUsers()->where(['>', 'transaction_id', '0'])->count(), $chatTipQueue->userAmount); ?> <?= $chatTipQueue->currency->code; ?><br/>
+<?= Yii::t('bot', 'Spots') ?>: <?= $chatTipQueue->getQueueProcessedUsersCount(); ?>/<?= $chatTipQueue->userCount ?><br/>
+<?= Yii::t('bot', 'Total paid') ?>: <?= $chatTipQueue->getQueuePaidSum(); ?> <?= $chatTipQueue->currency->code; ?><br/>

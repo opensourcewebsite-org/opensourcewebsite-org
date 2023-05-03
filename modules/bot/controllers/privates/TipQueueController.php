@@ -24,14 +24,55 @@ use yii\data\Pagination;
  */
 class TipQueueController extends Controller
 {
+    public function actionIndex($chatId = null)
+    {
+        $this->getState()->clearInputRoute();
+
+        $chat = Chat::findOne($chatId);
+
+        if (!isset($chat)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('select-wallet', [
+                                'page' => 1,
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'CONTINUE'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
+    }
+
     /**
      * @param int $page
      *
      * @return array
      */
-    public function actionIndex($page = 1, $chatId = null)
+    public function actionSelectWallet($page = 1, $chatId = null)
     {
-        $this->getState()->clearInputRoute();
+        $this->getState()->setInputRoute(self::createRoute('select-wallet', [
+            'page' => $page,
+            'chatId' => $chatId,
+        ]));
 
         $chat = Chat::findOne($chatId);
 
@@ -87,6 +128,13 @@ class TipQueueController extends Controller
         }
 
         $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', [
+                    'page' => 1,
+                    'chatId' => $chatId,
+                ]),
+                'text' => Emoji::BACK,
+            ],
             [
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
@@ -155,8 +203,7 @@ class TipQueueController extends Controller
 
         $buttons[] = [
             [
-                'callback_data' => self::createRoute('index', [
-                    'page' => 1,
+                'callback_data' => self::createRoute('select-wallet', [
                     'chatId' => $chatId,
                 ]),
                 'text' => Emoji::BACK,

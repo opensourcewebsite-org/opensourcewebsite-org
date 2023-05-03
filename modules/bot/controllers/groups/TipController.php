@@ -116,7 +116,6 @@ class TipController extends Controller
             // tip without reply
             $actionName = 'tip-queue/index';
             $actionParams = [
-                'page' => 1,
                 'chatId' => $chat->id,
             ];
         } elseif (!isset($toUser) || !isset($fromChatMember) || ($toUser->getId()) == $fromUser->getId()) {

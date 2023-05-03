@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\bot\models;
 
+use app\helpers\Number;
 use app\models\Currency;
 use app\models\traits\FloatAttributeTrait;
 use Yii;
@@ -170,36 +171,36 @@ class ChatTipQueue extends ActiveRecord
     public function check($flag = self::USER_CHECK_FLAG | self::CHAT_CHECK_FLAG)
     {
         if ($flag & self::USER_CHECK_FLAG) {
-            $chekItem = $this->getUser()->one();
-            if (empty($chekItem->id)) {
+            $checkItem = $this->getUser()->one();
+            if (empty($checkItem->id)) {
                 return false;
             }
         }
 
         if ($flag & self::CHAT_CHECK_FLAG) {
-            $chekItem = $this->getChat()->one();
-            if (empty($chekItem->id)) {
+            $checkItem = $this->getChat()->one();
+            if (empty($checkItem->id)) {
                 return false;
             }
         }
 
         if ($flag & self::CURRENCY_CHECK_FLAG) {
-            $chekItem = $this->getCurrency()->one();
-            if (empty($chekItem->id)) {
+            $checkItem = $this->getCurrency()->one();
+            if (empty($checkItem->id)) {
                 return false;
             }
         }
 
         if ($flag & self::USER_COUNT_CHECK_FLAG) {
-            $chekItem = $this->user_count;
-            if ($chekItem < self::USER_MIN_COUNT || $chekItem > self::USER_MAX_COUNT) {
+            $checkItem = $this->user_count;
+            if ($checkItem < self::USER_MIN_COUNT || $checkItem > self::USER_MAX_COUNT) {
                 return false;
             }
         }
 
         if ($flag & self::USER_AMOUNT_CHECK_FLAG) {
-            $chekItem = $this->user_amount;
-            if ($chekItem < self::USER_MIN_AMOUNT || $chekItem > self::USER_MAX_AMOUNT) {
+            $checkItem = $this->user_amount;
+            if ($checkItem < self::USER_MIN_AMOUNT || $checkItem > self::USER_MAX_AMOUNT) {
                 return false;
             }
         }
@@ -210,6 +211,16 @@ class ChatTipQueue extends ActiveRecord
     public function getQueueUsers(): ActiveQuery
     {
         return $this->hasMany(ChatTipQueueUser::class, ['queue_id' => 'id']);
+    }
+
+    public function getQueueProcessedUsersCount()
+    {
+        return $this->getQueueUsers()->where(['>', 'transaction_id', '0'])->count();
+    }
+
+    public function getQueuePaidSum()
+    {
+        return Number::floatMul($this->getQueueProcessedUsersCount(), $this->userAmount);
     }
 
     public function close()
