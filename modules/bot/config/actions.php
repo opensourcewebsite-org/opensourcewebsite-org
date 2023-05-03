@@ -96,4 +96,6 @@ return [
     'input_amount',
     'confirmation',
     'set_to_user',
+    'new_chat_members',
+    'left_chat_members',
 ];

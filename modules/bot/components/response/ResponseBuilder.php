@@ -280,14 +280,15 @@ class ResponseBuilder
         array $optionalParams,
         array $optionalParamsFilter
     ): array {
-        foreach ($replyMarkup as $key1 => $array1) {
-            foreach ($array1 as $key2 => $array2) {
-                // remove all items with visible = 0
-                if (isset($array2['visible'])) {
-                    if ($array2['visible']) {
+        foreach ($replyMarkup as $key1 => $rowButtons) {
+            foreach ($rowButtons as $key2 => $button) {
+                // remove all buttons with visible = 0
+                if (isset($button['visible'])) {
+                    if ($button['visible']) {
                         unset($replyMarkup[$key1][$key2]['visible']);
                     } else {
-                        array_splice($replyMarkup[$key1], $key2, 1);
+                        unset($replyMarkup[$key1][$key2]);
+                        unset($rowButtons[$key2]);
                     }
                 }
             }
