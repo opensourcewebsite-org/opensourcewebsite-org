@@ -49,4 +49,5 @@ class Emoji
     public const LIST = '📖';
     public const GIFT = '🎁';
     public const EYE = '👁‍🗨';
+    public const THANKS = '🙏';
 }

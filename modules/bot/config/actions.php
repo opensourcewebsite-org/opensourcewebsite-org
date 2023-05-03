@@ -96,9 +96,11 @@ return [
     'input_amount',
     'confirmation',
     'set_to_user',
+    'new_chat_members',
+    'left_chat_members',
     'set_user_count',
     'set_user_amount',
     'create_queue',
     'take_tip',
-    'select-wallet',
+    'select_wallet',
 ];
