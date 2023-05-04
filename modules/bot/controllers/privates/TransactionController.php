@@ -354,7 +354,7 @@ class TransactionController extends Controller
                 ->build();
         }
 
-        $walletTransactionId = $this->getGlobalUser()->createTransaction($walletTransaction);
+        $walletTransactionId = $walletTransaction->createTransaction();
 
         if ($walletTransactionId) {
             $this->getState()->clearItem(WalletTransaction::class);

@@ -213,7 +213,7 @@ class TipQueueController extends Controller
                 'type' => WalletTransaction::TIP_WITHOUT_REPLY_TYPE,
             ]);
 
-            $walletTransactionId = $queue->user->globalUser->createTransaction($walletTransaction);
+            $walletTransactionId = $walletTransaction->createTransaction();
 
             if (!$walletTransactionId) {
                 $wallet = $queue->user->globalUser->getWalletByCurrencyId($queue->getCurrencyId());

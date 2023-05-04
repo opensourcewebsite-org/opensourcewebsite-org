@@ -307,7 +307,7 @@ class SendGroupTipController extends Controller
         $toUser = $chatTip->toUser;
         $currency = $walletTransaction->currency;
 
-        if (!$this->getGlobalUser()->createTransaction($walletTransaction)) {
+        if (!$walletTransaction->createTransaction()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

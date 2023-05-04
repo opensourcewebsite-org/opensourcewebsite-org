@@ -77,13 +77,13 @@ class WalletTest extends \Codeception\Test\Unit
         ]);
 
         $walletTransaction->amount = $sourceWalletAmount;
-        expect("Cannot make transaction with amoun equal source wallet amount, because there is commission", $sourceUser->createTransaction($walletTransaction))->false();
+        expect("Cannot make transaction with amoun equal source wallet amount, because there is commission", $walletTransaction->createTransaction())->false();
         $walletTransaction->amount = 0;
-        expect("Cannot make transaction with zero amount", $sourceUser->createTransaction($walletTransaction))->false();
+        expect("Cannot make transaction with zero amount", $walletTransaction->createTransaction())->false();
         $walletTransaction->amount = $sourceWalletAmount + 1;
-        expect("Cannot make transaction with amount greater than wallet amount", $sourceUser->createTransaction($walletTransaction))->false();
+        expect("Cannot make transaction with amount greater than wallet amount", $walletTransaction->createTransaction())->false();
         $walletTransaction->amount = $sourceWalletAmount / 2;
-        expect("Can make transaction with valid amount", $sourceUser->createTransaction($walletTransaction))->numeric();
+        expect("Can make transaction with valid amount", $walletTransaction->createTransaction())->numeric();
     }
 
     public function testCannotCreateSameCurrencyWalletsForSingleUser()

@@ -284,4 +284,44 @@ class WalletTransaction extends ActiveRecord
 
         return true;
     }
+
+    /**
+     * @param WalletTransaction  $walletTransaction
+     *
+     * @return bool
+     */
+    public function createTransaction()
+    {
+        $transaction = ActiveRecord::getDb()->beginTransaction();
+
+        try {
+            if ($this->validate()) {
+                $fromUserWallet = $this->fromUser->getWalletByCurrencyId($this->currency_id);
+                $toUserWallet = $this->toUser->getWalletByCurrencyId($this->currency_id);
+
+                if (Number::floatSub($fromUserWallet->amount, Number::floatAdd($this->amount, $this->fee)) < 0) {
+                    return false;
+                }
+
+                $toUserWallet->amount += $this->amount;
+                $toUserWallet->save();
+
+                $fromUserWallet->amount -= $this->amount + $this->fee;
+                $fromUserWallet->save();
+
+                $this->save();
+            }
+
+            $transaction->commit();
+
+            // additional check after commit
+            $walletTransaction = WalletTransaction::findOne($this->id);
+
+            return $walletTransaction->id ?? false;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Yii::error($e->getMessage());
+            return false;
+        }
+    }
 }
