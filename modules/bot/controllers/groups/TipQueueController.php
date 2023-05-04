@@ -175,64 +175,62 @@ class TipQueueController extends Controller
             set_time_limit(0);
         }
 
-        function updateMessage($queue)
+        function updateMessage($chatTipQueue)
         {
             $module = Yii::$app->getModule('bot');
             $chat = $module->getChat();
-            $module->setChat($queue->chat);
+            $module->setChat($chatTipQueue->chat);
             $module->runAction('tip-queue/tip-message', [
-                'queueId' => $queue->id,
+                'queueId' => $chatTipQueue->id,
             ]);
             $module->setChat($chat);
         }
 
-        foreach (ChatTipQueueUser::getActiveUsers()->each(1) as $user) {
-            $queue = $user->queue;
+        foreach (ChatTipQueueUser::getActiveUsers()->each(1) as $chatTipQueueUser) {
+            $chatTipQueue = $chatTipQueueUser->queue;
 
-            if ($queue->state != ChatTipQueue::OPEN_STATE) {
+            if ($chatTipQueue->state != ChatTipQueue::OPEN_STATE) {
                 continue;
             }
 
-            $queueUsers = $queue->getQueueUsers();
+            $queueUsers = $chatTipQueue->getQueueUsers();
             $totalUserCount = $queueUsers->count();
 
-            if ($totalUserCount >= $queue->userCount) {
+            if ($totalUserCount >= $chatTipQueue->userCount) {
                 $processedUserCount = $queueUsers->where(['>', 'transaction_id', '0'])->count();
-                if ($processedUserCount >= $queue->userCount) {
+                if ($processedUserCount >= $chatTipQueue->userCount) {
                     goto CLOSE_QUEUE;
                 }
 
-                updateMessage($queue);
+                updateMessage($chatTipQueue);
             }
 
             $walletTransaction = new WalletTransaction([
-                'from_user_id' => $queue->user->globalUser->id,
-                'to_user_id' => $user->user->globalUser->id,
-                'amount' => $queue->userAmount,
-                'currency_id' => $queue->currency->id,
+                'from_user_id' => $chatTipQueue->user->globalUser->id,
+                'to_user_id' => $chatTipQueueUser->user->globalUser->id,
+                'amount' => $chatTipQueue->userAmount,
+                'currency_id' => $chatTipQueue->currency->id,
                 'type' => WalletTransaction::TIP_WITHOUT_REPLY_TYPE,
             ]);
 
+            $walletTransaction->setData(WalletTransaction::CHAT_TIP_QUEUE_USER_ID_DATA_KEY, $chatTipQueueUser->id);
             $walletTransactionId = $walletTransaction->createTransaction();
 
             if (!$walletTransactionId) {
-                $wallet = $queue->user->globalUser->getWalletByCurrencyId($queue->getCurrencyId());
-                if (!$wallet->hasAmount($queue->userAmount)) {
+                $wallet = $chatTipQueue->user->globalUser->getWalletByCurrencyId($chatTipQueue->getCurrencyId());
+                if (!$wallet->hasAmount($chatTipQueue->userAmount)) {
                     goto CLOSE_QUEUE;
                 }
 
-                $user->delete();
-                updateMessage($queue);
+                $chatTipQueueUser->delete();
+                updateMessage($chatTipQueue);
                 continue;
             }
-
-            $user->transaction_id = $walletTransactionId;
-            $user->save();
 
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
                     'walletTransaction' => $walletTransaction,
-                    'queue' => $queue,
+                    'queue' => $chatTipQueue,
                     'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
                 ]),
                 []
@@ -240,26 +238,26 @@ class TipQueueController extends Controller
 
             $processedUserCount = $queueUsers->where(['>', 'transaction_id', '0'])->count();
 
-            if ($processedUserCount >= $queue->userCount) {
+            if ($processedUserCount >= $chatTipQueue->userCount) {
                 goto CLOSE_QUEUE;
             }
 
-            $wallet = $queue->user->globalUser->getWalletByCurrencyId($queue->getCurrencyId());
-            if (!$wallet->hasAmount($queue->userAmount)) {
+            $wallet = $chatTipQueue->user->globalUser->getWalletByCurrencyId($chatTipQueue->getCurrencyId());
+            if (!$wallet->hasAmount($chatTipQueue->userAmount)) {
                 goto CLOSE_QUEUE;
             }
 
-            updateMessage($queue);
+            updateMessage($chatTipQueue);
 
             continue;
 
             CLOSE_QUEUE:
 
-            $queue->close();
-            updateMessage($queue);
+            $chatTipQueue->close();
+            updateMessage($chatTipQueue);
 
             if ($queueUsers->where(['>', 'transaction_id', '0'])->count() < 1) {
-                $this->getBotApi()->deleteMessage($queue->chat->getChatId(), $queue->getMessageId());
+                $this->getBotApi()->deleteMessage($chatTipQueue->chat->getChatId(), $chatTipQueue->getMessageId());
             }
         }
 
@@ -267,9 +265,9 @@ class TipQueueController extends Controller
 
         sleep(3);
 
-        $user = ChatTipQueueUser::getActiveUsers()->one();
+        $chatTipQueueUser = ChatTipQueueUser::getActiveUsers()->one();
 
-        if ($user) {
+        if ($chatTipQueueUser) {
             return self::processAllQueues();
         }
     }

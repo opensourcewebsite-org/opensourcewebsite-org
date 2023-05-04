@@ -353,12 +353,16 @@ class TransactionController extends Controller
                 ->build();
         }
 
+        $chatTip = $this->getState()->getItem(ChatTip::class);
+
+        if (isset($chatTip->id)) {
+            $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
+        }
+
         $walletTransactionId = $walletTransaction->createTransaction();
 
         if ($walletTransactionId) {
             $this->getState()->clearItem(WalletTransaction::class);
-
-            $chatTip = $this->getState()->getItem(ChatTip::class);
 
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
@@ -370,8 +374,6 @@ class TransactionController extends Controller
             );
 
             if (isset($chatTip->id)) {
-                // TODO: save chatTipId to transaction
-
                 if (in_array($walletTransaction->type, array(WalletTransaction::SEND_TIP_TYPE, WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE))) {
                     $thisChat = $this->chat;
                     $module = Yii::$app->getModule('bot');

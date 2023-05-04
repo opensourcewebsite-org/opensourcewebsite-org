@@ -378,11 +378,11 @@ class WalletController extends Controller
 
         $this->getState()->clearInputRoute();
 
-        // TODO: get chatTipId from transaction
+        $chatTipId = $walletTransaction->getData(WalletTransaction::CHAT_TIP_ID_DATA_KEY);
 
-        // if ($chatTipWalletTransaction) {
-        //     $chatTip = ChatTip::findOne(['id' => $chatTipWalletTransaction->chat_tip_id]);
-        // }
+        if ($chatTipId) {
+            $chatTip = ChatTip::findOne($chatTipId);
+        }
 
         if ($walletTransaction->fromUser->id != $this->getGlobalUser()->id) {
             return $this->getResponseBuilder()

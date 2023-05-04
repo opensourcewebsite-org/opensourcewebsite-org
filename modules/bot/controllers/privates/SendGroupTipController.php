@@ -305,6 +305,7 @@ class SendGroupTipController extends Controller
 
         $toUser = $chatTip->toUser;
         $currency = $walletTransaction->currency;
+        $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
 
         if (!$walletTransaction->createTransaction()) {
             return $this->getResponseBuilder()
@@ -316,8 +317,6 @@ class SendGroupTipController extends Controller
 
         $module = Yii::$app->getModule('bot');
         $module->setChat(Chat::findOne($chatTip->chat_id));
-
-        // TODO: save chatTipId to transaction
 
         $response = $module->runAction('tip/tip-message', [
             'chatTipId' => $chatTip->id,

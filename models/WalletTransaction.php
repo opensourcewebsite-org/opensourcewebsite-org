@@ -6,6 +6,7 @@ use app\behaviors\JsonBehavior;
 use app\components\helpers\TimeHelper;
 use app\helpers\Number;
 use app\models\traits\FloatAttributeTrait;
+use app\modules\bot\models\ChatTipQueueUser;
 use DateTime;
 use DateTimeZone;
 use Yii;
@@ -52,6 +53,7 @@ class WalletTransaction extends ActiveRecord
     public const AMOUNT_CHECK_FLAG = 8;
 
     public const CHAT_TIP_ID_DATA_KEY = 'chatTipId';
+    public const CHAT_TIP_QUEUE_USER_ID_DATA_KEY = 'chatTipQueueUserId';
 
     public function __construct()
     {
@@ -308,6 +310,25 @@ class WalletTransaction extends ActiveRecord
                 $fromUserWallet->save();
 
                 $this->save();
+            }
+
+            switch ($this->type) {
+                case self::TIP_WITHOUT_REPLY_TYPE:
+                    $chatTipQueueUserId = $this->getData(self::CHAT_TIP_QUEUE_USER_ID_DATA_KEY);
+                    if (!isset($chatTipQueueUserId)) {
+                        throw new \Exception('Chat tip user id is not found in transaction');
+                    }
+                    $chatTipQueueUser = ChatTipQueueUser::findOne($chatTipQueueUserId);
+
+                    if (!isset($chatTipQueueUser->id)) {
+                        throw new \Exception("Chat tip user with id: {$chatTipQueueUserId} is not found");
+                    }
+
+                    $chatTipQueueUser->transaction_id = $this->id;
+                    $chatTipQueueUser->save();
+                    break;
+                case self::MEMBERSHIP_PAYMENT_TYPE:
+                    break;
             }
 
             $transaction->commit();
