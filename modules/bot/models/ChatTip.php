@@ -83,8 +83,8 @@ class ChatTip extends ActiveRecord
 
     public function getWalletTransactions()
     {
-        return WalletTransaction::findBySql('SELECT t.* FROM wallet_transaction t WHERE t.data ->> :chatTipIdKey = :chatTipIdValue', [
-            'chatTipIdKey' => WalletTransaction::CHAT_TIP_ID_DATA_KEY,
+        return WalletTransaction::findBySql('SELECT t.* FROM wallet_transaction t WHERE (t.data ->> :chatTipIdKey) = :chatTipIdValue', [
+            'chatTipIdKey' => '$.' . WalletTransaction::CHAT_TIP_ID_DATA_KEY,
             'chatTipIdValue' => $this->id,
         ]);
     }

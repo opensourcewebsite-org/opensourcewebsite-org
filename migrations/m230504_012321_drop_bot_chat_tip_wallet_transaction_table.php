@@ -1,6 +1,8 @@
 <?php
 
+use app\models\WalletTransaction;
 use yii\db\Migration;
+use yii\db\Query;
 
 /**
  * Handles the dropping of table `{{%bot_chat_tip_wallet_transaction}}`.
@@ -50,5 +52,25 @@ class m230504_012321_drop_bot_chat_tip_wallet_transaction_table extends Migratio
             '{{%wallet_transaction}}',
             'id'
         );
+
+        $rows = (new Query())
+            ->select([
+                'ct.id as chat_tip_id',
+                't.id as transaction_id',
+            ])
+            ->from('wallet_transaction t')
+            ->join('JOIN', 'bot_chat_tip ct', '(t.data ->> :chatTipIdKey) = ct.id', [
+                ':chatTipIdKey' => '$.' . WalletTransaction::CHAT_TIP_ID_DATA_KEY,
+            ]);
+
+        foreach ($rows->each(1) as $row) {
+            $this->insert(
+                '{{%bot_chat_tip_wallet_transaction}}',
+                [
+                    'chat_tip_id' => $row['chat_tip_id'],
+                    'transaction_id' => $row['transaction_id'],
+                ]
+            );
+        }
     }
 }
