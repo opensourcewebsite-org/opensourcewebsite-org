@@ -14,6 +14,7 @@ abstract class BaseAction extends Action
             'insert' => true,
             'update' => true,
             'delete' => true,
+            'view-list' => true,
         ],
         'listBackRoute' => null,
     ];

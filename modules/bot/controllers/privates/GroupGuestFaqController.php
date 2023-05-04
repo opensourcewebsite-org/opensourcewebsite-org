@@ -32,6 +32,7 @@ class GroupGuestFaqController extends Controller
                         'insert' => false,
                         'update' => false,
                         'delete' => false,
+                        'view-list' => false,
                     ],
                     'listBackRoute' => [
                         'controller' => 'app\modules\bot\controllers\privates\GroupGuestController',
