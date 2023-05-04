@@ -10,7 +10,6 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatTip;
-use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
@@ -371,13 +370,7 @@ class TransactionController extends Controller
             );
 
             if (isset($chatTip->id)) {
-                // create new ChatTipWalletTransaction record
-                $chatTipWalletTransaction = new ChatTipWalletTransaction([
-                    'chat_tip_id' => $chatTip->id,
-                    'transaction_id' => $walletTransaction->id,
-                ]);
-
-                $chatTipWalletTransaction->save();
+                // TODO: save chatTipId to transaction
 
                 if (in_array($walletTransaction->type, array(WalletTransaction::SEND_TIP_TYPE, WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE))) {
                     $thisChat = $this->chat;

@@ -10,7 +10,6 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\ChatTip;
-use app\modules\bot\models\ChatTipWalletTransaction;
 use Yii;
 use yii\data\Pagination;
 use yii\db\ActiveRecord;
@@ -379,12 +378,11 @@ class WalletController extends Controller
 
         $this->getState()->clearInputRoute();
 
-        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['transaction_id' => $walletTransaction->id]);
-        $chatTip = null;
+        // TODO: get chatTipId from transaction
 
-        if ($chatTipWalletTransaction) {
-            $chatTip = ChatTip::findOne(['id' => $chatTipWalletTransaction->chat_tip_id]);
-        }
+        // if ($chatTipWalletTransaction) {
+        //     $chatTip = ChatTip::findOne(['id' => $chatTipWalletTransaction->chat_tip_id]);
+        // }
 
         if ($walletTransaction->fromUser->id != $this->getGlobalUser()->id) {
             return $this->getResponseBuilder()
@@ -425,12 +423,10 @@ class WalletController extends Controller
     public function actionDeleteTransaction($walletTransactionId = null)
     {
         $walletTransaction = WalletTransaction::findOne(['id' => $walletTransactionId]);
-        $chatTipWalletTransaction = ChatTipWalletTransaction::findOne(['transaction_id' => $walletTransactionId]);
 
-        if ($walletTransaction && $chatTipWalletTransaction) {
+        if ($walletTransaction) {
             $transaction = ActiveRecord::getDb()->beginTransaction();
             try {
-                $chatTipWalletTransaction->delete();
                 $walletTransaction->delete();
                 $transaction->commit();
                 return $this->actionTransactions($walletTransaction->currency_id);

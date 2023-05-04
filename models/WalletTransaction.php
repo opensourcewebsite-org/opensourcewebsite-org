@@ -6,7 +6,6 @@ use app\behaviors\JsonBehavior;
 use app\components\helpers\TimeHelper;
 use app\helpers\Number;
 use app\models\traits\FloatAttributeTrait;
-use app\modules\bot\models\ChatTipWalletTransaction;
 use DateTime;
 use DateTimeZone;
 use Yii;
@@ -45,11 +44,14 @@ class WalletTransaction extends ActiveRecord
     public const SEND_MONEY_TYPE = 2;
     public const SEND_ANONYMOUS_ADMIN_TIP_TYPE = 3;
     public const TIP_WITHOUT_REPLY_TYPE = 4;
+    public const MEMBERSHIP_PAYMENT_TYPE = 5;
 
     public const FROM_USER_CHECK_FLAG = 1;
     public const TO_USER_CHECK_FLAG = 2;
     public const CURRENCY_CHECK_FLAG = 4;
     public const AMOUNT_CHECK_FLAG = 8;
+
+    public const CHAT_TIP_ID_DATA_KEY = 'chatTipId';
 
     public function __construct()
     {
@@ -107,11 +109,12 @@ class WalletTransaction extends ActiveRecord
     public static function getTypeLabels(): array
     {
         return [
-            0 => '',
-            1 => Yii::t('app', 'Group Thanks'),
-            2 => '',
-            3 => Yii::t('app', 'Tip sending to anonymous admin transaction'),
-            4 => Yii::t('app', 'Tip without reply transaction'),
+            self::WALLET_TYPE => '',
+            self::SEND_TIP_TYPE => Yii::t('app', 'Group Thanks'),
+            self::SEND_MONEY_TYPE => '',
+            self::SEND_ANONYMOUS_ADMIN_TIP_TYPE => Yii::t('app', 'Tip sending to anonymous admin transaction'),
+            self::TIP_WITHOUT_REPLY_TYPE => Yii::t('app', 'Tip without reply transaction'),
+            self::MEMBERSHIP_PAYMENT_TYPE => Yii::t('app', 'Membership payment'),
         ];
     }
 
@@ -166,11 +169,6 @@ class WalletTransaction extends ActiveRecord
     public function getToUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'to_user_id']);
-    }
-
-    public function getChatTipWalletTransaction(): ActiveQuery
-    {
-        return $this->hasOne(ChatTipWalletTransaction::class, ['transaction_id' => 'id']);
     }
 
     public function getAmount()
