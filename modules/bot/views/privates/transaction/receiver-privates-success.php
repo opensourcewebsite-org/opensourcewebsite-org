@@ -6,7 +6,7 @@
 <?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($chatTip): ?>
+<?php if (isset($chatTip->id)): ?>
 <?= Yii::t('bot', 'Group') ?>: <b><?= $chatTip->chat->title ?></b><?= $chatTip->chat->username ? ' (@' . $chatTip->chat->username . ')' : '' ?><br/>
 <?php endif; ?>
 ————<br/>

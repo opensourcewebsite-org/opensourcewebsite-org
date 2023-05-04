@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\behaviors\JsonBehavior;
 use app\components\helpers\TimeHelper;
 use app\helpers\Number;
 use app\models\traits\FloatAttributeTrait;
@@ -114,8 +115,6 @@ class WalletTransaction extends ActiveRecord
         ];
     }
 
-
-
     /**
      * {@inheritdoc}
      */
@@ -127,6 +126,7 @@ class WalletTransaction extends ActiveRecord
             'from_user_id' => Yii::t('app', 'From User'),
             'to_user_id' => Yii::t('app', 'To User'),
             'amount' => Yii::t('app', 'Amount'),
+            'data' => Yii::t('app', 'Data'),
             'fee' => Yii::t('app', 'Fee'),
             'type' => Yii::t('app', 'Type'),
             'anonymity' => Yii::t('app', 'Anonymity'),
@@ -143,6 +143,12 @@ class WalletTransaction extends ActiveRecord
             [
                 'class' => TimestampBehavior::class,
                 'updatedAtAttribute' => false,
+            ],
+            [
+                'class' => JsonBehavior::class,
+                'attributes' => [
+                      'data',
+                ]
             ],
         ];
     }
@@ -210,6 +216,18 @@ class WalletTransaction extends ActiveRecord
     public function getAnonymity()
     {
         return $this->anonymity ?? 0;
+    }
+
+    public function getData($name)
+    {
+        return (isset($this->data[$name]) ? $this->data[$name] : null);
+    }
+
+    public function setData($name, $value)
+    {
+        $data = $this->data;
+        $data[$name] = $value;
+        $this->data = $data;
     }
 
     public function getAmountPlusFee(): float
