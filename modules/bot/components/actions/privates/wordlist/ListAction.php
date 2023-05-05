@@ -99,7 +99,7 @@ class ListAction extends BaseAction
                     'chatId' => $chatId,
                 ]),
                 'text' => Emoji::LIST,
-                'visible' => !empty($phrases),
+                'visible' => !empty($phrases) && $this->options['actions']['view-list'],
             ],
             [
                 'callback_data' => $this->createRoute($this->enterActionId, [
