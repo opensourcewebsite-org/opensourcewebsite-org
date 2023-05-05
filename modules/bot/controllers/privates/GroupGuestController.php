@@ -80,6 +80,24 @@ class GroupGuestController extends Controller
                 ];
             }
 
+            $toUserChatMember = ChatMember::findOne([
+                'chat_id' => $chatMember->getChatId(),
+                'status' => ChatMember::STATUS_CREATOR,
+            ]);
+    
+            if(isset($toUserChatMember) && $toUserChatMember->id != $chatMember->id)
+            {
+                $buttons[] = [
+                    [
+                        'callback_data' => self::createRoute('pay-for-membership', [
+                            'id' => $chatMember->id,
+                        ]),
+                        'text' => Yii::t('bot', 'Pay for membership'),
+                        'visible' => $chatMember->hasMembershipTariff(),
+                    ],
+                ];
+            }
+
             $buttons[] = [
                 [
                     'callback_data' => self::createRoute('remove-membership', [
@@ -567,5 +585,79 @@ class GroupGuestController extends Controller
         $chatMember->save();
 
         return $this->actionView($chatMember->getChatId());
+    }
+
+    /**
+     * @param int $id Chat->id
+     * @param int $page
+     * @return array
+     */
+    public function actionPayForMembership($id = null)
+    {
+        $chatMember = ChatMember::findOne($id);
+
+        if (!isset($chatMember) || !$chatMember->chat->isGroup() || !$chatMember->hasMembershipTariff()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $toUserChatMember = ChatMember::findOne([
+            'chat_id' => $chatMember->getChatId(),
+            'status' => ChatMember::STATUS_CREATOR,
+        ]);
+
+        if(!isset($toUserChatMember) || $toUserChatMember->id == $chatMember->id)
+        {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $wallet = $chatMember->user->getWalletByCurrencyId($chatMember->chat->currency->id);
+
+        $viewName = 'pay-for-membership';
+
+        if (!isset($wallet) || !$wallet->hasAmount($chatMember->membership_tariff_price)) {
+            $viewName = 'has-not-money';
+        } else {
+            $walletTransaction = new WalletTransaction([
+                'from_user_id' => 
+                'to_user_id' => 
+                'amount' => $chatMember->membership_tariff_price,
+                'currency_id' => $chatMember->chat->currency->id,
+                'type' => WalletTransaction::MEMBERSHIP_PAYMENT_TYPE,
+                'anonymity' => 1,
+            ]);
+
+            $buttons[] = [
+                [
+                    'callback_data' => TransactionController::createRoute('confirmation'),
+                    'text' => Yii::t('bot', 'PAY'),
+                ],
+            ];
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $chatMember->getChatId(),
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render($viewName, [
+                    'chatMember' => $chatMember,
+                ]),
+                $buttons
+            )
+            ->build();
     }
 }
