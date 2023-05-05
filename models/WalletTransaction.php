@@ -6,6 +6,7 @@ use app\behaviors\JsonBehavior;
 use app\components\helpers\TimeHelper;
 use app\helpers\Number;
 use app\models\traits\FloatAttributeTrait;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTipQueueUser;
 use DateTime;
 use DateTimeZone;
@@ -297,11 +298,16 @@ class WalletTransaction extends ActiveRecord
 
         try {
             if ($this->validate()) {
+
+                if ($this->fromUser->id == $this->toUser->id) {
+                    throw new \Exception('Sender and reciever are the same');
+                }
+
                 $fromUserWallet = $this->fromUser->getWalletByCurrencyId($this->currency_id);
                 $toUserWallet = $this->toUser->getWalletByCurrencyId($this->currency_id);
 
                 if (Number::floatSub($fromUserWallet->amount, Number::floatAdd($this->amount, $this->fee)) < 0) {
-                    return false;
+                    throw new \Exception('Not enough money');
                 }
 
                 $toUserWallet->amount += $this->amount;
@@ -311,6 +317,8 @@ class WalletTransaction extends ActiveRecord
                 $fromUserWallet->save();
 
                 $this->save();
+            } else {
+                throw new \Exception('Transaction validation is failed: ' . print_r($this->getErrors(), true));
             }
 
             switch ($this->type) {
@@ -329,6 +337,22 @@ class WalletTransaction extends ActiveRecord
                     $chatTipQueueUser->save();
                     break;
                 case self::MEMBERSHIP_PAYMENT_TYPE:
+                    $chatMemberId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
+                    if (!isset($chatMemberId)) {
+                        throw new \Exception('Chat member id is not found in transaction');
+                    }
+                    $chatMember = ChatMember::findOne($chatMemberId);
+
+                    if (!isset($chatMember->id)) {
+                        throw new \Exception("Chat member with id: {$chatMemberId} is not found");
+                    }
+
+                    $days = $chatMember->getMembershipTariffDaysBalance();
+                    $days += $chatMember->getMembershipTariffDays();
+                    if (!$chatMember->setMembershipTariffDaysBalance($days)) {
+                        throw new \Exception("Cannot set membership days to: {$days} in chat member with id: {$chatMemberId} is not found");
+                    }
+                    $chatMember->save();
                     break;
             }
 

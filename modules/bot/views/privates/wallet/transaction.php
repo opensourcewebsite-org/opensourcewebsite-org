@@ -10,6 +10,8 @@ use app\models\WalletTransaction;
 <?php if ($walletTransaction->anonymity): ?>
 <?php if ($walletTransaction->type == WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE && !empty($chatTip->id)): ?>
 <b><?= $chatTip->chat->title ?></b><?= $chatTip->chat->username ? ' (@' . $chatTip->chat->username . ')' : '' ?><br/>
+<?php elseif ($walletTransaction->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE && !empty($chatMember->id)): ?>
+<b><?= $chatMember->chat->title ?></b><?= $chatMember->chat->username ? ' (@' . $chatMember->chat->username . ')' : '' ?><br/>
 <?php endif; ?>
 <?php else: ?>
 <?= $walletTransaction->toUser->botUser->getFullLink() ?><br />

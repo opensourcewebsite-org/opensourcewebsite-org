@@ -117,7 +117,7 @@ class UserState extends ActiveRecord
         $this->setIsNewRecord(true);
         $this->refresh();
 
-        if (is_subclass_of($name, ActiveRecord::class) && isset($this->obj)) {
+        if (is_subclass_of($name, ActiveRecord::class)) {
             try {
 
                 $model = \Yii::createObject([

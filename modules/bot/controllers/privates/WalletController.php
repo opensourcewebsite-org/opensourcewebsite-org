@@ -9,6 +9,7 @@ use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatTip;
 use Yii;
 use yii\data\Pagination;
@@ -384,6 +385,12 @@ class WalletController extends Controller
             $chatTip = ChatTip::findOne($chatTipId);
         }
 
+        $chatMemberId = $walletTransaction->getData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY);
+
+        if ($chatMemberId) {
+            $chatMember = ChatMember::findOne($chatMemberId);
+        }
+
         if ($walletTransaction->fromUser->id != $this->getGlobalUser()->id) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
@@ -395,7 +402,8 @@ class WalletController extends Controller
                 $this->render('transaction', [
                     'walletTransaction' => $walletTransaction,
                     'timezone' => $this->getGlobalUser()->timezone,
-                    'chatTip' => $chatTip,
+                    'chatTip' => $chatTip ?? null,
+                    'chatMember' => $chatMember ?? null,
                 ]),
                 [
                     [

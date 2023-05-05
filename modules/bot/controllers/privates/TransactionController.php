@@ -310,13 +310,28 @@ class TransactionController extends Controller
                 ->build();
         }
 
+        $backRoute = self::createRoute('input-amount');
+
+        if ($walletTransaction->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+            $backRoute = $this->getState()->getBackRoute();
+        }
+
+        if (empty($backRoute)) {
+            $backRoute = WalletController::createRoute('view', [
+                'id' => $walletTransaction->getCurrencyId(),
+            ]);
+            $this->getState()->setBackRoute($backRoute);
+        }
+
         $chatTip = $this->getState()->getItem(ChatTip::class);
+        $chatMember = $this->getState()->getItem(ChatTip::class);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('confirmation', [
                     'walletTransaction' => $walletTransaction,
                     'chatTip' => $chatTip,
+                    'chatMember' => $chatMember,
                 ]),
                 [
                     [
@@ -327,7 +342,7 @@ class TransactionController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('input-amount'),
+                            'callback_data' => $backRoute,
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -359,16 +374,26 @@ class TransactionController extends Controller
             $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
         }
 
+        $chatMember = $this->getState()->getItem(ChatMember::class);
+
+        if (isset($chatMember->id)) {
+            $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
+        }
+
         $walletTransactionId = $walletTransaction->createTransaction();
 
         if ($walletTransactionId) {
             $this->getState()->clearItem(WalletTransaction::class);
+            $this->getState()->clearItem(ChatTip::class);
+            $this->getState()->clearItem(ChatMember::class);
+            $this->getState()->clearBackRoute();
 
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
                     'walletTransaction' => $walletTransaction,
                     'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
                     'chatTip' => $chatTip,
+                    'chatMember' => $chatMember,
                 ]),
                 []
             );
@@ -385,11 +410,7 @@ class TransactionController extends Controller
 
                     $module->setChat($thisChat);
                 }
-
-                $this->getState()->clearItem(ChatTip::class);
             }
-
-            $this->getState()->clearBackRoute();
 
             return $this->run('wallet/transaction', [
                 'id' => $walletTransactionId,

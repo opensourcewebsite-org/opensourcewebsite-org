@@ -84,9 +84,8 @@ class GroupGuestController extends Controller
                 'chat_id' => $chatMember->getChatId(),
                 'status' => ChatMember::STATUS_CREATOR,
             ]);
-    
-            if(isset($toUserChatMember) && $toUserChatMember->id != $chatMember->id)
-            {
+
+            if (isset($toUserChatMember) && $toUserChatMember->id != $chatMember->id) {
                 $buttons[] = [
                     [
                         'callback_data' => self::createRoute('pay-for-membership', [
@@ -607,8 +606,7 @@ class GroupGuestController extends Controller
             'status' => ChatMember::STATUS_CREATOR,
         ]);
 
-        if(!isset($toUserChatMember) || $toUserChatMember->id == $chatMember->id)
-        {
+        if (!isset($toUserChatMember) || $toUserChatMember->id == $chatMember->id) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -633,6 +631,11 @@ class GroupGuestController extends Controller
             $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
 
             $this->getState()->setItem($walletTransaction);
+            $this->getState()->setItem($chatMember);
+
+            $this->getState()->setBackRoute(self::createRoute('pay-for-membership', [
+                'id' => $chatMember->id,
+            ]));
 
             $buttons[] = [
                 [
