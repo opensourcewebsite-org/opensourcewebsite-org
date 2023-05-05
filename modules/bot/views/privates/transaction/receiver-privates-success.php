@@ -13,14 +13,14 @@ use app\models\WalletTransaction;
 <?php endif; ?>
 <?php switch($walletTransaction->type): ?>
 <?php case WalletTransaction::MEMBERSHIP_PAYMENT_TYPE: ?>
-        <?php if (isset($chatMember->id)): ?>
-            <?= Yii::t('bot', 'Group') ?>: <b><?= $chatMember->chat->title ?></b><?= $chatMember->chat->username ? ' (@' . $chatMember->chat->username . ')' : '' ?><br/>
-        <?php endif; ?>
-    <?php break; ?>
-    <?php default: ?>
-        <?php if (isset($chatTip->id)): ?>
-            <?= Yii::t('bot', 'Group') ?>: <b><?= $chatTip->chat->title ?></b><?= $chatTip->chat->username ? ' (@' . $chatTip->chat->username . ')' : '' ?><br/>
-        <?php endif; ?>
+<?php if (isset($chatMember->id)): ?>
+<?= Yii::t('bot', 'Group') ?>: <b><?= $chatMember->chat->title ?></b><?= $chatMember->chat->username ? ' (@' . $chatMember->chat->username . ')' : '' ?><br/>
+<?php endif; ?>
+<?php break; ?>
+<?php default: ?>
+<?php if (isset($chatTip->id)): ?>
+<?= Yii::t('bot', 'Group') ?>: <b><?= $chatTip->chat->title ?></b><?= $chatTip->chat->username ? ' (@' . $chatTip->chat->username . ')' : '' ?><br/>
+<?php endif; ?>
 <?php endswitch; ?>
 ————<br/>
 <i><?= Yii::t('bot', 'Available amount') ?>: <?= $toUserWallet->amount ?> <?= $walletTransaction->currency->code ?></i><br/>
