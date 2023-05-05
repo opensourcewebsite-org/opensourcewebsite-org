@@ -622,13 +622,17 @@ class GroupGuestController extends Controller
             $viewName = 'has-not-money';
         } else {
             $walletTransaction = new WalletTransaction([
-                'from_user_id' => 
-                'to_user_id' => 
+                'from_user_id' => $chatMember->user->globalUser->id,
+                'to_user_id' => $toUserChatMember->user->globalUser->id,
                 'amount' => $chatMember->membership_tariff_price,
                 'currency_id' => $chatMember->chat->currency->id,
                 'type' => WalletTransaction::MEMBERSHIP_PAYMENT_TYPE,
                 'anonymity' => 1,
             ]);
+
+            $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
+
+            $this->getState()->setItem($walletTransaction);
 
             $buttons[] = [
                 [

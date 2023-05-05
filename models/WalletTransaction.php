@@ -54,6 +54,7 @@ class WalletTransaction extends ActiveRecord
 
     public const CHAT_TIP_ID_DATA_KEY = 'chatTipId';
     public const CHAT_TIP_QUEUE_USER_ID_DATA_KEY = 'chatTipQueueUserId';
+    public const CHAT_MEMBER_ID_DATA_KEY = 'chatMemberId';
 
     public function __construct()
     {
