@@ -308,26 +308,26 @@ class User extends ActiveRecord
             if ((isset($changedAttributes['provider_user_name']) && ($changedAttributes['provider_user_name'] != $this->provider_user_name))
                 || (isset($changedAttributes['provider_user_first_name']) && ($changedAttributes['provider_user_first_name'] != $this->provider_user_first_name))
                 || (isset($changedAttributes['provider_user_last_name']) && ($changedAttributes['provider_user_last_name'] != $this->provider_user_last_name))) {
-                    $chats = $this->getGroups()
-                        ->joinWith('settings')
-                        ->andWhere([
-                            'and',
-                            [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
-                            [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
-                        ])
-                        ->all();
+                $chats = $this->getGroups()
+                    ->joinWith('settings')
+                    ->andWhere([
+                        'and',
+                        [ChatSetting::tableName() . '.setting' => 'notify_name_change_status'],
+                        [ChatSetting::tableName() . '.value' => ChatSetting::STATUS_ON],
+                    ])
+                    ->all();
 
-                    $module = Yii::$app->getModule('bot');
-                    foreach ($chats as $chat) {
-                        $module->setChat($chat);
-                        $module->runAction('notifier/index', [
-                            'chat' => $chat,
-                            'changedAttributes' => json_decode(json_encode($changedAttributes)),
-                            'user' => $this,
-                        ]);
-                    }
+                $module = Yii::$app->getModule('bot');
+                foreach ($chats as $chat) {
+                    $module->setChat($chat);
+                    $module->runAction('notifier/index', [
+                        'chat' => $chat,
+                        'changedAttributes' => json_decode(json_encode($changedAttributes)),
+                        'user' => $this,
+                    ]);
                 }
             }
+        }
 
         parent::afterSave($insert, $changedAttributes);
     }
@@ -422,7 +422,7 @@ class User extends ActiveRecord
                         'text' => 'OK',
                     ],
                 ];
-            } else if ($cancel = end($replyMarkup)) {
+            } elseif ($cancel = end($replyMarkup)) {
                 // check if replyMarkup contain delete message button
                 if ($cancel[0]['callback_data'] != DeleteMessageController::createRoute()) {
                     $replyMarkup[] = [
@@ -493,10 +493,5 @@ class User extends ActiveRecord
     public function getWalletsWithPositiveBalance()
     {
         return $this->globalUser->getWalletsWithPositiveBalance();
-    }
-
-    public function createTransaction($walletTransaction)
-    {
-        $this->globalUser->createTransaction($walletTransaction);
     }
 }

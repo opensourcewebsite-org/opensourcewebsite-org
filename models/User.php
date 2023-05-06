@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\components\Converter;
 use app\components\helpers\Html;
+use app\helpers\Number;
 use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
 use app\models\queries\WalletQuery;
@@ -1263,40 +1264,5 @@ class User extends ActiveRecord implements IdentityInterface
             ->where(['user_id' => $this->id])
             ->andWhere(['>', Wallet::tableName() . '.amount', 0])
             ->orderByCurrencyCode();
-    }
-
-    /**
-     * @param WalletTransaction  $walletTransaction
-     *
-     * @return bool
-     */
-    public function createTransaction($walletTransaction)
-    {
-        $transaction = ActiveRecord::getDb()->beginTransaction();
-        try {
-            if ($walletTransaction->validate()) {
-                $fromUserWallet = $this->getWalletByCurrencyId($walletTransaction->currency_id);
-                $toUserWallet = $walletTransaction->toUser->getWalletByCurrencyId($walletTransaction->currency_id);
-
-                if (($fromUserWallet->amount - $walletTransaction->amount - $walletTransaction->fee) < 0) {
-                    return false;
-                }
-
-                $toUserWallet->amount += $walletTransaction->amount;
-                $toUserWallet->save();
-
-                $fromUserWallet->amount -= $walletTransaction->amount + $walletTransaction->fee;
-                $fromUserWallet->save();
-
-                $walletTransaction->save();
-            }
-
-            $transaction->commit();
-            return $walletTransaction->id ?? false;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-            Yii::error($e->getMessage());
-            return false;
-        }
     }
 }

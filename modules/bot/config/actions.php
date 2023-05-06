@@ -98,4 +98,10 @@ return [
     'set_to_user',
     'new_chat_members',
     'left_chat_members',
+    'set_user_count',
+    'set_user_amount',
+    'create_queue',
+    'take_tip',
+    'select_wallet',
+    'pay_for_membership',
 ];

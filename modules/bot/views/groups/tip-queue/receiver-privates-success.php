@@ -6,8 +6,6 @@
 <?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <br/>
 <?php endif; ?>
-<?php if ($walletTransaction->hasGroupLabel()): ?>
-<?= Yii::t('bot', 'Group') ?>: <?= $walletTransaction->getGroupLabel() ?><br/>
-<?php endif; ?>
+<?= Yii::t('bot', 'Group') ?>: <b><?= $queue->chat->title ?></b><?= $queue->chat->username ? ' (@' . $queue->chat->username . ')' : '' ?><br/>
 ————<br/>
 <i><?= Yii::t('bot', 'Available amount') ?>: <?= $toUserWallet->amount ?> <?= $walletTransaction->currency->code ?></i><br/>
