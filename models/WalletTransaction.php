@@ -375,50 +375,79 @@ class WalletTransaction extends ActiveRecord
         if ($this->anonymity) {
             $label = Yii::t('bot', 'Hidden');
 
-            switch ($this->type) {
-                case WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE:
-                    $chatTipId = $this->getData(self::CHAT_TIP_ID_DATA_KEY);
-
-                    if (!isset($chatTipId)) {
-                        break;
-                    }
-
-                    $chatTip = ChatTip::findOne($chatTipId);
-
-                    if (!isset($chatTip->id)) {
-                        break;
-                    }
-
-                    $label = $chatTip->chat->title;
-
-                    if (!empty($chatTip->chat->username)) {
-                        $label .= ' (@' . $chatTip->chat->username . ')';
-                    }
-                    break;
-                case WalletTransaction::MEMBERSHIP_PAYMENT_TYPE:
-                    $chatMemberId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
-
-                    if (!isset($chatMemberId)) {
-                        break;
-                    }
-
-                    $chatMember = ChatMember::findOne($chatMemberId);
-
-                    if (!isset($chatMember->id)) {
-                        break;
-                    }
-
-                    $label = $chatMember->chat->title;
-
-                    if (!empty($chatMember->chat->username)) {
-                        $label .= ' (@' . $chatMember->chat->username . ')';
-                    }
-                    break;
+            if ($this->hasGroupLabel()) {
+                $label = $this->getGroupLabel();
             }
 
             return $label;
         }
 
         return $this->toUser->botUser->getFullLink();
+    }
+
+    public function hasGroupLabel()
+    {
+        $itemId = $this->getData(self::CHAT_TIP_ID_DATA_KEY);
+        $itemClass = ChatTip::class;
+
+        if ($this->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+            $itemId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
+            $itemClass = ChatMember::class;
+        }
+
+        if (!isset($itemId)) {
+            return false;
+        }
+
+        $item = $itemClass::findOne($itemId);
+
+        if (!isset($item->id) || !isset($item->chat->id)) {
+            return false;
+        }
+
+        $label = $item->chat->title;
+
+        if (!empty($item->chat->username)) {
+            $label .= ' (@' . $item->chat->username . ')';
+        }
+
+        if (empty($label)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getGroupLabel()
+    {
+        $itemId = $this->getData(self::CHAT_TIP_ID_DATA_KEY);
+        $itemClass = ChatTip::class;
+
+        if ($this->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+            $itemId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
+            $itemClass = ChatMember::class;
+        }
+
+        if (!isset($itemId)) {
+            return null;
+        }
+
+        $item = $itemClass::findOne($itemId);
+
+        if (!isset($item->id) || !isset($item->chat->id)) {
+            return null;
+        }
+
+        $label = $item->chat->title;
+
+        if (!empty($item->chat->username)) {
+            $label .= ' (@' . $item->chat->username . ')';
+        }
+
+        if (empty($label)) {
+            return null;
+        }
+
+        return $label;
     }
 }

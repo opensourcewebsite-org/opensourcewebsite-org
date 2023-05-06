@@ -379,18 +379,6 @@ class WalletController extends Controller
 
         $this->getState()->clearInputRoute();
 
-        $chatTipId = $walletTransaction->getData(WalletTransaction::CHAT_TIP_ID_DATA_KEY);
-
-        if ($chatTipId) {
-            $chatTip = ChatTip::findOne($chatTipId);
-        }
-
-        $chatMemberId = $walletTransaction->getData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY);
-
-        if ($chatMemberId) {
-            $chatMember = ChatMember::findOne($chatMemberId);
-        }
-
         if ($walletTransaction->fromUser->id != $this->getGlobalUser()->id) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
@@ -402,8 +390,6 @@ class WalletController extends Controller
                 $this->render('transaction', [
                     'walletTransaction' => $walletTransaction,
                     'timezone' => $this->getGlobalUser()->timezone,
-                    'chatTip' => $chatTip ?? null,
-                    'chatMember' => $chatMember ?? null,
                 ]),
                 [
                     [

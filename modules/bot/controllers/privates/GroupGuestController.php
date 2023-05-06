@@ -53,16 +53,21 @@ class GroupGuestController extends Controller
 
             if ($chatTip) {
 
-                $this->getState()->setItem($chatTip);
+                if (!isset($chatTip->toUser->globalUser->id)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery()
+                        ->build();
+                }
 
-                $transaction = new WalletTransaction([
+                $walletTransaction = new WalletTransaction([
                     'from_user_id' => $this->getTelegramUser()->getUserId(),
-                    'to_user_id' => $chatMember->user->globalUser->id,
+                    'to_user_id' => $chatTip->toUser->globalUser->id,
                     'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
                     'anonymity' => 1,
                 ]);
 
-                $this->getState()->setItem($transaction);
+                $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
+                $this->getState()->setItem($walletTransaction);
 
                 $this->getState()->setBackRoute(self::createRoute('view', [
                     'id' => $id,
@@ -72,7 +77,7 @@ class GroupGuestController extends Controller
                 $buttons[] = [
                     [
                         'callback_data' => TransactionController::createRoute('index', [
-                            'page' => $chatMember->id,
+                            'page' => 1,
                             'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
                         ]),
                         'text' => Yii::t('bot', 'Send a Tip'),
@@ -631,7 +636,6 @@ class GroupGuestController extends Controller
             $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
 
             $this->getState()->setItem($walletTransaction);
-            $this->getState()->setItem($chatMember);
 
             $this->getState()->setBackRoute(self::createRoute('pay-for-membership', [
                 'id' => $chatMember->id,

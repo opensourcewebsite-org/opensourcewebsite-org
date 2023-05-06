@@ -271,13 +271,10 @@ class TransactionController extends Controller
             }
         }
 
-        $chatTip = $this->getState()->getItem(ChatTip::class);
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('input-amount', [
                     'walletTransaction' => $walletTransaction,
-                    'chatTip' => $chatTip,
                 ]),
                 [
                     [
@@ -323,15 +320,10 @@ class TransactionController extends Controller
             $this->getState()->setBackRoute($backRoute);
         }
 
-        $chatTip = $this->getState()->getItem(ChatTip::class);
-        $chatMember = $this->getState()->getItem(ChatTip::class);
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('confirmation', [
                     'walletTransaction' => $walletTransaction,
-                    'chatTip' => $chatTip,
-                    'chatMember' => $chatMember,
                 ]),
                 [
                     [
@@ -368,35 +360,25 @@ class TransactionController extends Controller
                 ->build();
         }
 
-        $chatTip = $this->getState()->getItem(ChatTip::class);
-
-        if (isset($chatTip->id)) {
-            $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
-        }
-
-        $chatMember = $this->getState()->getItem(ChatMember::class);
-
-        if (isset($chatMember->id)) {
-            $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
-        }
-
         $walletTransactionId = $walletTransaction->createTransaction();
 
         if ($walletTransactionId) {
             $this->getState()->clearItem(WalletTransaction::class);
-            $this->getState()->clearItem(ChatTip::class);
-            $this->getState()->clearItem(ChatMember::class);
             $this->getState()->clearBackRoute();
 
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
                     'walletTransaction' => $walletTransaction,
                     'toUserWallet' => $walletTransaction->toUser->botUser->getWalletByCurrencyId($walletTransaction->currency->id),
-                    'chatTip' => $chatTip,
-                    'chatMember' => $chatMember,
                 ]),
                 []
             );
+
+            $chatTipId = $walletTransaction->getData(WalletTransaction::CHAT_TIP_ID_DATA_KEY);
+
+            if (isset($chatTipId)) {
+                $chatTip = ChatTip::findOne($chatTipId);
+            }
 
             if (isset($chatTip->id)) {
                 if (in_array($walletTransaction->type, array(WalletTransaction::SEND_TIP_TYPE, WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE))) {
