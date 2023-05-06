@@ -10,13 +10,12 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatTip;
-use app\modules\bot\models\ChatTipWalletTransaction;
 use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 
 /**
- * Class WalletController
+ * Class TransactionController
  *
  * @package app\modules\bot\controllers\privates
  */
@@ -308,6 +307,19 @@ class TransactionController extends Controller
                 ->build();
         }
 
+        $backRoute = self::createRoute('input-amount');
+
+        if ($walletTransaction->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+            $backRoute = $this->getState()->getBackRoute();
+        }
+
+        if (empty($backRoute)) {
+            $backRoute = WalletController::createRoute('view', [
+                'id' => $walletTransaction->getCurrencyId(),
+            ]);
+            $this->getState()->setBackRoute($backRoute);
+        }
+
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('confirmation', [
@@ -322,7 +334,7 @@ class TransactionController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('input-amount'),
+                            'callback_data' => $backRoute,
                             'text' => Emoji::BACK,
                         ],
                         [
@@ -348,10 +360,11 @@ class TransactionController extends Controller
                 ->build();
         }
 
-        $walletTransactionId = $this->getGlobalUser()->createTransaction($walletTransaction);
+        $walletTransactionId = $walletTransaction->createTransaction();
 
         if ($walletTransactionId) {
             $this->getState()->clearItem(WalletTransaction::class);
+            $this->getState()->clearBackRoute();
 
             $walletTransaction->toUser->botUser->sendMessage(
                 $this->render('receiver-privates-success', [
@@ -361,33 +374,25 @@ class TransactionController extends Controller
                 []
             );
 
-            if ($walletTransaction->type == WalletTransaction::SEND_TIP_TYPE) {
-                $chatTip = $this->getState()->getItem(ChatTip::class);
+            $chatTipId = $walletTransaction->getData(WalletTransaction::CHAT_TIP_ID_DATA_KEY);
 
-                if ($chatTip) {
+            if (isset($chatTipId)) {
+                $chatTip = ChatTip::findOne($chatTipId);
+            }
 
-                    // create new ChatTipWalletTransaction record
-                    $chatTipWalletTransaction = new ChatTipWalletTransaction([
-                        'chat_tip_id' => $chatTip->id,
-                        'transaction_id' => $walletTransaction->id,
-                    ]);
-
-                    $chatTipWalletTransaction->save();
-
+            if (isset($chatTip->id)) {
+                if (in_array($walletTransaction->type, array(WalletTransaction::SEND_TIP_TYPE, WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE))) {
                     $thisChat = $this->chat;
                     $module = Yii::$app->getModule('bot');
                     $module->setChat(Chat::findOne($chatTip->chat_id));
 
-                    $response = $module->runAction('tip/tip-message', [
+                    $module->runAction('tip/tip-message', [
                         'chatTipId' => $chatTip->id,
                     ]);
 
                     $module->setChat($thisChat);
                 }
             }
-
-            $this->getState()->clearItem(ChatTip::class);
-            $this->getState()->clearBackRoute();
 
             return $this->run('wallet/transaction', [
                 'id' => $walletTransactionId,

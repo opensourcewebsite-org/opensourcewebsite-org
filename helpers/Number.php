@@ -72,6 +72,11 @@ class Number
         return bcadd($leftFloat, $rightFloat, $scale);
     }
 
+    public static function floatMul(?string $leftFloat, ?string $rightFloat, int $scale = 2): string
+    {
+        return bcmul($leftFloat, $rightFloat, $scale);
+    }
+
     public static function sizeToInt(string $size)
     {
         $size = trim($size);

@@ -10,7 +10,6 @@ use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatTip;
-use app\modules\bot\models\ChatTipWalletTransaction;
 use Yii;
 use yii\data\Pagination;
 
@@ -306,8 +305,9 @@ class SendGroupTipController extends Controller
 
         $toUser = $chatTip->toUser;
         $currency = $walletTransaction->currency;
+        $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
 
-        if (!$this->getGlobalUser()->createTransaction($walletTransaction)) {
+        if (!$walletTransaction->createTransaction()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -317,14 +317,6 @@ class SendGroupTipController extends Controller
 
         $module = Yii::$app->getModule('bot');
         $module->setChat(Chat::findOne($chatTip->chat_id));
-
-        // create new ChatTipWalletTransaction record
-        $chatTipWalletTransaction = new ChatTipWalletTransaction([
-            'chat_tip_id' => $chatTip->id,
-            'transaction_id' => $walletTransaction->id,
-        ]);
-
-        $chatTipWalletTransaction->save();
 
         $response = $module->runAction('tip/tip-message', [
             'chatTipId' => $chatTip->id,

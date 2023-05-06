@@ -34,5 +34,8 @@ return [
                 ],
             ],
         ],
+        'mutex' => [
+            'class' => 'yii\mutex\MysqlMutex',
+        ]
     ],
 ];

@@ -66,4 +66,5 @@ return [
     'group_publisher',
     'send_group_tip',
     'transaction',
+    'tip_queue',
 ];
