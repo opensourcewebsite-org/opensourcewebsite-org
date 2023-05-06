@@ -5,4 +5,5 @@
 <b><?= Yii::t('bot', 'Group') ?>: <?= $chatMember->chat->title ?></b><?= $chatMember->chat->username ? ' (@' . $chatMember->chat->username . ')' : '' ?><br/>
 <br/>
 <?= Yii::t('bot', 'Currency') ?>: <?= $chatMember->chat->currency->code ?><br/>
-<br/>
+————<br />
+<i><?= Yii::t('bot', 'Available amount') ?>: <?= $chatMember->user->getWalletByCurrencyId($chatMember->chat->currency->id)->getAmountMinusFee() . ' ' . $chatMember->chat->currency->code ?></i><br />
