@@ -7,6 +7,7 @@ use app\components\helpers\TimeHelper;
 use app\helpers\Number;
 use app\models\traits\FloatAttributeTrait;
 use app\modules\bot\models\ChatMember;
+use app\modules\bot\models\ChatTip;
 use app\modules\bot\models\ChatTipQueueUser;
 use DateTime;
 use DateTimeZone;
@@ -367,5 +368,57 @@ class WalletTransaction extends ActiveRecord
             Yii::error($e->getMessage());
             return false;
         }
+    }
+
+    public function getReceiverLabel()
+    {
+        if ($this->anonymity) {
+            $label = Yii::t('bot', 'Hidden');
+
+            switch ($this->type) {
+                case WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE:
+                    $chatTipId = $this->getData(self::CHAT_TIP_ID_DATA_KEY);
+
+                    if (!isset($chatTipId)) {
+                        break;
+                    }
+
+                    $chatTip = ChatTip::findOne($chatTipId);
+
+                    if (!isset($chatTip->id)) {
+                        break;
+                    }
+
+                    $label = $chatTip->chat->title;
+
+                    if (!empty($chatTip->chat->username)) {
+                        $label .= ' (@' . $chatTip->chat->username . ')';
+                    }
+                    break;
+                case WalletTransaction::MEMBERSHIP_PAYMENT_TYPE:
+                    $chatMemberId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
+
+                    if (!isset($chatMemberId)) {
+                        break;
+                    }
+
+                    $chatMember = ChatMember::findOne($chatMemberId);
+
+                    if (!isset($chatMember->id)) {
+                        break;
+                    }
+
+                    $label = $chatMember->chat->title;
+
+                    if (!empty($chatMember->chat->username)) {
+                        $label .= ' (@' . $chatMember->chat->username . ')';
+                    }
+                    break;
+            }
+
+            return $label;
+        }
+
+        return $this->toUser->botUser->getFullLink();
     }
 }

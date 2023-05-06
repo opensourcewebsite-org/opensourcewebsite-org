@@ -91,7 +91,7 @@ class GroupGuestController extends Controller
                         'callback_data' => self::createRoute('pay-for-membership', [
                             'id' => $chatMember->id,
                         ]),
-                        'text' => Yii::t('bot', 'Pay for membership'),
+                        'text' => Yii::t('bot', 'Renew Membership'),
                         'visible' => $chatMember->hasMembershipTariff(),
                     ],
                 ];
@@ -640,7 +640,7 @@ class GroupGuestController extends Controller
             $buttons[] = [
                 [
                     'callback_data' => TransactionController::createRoute('confirmation'),
-                    'text' => Yii::t('bot', 'PAY'),
+                    'text' => Yii::t('bot', 'CONTINUE'),
                 ],
             ];
         }
