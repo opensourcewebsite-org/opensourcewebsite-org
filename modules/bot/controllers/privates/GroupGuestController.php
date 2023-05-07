@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
+use app\models\WalletTransaction;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
@@ -10,6 +11,7 @@ use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
+use app\modules\bot\models\ChatTip;
 use Yii;
 use yii\data\Pagination;
 
@@ -24,7 +26,7 @@ class GroupGuestController extends Controller
      * @param int $id Chat->id
      * @return array
      */
-    public function actionView($id = null)
+    public function actionView($id = null, $chatTipId = null)
     {
         $chat = Chat::findOne($id);
 
@@ -47,6 +49,59 @@ class GroupGuestController extends Controller
         $buttons = [];
 
         if ($chatMember) {
+            $chatTip = ChatTip::findOne($chatTipId);
+
+            if ($chatTip) {
+
+                if (!isset($chatTip->toUser->globalUser->id)) {
+                    return $this->getResponseBuilder()
+                        ->answerCallbackQuery()
+                        ->build();
+                }
+
+                $walletTransaction = new WalletTransaction([
+                    'from_user_id' => $this->getTelegramUser()->getUserId(),
+                    'to_user_id' => $chatTip->toUser->globalUser->id,
+                    'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                    'anonymity' => 1,
+                ]);
+
+                $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
+                $this->getState()->setItem($walletTransaction);
+
+                $this->getState()->setBackRoute(self::createRoute('view', [
+                    'id' => $id,
+                    'chatTipId' => $chatTip->id,
+                ]));
+
+                $buttons[] = [
+                    [
+                        'callback_data' => TransactionController::createRoute('index', [
+                            'page' => 1,
+                            'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                        ]),
+                        'text' => Yii::t('bot', 'Send a Tip'),
+                    ],
+                ];
+            }
+
+            $toUserChatMember = ChatMember::findOne([
+                'chat_id' => $chatMember->getChatId(),
+                'status' => ChatMember::STATUS_CREATOR,
+            ]);
+
+            if (isset($toUserChatMember) && $toUserChatMember->id != $chatMember->id) {
+                $buttons[] = [
+                    [
+                        'callback_data' => self::createRoute('pay-for-membership', [
+                            'id' => $chatMember->id,
+                        ]),
+                        'text' => Yii::t('bot', 'Renew Membership'),
+                        'visible' => $chatMember->hasMembershipTariff(),
+                    ],
+                ];
+            }
+
             $buttons[] = [
                 [
                     'callback_data' => self::createRoute('remove-membership', [
@@ -534,5 +589,86 @@ class GroupGuestController extends Controller
         $chatMember->save();
 
         return $this->actionView($chatMember->getChatId());
+    }
+
+    /**
+     * @param int $id Chat->id
+     * @param int $page
+     * @return array
+     */
+    public function actionPayForMembership($id = null)
+    {
+        $chatMember = ChatMember::findOne($id);
+
+        if (!isset($chatMember) || !$chatMember->chat->isGroup() || !$chatMember->hasMembershipTariff()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $toUserChatMember = ChatMember::findOne([
+            'chat_id' => $chatMember->getChatId(),
+            'status' => ChatMember::STATUS_CREATOR,
+        ]);
+
+        if (!isset($toUserChatMember) || $toUserChatMember->id == $chatMember->id) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $wallet = $chatMember->user->getWalletByCurrencyId($chatMember->chat->currency->id);
+
+        $viewName = 'pay-for-membership';
+
+        if (!isset($wallet) || !$wallet->hasAmount($chatMember->membership_tariff_price)) {
+            $viewName = 'has-not-money';
+        } else {
+            $walletTransaction = new WalletTransaction([
+                'from_user_id' => $chatMember->user->globalUser->id,
+                'to_user_id' => $toUserChatMember->user->globalUser->id,
+                'amount' => $chatMember->membership_tariff_price,
+                'currency_id' => $chatMember->chat->currency->id,
+                'type' => WalletTransaction::MEMBERSHIP_PAYMENT_TYPE,
+                'anonymity' => 1,
+            ]);
+
+            $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
+
+            $this->getState()->setItem($walletTransaction);
+
+            $this->getState()->setBackRoute(self::createRoute('pay-for-membership', [
+                'id' => $chatMember->id,
+            ]));
+
+            $buttons[] = [
+                [
+                    'callback_data' => TransactionController::createRoute('confirmation'),
+                    'text' => Yii::t('bot', 'CONTINUE'),
+                ],
+            ];
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('view', [
+                    'id' => $chatMember->getChatId(),
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render($viewName, [
+                    'chatMember' => $chatMember,
+                ]),
+                $buttons
+            )
+            ->build();
     }
 }

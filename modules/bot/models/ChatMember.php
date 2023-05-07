@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\modules\bot\models;
 
 use app\components\helpers\TimeHelper;
+use app\helpers\Number;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\queries\ChatMemberQuery;
 use DateTime;
@@ -590,6 +591,19 @@ class ChatMember extends ActiveRecord
         }
 
         $this->membership_date = Yii::$app->formatter->asDate($today->getTimestamp() + $today->getOffset());
+
+        return true;
+    }
+
+    public function hasMembershipTariff()
+    {
+        if (Number::isFloatLower(strval($this->membership_tariff_price), '0')) {
+            return false;
+        }
+
+        if (Number::isFloatLower(strval($this->membership_tariff_days), '1')) {
+            return false;
+        }
 
         return true;
     }

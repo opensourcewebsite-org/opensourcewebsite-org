@@ -124,17 +124,20 @@ class MemberController extends Controller
             'member_id' => $chatMember->id,
         ]);
 
-        $chatTip = ChatTip::findOne($chatTipId);
 
-        if ($chatTip) {
-            $this->getState()->setItem($chatTip);
-        }
-
-        $this->getState()->setItem(new WalletTransaction([
+        $walletTransaction = new WalletTransaction([
             'from_user_id' => $this->getTelegramUser()->getUserId(),
             'to_user_id' => $chatMember->user->globalUser->id,
             'type' => WalletTransaction::SEND_MONEY_TYPE,
-        ]));
+        ]);
+
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if ($chatTip) {
+            $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
+        }
+
+        $this->getState()->setItem($walletTransaction);
 
         $this->getState()->setBackRoute(self::createRoute('id', [
             'id' => $id,
