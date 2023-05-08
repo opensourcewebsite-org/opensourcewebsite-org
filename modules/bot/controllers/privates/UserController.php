@@ -79,7 +79,7 @@ class UserController extends Controller
         $this->getState()->setItem(new WalletTransaction([
             'from_user_id' => $this->getTelegramUser()->getUserId(),
             'to_user_id' => $viewUser->globalUser->id,
-            'type' => WalletTransaction::SEND_MONEY_TYPE,
+            'type' => WalletTransaction::USER_TYPE,
         ]));
 
         $this->getState()->setBackRoute(self::createRoute('id', [
@@ -97,7 +97,7 @@ class UserController extends Controller
                         [
                             'callback_data' => TransactionController::createRoute('index', [
                                 'page' => 1,
-                                'type' => WalletTransaction::SEND_MONEY_TYPE,
+                                'type' => WalletTransaction::USER_TYPE,
                             ]),
                             'text' => Yii::t('bot', 'Send money'),
                         ],

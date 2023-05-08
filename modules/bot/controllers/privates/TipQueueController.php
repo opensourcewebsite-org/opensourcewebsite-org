@@ -44,7 +44,6 @@ class TipQueueController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('select-wallet', [
-                                'page' => 1,
                                 'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'CONTINUE'),
@@ -89,6 +88,17 @@ class TipQueueController extends Controller
         $query = $this->globalUser->getWalletsWithPositiveBalance()
             ->orderByCurrencyCode();
 
+        if (!$query->count()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('../alert', [
+                        'alert' => Yii::t('bot', 'You do not have wallets with positive balance') . '.',
+                    ]),
+                    true
+                )
+                ->build();
+        }
+
         $pagination = new Pagination([
             'totalCount' => $query->count(),
             'pageSize' => 9,
@@ -99,31 +109,29 @@ class TipQueueController extends Controller
             'validatePage' => true,
         ]);
 
-        $buttons = [];
-
         $wallets = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
-        if ($wallets) {
-            foreach ($wallets as $wallet) {
-                $buttons[][] = [
-                    'callback_data' => self::createRoute('set-user-count', [
-                        'id' => $wallet->getCurrencyId(),
-                    ]),
-                    'text' => $wallet->amount . ' ' . $wallet->currency->code,
-                ];
-            }
+        $buttons = [];
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-                return self::createRoute('index', [
-                    'page' => $page,
-                ]);
-            });
+        foreach ($wallets as $wallet) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('set-user-count', [
+                    'id' => $wallet->getCurrencyId(),
+                ]),
+                'text' => $wallet->amount . ' ' . $wallet->currency->code,
+            ];
+        }
 
-            if ($paginationButtons) {
-                $buttons[] = $paginationButtons;
-            }
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            return self::createRoute('index', [
+                'page' => $page,
+            ]);
+        });
+
+        if ($paginationButtons) {
+            $buttons[] = $paginationButtons;
         }
 
         $buttons[] = [
@@ -140,15 +148,9 @@ class TipQueueController extends Controller
             ],
         ];
 
-        $viewName = 'select-wallet';
-
-        if (empty($wallets)) {
-            $viewName = 'no-wallet-with-positive-balance';
-        }
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render($viewName),
+                $this->render('select-wallet'),
                 $buttons
             )
             ->build();

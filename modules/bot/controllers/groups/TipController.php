@@ -190,7 +190,7 @@ class TipController extends Controller
                     'callback_data' => self::createRoute('index', [
                         'chatTipId' => $chatTip->id,
                     ]),
-                    'text' => Emoji::ADD . Emoji::GIFT,
+                    'text' => Emoji::ADD . Emoji::THANKS,
                 ],
             ],
         ];

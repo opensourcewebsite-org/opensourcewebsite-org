@@ -111,7 +111,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 1,
                             ]),
-                            'text' => ($chat->filter_remove_reply == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: reply'),
+                            'text' => ($chat->filter_remove_reply == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': reply',
                         ],
                     ],
                     [
@@ -120,7 +120,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 2,
                             ]),
-                            'text' => ($chat->filter_remove_username == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: username'),
+                            'text' => ($chat->filter_remove_username == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': username',
                         ],
                     ],
                     [
@@ -129,7 +129,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 3,
                             ]),
-                            'text' => ($chat->filter_remove_emoji == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: emoji'),
+                            'text' => ($chat->filter_remove_emoji == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ':  emoji',
                         ],
                     ],
                     [
@@ -138,7 +138,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 4,
                             ]),
-                            'text' => ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: empty line'),
+                            'text' => ($chat->filter_remove_empty_line == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': empty line',
                         ],
                     ],
                     [
@@ -147,7 +147,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 5,
                             ]),
-                            'text' => ($chat->filter_remove_channels == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: channels'),
+                            'text' => ($chat->filter_remove_channels == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': channels',
                         ],
                     ],
                     [
@@ -156,7 +156,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 6,
                             ]),
-                            'text' => ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: styled texts'),
+                            'text' => ($chat->filter_remove_styled_texts == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': styled texts',
                         ],
                     ],
                     [
@@ -165,7 +165,7 @@ class GroupMessageFilterController extends Controller
                                 'id' => $chat->id,
                                 'i' => 7,
                             ]),
-                            'text' => ($chat->filter_remove_locations == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: locations'),
+                            'text' => ($chat->filter_remove_locations == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': locations',
                         ],
                     ],
                     [

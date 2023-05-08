@@ -210,7 +210,7 @@ class TipQueueController extends Controller
                 'to_user_id' => $chatTipQueueUser->user->globalUser->id,
                 'amount' => $chatTipQueue->userAmount,
                 'currency_id' => $chatTipQueue->currency->id,
-                'type' => WalletTransaction::TIP_WITHOUT_REPLY_TYPE,
+                'type' => WalletTransaction::GROUP_GIFT_TYPE,
             ]);
 
             $walletTransaction->setData(WalletTransaction::CHAT_TIP_QUEUE_USER_ID_DATA_KEY, $chatTipQueueUser->id);

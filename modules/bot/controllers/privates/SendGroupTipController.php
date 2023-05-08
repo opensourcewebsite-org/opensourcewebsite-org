@@ -83,16 +83,11 @@ class SendGroupTipController extends Controller
 
         if (!$query->count()) {
             return $this->getResponseBuilder()
-                ->editMessageTextOrSendMessage(
-                    $this->render('warning-no-wallets'),
-                    [
-                        [
-                            [
-                                'callback_data' => MenuController::createRoute(),
-                                'text' => 'OK',
-                            ],
-                        ],
-                    ]
+                ->answerCallbackQuery(
+                    $this->render('../alert', [
+                        'alert' => Yii::t('bot', 'You do not have wallets with positive balance') . '.',
+                    ]),
+                    true
                 )
                 ->build();
         }

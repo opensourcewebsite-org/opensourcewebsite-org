@@ -128,7 +128,7 @@ class MemberController extends Controller
         $walletTransaction = new WalletTransaction([
             'from_user_id' => $this->getTelegramUser()->getUserId(),
             'to_user_id' => $chatMember->user->globalUser->id,
-            'type' => WalletTransaction::SEND_MONEY_TYPE,
+            'type' => WalletTransaction::USER_TYPE,
         ]);
 
         $chatTip = ChatTip::findOne($chatTipId);
@@ -157,16 +157,14 @@ class MemberController extends Controller
                     [
                         [
                             'callback_data' => TransactionController::createRoute('index', [
-                                'page' => 1,
-                                'type' => WalletTransaction::SEND_TIP_TYPE,
+                                'type' => WalletTransaction::GROUP_REPLY_TIP_TYPE,
                             ]),
-                            'text' => Yii::t('bot', 'Send a Tip'),
+                            'text' => Yii::t('bot', 'Send a Thanks'),
                             'visible' => !empty($chatTip),
                         ],
                         [
                             'callback_data' => TransactionController::createRoute('index', [
-                                'page' => 1,
-                                'type' => WalletTransaction::SEND_MONEY_TYPE,
+                                'type' => WalletTransaction::USER_TYPE,
                             ]),
                             'text' => Yii::t('bot', 'Send money'),
                         ],

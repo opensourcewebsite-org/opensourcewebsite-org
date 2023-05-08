@@ -1,12 +1,12 @@
 <b>+<?= $walletTransaction->amount ?> <?= $walletTransaction->currency->code ?></b><br/>
 <br/>
 <?= Yii::t('bot', 'Sender') ?>: <?= $walletTransaction->fromUser->botUser->getFullLink() ?><br/>
-<br/>
 <?php if ($walletTransaction->hasTypeLabel()): ?>
-<?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <br/>
+<?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <?php endif; ?>
 <?php if ($walletTransaction->hasGroupLabel()): ?>
+<br/>
 <?= Yii::t('bot', 'Group') ?>: <?= $walletTransaction->getGroupLabel() ?><br/>
 <?php endif; ?>
 ————<br/>

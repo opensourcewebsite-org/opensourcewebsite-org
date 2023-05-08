@@ -65,6 +65,17 @@ class TransactionController extends Controller
         $query = $this->globalUser->getWalletsWithPositiveBalance()
             ->orderByCurrencyCode();
 
+        if (!$query->count()) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('../alert', [
+                        'alert' => Yii::t('bot', 'You do not have wallets with positive balance') . '.',
+                    ]),
+                    true
+                )
+                ->build();
+        }
+
         $pagination = new Pagination([
             'totalCount' => $query->count(),
             'pageSize' => 9,
@@ -75,32 +86,30 @@ class TransactionController extends Controller
             'validatePage' => true,
         ]);
 
-        $buttons = [];
-
         $wallets = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
-        if ($wallets) {
-            foreach ($wallets as $wallet) {
-                $buttons[][] = [
-                    'callback_data' => self::createRoute('set-to-user', [
-                        'id' => $wallet->getCurrencyId(),
-                    ]),
-                    'text' => $wallet->amount . ' ' . $wallet->currency->code,
-                ];
-            }
+        $buttons = [];
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($type) {
-                return self::createRoute('index', [
-                    'page' => $page,
-                    'type' => $type,
-                ]);
-            });
+        foreach ($wallets as $wallet) {
+            $buttons[][] = [
+                'callback_data' => self::createRoute('set-to-user', [
+                    'id' => $wallet->getCurrencyId(),
+                ]),
+                'text' => $wallet->amount . ' ' . $wallet->currency->code,
+            ];
+        }
 
-            if ($paginationButtons) {
-                $buttons[] = $paginationButtons;
-            }
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($type) {
+            return self::createRoute('index', [
+                'page' => $page,
+                'type' => $type,
+            ]);
+        });
+
+        if ($paginationButtons) {
+            $buttons[] = $paginationButtons;
         }
 
         $buttons[] = [
@@ -114,15 +123,9 @@ class TransactionController extends Controller
             ],
         ];
 
-        $viewName = 'select-wallet';
-
-        if (empty($wallets)) {
-            $viewName = 'no-wallet-with-positive-balance';
-        }
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render($viewName),
+                $this->render('select-wallet'),
                 $buttons
             )
             ->build();
@@ -309,7 +312,7 @@ class TransactionController extends Controller
 
         $backRoute = self::createRoute('input-amount');
 
-        if ($walletTransaction->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+        if ($walletTransaction->type == WalletTransaction::GROUP_MEMBERSHIP_TYPE) {
             $backRoute = $this->getState()->getBackRoute();
         }
 
@@ -381,7 +384,7 @@ class TransactionController extends Controller
             }
 
             if (isset($chatTip->id)) {
-                if (in_array($walletTransaction->type, array(WalletTransaction::SEND_TIP_TYPE, WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE))) {
+                if (in_array($walletTransaction->type, array(WalletTransaction::GROUP_REPLY_TIP_TYPE, WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE))) {
                     $thisChat = $this->chat;
                     $module = Yii::$app->getModule('bot');
                     $module->setChat(Chat::findOne($chatTip->chat_id));

@@ -43,11 +43,11 @@ class WalletTransaction extends ActiveRecord
     public const MAX_AMOUNT = 9999999999999.99;
 
     public const WALLET_TYPE = 0;
-    public const SEND_TIP_TYPE = 1;
-    public const SEND_MONEY_TYPE = 2;
-    public const SEND_ANONYMOUS_ADMIN_TIP_TYPE = 3;
-    public const TIP_WITHOUT_REPLY_TYPE = 4;
-    public const MEMBERSHIP_PAYMENT_TYPE = 5;
+    public const GROUP_REPLY_TIP_TYPE = 1;
+    public const USER_TYPE = 2;
+    public const GROUP_ANONYMOUS_REPLY_TIP_TYPE = 3;
+    public const GROUP_GIFT_TYPE = 4;
+    public const GROUP_MEMBERSHIP_TYPE = 5;
 
     public const FROM_USER_CHECK_FLAG = 1;
     public const TO_USER_CHECK_FLAG = 2;
@@ -115,11 +115,11 @@ class WalletTransaction extends ActiveRecord
     {
         return [
             self::WALLET_TYPE => '',
-            self::SEND_TIP_TYPE => Yii::t('app', 'Group Thanks'),
-            self::SEND_MONEY_TYPE => '',
-            self::SEND_ANONYMOUS_ADMIN_TIP_TYPE => Yii::t('app', 'Tip sending to anonymous admin transaction'),
-            self::TIP_WITHOUT_REPLY_TYPE => Yii::t('app', 'Tip without reply transaction'),
-            self::MEMBERSHIP_PAYMENT_TYPE => Yii::t('app', 'Membership payment'),
+            self::GROUP_REPLY_TIP_TYPE => Yii::t('app', 'Group Thanks'),
+            self::USER_TYPE => '',
+            self::GROUP_ANONYMOUS_REPLY_TIP_TYPE => Yii::t('app', 'Group Thanks'),
+            self::GROUP_GIFT_TYPE => Yii::t('app', 'Group Gift'),
+            self::GROUP_MEMBERSHIP_TYPE => Yii::t('app', 'Group Membership Fee'),
         ];
     }
 
@@ -323,7 +323,7 @@ class WalletTransaction extends ActiveRecord
             }
 
             switch ($this->type) {
-                case self::TIP_WITHOUT_REPLY_TYPE:
+                case self::GROUP_GIFT_TYPE:
                     $chatTipQueueUserId = $this->getData(self::CHAT_TIP_QUEUE_USER_ID_DATA_KEY);
                     if (!isset($chatTipQueueUserId)) {
                         throw new \Exception('Chat tip user id is not found in transaction');
@@ -337,7 +337,7 @@ class WalletTransaction extends ActiveRecord
                     $chatTipQueueUser->transaction_id = $this->id;
                     $chatTipQueueUser->save();
                     break;
-                case self::MEMBERSHIP_PAYMENT_TYPE:
+                case self::GROUP_MEMBERSHIP_TYPE:
                     $chatMemberId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
                     if (!isset($chatMemberId)) {
                         throw new \Exception('Chat member id is not found in transaction');
@@ -390,7 +390,7 @@ class WalletTransaction extends ActiveRecord
         $itemId = $this->getData(self::CHAT_TIP_ID_DATA_KEY);
         $itemClass = ChatTip::class;
 
-        if ($this->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+        if ($this->type == WalletTransaction::GROUP_MEMBERSHIP_TYPE) {
             $itemId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
             $itemClass = ChatMember::class;
         }
@@ -423,7 +423,7 @@ class WalletTransaction extends ActiveRecord
         $itemId = $this->getData(self::CHAT_TIP_ID_DATA_KEY);
         $itemClass = ChatTip::class;
 
-        if ($this->type == WalletTransaction::MEMBERSHIP_PAYMENT_TYPE) {
+        if ($this->type == WalletTransaction::GROUP_MEMBERSHIP_TYPE) {
             $itemId = $this->getData(self::CHAT_MEMBER_ID_DATA_KEY);
             $itemClass = ChatMember::class;
         }
