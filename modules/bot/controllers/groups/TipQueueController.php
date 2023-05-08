@@ -124,7 +124,7 @@ class TipQueueController extends Controller
 
         $botUser = $this->getTelegramUser();
 
-        if (false && $botUser->id == $chatTipQueue->user->id) {
+        if ($botUser->id == $chatTipQueue->user->id) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -201,8 +201,6 @@ class TipQueueController extends Controller
                 if ($processedUserCount >= $chatTipQueue->userCount) {
                     goto CLOSE_QUEUE;
                 }
-
-                updateMessage($chatTipQueue);
             }
 
             $walletTransaction = new WalletTransaction([

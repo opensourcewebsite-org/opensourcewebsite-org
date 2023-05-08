@@ -26,7 +26,7 @@ class GroupGuestController extends Controller
      * @param int $id Chat->id
      * @return array
      */
-    public function actionView($id = null, $chatTipId = null)
+    public function actionView($id = null)
     {
         $chat = Chat::findOne($id);
 
@@ -49,41 +49,6 @@ class GroupGuestController extends Controller
         $buttons = [];
 
         if ($chatMember) {
-            $chatTip = ChatTip::findOne($chatTipId);
-
-            if ($chatTip) {
-
-                if (!isset($chatTip->toUser->globalUser->id)) {
-                    return $this->getResponseBuilder()
-                        ->answerCallbackQuery()
-                        ->build();
-                }
-
-                $walletTransaction = new WalletTransaction([
-                    'from_user_id' => $this->getTelegramUser()->getUserId(),
-                    'to_user_id' => $chatTip->toUser->globalUser->id,
-                    'type' => WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE,
-                    'anonymity' => 1,
-                ]);
-
-                $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
-                $this->getState()->setItem($walletTransaction);
-
-                $this->getState()->setBackRoute(self::createRoute('view', [
-                    'id' => $id,
-                    'chatTipId' => $chatTip->id,
-                ]));
-
-                $buttons[] = [
-                    [
-                        'callback_data' => TransactionController::createRoute('index', [
-                            'page' => 1,
-                            'type' => WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE,
-                        ]),
-                        'text' => Yii::t('bot', 'Send a Thanks'),
-                    ],
-                ];
-            }
 
             $toUserChatMember = ChatMember::findOne([
                 'chat_id' => $chatMember->getChatId(),
@@ -620,14 +585,14 @@ class GroupGuestController extends Controller
         $wallet = $chatMember->user->getWalletByCurrencyId($chatMember->chat->currency->id);
 
         if (!isset($wallet) || !$wallet->hasAmount($chatMember->membership_tariff_price)) {
-                return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('../alert', [
-                        'alert' => Yii::t('bot', 'You do not have wallets with sufficient balance') . '.',
-                    ]),
-                    true
-                )
-                ->build();
+            return $this->getResponseBuilder()
+            ->answerCallbackQuery(
+                $this->render('../alert', [
+                    'alert' => Yii::t('bot', 'You do not have wallets with sufficient balance') . '.',
+                ]),
+                true
+            )
+            ->build();
         }
 
         $walletTransaction = new WalletTransaction([
@@ -673,6 +638,70 @@ class GroupGuestController extends Controller
                     'chatMember' => $chatMember,
                 ]),
                 $buttons
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     *
+     * @return array
+     */
+    public function actionSendTip($id = null, $chatTipId = null)
+    {
+        $chatMember = ChatMember::findOne($id);
+
+        if (!isset($chatMember)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $chatTip = ChatTip::findOne($chatTipId);
+
+        if (!isset($chatTip)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $walletTransaction = new WalletTransaction([
+            'from_user_id' => $this->getTelegramUser()->getUserId(),
+            'to_user_id' => $chatMember->user->globalUser->id,
+            'type' => WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE,
+            'anonymity' => 1,
+        ]);
+
+        $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
+
+        $this->getState()->setItem($walletTransaction);
+
+        $this->getState()->setBackRoute(self::createRoute('send-tip', [
+            'id' => $id,
+            'chatTipId' => $chatTipId,
+        ]));
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('send-tip', [
+                    'chatTip' => $chatTip,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => TransactionController::createRoute('index', [
+                                'type' => WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE,
+                            ]),
+                            'text' => Yii::t('bot', 'CONTINUE'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
             )
             ->build();
     }
