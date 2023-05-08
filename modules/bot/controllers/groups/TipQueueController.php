@@ -124,7 +124,7 @@ class TipQueueController extends Controller
 
         $botUser = $this->getTelegramUser();
 
-        if (false && $botUser->id == $chatTipQueue->user->id) {
+        if ($botUser->id == $chatTipQueue->user->id) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
