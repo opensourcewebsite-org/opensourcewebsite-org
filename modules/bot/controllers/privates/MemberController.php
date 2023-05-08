@@ -75,7 +75,7 @@ class MemberController extends Controller
     /**
      * @return array
      */
-    public function actionId($id = null, $chatTipId = null)
+    public function actionId($id = null)
     {
         if ($id) {
             $memberId = $id;
@@ -117,13 +117,10 @@ class MemberController extends Controller
             }
         }
 
-        $this->getState()->setInputRoute(json_encode($chatTipId));
-
         $chatMemberReview = ChatMemberReview::findOne([
             'user_id' => $user->id,
             'member_id' => $chatMember->id,
         ]);
-
 
         $walletTransaction = new WalletTransaction([
             'from_user_id' => $this->getTelegramUser()->getUserId(),
@@ -131,17 +128,10 @@ class MemberController extends Controller
             'type' => WalletTransaction::USER_TYPE,
         ]);
 
-        $chatTip = ChatTip::findOne($chatTipId);
-
-        if ($chatTip) {
-            $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
-        }
-
         $this->getState()->setItem($walletTransaction);
 
         $this->getState()->setBackRoute(self::createRoute('id', [
-            'id' => $id,
-            'chatTipId' => $chatTipId,
+            'id' => $chatMember->id,
         ]));
 
         return $this->getResponseBuilder()
@@ -155,13 +145,6 @@ class MemberController extends Controller
                 ]),
                 [
                     [
-                        [
-                            'callback_data' => TransactionController::createRoute('index', [
-                                'type' => WalletTransaction::GROUP_REPLY_TIP_TYPE,
-                            ]),
-                            'text' => Yii::t('bot', 'Send a Thanks'),
-                            'visible' => !empty($chatTip),
-                        ],
                         [
                             'callback_data' => TransactionController::createRoute('index', [
                                 'type' => WalletTransaction::USER_TYPE,
@@ -211,11 +194,9 @@ class MemberController extends Controller
      *
      * @return array
      */
-    public function actionSendTip($id = null)
+    public function actionSendTip($id = null, $chatTipId = null)
     {
-        $chatMember = ChatMember::findOne([
-            'id' => $id,
-        ]);
+        $chatMember = ChatMember::findOne($id);
 
         if (!isset($chatMember)) {
             return $this->getResponseBuilder()
@@ -223,21 +204,52 @@ class MemberController extends Controller
                 ->build();
         }
 
-        $chatTipId = json_decode($this->getState()->getInputRoute());
         $chatTip = ChatTip::findOne($chatTipId);
 
         if (!isset($chatTip)) {
-            $chatTip = new ChatTip([
-                'chat_id' => $chatMember->chat_id,
-                'to_user_id' => $chatMember->user_id,
-            ]);
-
-            $chatTip->save();
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
         }
 
-        return $this->run('send-group-tip/index', [
-            'chatTipId' => $chatTip->id,
+        $walletTransaction = new WalletTransaction([
+            'from_user_id' => $this->getTelegramUser()->getUserId(),
+            'to_user_id' => $chatMember->user->globalUser->id,
+            'type' => WalletTransaction::GROUP_REPLY_TIP_TYPE,
         ]);
+
+        $walletTransaction->setData(WalletTransaction::CHAT_TIP_ID_DATA_KEY, $chatTip->id);
+
+        $this->getState()->setItem($walletTransaction);
+
+        $this->getState()->setBackRoute(self::createRoute('send-tip', [
+            'id' => $id,
+            'chatTipId' => $chatTip->id,
+        ]));
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('send-tip', [
+                    'chatTip' => $chatTip,
+                ]),
+                [
+                    [
+                        [
+                            'callback_data' => TransactionController::createRoute('index', [
+                                'type' => WalletTransaction::GROUP_REPLY_TIP_TYPE,
+                            ]),
+                            'text' => Yii::t('bot', 'CONTINUE'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => MenuController::createRoute(),
+                            'text' => Emoji::MENU,
+                        ],
+                    ],
+                ]
+            )
+            ->build();
     }
 
     /**
