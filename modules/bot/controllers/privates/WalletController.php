@@ -377,19 +377,20 @@ class WalletController extends Controller
                 ->build();
         }
 
-        $this->getState()->clearInputRoute();
-
-        if ($walletTransaction->fromUser->id != $this->getGlobalUser()->id) {
+        if (($walletTransaction->fromUser->id != $this->getGlobalUser()->id) && ($walletTransaction->toUser->id != $this->getGlobalUser()->id)) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
         }
+
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('transaction', [
                     'walletTransaction' => $walletTransaction,
                     'timezone' => $this->getGlobalUser()->timezone,
+                    'user'=> $this->getTelegramUser(),
                 ]),
                 [
                     [

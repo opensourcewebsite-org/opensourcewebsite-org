@@ -1,8 +1,7 @@
-<b><?= Yii::t('bot', 'Multitip confirmation') ?></b><br/>
+<b><?= Yii::t('bot', 'Group') ?>: <?= $chatTipQueue->chat->title ?></b><?= $chatTipQueue->chat->username ? ' (@' . $chatTipQueue->chat->username . ')' : '' ?><br/>
 <br/>
-<?= Yii::t('bot', 'Group') ?>: <b><?= $chatTipQueue->chat->title ?></b> <?= $chatTipQueue->chat->username ? ' (@' . $chatTipQueue->chat->username . ')' : '' ?>
+<?= Yii::t('bot', 'Confirmation') ?>. <?= Yii::t('bot', 'Financial gifts for this group') ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'User amount') ?>: <?= $chatTipQueue->userAmount; ?> <?= $chatTipQueue->currency->code; ?>
+<?= Yii::t('bot', 'Number of gifts') ?>: <?= $chatTipQueue->userCount; ?><br/>
 <br/>
-<?= Yii::t('bot', 'User count') ?>: <?= $chatTipQueue->userCount; ?>
-<br/>
+<?= Yii::t('bot', 'Gift amount') ?>: <?= $chatTipQueue->userAmount; ?> <?= $chatTipQueue->currency->code; ?><br/>

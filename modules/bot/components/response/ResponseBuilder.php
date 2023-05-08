@@ -281,16 +281,23 @@ class ResponseBuilder
         array $optionalParamsFilter
     ): array {
         foreach ($replyMarkup as $key1 => $rowButtons) {
+            $isButtonRemoved = false;
+
             foreach ($rowButtons as $key2 => $button) {
                 // remove all buttons with visible = 0
                 if (isset($button['visible'])) {
                     if ($button['visible']) {
                         unset($replyMarkup[$key1][$key2]['visible']);
                     } else {
+                        $isButtonRemoved = true;
                         unset($replyMarkup[$key1][$key2]);
                         unset($rowButtons[$key2]);
                     }
                 }
+            }
+            // reindexing the row array in case of deleting a button in a row array
+            if ($isButtonRemoved && count($rowButtons)) {
+                $replyMarkup[$key1] = array_values($replyMarkup[$key1]);
             }
         }
 
@@ -300,6 +307,8 @@ class ResponseBuilder
             ],
             ArrayHelper::filter($optionalParams, $optionalParamsFilter)
         );
+
+        Yii::warning($replyMarkup);
 
         return $optionalParams;
     }

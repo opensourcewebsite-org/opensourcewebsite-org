@@ -36,8 +36,6 @@ class GroupGuestController extends Controller
                 ->build();
         }
 
-        $this->getState()->clearInputRoute();
-
         $chatMember = $chat->getChatMemberByUserId();
 
         if (!$chat->hasUsername() && !$chatMember) {
@@ -45,6 +43,8 @@ class GroupGuestController extends Controller
                 ->answerCallbackQuery()
                 ->build();
         }
+
+        $this->getState()->clearInputRoute();
 
         $buttons = [];
 
@@ -62,7 +62,7 @@ class GroupGuestController extends Controller
                 $walletTransaction = new WalletTransaction([
                     'from_user_id' => $this->getTelegramUser()->getUserId(),
                     'to_user_id' => $chatTip->toUser->globalUser->id,
-                    'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                    'type' => WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE,
                     'anonymity' => 1,
                 ]);
 
@@ -78,9 +78,9 @@ class GroupGuestController extends Controller
                     [
                         'callback_data' => TransactionController::createRoute('index', [
                             'page' => 1,
-                            'type' => WalletTransaction::SEND_ANONYMOUS_ADMIN_TIP_TYPE,
+                            'type' => WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE,
                         ]),
-                        'text' => Yii::t('bot', 'Send a Tip'),
+                        'text' => Yii::t('bot', 'Send a Thanks'),
                     ],
                 ];
             }
@@ -93,10 +93,10 @@ class GroupGuestController extends Controller
             if (isset($toUserChatMember) && $toUserChatMember->id != $chatMember->id) {
                 $buttons[] = [
                     [
-                        'callback_data' => self::createRoute('pay-for-membership', [
+                        'callback_data' => self::createRoute('renew-membership', [
                             'id' => $chatMember->id,
                         ]),
-                        'text' => Yii::t('bot', 'Renew Membership'),
+                        'text' => Yii::t('bot', 'Renew membership'),
                         'visible' => $chatMember->hasMembershipTariff(),
                     ],
                 ];
@@ -596,7 +596,7 @@ class GroupGuestController extends Controller
      * @param int $page
      * @return array
      */
-    public function actionPayForMembership($id = null)
+    public function actionRenewMembership($id = null)
     {
         $chatMember = ChatMember::findOne($id);
 
@@ -619,35 +619,40 @@ class GroupGuestController extends Controller
 
         $wallet = $chatMember->user->getWalletByCurrencyId($chatMember->chat->currency->id);
 
-        $viewName = 'pay-for-membership';
-
         if (!isset($wallet) || !$wallet->hasAmount($chatMember->membership_tariff_price)) {
-            $viewName = 'has-not-money';
-        } else {
-            $walletTransaction = new WalletTransaction([
-                'from_user_id' => $chatMember->user->globalUser->id,
-                'to_user_id' => $toUserChatMember->user->globalUser->id,
-                'amount' => $chatMember->membership_tariff_price,
-                'currency_id' => $chatMember->chat->currency->id,
-                'type' => WalletTransaction::MEMBERSHIP_PAYMENT_TYPE,
-                'anonymity' => 1,
-            ]);
-
-            $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
-
-            $this->getState()->setItem($walletTransaction);
-
-            $this->getState()->setBackRoute(self::createRoute('pay-for-membership', [
-                'id' => $chatMember->id,
-            ]));
-
-            $buttons[] = [
-                [
-                    'callback_data' => TransactionController::createRoute('confirmation'),
-                    'text' => Yii::t('bot', 'CONTINUE'),
-                ],
-            ];
+                return $this->getResponseBuilder()
+                ->answerCallbackQuery(
+                    $this->render('../alert', [
+                        'alert' => Yii::t('bot', 'You do not have wallets with sufficient balance') . '.',
+                    ]),
+                    true
+                )
+                ->build();
         }
+
+        $walletTransaction = new WalletTransaction([
+            'from_user_id' => $chatMember->user->globalUser->id,
+            'to_user_id' => $toUserChatMember->user->globalUser->id,
+            'amount' => $chatMember->membership_tariff_price,
+            'currency_id' => $chatMember->chat->currency->id,
+            'type' => WalletTransaction::GROUP_MEMBERSHIP_TYPE,
+            'anonymity' => 1,
+        ]);
+
+        $walletTransaction->setData(WalletTransaction::CHAT_MEMBER_ID_DATA_KEY, $chatMember->id);
+
+        $this->getState()->setItem($walletTransaction);
+
+        $this->getState()->setBackRoute(self::createRoute('renew-membership', [
+            'id' => $chatMember->id,
+        ]));
+
+        $buttons[] = [
+            [
+                'callback_data' => TransactionController::createRoute('confirmation'),
+                'text' => Yii::t('bot', 'CONTINUE'),
+            ],
+        ];
 
         $buttons[] = [
             [
@@ -664,7 +669,7 @@ class GroupGuestController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render($viewName, [
+                $this->render('renew-membership', [
                     'chatMember' => $chatMember,
                 ]),
                 $buttons

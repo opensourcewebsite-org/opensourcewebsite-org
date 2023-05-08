@@ -218,6 +218,11 @@ class ChatTipQueue extends ActiveRecord
         return $this->getQueueUsers()->where(['>', 'transaction_id', '0'])->count();
     }
 
+    public function getQueueAvailableUsersCount()
+    {
+        return $this->userCount - $this->getQueueProcessedUsersCount();
+    }
+
     public function getQueuePaidSum()
     {
         return Number::floatMul($this->getQueueProcessedUsersCount(), $this->userAmount);

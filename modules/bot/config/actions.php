@@ -104,4 +104,6 @@ return [
     'take_tip',
     'select_wallet',
     'pay_for_membership',
+    'renew_membership',
+    'transaction',
 ];
