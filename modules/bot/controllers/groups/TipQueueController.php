@@ -201,8 +201,6 @@ class TipQueueController extends Controller
                 if ($processedUserCount >= $chatTipQueue->userCount) {
                     goto CLOSE_QUEUE;
                 }
-
-                updateMessage($chatTipQueue);
             }
 
             $walletTransaction = new WalletTransaction([
