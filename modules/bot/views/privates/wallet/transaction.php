@@ -17,4 +17,3 @@
 <br/>
 <?= Yii::t('bot', 'Fee') ?>: <?= $walletTransaction->fee ?> <?= $walletTransaction->currency->code ?><br/>
 <?php endif; ?>
-    
