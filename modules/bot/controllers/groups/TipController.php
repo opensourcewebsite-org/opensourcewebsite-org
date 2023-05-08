@@ -63,7 +63,7 @@ class TipController extends Controller
                     }
 
                     $toUser = $chatMember->user;
-                    $actionName = 'group-guest/view';
+                    $actionName = 'group-guest/send-tip';
                 } elseif ($toUser->isBot()) {
                     return [];
                 }
@@ -98,7 +98,7 @@ class TipController extends Controller
 
             foreach ($walletTransactions as $transaction) {
                 if ($transaction->anonymity) {
-                    $actionName = 'group-guest/view';
+                    $actionName = 'group-guest/send-tip';
                     $actionParams = [
                         'id' => $chat->id,
                         'chatTipId' => $chatTip->id,
@@ -134,7 +134,7 @@ class TipController extends Controller
         $module->setChat($privateChat);
 
         if (!isset($actionName)) {
-            $actionName = 'member/id';
+            $actionName = 'member/send-tip';
             $actionParams = [
                 'id' => $chatTip->chat->getChatMemberByUser($toUser)->id,
                 'chatTipId' => $chatTip->id,
