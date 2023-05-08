@@ -1,7 +1,7 @@
 <b><?= Yii::t('bot', 'Transfer confirmation') ?></b><br/>
 <?php if ($walletTransaction->hasTypeLabel()): ?>
-<?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <br/>
+<?= Yii::t('bot', 'Description') ?>: <?= $walletTransaction->getTypeLabel() ?><br/>
 <?php endif; ?>
 <?php if (!$walletTransaction->anonymity): ?>
 <br/>
