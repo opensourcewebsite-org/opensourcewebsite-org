@@ -1,5 +1,5 @@
 <b><?= Yii::t('bot', 'Group') ?>: <?= $chatTip->chat->title ?></b><?= $chatTip->chat->username ? ' (@' . $chatTip->chat->username . ')' : '' ?><br/>
 <br/>
-<?= Yii::t('bot', 'Reciever') ?>: <?= $chatTip->toUser->getFullLink() ?><br/>
+<?= Yii::t('bot', 'Preparation') ?>. <?= Yii::t('bot', 'Financial thanks for this member') ?>.<br/>
 <br/>
-<?= Yii::t('bot', 'Preparation') ?>. <?= Yii::t('bot', 'Financial gift for this user') ?>.<br/>
+<?= Yii::t('bot', 'Receiver') ?>: <?= $chatTip->toUser->getFullLink() ?><br/>
