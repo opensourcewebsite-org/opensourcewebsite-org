@@ -1,7 +1,7 @@
 <?php
 
 // add new values to the end
-// erase instead deleting 'controllerName' -> ''
+// erase instead deleting 'controllerName' => ''
 // so that the index is not violated
 return [
     'start',

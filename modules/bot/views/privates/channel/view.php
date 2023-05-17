@@ -11,7 +11,7 @@ use app\components\helpers\TimeHelper;
 <?php endforeach; ?>
 <br/>
 <i><?= Yii::t('bot', 'Only the owner of the channel can configure the list of administrators who have access to the settings of this channel') ?>.</i><br/>
-<br/>
+————<br/>
 <?= Yii::t('bot', 'Timezone') ?>: <?= TimeHelper::getNameByOffset($chat->timezone) ?><br/>
 <?php if ($currency = $chat->currency) : ?>
 <?= Yii::t('bot', 'Currency') ?>: <?= $currency->code . ' - ' . $currency->name ?><br/>

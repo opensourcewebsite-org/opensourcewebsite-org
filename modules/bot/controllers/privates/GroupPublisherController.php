@@ -320,6 +320,14 @@ class GroupPublisherController extends Controller
                     ],
                     [
                         [
+                            'callback_data' => self::createRoute('set-text', [
+                                'id' => $post->id,
+                            ]),
+                            'text' => Yii::t('app', 'Text'),
+                        ],
+                    ],
+                    [
+                        [
                             'callback_data' => self::createRoute('set-time', [
                                 'id' => $post->id,
                             ]),
@@ -332,14 +340,6 @@ class GroupPublisherController extends Controller
                                 'id' => $post->id,
                             ]),
                             'text' => Yii::t('bot', 'Skip days') . ': ' . $post->getSkipDays(),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => self::createRoute('set-text', [
-                                'id' => $post->id,
-                            ]),
-                            'text' => Yii::t('app', 'Text'),
                         ],
                     ],
                     [
@@ -573,8 +573,8 @@ class GroupPublisherController extends Controller
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
                 $post->text = $text;
 
-                if ($post->validate('text')) {
-                    $post->save(false);
+                if ($post->validate('text') && $post->save(false)) {
+                    return $this->actionPost($post->id);
                 }
             }
         }

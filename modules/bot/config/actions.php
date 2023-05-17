@@ -1,7 +1,7 @@
 <?php
 
 // add new values to the end
-// erase instead deleting 'actionName' -> ''
+// erase instead deleting 'actionName' => ''
 // so that the index is not violated
 return [
     'view',
@@ -106,4 +106,8 @@ return [
     'pay_for_membership',
     'renew_membership',
     'transaction',
+    'set_member_membership_date',
+    'set_member_verification_date',
+    'delete_member_membership_date',
+    'delete_member_verification_date',
 ];

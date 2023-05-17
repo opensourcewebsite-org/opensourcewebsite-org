@@ -68,15 +68,6 @@ class GroupMembershipController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('send-group-message', [
-                                'id' => $chat->id,
-                            ]),
-                            'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new message to the group'),
-                            'visible' => $chat->getPremiumChatMembers()->exists(),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => GroupController::createRoute('view', [
                                 'chatId' => $chat->id,
                             ]),
@@ -344,9 +335,7 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $this->getState()->setInputRoute(self::createRoute('input-member-date', [
-            'id' => $member->id,
-        ]));
+        $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -393,10 +382,18 @@ class GroupMembershipController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('set-member-verification_date', [
+                            'callback_data' => self::createRoute('set-member-membership-date', [
                                 'id' => $member->id,
                             ]),
-                            'text' => Yii::t('bot', 'Verification date'),
+                            'text' => Yii::t('bot', 'Membership end date'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-member-verification-date', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Verification end date'),
                         ],
                     ],
                     [
@@ -411,7 +408,7 @@ class GroupMembershipController extends Controller
                             'text' => Emoji::MENU,
                         ],
                         [
-                            'callback_data' => self::createRoute('delete-member-date', [
+                            'callback_data' => self::createRoute('delete-member-membership-date', [
                                 'id' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
@@ -422,11 +419,11 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
-    /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionInputMemberDate($id = null)
+        /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberMembershipDate($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -444,6 +441,10 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
+        $this->getState()->setInputRoute(self::createRoute('set-member-membership-date', [
+            'id' => $member->id,
+        ]));
+
         if ($this->getUpdate()->getMessage()) {
             if ($text = $this->getUpdate()->getMessage()->getText()) {
                 $dateValidator = new DateValidator();
@@ -460,7 +461,19 @@ class GroupMembershipController extends Controller
         }
 
         return $this->getResponseBuilder()
-            ->answerCallbackQuery()
+            ->editMessageTextOrSendMessage(
+                $this->render('set-member-membership-date'),
+                [
+                    [
+                        [
+                            'callback_data' => self::createRoute('member', [
+                                'id' => $member->id,
+                            ]),
+                            'text' => Emoji::BACK,
+                        ],
+                    ],
+                ]
+            )
             ->build();
     }
 
@@ -532,7 +545,7 @@ class GroupMembershipController extends Controller
     * @param int $id ChatMember->id
     * @return array
     */
-    public function actionDeleteMemberDate($id = null)
+    public function actionDeleteMemberMembershipDate($id = null)
     {
         $member = ChatMember::findOne($id);
 
@@ -977,39 +990,6 @@ class GroupMembershipController extends Controller
                     ],
                 ]
             )
-            ->build();
-    }
-
-    /**
-     * @param int $id Chat->id
-     * @return array
-     */
-    public function actionSendGroupMessage($id = null)
-    {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $thisChat = $this->chat;
-        $module = Yii::$app->getModule('bot');
-        $module->setChat($chat);
-        $response = $module->runAction('premium-members/index');
-        $module->setChat($thisChat);
-
-        if ($response) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery(
-                    $this->render('../alert-ok')
-                )
-                ->build();
-        }
-
-        return $this->getResponseBuilder()
-            ->answerCallbackQuery()
             ->build();
     }
 }
