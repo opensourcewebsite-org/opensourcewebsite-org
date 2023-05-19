@@ -16,5 +16,5 @@ use app\components\helpers\TimeHelper;
 <?php if ($currency = $chat->currency) : ?>
 <?= Yii::t('bot', 'Currency') ?>: <?= $currency->code . ' - ' . $currency->name ?><br/>
 <?php endif; ?>
-<br/>
+————<br/>
 <?= Yii::t('bot', 'Public link to view information about the channel'); ?>: <?= $chat->getLink() ?><br/>

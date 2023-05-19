@@ -16,10 +16,5 @@ use app\components\helpers\TimeHelper;
 <?php if ($currency = $chat->currency) : ?>
 <?= Yii::t('bot', 'Currency') ?>: <?= $currency->code . ' - ' . $currency->name ?><br/>
 <?php endif; ?>
-<br/>
-<?= Yii::t('bot', 'Public link to view information about the group'); ?>: <?= $chat->getLink() ?><br/>
 ————<br/>
-<?= Yii::t('bot', 'Available commands in this group (as a reply to another message)') ?>:<br/>
-  <code>/warn</code> - <?= Yii::t('bot', 'delete a member\'s message, send a personal notification about violation of group rules') ?>.<br/>
-  <code>/mute</code> - <?= Yii::t('bot', 'delete a member\'s message, send a personal notification about violation of group rules, mute the member in the group') ?>.<br/>
-  <code>/ban</code> - <?= Yii::t('bot', 'delete a member\'s message, send a personal notification about violation of group rules, ban the member in the group') ?>.<br/>
+<?= Yii::t('bot', 'Public link to view information about the group'); ?>: <?= $chat->getLink() ?><br/>
