@@ -129,11 +129,6 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Contacts'), 'url' =>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th class="align-middle"><?= $contact->getAttributeLabel('is_basic_income_candidate'); ?></th>
-                                    <td class="align-middle"><?= $contact->getIsBasicIncomeCandidateLabel(); ?></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
                                     <th class="align-middle"><?= $contact->getAttributeLabel('vote_delegation_priority'); ?></th>
                                     <td class="align-middle"><?= $contact->vote_delegation_priority ?: Html::badge('secondary', Yii::t('app', 'DENY')); ?></td>
                                     <td></td>

@@ -37,9 +37,6 @@ use yii\web\IdentityInterface;
  * @property integer $currency_id
  * @property integer $sexuality_id
  * @property bool $gender
- * @property bool $basic_income_on
- * @property integer $basic_income_activated_at
- * @property integer $basic_income_processed_at
  *
  * @property Company[] $companies
  * @property app\modules\bot\models\User $botUser
@@ -82,10 +79,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['gender_id', 'sexuality_id', 'currency_id', 'rating'], 'integer'],
-            [['created_at', 'updated_at', 'last_activity_at', 'basic_income_activated_at', 'basic_income_processed_at'], 'integer'],
+            [['created_at', 'updated_at', 'last_activity_at'], 'integer'],
             [['created_at', 'updated_at', 'last_activity_at'], 'default', 'value' => time()],
-            ['basic_income_on', 'boolean'],
-            ['basic_income_on', 'default', 'value' => 1],
             ['birthday', 'date'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
@@ -231,11 +226,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function isEmailConfirmed()
     {
         return $this->email && $this->email->isConfirmed();
-    }
-
-    public function isStellarConfirmed()
-    {
-        return $this->stellar && $this->stellar->isConfirmed();
     }
 
     // Compatible with IdentityInterface
@@ -680,46 +670,6 @@ class User extends ActiveRecord implements IdentityInterface
         return true;
     }
 
-    public function updateBasicIncomeActivatedAt()
-    {
-        $totalRating = Rating::find()
-            ->where([
-                'user_id' => $this->id,
-            ])
-            ->sum('amount');
-
-        if ($this->rating != ($totalRating + Rating::DEFAULT)) {
-            $this->rating = $totalRating + Rating::DEFAULT;
-            $this->save(false);
-        }
-
-        return true;
-    }
-
-    public function resetBasicIncomeProcessedAt()
-    {
-        if ($this->basic_income_processed_at) {
-            $this->basic_income_processed_at = null;
-            $this->save(false);
-        }
-    }
-
-    public function confirmBasicIncomeActivatedAt()
-    {
-        if (!$this->basic_income_activated_at) {
-            $this->basic_income_activated_at = time();
-            $this->save(false);
-        }
-    }
-
-    public function resetBasicIncomeActivatedAt()
-    {
-        if ($this->basic_income_activated_at) {
-            $this->basic_income_activated_at = null;
-            $this->save(false);
-        }
-    }
-
     /**
      * Add user rating
      *
@@ -1035,25 +985,6 @@ class User extends ActiveRecord implements IdentityInterface
             ]);
     }
 
-    // TODO remove old
-    public function getStellar(): ActiveQuery
-    {
-        return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
-    }
-
-    public function getUserStellar(): ActiveQuery
-    {
-        return $this->hasOne(UserStellar::class, ['user_id' => 'id']);
-    }
-
-    public function getNewUserStellar(): UserStellar
-    {
-        $model = new UserStellar();
-        $model->user_id = Yii::$app->user->id;
-
-        return $model;
-    }
-
     public function getPendingDebts()
     {
         $query = Debt::find()
@@ -1144,50 +1075,6 @@ class User extends ActiveRecord implements IdentityInterface
     public function getLocation(): ?string
     {
         return $this->userLocation ? $this->userLocation->location : null;
-    }
-
-    public function isBasicIncomeOn()
-    {
-        return (bool)$this->basic_income_on;
-    }
-
-    public function getBasicIncomePositiveVotesCount()
-    {
-        return $this->getCounterContacts()
-            ->where([
-                'is_basic_income_candidate' => 1,
-            ])
-            ->count();
-    }
-
-    /**
-     * @param int|null $userId
-     * @return bool
-     */
-    public function getBasicIncomeVoteByUserId($userId = null)
-    {
-        if (!$userId) {
-            $userId = Yii::$app->user->id;
-        }
-
-        $contact = Contact::find()
-            ->where([
-                'user_id' => $userId,
-                'link_user_id' => $this->id,
-            ])
-            ->one();
-
-        return $contact ? $contact->is_basic_income_candidate : 0;
-    }
-
-    public function isBasicIncomeParticipant()
-    {
-        return (bool)$this->basic_income_on && (bool)$this->basic_income_activated_at && (bool)($this->stellar && $this->stellar->confirmed_at);
-    }
-
-    public function isBasicIncomeActivated()
-    {
-        return (bool)$this->basic_income_activated_at;
     }
 
     public function getAuthLinkTimeLimit()

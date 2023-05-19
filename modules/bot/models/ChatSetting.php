@@ -28,9 +28,6 @@ class ChatSetting extends ActiveRecord
     public const FAQ_ANSWER_LENGHT_MIN = 1;
     public const FAQ_ANSWER_LENGHT_MAX = 10000;
 
-    public const STELLAR_MODE_HOLDERS = 1;
-    public const STELLAR_MODE_SIGNERS = 2;
-
     public static array $settings = [
         'basic_commands_status' => [
             'default' => self::STATUS_ON,
@@ -121,20 +118,6 @@ class ChatSetting extends ActiveRecord
         'faq_status' => [
             'default' => self::STATUS_OFF,
         ],
-        'stellar_status' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'stellar_mode' => [
-            'default' => self::STELLAR_MODE_HOLDERS,
-        ],
-        'stellar_asset' => [],
-        'stellar_issuer' => [],
-        'stellar_threshold' => [
-            'type' => 'float',
-            'default' => 1,
-            'min' => 0.00000001,
-        ],
-        'stellar_invite_link' => [],
     ];
 
     /**

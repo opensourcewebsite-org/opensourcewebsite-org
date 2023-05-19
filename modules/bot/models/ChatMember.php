@@ -77,10 +77,6 @@ class ChatMember extends ActiveRecord
             'active_bot_group_faq_quantity_value_per_one_rating',
             'active_bot_group_faq_min_quantity_value_per_one_user',
         ],
-        'stellar_status' => [
-            'active_bot_group_stellar_quantity_value_per_one_rating',
-            'active_bot_group_stellar_min_quantity_value_per_one_user',
-        ],
         'notify_name_change_status' => [
             'active_bot_group_notify_name_change_quantity_value_per_one_rating',
             'active_bot_group_notify_name_change_min_quantity_value_per_one_user',

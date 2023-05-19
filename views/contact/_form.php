@@ -45,11 +45,6 @@ $form = ActiveForm::begin();
                     </div>
                     <div class="row">
                         <div class="col">
-                            <?= $form->field($model, 'is_basic_income_candidate')->radioList(Contact::getIsBasicIncomeCandidateLabels()); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
                             <?= $form->field($model, 'vote_delegation_priority')
                                 ->textInput([
                                     'type' => 'number',

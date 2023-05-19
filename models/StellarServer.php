@@ -14,7 +14,15 @@ class StellarServer extends Server
     public const TRANSACTION_LIMIT = 100;
 
     /**
+     * The network base fee, stroops
+     *
+     * @var integer
+     */
+    protected $baseFee = 10001;
+
+    /**
      * StellarServer constructor. Creates either testnet server or public server connection depending on Yii config
+     *
      * @throws \Exception
      */
     public function __construct()
@@ -46,26 +54,6 @@ class StellarServer extends Server
     public static function getOperatorPrivateKey(): ?string
     {
         return Yii::$app->params['stellar']['operator_private_key'] ?? null;
-    }
-
-    public static function getCroupierPublicKey(): ?string
-    {
-        return Yii::$app->params['stellar']['croupier_public_key'] ?? null;
-    }
-
-    public static function getCroupierPrivateKey(): ?string
-    {
-        return Yii::$app->params['stellar']['croupier_private_key'] ?? null;
-    }
-
-    public static function getGiverPublicKey(): ?string
-    {
-        return Yii::$app->params['stellar']['giver_public_key'] ?? null;
-    }
-
-    public static function getGiverPrivateKey(): ?string
-    {
-        return Yii::$app->params['stellar']['giver_private_key'] ?? null;
     }
 
     public function isTestnet(): bool

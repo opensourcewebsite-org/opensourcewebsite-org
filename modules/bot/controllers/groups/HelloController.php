@@ -24,18 +24,11 @@ class HelloController extends Controller
 
         if ($chat->basic_commands_status == ChatSetting::STATUS_ON) {
             $commands = [
-                '/basic_income',
-                '/deposit_income',
                 '/my_id',
                 '/my_rank',
-                '/my_stellar',
                 '/chat_id',
                 '/id',
             ];
-
-            if ($chat->stellar_status == ChatSetting::STATUS_ON) {
-                $commands[] = '/stellar';
-            }
 
             sort($commands);
         } else {

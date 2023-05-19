@@ -30,7 +30,6 @@ class ContactFixture extends ARGenerator
         $model->name = $this->faker->name;
         $model->is_real = (int)$this->faker->boolean();
         $model->relation = $this->faker->numberBetween(0, 2);
-        $model->is_basic_income_candidate = $this->faker->optional(0.5, 1)->numberBetween(0, 2);
 
         $model->vote_delegation_priority = $this->faker
             ->optional(0.5, 0)

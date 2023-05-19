@@ -35,8 +35,6 @@ class CronController extends Controller
         'JoResumeMatch',
         'CeOrderMatch',
         //'Debt',
-        'StellarCroupier',
-        'StellarGiver',
     ];
 
     private $cronJobs;

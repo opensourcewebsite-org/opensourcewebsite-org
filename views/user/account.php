@@ -6,7 +6,6 @@ use app\components\helpers\TimeHelper;
 use app\models\Country;
 use app\models\Language;
 use app\models\LanguageLevel;
-use app\models\StellarOperator;
 use app\models\User;
 use app\widgets\buttons\EditButton;
 use app\widgets\buttons\SelectButton;
@@ -347,44 +346,6 @@ $this->title = Yii::t('app', 'Account');
                                     <td>
                                         <?= EditButton::widget([
                                             'url' => '/user/change-email',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ],
-                                        ]); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="align-middle">Stellar</th>
-                                    <td class="align-middle">
-                                        <?php if (($userStellar = $model->stellar) && !$userStellar->isExpired()) : ?>
-                                            <?= (!$userStellar->isConfirmed() ? Html::badge('warning', Yii::t('app', 'not confirmed')) . ' ' : '') . Html::a($userStellar->getPublicKey(), ExternalLink::getStellarExpertAccountLink($userStellar->getPublicKey())) ?>
-                                            <?php if (!$userStellar->isConfirmed()) : ?>
-                                            <br/><br/>
-                                            <?= Html::icon('warning') ?> <?= Yii::t('bot', 'Confirm your Stellar account') ?> (<?= Yii::t('bot', 'added {0}', Yii::$app->formatter->asRelativeTime($userStellar->created_at)) ?>).<br/>
-                                            <?php if (StellarOperator::getDistributorPublicKey()) : ?>
-                                            <br/>
-                                            <?= Yii::t('bot', 'In the next {0,number} minutes, send any amount of XLM to OSW account {1} and then click the "CONFIRM" button', [$userStellar->getTimeLimit(), Html::a(StellarOperator::getDistributorPublicKey(), ExternalLink::getStellarExpertAccountLink(StellarOperator::getDistributorPublicKey()))]) ?>.<br/>
-                                            <br/>
-                                            <?= SelectButton::widget([
-                                                'text' => Yii::t('app', 'Confirm'),
-                                                'options' => [
-                                                    'title' => Yii::t('app', 'Confirm'),
-                                                    'style' => '',
-                                                    'class' => 'btn btn-outline-success',
-                                                    // 'data-toggle' => 'modal',
-                                                    // 'data-target' => '#main-modal',
-                                                ],
-                                                'url' => [
-                                                    'user/confirm-stellar',
-                                                ],
-                                            ]); ?>
-                                            <?php endif; ?>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?= EditButton::widget([
-                                            'url' => '/user/change-stellar',
                                             'options' => [
                                                 'style' => 'float: right',
                                             ],

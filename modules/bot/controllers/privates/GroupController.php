@@ -220,14 +220,6 @@ class GroupController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => GroupStellarController::createRoute('index', [
-                                'id' => $chat->id,
-                            ]),
-                            'text' => ($chat->stellar_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' Stellar',
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => GroupNotifyNameChangeController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),

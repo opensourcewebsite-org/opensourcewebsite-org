@@ -149,16 +149,6 @@ class Setting extends ActiveRecord
             'default' => 1,
             'min' => 0,
         ],
-        'active_bot_group_stellar_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 1,
-            'more' => 0,
-        ],
-        'active_bot_group_stellar_min_quantity_value_per_one_user' => [
-            'type' => 'integer',
-            'default' => 1,
-            'min' => 0,
-        ],
         'active_bot_group_publisher_quantity_value_per_one_rating' => [
             'type' => 'float',
             'default' => 1,
@@ -223,11 +213,6 @@ class Setting extends ActiveRecord
             'type' => 'integer',
             'default' => 2,
             'more' => 0,
-        ],
-        'basic_income_min_rating_value_to_activate' => [
-            'type' => 'integer',
-            'default' => 1000,
-            'min' => 1,
         ],
         'link_p2p_exchange' => [
             'type' => 'url',

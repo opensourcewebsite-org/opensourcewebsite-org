@@ -29,7 +29,6 @@ use app\models\UserEmail;
 use app\models\UserIssueVote;
 use app\models\UserLanguage;
 use app\models\UserMoqupFollow;
-use app\models\UserStellar;
 use app\models\Vacancy;
 use app\models\Wallet;
 use app\models\WalletTransaction;
@@ -188,14 +187,6 @@ class MergeAccountsService
                 $transaction->rollBack();
 
                 return false;
-            }
-        }
-
-        if ($userToMerge->userStellar) {
-            if (!$user->userStellar) {
-                UserStellar::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-            } else {
-                UserStellar::deleteAll("user_id = {$userToMerge->id}");
             }
         }
 

@@ -65,7 +65,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'link_user_id', 'relation', 'is_basic_income_candidate'], 'integer'],
+            [['user_id', 'link_user_id', 'relation'], 'integer'],
             [['relation'], 'integer', 'min' => 0, 'max' => 2],
             ['userIdOrName', 'string', 'on' => 'form'],
             ['userIdOrName', 'trim', 'on' => 'form'],
@@ -113,7 +113,7 @@ class Contact extends ActiveRecord implements ByOwnerInterface
                 },
             ],
             ['is_real', 'boolean'],
-            [['is_real', 'relation', 'is_basic_income_candidate'], 'default', 'value' => 0],
+            [['is_real', 'relation'], 'default', 'value' => 0],
             [
                 'groupIds', 'filter', 'filter' => function ($value) {
                     if ($value === '') {
@@ -142,7 +142,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'userIdOrName' => 'User ID / Username',
             'is_real' => Yii::t('app', 'Personal identification'),
             'relation' => Yii::t('app', 'Personal relation'),
-            'is_basic_income_candidate' => Yii::t('app', 'Basic income candidate'),
             'vote_delegation_priority' => Yii::t('app', 'Vote delegation priority'),
             'debt_redistribution_priority' => Yii::t('app', 'Debt transfer priority'),
             'groupIds' => Yii::t('app', 'Groups'),
@@ -164,11 +163,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
             'userIdOrName' => Yii::t('app', 'To associate this contact with another user') . '.',
             'is_real' => Yii::t('app', 'To confirm that this is a real person, and not a virtual account (fake or bot)') . '.',
             'relation' => Yii::t('app', 'To see social recommendations in the profiles of other users') . '.',
-            'is_basic_income_candidate' => Yii::t('app', 'To confirm that this person meets the requirements to earn a weekly basic income') . '.'
-            . Html::ul([
-                Yii::t('app', 'Yes - your vote supports this candidate, this is public information') . '.',
-                Yii::t('app', 'No - your vote rejects this candidate, this is private information') . '.',
-            ]),
         ];
     }
 
@@ -355,46 +349,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         ];
     }
 
-    public function beforeDelete()
-    {
-        if ($this->isUser()
-            && $this->is_basic_income_candidate) {
-            $this->linkedUser->resetBasicIncomeProcessedAt();
-        }
-
-        return parent::beforeDelete();
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Throwable
-     */
-    public function afterSave($insert, $changedAttributes)
-    {
-        if ($insert) {
-            if ($this->isUser()
-                && $this->is_basic_income_candidate) {
-                $this->linkedUser->resetBasicIncomeProcessedAt();
-            }
-        } else {
-            if ((isset($changedAttributes['user_id']) && ($changedAttributes['user_id'] != $this->user_id))
-                || (isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id))
-                || (isset($changedAttributes['is_basic_income_candidate']) && ($changedAttributes['is_basic_income_candidate'] != $this->is_basic_income_candidate))) {
-                if (isset($changedAttributes['link_user_id']) && ($changedAttributes['link_user_id'] != $this->link_user_id) && $changedAttributes['link_user_id']) {
-                    $user = User::findOne($changedAttributes['link_user_id']);
-                    $user->resetBasicIncomeProcessedAt();
-                }
-
-                if ($this->link_user_id) {
-                    $this->linkedUser->resetBasicIncomeProcessedAt();
-                }
-            }
-        }
-
-        parent::afterSave($insert, $changedAttributes);
-    }
-
     public function getGroups(): ActiveQuery
     {
         return $this->hasMany(ContactGroup::class, ['id' => 'contact_group_id'])
@@ -481,20 +435,6 @@ class Contact extends ActiveRecord implements ByOwnerInterface
         return [
             0 => Yii::t('app', 'Virtual'),
             1 => Yii::t('app', 'Real'),
-        ];
-    }
-
-    public function getIsBasicIncomeCandidateLabel(): string
-    {
-        return static::getIsBasicIncomeCandidateLabels()[(int)$this->is_basic_income_candidate];
-    }
-
-    public static function getIsBasicIncomeCandidateLabels(): array
-    {
-        return [
-            0 => Yii::t('app', 'Unknown'),
-            1 => Yii::t('app', 'Yes'),
-            2 => Yii::t('app', 'No'),
         ];
     }
 

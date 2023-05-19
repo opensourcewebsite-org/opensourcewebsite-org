@@ -27,9 +27,5 @@ return [
     //    'distributor_public_key' => '',
     //    'operator_public_key' => '',
     //    'operator_private_key' => '',
-    //    'croupier_public_key' => '',
-    //    'croupier_private_key' => '',
-    //    'giver_public_key' => '',
-    //    'giver_private_key' => '',
     //],
 ];

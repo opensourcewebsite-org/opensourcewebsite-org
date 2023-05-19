@@ -8,14 +8,12 @@ use app\models\Contact;
 use app\models\Gender;
 use app\models\Language;
 use app\models\LanguageLevel;
-use app\models\StellarServer;
 use app\models\User;
 use app\models\UserCitizenship;
 use app\models\UserEmail;
 use app\models\UserLanguage;
 use app\models\UserLocation;
 use app\models\UserMoqupFollow;
-use app\models\UserStellar;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
@@ -601,71 +599,5 @@ class UserController extends Controller
     public function actionViewLocation(): string
     {
         return $this->renderAjax('modals/view-location', ['model' => $this->user->userLocation]);
-    }
-
-    public function actionChangeStellar()
-    {
-        if (!$userStellar = $this->user->stellar) {
-            $userStellar = new UserStellar();
-            $userStellar->user_id = $this->user->id;
-        }
-
-        $renderParams = [
-            'userStellar' => $userStellar,
-        ];
-
-        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserStellar'))) {
-            $publicKey = $postData['public_key'];
-
-            if ($userStellar->isNewRecord || ($userStellar->public_key != $publicKey)) {
-                $userStellar->public_key = $publicKey;
-                $userStellar->created_at = time();
-                $userStellar->confirmed_at = null;
-            }
-
-            if ($userStellar->getDirtyAttributes() && $userStellar->save()) {
-                return $this->redirect('/account');
-            }
-        }
-
-        return $this->render('fields/change-stellar', $renderParams);
-    }
-
-    public function actionDeleteStellar()
-    {
-        if (Yii::$app->request->isPost) {
-            if ($userStellar = $this->user->stellar) {
-                $userStellar->delete();
-            }
-        }
-
-        $this->redirect('/account');
-    }
-
-    public function actionConfirmStellar()
-    {
-        if (($userStellar = $this->user->stellar) && !$userStellar->isConfirmed()) {
-            if ($stellarServer = new StellarServer()) {
-                if (!$stellarServer->accountExists($userStellar->getPublicKey())) {
-                    return $this->renderAjax('modals/stellar-alert-account-not-found');
-                }
-
-
-                $userSentTransaction = $stellarServer->operationExists(
-                    $userStellar->getPublicKey(),
-                    StellarServer::getDistributorPublicKey(),
-                    $userStellar->created_at,
-                    $userStellar->created_at + UserStellar::CONFIRM_REQUEST_LIFETIME
-                );
-
-                if (!$userSentTransaction) {
-                    return $this->renderAjax('modals/stellar-alert-transaction-not-found');
-                }
-
-                $userStellar->confirm();
-            }
-        }
-
-        return $this->redirect('/account');
     }
 }
