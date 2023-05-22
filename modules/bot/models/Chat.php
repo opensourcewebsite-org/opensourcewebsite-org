@@ -416,6 +416,17 @@ class Chat extends ActiveRecord
         return $this->hasMany(ChatPublisherPost::class, ['chat_id' => 'id']);
     }
 
+    public function isBasicCommandsOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->basic_commands_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isMembershipOn()
     {
         if ($this->isGroup() || $this->isChannel()) {

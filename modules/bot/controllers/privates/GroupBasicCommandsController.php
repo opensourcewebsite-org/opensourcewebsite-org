@@ -38,7 +38,7 @@ class GroupBasicCommandsController extends Controller
                                 'callback_data' => self::createRoute('set-status', [
                                     'id' => $chat->id,
                                 ]),
-                                'text' => $chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                                'text' => $chat->isBasicCommandsOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                             ],
                         ],
                         [

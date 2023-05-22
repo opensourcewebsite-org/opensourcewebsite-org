@@ -49,18 +49,18 @@ class GroupSlowModeController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => self::createRoute('set-messages-limit', [
-                                'id' => $chat->id,
-                            ]),
-                            'text' => Yii::t('bot', 'Limit of messages'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => self::createRoute('members', [
                                 'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Members with exceptions'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-messages-limit', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Limit of messages'),
                         ],
                     ],
                     [

@@ -22,7 +22,7 @@ class HelloController extends Controller
     {
         $chat = $this->getTelegramChat();
 
-        if ($chat->basic_commands_status == ChatSetting::STATUS_ON) {
+        if ($chat->isBasicCommandsOn()) {
             $commands = [
                 '/my_id',
                 '/my_rank',

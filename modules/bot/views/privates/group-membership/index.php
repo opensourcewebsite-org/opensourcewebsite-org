@@ -8,4 +8,3 @@
 ————<br/>
 <?= Yii::t('bot', 'Available commands in this group') ?>:<br/>
   <code>/premium_members</code> - <?= Yii::t('bot', 'list of premium members') ?>. <i><?= Yii::t('bot', 'Sorted by user rank') ?>.</i><br/>
-  <code>/premium_members__intro</code> - <?= Yii::t('bot', 'premium members with intro') ?>. <i><?= Yii::t('bot', 'Sorted by user rank') ?>.</i><br/>

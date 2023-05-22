@@ -52,6 +52,7 @@ return [
     'BEGIN' => 'НАЧАТЬ',
     'Commands' => 'Команды',
     'Available commands' => 'Доступные команды',
+    'Available commands in this group' => 'Доступные команды в этой группе',
     'For active administrators' => 'Для активных администраторов',
     'For members' => 'Для участников',
     'As a separate message' => 'В виде отдельного сообщения',

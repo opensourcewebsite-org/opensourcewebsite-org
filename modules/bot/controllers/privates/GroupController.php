@@ -151,7 +151,7 @@ class GroupController extends Controller
                             'callback_data' => GroupBasicCommandsController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->basic_commands_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Basic Commands'),
+                            'text' => ($chat->isBasicCommandsOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Basic Commands'),
                         ],
                     ],
                     [
