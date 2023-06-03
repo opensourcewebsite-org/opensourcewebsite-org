@@ -563,7 +563,15 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
+        // remove membership
         $member->membership_date = null;
+        $member->membership_tariff_price = null;
+        $member->membership_tariff_days = null;
+        // remove slow mode
+        $member->slow_mode_messages_limit = null;
+        $member->slow_mode_messages_skip_days = null;
+        $member->slow_mode_messages_skip_hours = null;
+
         $member->save(false);
 
         return $this->runAction('members', [

@@ -590,7 +590,7 @@ return [
     'P2P Exchange' => 'P2P обмен',
     'Transaction' => 'Транзакция',
     'Choose a wallet' => 'Выберите кошелек',
-    'Send amount for transfer' => 'Отправьте сумму для перевода',
+    'Send the amount for transfer' => 'Отправьте сумму для перевода',
     'Available amount' => 'Доступная сумма',
     'Fee' => 'Комиссия',
     'Total amount' => 'Общая сумма',

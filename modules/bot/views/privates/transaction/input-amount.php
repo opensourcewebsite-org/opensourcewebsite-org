@@ -1,4 +1,4 @@
-<b><?= Yii::t('bot', 'Send amount for transfer') ?>:</b><br/>
+<b><?= Yii::t('bot', 'Send the amount for transfer') ?>:</b><br/>
 <br/>
 <?= Yii::t('bot', 'Receiver') ?>: <?= $walletTransaction->getReceiverLabel() ?><br/>
 ————<br/>
