@@ -1,7 +1,7 @@
 <?php
 
 # https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/usage.rst
-# https://mlocati.github.io/php-cs-fixer-configurator/#version:3.16
+# https://mlocati.github.io/php-cs-fixer-configurator/
 
 declare(strict_types=1);
 
@@ -29,6 +29,9 @@ return $config
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude('vendor')
+            ->exclude([
+                'runtime',
+                'vendor',
+            ])
             ->in(__DIR__)
     );
