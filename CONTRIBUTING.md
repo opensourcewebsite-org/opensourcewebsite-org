@@ -80,14 +80,6 @@ All `*.md` files must adhere to [Markdown Syntax](https://www.markdownguide.org/
 PHP Code MUST adhere to [Yii 2 Web Framework Coding Standard Style](https://github.com/yiisoft/yii2-coding-standards), [PHP Standards Recommendations](https://www.php-fig.org/psr/), [Clean Code PHP](https://github.com/jupeter/clean-code-php).
 
 Recommended IDE:
-  - [Atom](https://atom.io)
-    - [Atom-Beautify](https://atom.io/packages/atom-beautify)
-      - [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer). The beautifier uses `.php_cs` file.
-        - Go to "File > Settings > Packages > atom-beautify > Settings > PHP". To automatically beautify PHP code on file save toggle `Beautify On Save` option and select `PHP-CS-Fixer` as Default Beautifier.
-        - Go to "File > Settings > Packages > atom-beautify > Settings > Executable > PHP-CS-Fixer". Add `Binary/Script Path` like `ABSOLUTE_PATH_TO_PROJECT_DIR/vendor/bin/php-cs-fixer`.
-    - [EditorConfig](https://atom.io/packages/editorconfig)
-    - [PHP Linter](https://atom.io/packages/linter-php)
-    - [Yii Framework 2](https://atom.io/packages/atom-yii2)
   - [VS Code](https://code.visualstudio.com)
     - [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
     - [PHP](https://marketplace.visualstudio.com/items?itemName=DEVSENSE.phptools-vscode)
@@ -150,7 +142,6 @@ To upgrade data in the database, create a migration whose name starts with `upgr
 JavaScript Code MUST adhere to [JavaScript Standard Style](https://standardjs.com).
 
 Recommended IDE:
-  - [Atom](https://atom.io)
   - [VS Code](https://code.visualstudio.com)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
   - [Eclipse](https://www.eclipse.org)

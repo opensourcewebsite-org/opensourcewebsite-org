@@ -142,7 +142,6 @@ P.S. Тестировалось только в PHPStorm.
   - Перейдите в "Bot Settings > Channel Admin Rights" и активируйте все права для вашего бота.
 - Установите `['baseUrl']` в `config/params.php` для вашего открытого URL с HTTPS.
 - Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `['bot']['proxy']` в `config/params.php`.
-- Создайте новую запись в таблице `bot` в базе данных MySQL, заполнив `status` = 0, или используйте консольную команду:
 - Установите `['bot']['username']` и `['bot']['token']` в `config/params.php` для вашего бота.
 
 Активировать Telegram webhook для бота:
