@@ -2,6 +2,7 @@
 
 namespace app\modules\bot;
 
+use app\models\Language;
 use app\models\Rating;
 use app\models\User as GlobalUser;
 use app\modules\bot\components\api\BotApi;
@@ -94,9 +95,11 @@ class Module extends \yii\base\Module
 
                     return false;
                 }
+
                 // Set user language for bot answers
                 Yii::$app->language = $user->language->code;
             }
+
             // create a user for new forward from
             if ($this->getUpdate()->getRequestMessage() && ($providerForwardFrom = $this->getUpdate()->getRequestMessage()->getForwardFrom())) {
                 $forwardUser = User::findOne([
@@ -165,6 +168,7 @@ class Module extends \yii\base\Module
             }
 
             $this->setChat($chat);
+
             // Save chat administrators for new group or channel
             if ($isNewChat && !$chat->isPrivate()) {
                 $botApiAdministrators = $this->getBotApi()->getChatAdministrators($chat->getChatId());
@@ -233,7 +237,6 @@ class Module extends \yii\base\Module
                     $this->getUpdate()->setPrivateMessageFromState($this->getUserState());
                 }
             }
-
             return true;
         }
 
@@ -265,6 +268,30 @@ class Module extends \yii\base\Module
             if (($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID)
                 || $this->getUpdate()->getRequestMessage()->isAutomaticForward()) {
                 return true;
+            }
+        }
+
+        if ($this->getChat()->isGroup()) {
+            // Ignore service user id
+            if ($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID
+                || $this->getUpdate()->getRequestMessage()->isAutomaticForward()) {
+                return true;
+            }
+
+            $group = $this->getChat();
+
+            if ($group) {
+                // Get the language_id from the bot_chat table
+                $languageId = $group->language_id;
+
+                if ($languageId) {
+                    // Find the language based on the language_id
+                    $language = Language::findOne(['id' => $languageId]);
+
+                    if ($language) {
+                        Yii::$app->language = $language->code;
+                    }
+                }
             }
         }
 
