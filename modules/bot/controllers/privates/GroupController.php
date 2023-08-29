@@ -134,8 +134,7 @@ class GroupController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => GroupLanguageController::createRoute('set', [
-                                'code' => $chat->code,
+                            'callback_data' => GroupLanguageController::createRoute('index', [
                                 'chatId' => $chatId,
                             ]),
                             'text' => Yii::t('bot', 'Language'),
