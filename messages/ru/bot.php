@@ -651,4 +651,5 @@ return [
     'Publisher' => 'Публикатор',
     'sends posts to the group at the specified time' => 'отправляет обьявления в группу в заданное время',
     'Next publish' => 'Следующая публикация',
+    'Reset' => 'Сбросить'
 ];

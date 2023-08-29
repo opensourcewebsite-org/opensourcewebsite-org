@@ -46,6 +46,7 @@ class GroupController extends Controller
 
         if ($chats) {
             foreach ($chats as $chat) {
+
                 $buttons[][] = [
                     'callback_data' => self::createRoute('view', [
                         'chatId' => $chat->id,
@@ -118,6 +119,7 @@ class GroupController extends Controller
             ->editMessageTextOrSendMessage(
                 $this->render('view', [
                     'chat' => $chat,
+                    'chatId' => $chatId,
                     'administrators' => $administrators,
                 ]),
                 [
@@ -127,6 +129,15 @@ class GroupController extends Controller
                                 'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Administrators'),
+                            'visible' => $chatMember->isCreator(),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupLanguageController::createRoute('index', [
+                                'chatId' => $chatId,
+                            ]),
+                            'text' => Yii::t('bot', 'Language'),
                             'visible' => $chatMember->isCreator(),
                         ],
                     ],
