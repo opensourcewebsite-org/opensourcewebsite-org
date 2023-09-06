@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\modules\bot\models;
 
 use app\models\Currency;
+use app\models\Language;
 use app\models\User as GlobalUser;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\queries\ChatQuery;
@@ -17,7 +18,10 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "bot_chat".
  *
- * @property integer $currency_id
+ * @property int $id
+ * @property int $chat_id
+ * @property int|null $currency_id
+ * @property int|null $language_id
  *
  * @package app\modules\bot\models
  */
@@ -45,7 +49,7 @@ class Chat extends ActiveRecord
     {
         return [
             [['chat_id', 'type'], 'required'],
-            [['chat_id', 'currency_id'], 'integer'],
+            [['chat_id', 'currency_id', 'language_id'], 'integer'],
             [['type', 'title', 'username', 'first_name', 'last_name', 'description'], 'string'],
             [['timezone'], 'default', 'value' => 0],
             [['timezone'], 'integer', 'min' => -720, 'max' => 840],
@@ -189,7 +193,7 @@ class Chat extends ActiveRecord
     {
         return $this->getPhrases()
             ->where([
-                'type' =>ChatPhrase::TYPE_BLACKLIST,
+                'type' => ChatPhrase::TYPE_BLACKLIST,
             ])
             ->orderBy([
                 'text' => SORT_ASC,
@@ -200,7 +204,7 @@ class Chat extends ActiveRecord
     {
         return $this->getPhrases()
             ->where([
-                'type' =>ChatPhrase::TYPE_WHITELIST,
+                'type' => ChatPhrase::TYPE_WHITELIST,
             ])
             ->orderBy([
                 'text' => SORT_ASC,
@@ -363,7 +367,7 @@ class Chat extends ActiveRecord
 
     public function getChatMemberCreator()
     {
-        return $this->hasOne(ChatMember::className(), ['chat_id' => 'id'])
+        return $this->hasOne(ChatMember::class, ['chat_id' => 'id'])
             ->andWhere([
                 ChatMember::tableName() . '.status' => ChatMember::STATUS_CREATOR,
             ]);
@@ -387,7 +391,7 @@ class Chat extends ActiveRecord
 
     public function getChatMembersWithIntro()
     {
-        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+        return $this->hasMany(ChatMember::class, ['chat_id' => 'id'])
             ->andWhere([
                 'not',
                 [ChatMember::tableName() . '.intro' => null],
@@ -397,7 +401,7 @@ class Chat extends ActiveRecord
 
     public function getChatMembersWithPositiveReviews()
     {
-        return $this->hasMany(ChatMember::className(), ['chat_id' => 'id'])
+        return $this->hasMany(ChatMember::class, ['chat_id' => 'id'])
             ->joinWith('positiveReviews')
             ->groupBy(ChatMember::tableName() . '.id')
             ->orderByRank();
@@ -409,6 +413,14 @@ class Chat extends ActiveRecord
     public function getCurrency()
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLanguage()
+    {
+        return $this->hasOne(Language::class, ['id' => 'language_id']);
     }
 
     public function getPublisherPosts(): ActiveQuery
@@ -508,6 +520,17 @@ class Chat extends ActiveRecord
     {
         if ($this->isGroup() || $this->isChannel()) {
             if ($this->faq_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isMessageFilterOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->filter_status == ChatSetting::STATUS_ON) {
                 return true;
             }
         }

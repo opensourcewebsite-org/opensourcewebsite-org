@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use Yii;
@@ -16,19 +17,22 @@ use Yii;
  */
 class GroupGreetingController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
     * @param int $id Chat->id
     * @return array
     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
@@ -83,13 +87,8 @@ class GroupGreetingController extends Controller
     */
     public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         switch ($chat->greeting_status) {
             case ChatSetting::STATUS_ON:
@@ -97,8 +96,6 @@ class GroupGreetingController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chatMember = $chat->getChatMemberByUserId();
-
                 if (!$chatMember->trySetChatSetting('greeting_status', ChatSetting::STATUS_ON)) {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(
@@ -122,13 +119,7 @@ class GroupGreetingController extends Controller
     */
     public function actionSetMessage($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('set-message', [
                 'id' => $chat->id,

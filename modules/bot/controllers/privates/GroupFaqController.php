@@ -6,9 +6,9 @@ use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatFaqQuestion;
-use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use Yii;
 use yii\data\Pagination;
@@ -20,6 +20,15 @@ use yii\data\Pagination;
  */
 class GroupFaqController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     public function actions()
     {
         return array_merge(
@@ -43,13 +52,7 @@ class GroupFaqController extends Controller
     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
@@ -101,13 +104,8 @@ class GroupFaqController extends Controller
     */
     public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         switch ($chat->faq_status) {
             case ChatSetting::STATUS_ON:
@@ -115,8 +113,6 @@ class GroupFaqController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chatMember = $chat->getChatMemberByUserId();
-
                 if (!$chatMember->trySetChatSetting('faq_status', ChatSetting::STATUS_ON)) {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(

@@ -7,6 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\MessageWithEntitiesConverter;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatPublisherPost;
 use app\modules\bot\models\ChatSetting;
@@ -20,19 +21,22 @@ use yii\data\Pagination;
  */
 class GroupPublisherController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
@@ -80,16 +84,12 @@ class GroupPublisherController extends Controller
 
     /**
      * @param int $id Chat->id
+     * @return array
      */
     public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         switch ($chat->publisher_status) {
             case ChatSetting::STATUS_ON:
@@ -97,8 +97,6 @@ class GroupPublisherController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chatMember = $chat->getChatMemberByUserId();
-
                 if (!$chatMember->trySetChatSetting('publisher_status', ChatSetting::STATUS_ON)) {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(
@@ -117,28 +115,14 @@ class GroupPublisherController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionPosts($id = null, $page = 1)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
 
         $query = $chat->getPublisherPosts()
             ->orderBy([
@@ -172,7 +156,8 @@ class GroupPublisherController extends Controller
             foreach ($posts as $post) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('post', [
-                        'id' => $post->id,
+                        'id' => $chat->id,
+                        'oid' => $post->id,
                     ]),
                     'text' => ($post->isActive() ? '' : Emoji::INACTIVE . ' ') . '#' . $post->id . ' ' . $post->getTimeOfDay(),
                 ];
@@ -219,25 +204,11 @@ class GroupPublisherController extends Controller
      */
     public function actionAdd($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('add', [
             'id' => $chat->id,
         ]));
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
 
         if ($this->getUpdate()->getMessage()) {
             if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
@@ -246,7 +217,10 @@ class GroupPublisherController extends Controller
                 $post->text = $text;
 
                 if ($post->save()) {
-                    return $this->actionPosts($id);
+                    return $this->runAction('post', [
+                        'id' => $chat->id,
+                        'oid' => $post->id,
+                    ]);
                 }
             }
         }
@@ -274,28 +248,20 @@ class GroupPublisherController extends Controller
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionPost($id = null)
+    public function actionPost($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        if (!($chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -313,7 +279,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-post-status', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => $post->isActive() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
@@ -321,7 +288,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-text', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Yii::t('app', 'Text'),
                         ],
@@ -329,7 +297,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-time', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay(),
                         ],
@@ -337,7 +306,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-skip-days', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Yii::t('bot', 'Skip days') . ': ' . $post->getSkipDays(),
                         ],
@@ -345,7 +315,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('send-group-message', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Emoji::SEND . ' ' . Yii::t('bot', 'Send new post to the group'),
                         ],
@@ -363,7 +334,8 @@ class GroupPublisherController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -377,28 +349,20 @@ class GroupPublisherController extends Controller
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionSetPostStatus($id = null)
+    public function actionSetPostStatus($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        if ((!$chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -414,16 +378,25 @@ class GroupPublisherController extends Controller
             $post->save(false);
         }
 
-        return $this->actionPost($post->id);
+        return $this->runAction('post', [
+            'id' => $chat->id,
+            'oid' => $post->id,
+        ]);
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionSetTime($id = null)
+    public function actionSetTime($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -431,22 +404,9 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-time', [
-            'id' => $post->id,
+            'id' => $chat->id,
+            'oid' => $post->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -454,7 +414,10 @@ class GroupPublisherController extends Controller
                 $post->time = $text;
 
                 if ($post->validate('time') && $post->save(false)) {
-                    return $this->actionPost($post->id);
+                    return $this->runAction('post', [
+                        'id' => $chat->id,
+                        'oid' => $post->id,
+                    ]);
                 }
             }
         }
@@ -468,7 +431,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' =>  self::createRoute('post', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -479,12 +443,18 @@ class GroupPublisherController extends Controller
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionSetSkipDays($id = null)
+    public function actionSetSkipDays($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -492,22 +462,9 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-skip-days', [
-            'id' => $post->id,
+            'id' => $chat->id,
+            'oid' => $post->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -515,7 +472,10 @@ class GroupPublisherController extends Controller
                 $post->skip_days = $text;
 
                 if ($post->validate('skip_days') && $post->save(false)) {
-                    return $this->actionPost($post->id);
+                    return $this->runAction('post', [
+                        'id' => $chat->id,
+                        'oid' => $post->id,
+                    ]);
                 }
             }
         }
@@ -527,7 +487,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' =>  self::createRoute('post', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -538,12 +499,18 @@ class GroupPublisherController extends Controller
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionSetText($id = null)
+    public function actionSetText($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post)) {
             return $this->getResponseBuilder()
@@ -551,22 +518,9 @@ class GroupPublisherController extends Controller
                 ->build();
         }
 
-        if ((!$chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-text', [
-            'id' => $post->id,
+            'id' => $chat->id,
+            'oid' => $post->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -574,7 +528,10 @@ class GroupPublisherController extends Controller
                 $post->text = $text;
 
                 if ($post->validate('text') && $post->save(false)) {
-                    return $this->actionPost($post->id);
+                    return $this->runAction('post', [
+                        'id' => $chat->id,
+                        'oid' => $post->id,
+                    ]);
                 }
             }
         }
@@ -591,7 +548,8 @@ class GroupPublisherController extends Controller
                     [
                         [
                             'callback_data' =>  self::createRoute('post', [
-                                'id' => $post->id,
+                                'id' => $chat->id,
+                                'oid' => $post->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -605,28 +563,20 @@ class GroupPublisherController extends Controller
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionSendGroupMessage($id = null)
+    public function actionSendGroupMessage($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post) || !$post->isActive()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        if ((!$chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -654,28 +604,20 @@ class GroupPublisherController extends Controller
     }
 
     /**
-     * @param int $id ChatPublisherPost->id
+     * @param int $id Chat->id
+     * @param int $oid ChatPublisherPost->id
      * @return array
      */
-    public function actionDelete($id = null)
+    public function actionDelete($id = null, $oid = null)
     {
-        $post = ChatPublisherPost::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $post = ChatPublisherPost::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($post)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        if ((!$chat = $post->chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

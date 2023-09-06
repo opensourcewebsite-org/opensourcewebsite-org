@@ -6,8 +6,7 @@ use app\components\helpers\TimeHelper;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use Yii;
 use yii\data\Pagination;
 
@@ -18,23 +17,31 @@ use yii\data\Pagination;
  */
 class GroupTimezoneController extends Controller
 {
-    /**
-     * @return array
-     */
-    public function actionIndex($chatId = null)
+    public function behaviors()
     {
-        return $this->actionList($chatId);
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
     }
 
-    public function actionList($chatId = null, $page = 2)
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($chatId);
+        return $this->actionList($id);
+    }
 
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionList($id = null, $page = 2)
+    {
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('input'));
 
@@ -58,15 +65,15 @@ class GroupTimezoneController extends Controller
             $buttons[][] = [
                 'text' => $name,
                 'callback_data' => self::createRoute('select', [
-                    'chatId' => $chatId,
+                    'id' => $chat->id,
                     'timezone' => $timezone,
                 ]),
             ];
         }
 
-        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chatId) {
+        $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
             return self::createRoute('list', [
-                'chatId' => $chatId,
+                'id' => $chat->id,
                 'page' => $page,
             ]);
         });
@@ -77,7 +84,7 @@ class GroupTimezoneController extends Controller
 
         $buttons[][] = [
             'callback_data' => GroupController::createRoute('view', [
-                'chatId' => $chatId,
+                'chatId' => $chat->id,
             ]),
             'text' => Emoji::BACK,
         ];
@@ -90,26 +97,22 @@ class GroupTimezoneController extends Controller
             ->build();
     }
 
-    public function actionSelect($chatId = null, $timezone = null)
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionSelect($id = null, $timezone = null)
     {
-        $chat = Chat::findOne($chatId);
+        $chat = Yii::$app->cache->get('chat');
 
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        if ($timezone !== null) {
+            $chat->timezone = $timezone;
 
-        if ($timezone === null) {
-            return $this->actionList($chatId);
-        }
-
-        $chat->timezone = $timezone;
-
-        if ($chat->validate('timezone') && $chat->save(false)) {
-            return $this->run('group/view', [
-                'chatId' => $chatId,
-            ]);
+            if ($chat->validate('timezone') && $chat->save(false)) {
+                return $this->run('group/view', [
+                    'chatId' => $chat->id,
+                ]);
+            }
         }
 
         return $this->getResponseBuilder()
@@ -117,8 +120,14 @@ class GroupTimezoneController extends Controller
             ->build();
     }
 
-    public function actionInput()
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionInput($id = null)
     {
+        $chat = Yii::$app->cache->get('chat');
+
         // TODO add text input to set timezone (Examples: 07, 06:30, -07, -06:30)
     }
 }

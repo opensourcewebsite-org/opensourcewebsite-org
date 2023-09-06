@@ -6,8 +6,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatSetting;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use Yii;
 use yii\data\Pagination;
 
@@ -18,6 +17,16 @@ use yii\data\Pagination;
  */
 class GroupController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+                'only' => ['view'],
+            ],
+        ];
+    }
+
     /**
      * @param int $page
      * @return array
@@ -94,21 +103,8 @@ class GroupController extends Controller
      */
     public function actionView($chatId = null)
     {
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         $this->getState()->clearInputRoute();
 
@@ -133,15 +129,23 @@ class GroupController extends Controller
                     [
                         [
                             'callback_data' => GroupTimezoneController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Timezone'),
+                        ],
+                    ],
+                                        [
+                        [
+                            'callback_data' => GroupLanguageController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Yii::t('bot', 'Language'),
                         ],
                     ],
                     [
                         [
                             'callback_data' => GroupCurrencyController::createRoute('index', [
-                                'chatId' => $chat->id,
+                                'id' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Currency'),
                         ],
@@ -167,7 +171,7 @@ class GroupController extends Controller
                             'callback_data' => GroupMessageFilterController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
+                            'text' => ($chat->isMessageFilterOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Message Filter'),
                         ],
                     ],
                     [
@@ -223,7 +227,7 @@ class GroupController extends Controller
                             'callback_data' => GroupNotifyNameChangeController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => ($chat->notify_name_change_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notifier'),
+                            'text' => ($chat->isNotifyNameChangeOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Notifier'),
                         ],
                     ],
                     [

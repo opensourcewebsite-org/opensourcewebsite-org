@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use Yii;
@@ -25,19 +26,22 @@ class GroupJoinHiderController extends Controller
         6 => 'filter_remove_video_chat_invited',
     ];
 
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
      * @param int|null $id Chat->id
      * @return array
      */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -48,7 +52,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                 ]),
                                 'text' => $chat->isJoinHiderOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                             ],
@@ -56,7 +60,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                     'i' => 1,
                                 ]),
                                 'text' => ($chat->filter_remove_member_joined == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: member joined'),
@@ -65,7 +69,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                     'i' => 2,
                                 ]),
                                 'text' => ($chat->filter_remove_member_left == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: member left'),
@@ -74,7 +78,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                     'i' => 3,
                                 ]),
                                 'text' => ($chat->filter_remove_video_chat_scheduled == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: video chat scheduled'),
@@ -83,7 +87,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                     'i' => 4,
                                 ]),
                                 'text' => ($chat->filter_remove_video_chat_started == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: video chat started'),
@@ -92,7 +96,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                     'i' => 5,
                                 ]),
                                 'text' => ($chat->filter_remove_video_chat_ended == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: video chat ended'),
@@ -101,7 +105,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => self::createRoute('set-status', [
-                                    'id' => $id,
+                                    'id' => $chat->id,
                                     'i' => 6,
                                 ]),
                                 'text' => ($chat->filter_remove_video_chat_invited == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove: video chat invited'),
@@ -110,7 +114,7 @@ class GroupJoinHiderController extends Controller
                         [
                             [
                                 'callback_data' => GroupController::createRoute('view', [
-                                    'chatId' => $id,
+                                    'chatId' => $chat->id,
                                 ]),
                                 'text' => Emoji::BACK,
                             ],
@@ -137,13 +141,8 @@ class GroupJoinHiderController extends Controller
                 ->build();
         }
 
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         $status = static::$statuses[$i];
 
@@ -154,8 +153,6 @@ class GroupJoinHiderController extends Controller
                 break;
             case ChatSetting::STATUS_OFF:
                 if ($status == 'join_hider_status') {
-                    $chatMember = $chat->getChatMemberByUserId();
-
                     if (!$chatMember->trySetChatSetting('join_hider_status', ChatSetting::STATUS_ON)) {
                         return $this->getResponseBuilder()
                             ->answerCallbackQuery(

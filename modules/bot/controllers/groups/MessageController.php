@@ -28,7 +28,7 @@ class MessageController extends Controller
         $chatMember = $chat->getChatMemberByUserId();
 
         if ($user->isBot()) {
-            if ($chat->filter_status == ChatSetting::STATUS_ON) {
+            if ($chat->isMessageFilterOn()) {
                 if ($chat->filter_remove_channels == ChatSetting::STATUS_ON) {
                     if ($chatMember->isAnonymousChannel()) {
                         if ($this->getMessage()) {
@@ -140,7 +140,7 @@ class MessageController extends Controller
 
             if (!$deleteMessage) {
                 if (!$chatMember->isActiveAdministrator() && (!$chat->isMembershipOn() || ($chat->isMembershipOn() && !$chatMember->hasActiveMembership()))) {
-                    if ($chat->filter_status == ChatSetting::STATUS_ON) {
+                    if ($chat->isMessageFilterOn()) {
                         if (($this->getMessage()->getText() !== null) || ($this->getMessage()->getLocation() !== null)) {
                             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                                 if (!$replyMessage->getForumTopicCreated()) {

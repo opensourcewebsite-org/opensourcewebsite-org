@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatSetting;
 use Yii;
@@ -15,23 +16,28 @@ use Yii;
  */
 class GroupBasicCommandsController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
                 [
                         [
                             [
@@ -59,18 +65,12 @@ class GroupBasicCommandsController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         switch ($chat->basic_commands_status) {
             case ChatSetting::STATUS_ON:

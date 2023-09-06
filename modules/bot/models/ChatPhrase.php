@@ -49,7 +49,7 @@ class ChatPhrase extends ActiveRecord
      */
     public function getChat()
     {
-        return $this->hasOne(Chat::className(), ['id' => 'chat_id']);
+        return $this->hasOne(Chat::class, ['id' => 'chat_id']);
     }
 
     /**
@@ -59,7 +59,7 @@ class ChatPhrase extends ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
     public function getChatId()

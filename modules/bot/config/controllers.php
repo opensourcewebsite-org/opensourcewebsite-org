@@ -18,7 +18,7 @@ return [
     'member',
     'group_timezone',
     'group_currency',
-    '',
+    'group_language',
     '',
     '',
     '',

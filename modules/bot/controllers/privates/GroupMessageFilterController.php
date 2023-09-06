@@ -6,6 +6,7 @@ use app\modules\bot\components\actions\privates\wordlist\WordlistComponent;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatPhrase;
 use app\modules\bot\models\ChatSetting;
@@ -29,6 +30,15 @@ class GroupMessageFilterController extends Controller
         6 => 'filter_remove_styled_texts',
         7 => 'filter_remove_locations',
     ];
+
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
 
     public function actions()
     {
@@ -59,26 +69,22 @@ class GroupMessageFilterController extends Controller
     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [
                             'callback_data' => self::createRoute('set-status', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => $chat->filter_status == ChatSetting::STATUS_ON ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
+                            'text' => $chat->isMessageFilterOn() ? Emoji::STATUS_ON . ' ON' : Emoji::STATUS_OFF . ' OFF',
                         ],
                     ],
                     [
@@ -198,13 +204,8 @@ class GroupMessageFilterController extends Controller
                 ->build();
         }
 
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         $status = static::$statuses[$i];
 
@@ -215,8 +216,6 @@ class GroupMessageFilterController extends Controller
                 break;
             case ChatSetting::STATUS_OFF:
                 if ($status == 'filter_status') {
-                    $chatMember = $chat->getChatMemberByUserId();
-
                     if (!$chatMember->trySetChatSetting('filter_status', ChatSetting::STATUS_ON)) {
                         return $this->getResponseBuilder()
                             ->answerCallbackQuery(
@@ -243,13 +242,7 @@ class GroupMessageFilterController extends Controller
      */
     public function actionSetMode($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         switch ($chat->filter_mode) {
             case ChatSetting::FILTER_MODE_OFF:

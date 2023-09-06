@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -13,31 +14,36 @@ use Yii;
 use yii\data\Pagination;
 
 /**
-* Class GroupSlowModeController
-*
-* @package app\modules\bot\controllers\privates
-*/
+ * Class GroupSlowModeController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
 class GroupSlowModeController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [
@@ -81,18 +87,13 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         switch ($chat->slow_mode_status) {
             case ChatSetting::STATUS_ON:
@@ -100,8 +101,6 @@ class GroupSlowModeController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chatMember = $chat->getChatMemberByUserId();
-
                 if (!$chatMember->trySetChatSetting('slow_mode_status', ChatSetting::STATUS_ON)) {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(
@@ -120,18 +119,12 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetMessagesLimit($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('set-messages-limit', [
             'id' => $chat->id,
@@ -167,19 +160,13 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @param int $page
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @param int $page
+     * @return array
+     */
     public function actionMembers($id = null, $page = 1)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('input-member', [
             'id' => $chat->id,
@@ -223,7 +210,8 @@ class GroupSlowModeController extends Controller
             foreach ($members as $member) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]),
                     'text' => $member->user->getDisplayName(),
                 ];
@@ -258,18 +246,12 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionInputMember($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         if ($text = $this->getMessage()->getText()) {
             if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
@@ -305,27 +287,26 @@ class GroupSlowModeController extends Controller
         }
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionMember($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionMember($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -343,7 +324,8 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-messages-now', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Now messages') . ': ' . $member->slow_mode_messages,
                         ],
@@ -351,7 +333,8 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-messages-limit', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Limit of messages') . (!is_null($member->slow_mode_messages_limit) ? ': ' . $member->slow_mode_messages_limit : ''),
                         ],
@@ -359,7 +342,8 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-messages-skip-days', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Skip days') . (!is_null($member->slow_mode_messages_skip_days) ? ': ' . $member->slow_mode_messages_skip_days : ''),
                         ],
@@ -367,7 +351,8 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-messages-skip-hours', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Skip hours') . (!is_null($member->slow_mode_messages_skip_hours) ? ': ' . $member->slow_mode_messages_skip_hours : ''),
                         ],
@@ -385,7 +370,8 @@ class GroupSlowModeController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -396,12 +382,18 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberMessagesNow($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberMessagesNow($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -409,16 +401,9 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-messages-now', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -429,7 +414,8 @@ class GroupSlowModeController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -442,13 +428,15 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-messages-now', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => !is_null($member->slow_mode_messages),
@@ -460,12 +448,18 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberMessagesLimit($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberMessagesLimit($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -473,16 +467,9 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-messages-limit', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -493,7 +480,8 @@ class GroupSlowModeController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -506,13 +494,15 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-messages-limit', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => !is_null($member->slow_mode_messages_limit),
@@ -524,12 +514,18 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberMessagesSkipDays($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberMessagesSkipDays($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -537,16 +533,9 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-messages-skip-days', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -557,7 +546,8 @@ class GroupSlowModeController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -570,13 +560,15 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-messages-skip-days', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => !is_null($member->slow_mode_messages_skip_days),
@@ -588,12 +580,18 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-     * @param int $id ChatMember->id
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
      * @return array
      */
-    public function actionSetMemberMessagesSkipHours($id = null)
+    public function actionSetMemberMessagesSkipHours($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -601,16 +599,9 @@ class GroupSlowModeController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-messages-skip-hours', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -621,7 +612,8 @@ class GroupSlowModeController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -634,13 +626,15 @@ class GroupSlowModeController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-messages-skip-hours', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => !is_null($member->slow_mode_messages_skip_hours),
@@ -652,22 +646,20 @@ class GroupSlowModeController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberMessagesNow($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberMessagesNow($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -677,27 +669,26 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberMessagesLimit($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberMessagesLimit($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -707,27 +698,26 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberMessagesSkipDays($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberMessagesSkipDays($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -737,27 +727,26 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-     * @param int $id ChatMember->id
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
      * @return array
      */
-    public function actionDeleteMemberMessagesSkipHours($id = null)
+    public function actionDeleteMemberMessagesSkipHours($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -767,27 +756,26 @@ class GroupSlowModeController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMember($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMember($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

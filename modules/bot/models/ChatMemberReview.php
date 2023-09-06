@@ -49,8 +49,8 @@ class ChatMemberReview extends ActiveRecord
             ['status', 'default', 'value' => self::STATUS_OFF],
             ['status', 'integer', 'min' => 0, 'max' => 2],
             ['text', 'string', 'max' => 10000],
-            [['member_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatMember::className(), 'targetAttribute' => ['member_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['member_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatMember::class, 'targetAttribute' => ['member_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -97,7 +97,7 @@ class ChatMemberReview extends ActiveRecord
      */
     public function getChat()
     {
-        return $this->hasOne(Chat::className(), ['id' => 'chat_id'])
+        return $this->hasOne(Chat::class, ['id' => 'chat_id'])
             ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
     }
 
@@ -108,7 +108,7 @@ class ChatMemberReview extends ActiveRecord
      */
     public function getCounterChatMember()
     {
-        return $this->hasOne(ChatMember::className(), ['id' => 'member_id']);
+        return $this->hasOne(ChatMember::class, ['id' => 'member_id']);
     }
 
     /**
@@ -118,7 +118,7 @@ class ChatMemberReview extends ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     public function getUserId()
@@ -143,7 +143,7 @@ class ChatMemberReview extends ActiveRecord
      */
     public function getGlobalUser()
     {
-        return $this->hasOne(GlobalUser::className(), ['id' => 'user_id'])
+        return $this->hasOne(GlobalUser::class, ['id' => 'user_id'])
             ->viaTable(User::tableName(), ['id' => 'user_id']);
     }
 
@@ -154,7 +154,7 @@ class ChatMemberReview extends ActiveRecord
      */
     public function getCounterUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id'])
+        return $this->hasOne(User::class, ['id' => 'user_id'])
             ->viaTable(ChatMember::tableName(), ['id' => 'member_id']);
     }
 

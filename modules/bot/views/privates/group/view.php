@@ -13,6 +13,9 @@ use app\components\helpers\TimeHelper;
 <i><?= Yii::t('bot', 'Only the owner of the group can configure the list of administrators who have access to the settings of this group') ?>.</i><br/>
 ————<br/>
 <?= Yii::t('bot', 'Timezone') ?>: <?= TimeHelper::getNameByOffset($chat->timezone) ?><br/>
+<?php if ($language = $chat->language) : ?>
+<?= Yii::t('bot', 'Language') ?>: <?= strtoupper($language->code) . ' - ' . $language->name ?><br/>
+<?php endif; ?>
 <?php if ($currency = $chat->currency) : ?>
 <?= Yii::t('bot', 'Currency') ?>: <?= $currency->code . ' - ' . $currency->name ?><br/>
 <?php endif; ?>

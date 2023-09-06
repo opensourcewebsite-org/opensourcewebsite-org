@@ -34,8 +34,8 @@ class ChatMemberPhrase extends \yii\db\ActiveRecord
         return [
             [['member_id', 'phrase_id'], 'required'],
             [['member_id', 'phrase_id'], 'integer'],
-            [['member_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatMember::className(), 'targetAttribute' => ['member_id' => 'id']],
-            [['phrase_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatPhrase::className(), 'targetAttribute' => ['phrase_id' => 'id']],
+            [['member_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatMember::class, 'targetAttribute' => ['member_id' => 'id']],
+            [['phrase_id'], 'exist', 'skipOnError' => true, 'targetClass' => ChatPhrase::class, 'targetAttribute' => ['phrase_id' => 'id']],
         ];
     }
 
@@ -58,7 +58,7 @@ class ChatMemberPhrase extends \yii\db\ActiveRecord
      */
     public function getChatMember()
     {
-        return $this->hasOne(ChatMember::className(), ['id' => 'member_id']);
+        return $this->hasOne(ChatMember::class, ['id' => 'member_id']);
     }
 
     /**
@@ -68,6 +68,6 @@ class ChatMemberPhrase extends \yii\db\ActiveRecord
      */
     public function getChatPhrase()
     {
-        return $this->hasOne(ChatPhrase::className(), ['id' => 'phrase_id']);
+        return $this->hasOne(ChatPhrase::class, ['id' => 'phrase_id']);
     }
 }

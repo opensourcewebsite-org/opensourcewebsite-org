@@ -120,6 +120,10 @@ class GroupRouteResolver extends Component
             }
         }
 
+        if ($params) {
+            Yii::$app->request->setQueryParams($params);
+        }
+
         return [$route, $params];
     }
 

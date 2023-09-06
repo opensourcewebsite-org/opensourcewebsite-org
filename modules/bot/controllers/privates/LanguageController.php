@@ -21,60 +21,16 @@ class LanguageController extends Controller
      */
     public function actionIndex()
     {
-        return $this->actionSet();
+        return $this->actionList();
     }
 
     /**
-     * @param string|null $code Language->code
      * @param int $page
      * @return array
      */
-    public function actionSet($code = null, $page = 1)
+    public function actionList($page = 1)
     {
-        if ($code) {
-            $language = Language::findOne([
-                'code' => $code,
-            ]);
-
-            if ($language) {
-                $user = $this->getTelegramUser();
-                $user->language_id = $language->id;
-
-                if ($user->save()) {
-                    Yii::$app->language = $language->code;
-                }
-
-                return $this->run('start/index');
-            }
-        }
-
-        if ($this->getUpdate()->getMessage()) {
-            if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if (strlen($text) <= 3) {
-                    $language = Language::find()
-                        ->orFilterWhere(['like', 'code', $text, false])
-                        ->one();
-                } else {
-                    $language = Language::find()
-                        ->orFilterWhere(['like', 'name', $text . '%', false])
-                        ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
-                        ->one();
-                }
-
-                if ($language) {
-                    $user = $this->getTelegramUser();
-                    $user->language_id = $language->id;
-
-                    if ($user->save()) {
-                        Yii::$app->language = $language->code;
-                    }
-
-                    return $this->run('start/index');
-                }
-            }
-        }
-
-        $this->getState()->setInputRoute(self::createRoute('set'));
+        $this->getState()->setInputRoute(self::createRoute('input'));
 
         $query = Language::find()
             ->orderBy([
@@ -100,7 +56,7 @@ class LanguageController extends Controller
         if ($languages) {
             foreach ($languages as $language) {
                 $buttons[][] = [
-                    'callback_data' => self::createRoute('set', [
+                    'callback_data' => self::createRoute('select', [
                         'code' => $language->code,
                     ]),
                     'text' => strtoupper($language->code) . ' - ' . $language->name,
@@ -108,7 +64,7 @@ class LanguageController extends Controller
             }
 
             $paginationButtons = PaginationButtons::build($pagination, function ($page) {
-                return self::createRoute('set', [
+                return self::createRoute('list', [
                     'page' => $page,
                 ]);
             });
@@ -127,9 +83,66 @@ class LanguageController extends Controller
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('set'),
+                $this->render('list'),
                 $buttons
             )
             ->build();
+    }
+
+    /**
+     * @param string|null $code Language->code
+     * @return array
+     */
+    public function actionSelect($code = null)
+    {
+        if ($code) {
+            $language = Language::findOne([
+                'code' => $code,
+            ]);
+
+            if ($language) {
+                $user = $this->getTelegramUser();
+                $user->language_id = $language->id;
+
+                if ($user->save()) {
+                    Yii::$app->language = $language->code;
+                }
+
+                return $this->run('start/index');
+            }
+        }
+
+        return $this->getResponseBuilder()
+        ->answerCallbackQuery()
+        ->build();
+    }
+
+    /**
+     * @return array
+     */
+    public function actionInput()
+    {
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if (strlen($text) <= 3) {
+                    $language = Language::find()
+                        ->orFilterWhere(['like', 'code', $text, false])
+                        ->one();
+                } else {
+                    $language = Language::find()
+                        ->orFilterWhere(['like', 'name', $text . '%', false])
+                        ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
+                        ->one();
+                }
+
+                if ($language) {
+                    return $this->actionSelect($language->code);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+        ->answerCallbackQuery()
+        ->build();
     }
 }

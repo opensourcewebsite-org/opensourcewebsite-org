@@ -2,7 +2,7 @@
 
 namespace app\modules\bot\controllers\privates;
 
-use app\models\Currency;
+use app\models\Language;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
@@ -11,11 +11,11 @@ use Yii;
 use yii\data\Pagination;
 
 /**
- * Class GroupCurrencyController
+ * Class GroupLanguageController
  *
  * @package app\modules\bot\controllers\privates
  */
-class GroupCurrencyController extends Controller
+class GroupLanguageController extends Controller
 {
     public function behaviors()
     {
@@ -47,7 +47,7 @@ class GroupCurrencyController extends Controller
             'id' => $chat->id,
         ]));
 
-        $query = Currency::find()
+        $query = Language::find()
             ->orderBy([
                 'code' => SORT_ASC,
             ]);
@@ -62,20 +62,20 @@ class GroupCurrencyController extends Controller
             'validatePage' => true,
         ]);
 
-        $currencies = $query->offset($pagination->offset)
+        $languages = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
         $buttons = [];
 
-        if ($currencies) {
-            foreach ($currencies as $currency) {
+        if ($languages) {
+            foreach ($languages as $language) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('select', [
                         'id' => $chat->id,
-                        'code' => $currency->code,
+                        'code' => $language->code,
                     ]),
-                    'text' => $currency->code . ' - ' . $currency->name,
+                    'text' => strtoupper($language->code) . ' - ' . $language->name,
                 ];
             }
 
@@ -103,7 +103,7 @@ class GroupCurrencyController extends Controller
                     'id' => $chat->id,
                 ]),
                 'text' => Emoji::DELETE,
-                'visible' => (bool)$chat->currency,
+                'visible' => (bool)$chat->language,
             ],
         ];
 
@@ -124,14 +124,14 @@ class GroupCurrencyController extends Controller
         $chat = Yii::$app->cache->get('chat');
 
         if ($code) {
-            $currency = Currency::findOne([
+            $language = Language::findOne([
                 'code' => $code,
             ]);
 
-            if ($currency) {
-                $chat->currency_id = $currency->id;
+            if ($language) {
+                $chat->language_id = $language->id;
 
-                if ($chat->validate('currency_id') && $chat->save(false)) {
+                if ($chat->validate('language_id') && $chat->save(false)) {
                     return $this->run('group/view', [
                         'chatId' => $chat->id,
                     ]);
@@ -152,19 +152,22 @@ class GroupCurrencyController extends Controller
     {
         $chat = Yii::$app->cache->get('chat');
 
-        if ($text = $this->getUpdate()->getMessage()->getText()) {
-            if (strlen($text) <= 3) {
-                $currency = Currency::find()
-                    ->orFilterWhere(['like', 'code', $text, false])
-                    ->one();
-            } else {
-                $currency = Currency::find()
-                    ->orFilterWhere(['like', 'name', $text . '%', false])
-                    ->one();
-            }
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if (strlen($text) <= 3) {
+                    $language = Language::find()
+                        ->orFilterWhere(['like', 'code', $text, false])
+                        ->one();
+                } else {
+                    $language = Language::find()
+                        ->orFilterWhere(['like', 'name', $text . '%', false])
+                        ->orFilterWhere(['like', 'name_ascii', $text . '%', false])
+                        ->one();
+                }
 
-            if (isset($currency)) {
-                return $this->actionSelect($chat->id, $currency->code);
+                if (isset($language)) {
+                    return $this->actionSelect($chat->id, $language->code);
+                }
             }
         }
 
@@ -181,12 +184,12 @@ class GroupCurrencyController extends Controller
     {
         $chat = Yii::$app->cache->get('chat');
 
-        if ($chat->currency) {
-            $chat->currency_id = null;
+        if ($chat->language) {
+            $chat->language_id = null;
 
             if ($chat->save(false)) {
                 return $this->run('group/view', [
-                    'chatId' => $chat->id,
+                    'id' => $chat->id,
                 ]);
             }
         }

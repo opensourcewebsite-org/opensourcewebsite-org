@@ -500,4 +500,12 @@ class Module extends \yii\base\Module
             return false;
         }
     }
+
+    /**
+     * @return ResponseBuilder
+     */
+    public function getResponseBuilder()
+    {
+        return new ResponseBuilder();
+    }
 }

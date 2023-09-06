@@ -126,7 +126,7 @@ class ChatMember extends ActiveRecord
     public function behaviors()
     {
         return [
-            // TimestampBehavior::className(),
+            // TimestampBehavior::class,
         ];
     }
 

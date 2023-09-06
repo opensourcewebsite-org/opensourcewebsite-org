@@ -6,41 +6,44 @@ use app\models\User as GlobalUser;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
-use app\modules\bot\controllers\groups\PremiumMembersController;
-use app\modules\bot\models\Chat;
+use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
-use app\modules\bot\models\User;
 use Yii;
 use yii\data\Pagination;
 use yii\validators\DateValidator;
 
 /**
-* Class GroupMembershipController
-*
-* @package app\modules\bot\controllers\privates
-*/
+ * Class GroupMembershipController
+ *
+ * @package app\modules\bot\controllers\privates
+ */
 class GroupMembershipController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'groupActiveAdministratorAccess' => [
+                'class' => GroupActiveAdministratorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('index', compact('chat')),
+                $this->render('index', [
+                    'chat' => $chat,
+                ]),
                 [
                     [
                         [
@@ -84,18 +87,13 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetStatus($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         switch ($chat->membership_status) {
             case ChatSetting::STATUS_ON:
@@ -103,8 +101,6 @@ class GroupMembershipController extends Controller
 
                 break;
             case ChatSetting::STATUS_OFF:
-                $chatMember = $chat->getChatMemberByUserId();
-
                 if (!$chatMember->trySetChatSetting('membership_status', ChatSetting::STATUS_ON)) {
                     return $this->getResponseBuilder()
                         ->answerCallbackQuery(
@@ -123,18 +119,12 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionSetTag($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('set-tag', [
             'id' => $chat->id,
@@ -170,19 +160,13 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @param int $page
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @param int $page
+     * @return array
+     */
     public function actionMembers($id = null, $page = 1)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->setInputRoute(self::createRoute('input-member', [
             'id' => $chat->id,
@@ -227,7 +211,8 @@ class GroupMembershipController extends Controller
             foreach ($members as $member) {
                 $buttons[][] = [
                     'callback_data' => self::createRoute('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]),
                     'text' => $member->membership_date . ' - ' . $member->user->getDisplayName(),
                 ];
@@ -262,18 +247,12 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id Chat->id
-    * @return array
-    */
+     * @param int $id Chat->id
+     * @return array
+     */
     public function actionInputMember($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         if ($text = $this->getMessage()->getText()) {
             if (preg_match('/(?:^@(?:[A-Za-z0-9][_]{0,1})*[A-Za-z0-9]+)/i', $text, $matches)) {
@@ -309,27 +288,26 @@ class GroupMembershipController extends Controller
         }
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionMember($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionMember($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -347,7 +325,8 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-note', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Note'),
                         ],
@@ -355,13 +334,15 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-tariff-price', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Tariff, price'),
                         ],
                         [
                             'callback_data' => self::createRoute('set-member-tariff-price-balance', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Balance, price'),
                         ],
@@ -369,13 +350,15 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-tariff-days', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Tariff, days'),
                         ],
                         [
                             'callback_data' => self::createRoute('set-member-tariff-days-balance', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Balance, days'),
                         ],
@@ -383,7 +366,8 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-membership-date', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Membership end date'),
                         ],
@@ -391,7 +375,8 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('set-member-verification-date', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Yii::t('bot', 'Verification end date'),
                         ],
@@ -409,7 +394,8 @@ class GroupMembershipController extends Controller
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-membership-date', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -419,13 +405,19 @@ class GroupMembershipController extends Controller
             ->build();
     }
 
-        /**
-     * @param int $id ChatMember->id
+    /**
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
      * @return array
      */
-    public function actionSetMemberMembershipDate($id = null)
+    public function actionSetMemberMembershipDate($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -433,16 +425,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-membership-date', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -454,7 +439,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -467,7 +453,8 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -478,12 +465,18 @@ class GroupMembershipController extends Controller
     }
 
     /**
-     * @param int $id ChatMember->id
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
      * @return array
      */
-    public function actionSetMemberVerificationDate($id = null)
+    public function actionSetMemberVerificationDate($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -491,16 +484,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-verification-date', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -512,7 +498,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -525,13 +512,15 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-verification-date', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                         ],
@@ -542,22 +531,20 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberMembershipDate($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberMembershipDate($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -580,22 +567,20 @@ class GroupMembershipController extends Controller
     }
 
     /**
-     * @param int $id ChatMember->id
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
      * @return array
      */
-    public function actionDeleteMemberVerificationDate($id = null)
+    public function actionDeleteMemberVerificationDate($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -605,17 +590,24 @@ class GroupMembershipController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberNote($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberNote($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -623,16 +615,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-note', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -643,7 +628,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -656,13 +642,15 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-note', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => (bool)$member->getMembershipNote(),
@@ -674,22 +662,20 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberNote($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberNote($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -699,17 +685,24 @@ class GroupMembershipController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberTariffPrice($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberTariffPrice($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -717,16 +710,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-tariff-price', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -737,7 +723,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -750,13 +737,15 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-tariff-price', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => (bool)$member->getMembershipTariffPrice(),
@@ -768,22 +757,20 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberTariffPrice($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberTariffPrice($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -793,17 +780,24 @@ class GroupMembershipController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberTariffPriceBalance($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberTariffPriceBalance($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -811,16 +805,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-tariff-price-balance', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -829,7 +816,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -842,7 +830,8 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
@@ -853,12 +842,18 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberTariffDays($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberTariffDays($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -866,16 +861,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-tariff-days', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -886,7 +874,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -899,13 +888,15 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
                         [
                             'callback_data' => self::createRoute('delete-member-tariff-days', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::DELETE,
                             'visible' => (bool)$member->getMembershipTariffDays(),
@@ -917,22 +908,20 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionDeleteMemberTariffDays($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionDeleteMemberTariffDays($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();
@@ -942,17 +931,24 @@ class GroupMembershipController extends Controller
         $member->save(false);
 
         return $this->runAction('member', [
-             'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]);
     }
 
     /**
-    * @param int $id ChatMember->id
-    * @return array
-    */
-    public function actionSetMemberTariffDaysBalance($id = null)
+     * @param int $id Chat->id
+     * @param int $oid ChatMember->id
+     * @return array
+     */
+    public function actionSetMemberTariffDaysBalance($id = null, $oid = null)
     {
-        $member = ChatMember::findOne($id);
+        $chat = Yii::$app->cache->get('chat');
+
+        $member = ChatMember::findOne([
+            'id' => $oid,
+            'chat_id' => $chat->id,
+        ]);
 
         if (!isset($member)) {
             return $this->getResponseBuilder()
@@ -960,16 +956,9 @@ class GroupMembershipController extends Controller
                 ->build();
         }
 
-        $chat = $member->chat;
-
-        if (!isset($chat) || !$chat->isGroup()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
         $this->getState()->setInputRoute(self::createRoute('set-member-tariff-days-balance', [
-            'id' => $member->id,
+            'id' => $chat->id,
+            'oid' => $member->id,
         ]));
 
         if ($this->getUpdate()->getMessage()) {
@@ -978,7 +967,8 @@ class GroupMembershipController extends Controller
                     $member->save(false);
 
                     return $this->runAction('member', [
-                        'id' => $member->id,
+                        'id' => $chat->id,
+                        'oid' => $member->id,
                     ]);
                 }
             }
@@ -991,7 +981,8 @@ class GroupMembershipController extends Controller
                     [
                         [
                             'callback_data' => self::createRoute('member', [
-                                'id' => $member->id,
+                                'id' => $chat->id,
+                                'oid' => $member->id,
                             ]),
                             'text' => Emoji::BACK,
                         ],
