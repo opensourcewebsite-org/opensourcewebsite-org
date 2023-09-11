@@ -8,6 +8,11 @@ use TelegramBot\Api\HttpException;
 use TelegramBot\Api\Types\InputMedia\InputMediaPhoto;
 use Yii;
 
+/**
+ * Class EditPhotoCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class EditPhotoCommand extends Command
 {
     public function __construct(string $chatId, string $messageId, Photo $photo, MessageText $caption, array $optionalParams = [])

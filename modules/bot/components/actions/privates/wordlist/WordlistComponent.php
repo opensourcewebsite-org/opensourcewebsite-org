@@ -23,8 +23,8 @@ use yii\base\InvalidConfigException;
  *     return array_merge(
  *         parent::actions(),
  *         Yii::createObject([
- *             'class' => WordlistComponent::className(),
- *             'wordModelClass' => BotRouteAlias::className(),
+ *             'class' => WordlistComponent::class,
+ *             'wordModelClass' => BotRouteAlias::class,
  *             'modelAttributes' => [
  *                 'command' => VotebanController::createRoute('index')
  *             ]

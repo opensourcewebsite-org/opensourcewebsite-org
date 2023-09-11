@@ -35,6 +35,8 @@ use yii\db\ActiveRecord;
  * @property bool $is_bot
  * @property int $captcha_confirmed_at
  *
+ * @property GlobalUser $globalUser
+ *
  * @package app\modules\bot\models
  */
 class User extends ActiveRecord

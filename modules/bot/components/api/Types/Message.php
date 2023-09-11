@@ -34,6 +34,11 @@ use TelegramBot\Api\Types\VideoChatStarted;
 use TelegramBot\Api\Types\VideoNote;
 use TelegramBot\Api\Types\Voice;
 
+/**
+ * Class Message
+ *
+ * @package app\modules\bot\components\api\Types
+ */
 class Message extends \TelegramBot\Api\Types\Message
 {
     // A message can only be deleted if it was sent less than 48 hours ago

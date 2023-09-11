@@ -38,7 +38,7 @@ class WebhookController extends Controller
     public function actions()
     {
         return [
-            'telegram-bot' => WebHookAction::className(),
+            'telegram-bot' => WebHookAction::class,
         ];
     }
 

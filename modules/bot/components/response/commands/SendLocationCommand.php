@@ -5,6 +5,11 @@ namespace app\modules\bot\components\response\commands;
 use TelegramBot\Api\HttpException;
 use Yii;
 
+/**
+ * Class SendLocationCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class SendLocationCommand extends Command
 {
     public function __construct(string $chatId, int $latitude, int $longitude, array $optionalParams = [])
@@ -24,7 +29,7 @@ class SendLocationCommand extends Command
         $answer = false;
 
         try {
-            $answer = $botApi->sendLocation(
+            $answer = $this->getBotApi()->sendLocation(
                 $this->chatId,
                 $this->latitude,
                 $this->longitude,

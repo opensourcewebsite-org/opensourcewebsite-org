@@ -2,7 +2,6 @@
 
 namespace app\modules\bot;
 
-use app\models\Rating;
 use app\models\User as GlobalUser;
 use app\modules\bot\components\api\BotApi;
 use app\modules\bot\components\api\Types\Update;
@@ -10,7 +9,6 @@ use app\modules\bot\components\response\ResponseBuilder;
 use app\modules\bot\models\Bot;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
-use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
 use app\modules\bot\models\UserState;
 use Yii;
@@ -490,7 +488,7 @@ class Module extends \yii\base\Module
             if ($namespace && ($this->namespace != $namespace)) {
                 $this->namespace = $namespace;
 
-                Yii::configure($this, require __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->namespace . '.php');
+                Yii::configure($this, require_once __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->namespace . '.php');
                 $this->controllerNamespace = $this->defaultControllerNamespace . '\\' . $this->namespace;
                 $this->setViewPath($this->defaultViewPath . DIRECTORY_SEPARATOR . $this->namespace);
             }

@@ -4,6 +4,11 @@ namespace app\modules\bot\components\response\commands;
 
 use Yii;
 
+/**
+ * Class DeleteMessageCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class DeleteMessageCommand extends Command
 {
     public function __construct($chatId, $messageId)

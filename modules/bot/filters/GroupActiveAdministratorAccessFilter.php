@@ -4,9 +4,13 @@ namespace app\modules\bot\filters;
 
 use app\modules\bot\models\Chat;
 use Yii;
-use yii\base\ActionFilter;
 
-class GroupActiveAdministratorAccessFilter extends ActionFilter
+/**
+ * Class GroupActiveAdministratorAccessFilter
+ *
+ * @package app\modules\bot\filters
+ */
+class GroupActiveAdministratorAccessFilter extends \yii\base\ActionFilter
 {
     public $chatId;
 

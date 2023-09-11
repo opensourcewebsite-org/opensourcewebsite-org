@@ -6,6 +6,11 @@ use TelegramBot\Api\HttpException;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 use Yii;
 
+/**
+ * Class EditMessageReplyMarkupCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class EditMessageReplyMarkupCommand extends Command
 {
     public function __construct(string $chatId, string $messageId, InlineKeyboardMarkup $replyMarkup = null)

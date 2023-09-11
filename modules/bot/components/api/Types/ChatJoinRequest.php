@@ -5,6 +5,11 @@ namespace app\modules\bot\components\api\Types;
 use TelegramBot\Api\Types\ChatInviteLink;
 use TelegramBot\Api\Types\User;
 
+/**
+ * Class ChatJoinRequest
+ *
+ * @package app\modules\bot\components\api\Types
+ */
 class ChatJoinRequest extends \TelegramBot\Api\Types\ChatJoinRequest
 {
     /**

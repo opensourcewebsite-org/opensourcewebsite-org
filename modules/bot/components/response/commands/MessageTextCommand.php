@@ -4,6 +4,11 @@ namespace app\modules\bot\components\response\commands;
 
 use app\modules\bot\components\helpers\MessageText;
 
+/**
+ * Class MessageTextCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 abstract class MessageTextCommand extends Command
 {
     public function __construct(MessageText $messageText = null, $optionalParams = [])

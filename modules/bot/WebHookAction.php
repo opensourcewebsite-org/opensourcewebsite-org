@@ -18,12 +18,9 @@ class WebHookAction extends Action
      */
     public function run($token = '')
     {
-        $result = false;
-
         $input = file_get_contents('php://input');
         $module =  Yii::$app->getModule('bot');
-        $result = $module->handleInput($input, $token);
 
-        return $result;
+        return $module->handleInput($input, $token);
     }
 }

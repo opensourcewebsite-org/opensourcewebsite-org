@@ -7,6 +7,11 @@ use app\modules\bot\components\helpers\Photo;
 use TelegramBot\Api\HttpException;
 use Yii;
 
+/**
+ * Class SendPhotoCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class SendPhotoCommand extends Command
 {
     public function __construct(string $chatId, Photo $photo, MessageText $caption, array $optionalParams = [])

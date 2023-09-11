@@ -21,6 +21,7 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Class ResponseBuilder
+ *
  * @package app\modules\bot\components\response
  */
 class ResponseBuilder

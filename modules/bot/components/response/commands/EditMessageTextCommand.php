@@ -6,6 +6,11 @@ use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\HttpException;
 use Yii;
 
+/**
+ * Class EditMessageTextCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class EditMessageTextCommand extends MessageTextCommand
 {
     public function __construct(string $chatId, string $messageId, MessageText $messageText, array $optionalParams = [])

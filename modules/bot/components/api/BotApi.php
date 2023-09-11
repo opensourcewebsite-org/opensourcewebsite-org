@@ -2,14 +2,12 @@
 
 namespace app\modules\bot\components\api;
 
-use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\models\Chat;
 use TelegramBot\Api\HttpException;
-use TelegramBot\Api\Types\ChatMember;
+use app\modules\bot\components\api\Types\ChatMember;
 use Yii;
 
 /**
- * Class botApi
+ * Class BotApi
  *
  * @package app\modules\bot\components\api
  */
@@ -20,14 +18,16 @@ class BotApi extends \TelegramBot\Api\BotApi
      *
      * @param string|int $chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int $userId
-     * @return ChatMember
+     * @return ChatMember|false
      */
     public function getChatMember($chatId, $userId)
     {
+        Yii::warning('BotApi->getChatMember()');
+
         try {
             return ChatMember::fromResponse($this->call('getChatMember', [
                 'chat_id' => $chatId,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]));
         } catch (\Exception $e) {
             Yii::warning($e);
@@ -37,6 +37,8 @@ class BotApi extends \TelegramBot\Api\BotApi
     }
 
     /**
+     * Use this method to delete a message from a chat.
+     *
      * @param int $chatId
      * @param int $messageId
      * @return bool
@@ -55,6 +57,8 @@ class BotApi extends \TelegramBot\Api\BotApi
     }
 
     /**
+     * Use this method to respond to a callback request from a chat.
+     *
      * @param $callbackQueryId
      * @param string|null $text
      * @param bool $showAlert

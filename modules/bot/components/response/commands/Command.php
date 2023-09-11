@@ -5,6 +5,11 @@ namespace app\modules\bot\components\response\commands;
 use app\modules\bot\components\api\BotApi;
 use Yii;
 
+/**
+ * Class Command
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 abstract class Command
 {
     private $fields = [];
@@ -75,4 +80,6 @@ abstract class Command
     {
         $this->send();
     }
+
+    abstract public function send();
 }

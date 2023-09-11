@@ -7,6 +7,11 @@ use TelegramBot\Api\Types\ChatLocation;
 use TelegramBot\Api\Types\ChatPermissions;
 use TelegramBot\Api\Types\ChatPhoto;
 
+/**
+ * Class Chat
+ *
+ * @package app\modules\bot\components\api\Types
+ */
 class Chat extends \TelegramBot\Api\Types\Chat
 {
     /**

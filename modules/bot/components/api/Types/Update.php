@@ -11,6 +11,11 @@ use TelegramBot\Api\Types\Poll;
 use TelegramBot\Api\Types\PollAnswer;
 use Yii;
 
+/**
+ * Class Update
+ *
+ * @package app\modules\bot\components\api\Types
+ */
 class Update extends \TelegramBot\Api\Types\Update
 {
     /**

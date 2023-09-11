@@ -6,6 +6,11 @@ use app\modules\bot\components\helpers\MessageText;
 use TelegramBot\Api\HttpException;
 use Yii;
 
+/**
+ * Class AnswerCallbackQueryCommand
+ *
+ * @package app\modules\bot\components\response\commands
+ */
 class AnswerCallbackQueryCommand extends MessageTextCommand
 {
     public function __construct(string $callbackQueryId, MessageText $messageText = null, bool $showAlert = false)

@@ -4,6 +4,11 @@ namespace app\modules\bot\components\api\Types;
 
 use app\modules\bot\models\ChatMember as ChatMemberModel;
 
+/**
+ * Class ChatMember
+ *
+ * @package app\modules\bot\components\api\Types
+ */
 class ChatMember extends \TelegramBot\Api\Types\ChatMember
 {
     /**
