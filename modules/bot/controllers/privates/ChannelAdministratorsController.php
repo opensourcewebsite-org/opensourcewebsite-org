@@ -5,6 +5,7 @@ namespace app\modules\bot\controllers\privates;
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\filters\ChannelCreatorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -18,6 +19,15 @@ use yii\data\Pagination;
  */
 class ChannelAdministratorsController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'channelCreatorAccess' => [
+                'class' => ChannelCreatorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
      * @param int $id Chat->id
      * @param int $page
@@ -25,28 +35,9 @@ class ChannelAdministratorsController extends Controller
      */
     public function actionIndex($id = null, $page = 1)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isChannel()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
-
-        $user = $this->getTelegramUser();
-
-        $chatMember = ChatMember::findOne([
-            'chat_id' => $chat->id,
-            'user_id' => $user->id,
-        ]);
-
-        if (!isset($chatMember) || !$chatMember->isCreator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
 
         $query = $chat->getHumanAdministrators();
 
@@ -122,25 +113,12 @@ class ChannelAdministratorsController extends Controller
      */
     public function actionSet($id = null, $administratorId = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isChannel()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         $this->getState()->clearInputRoute();
-
-        $user = $this->getTelegramUser();
-
-        $chatMember = ChatMember::findOne([
-            'chat_id' => $chat->id,
-            'user_id' => $user->id,
-        ]);
-
         // creator cannot be deactivated
-        if (!isset($chatMember) || !$chatMember->isCreator() || ($chatMember->getUserId() == $administratorId)) {
+        if ($chatMember->getUserId() == $administratorId) {
             return $this->getResponseBuilder()
                 ->answerCallbackQuery()
                 ->build();

@@ -4,6 +4,7 @@ namespace app\modules\bot\controllers\privates;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
+use app\modules\bot\filters\ChannelCreatorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\User;
@@ -16,6 +17,15 @@ use Yii;
  */
 class ChannelDeleteController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'channelCreatorAccess' => [
+                'class' => ChannelCreatorAccessFilter::class,
+            ],
+        ];
+    }
+
     /**
      * @param int $id Chat->id
      * @return array
@@ -23,24 +33,7 @@ class ChannelDeleteController extends Controller
      */
     public function actionIndex($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isChannel()) {
-            return $this->run('channel/index');
-        }
-
-        $user = $this->getTelegramUser();
-
-        $chatMember = ChatMember::findOne([
-            'chat_id' => $chat->id,
-            'user_id' => $user->id,
-        ]);
-
-        if (!isset($chatMember) || !$chatMember->isCreator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $this->getState()->clearInputRoute();
 
@@ -84,24 +77,7 @@ class ChannelDeleteController extends Controller
      */
     public function actionConfirm($id = null)
     {
-        $chat = Chat::findOne($id);
-
-        if (!isset($chat) || !$chat->isChannel()) {
-            return $this->run('channel/index');
-        }
-
-        $user = $this->getTelegramUser();
-
-        $chatMember = ChatMember::findOne([
-            'chat_id' => $chat->id,
-            'user_id' => $user->id,
-        ]);
-
-        if (!isset($chatMember) || !$chatMember->isCreator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
 
         $chat->delete();
 

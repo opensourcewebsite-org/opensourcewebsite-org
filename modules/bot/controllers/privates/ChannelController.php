@@ -6,6 +6,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\components\helpers\PaginationButtons;
+use app\modules\bot\filters\ChannelActiveAdministratorAccessFilter;
 use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -21,6 +22,16 @@ use yii\helpers\ArrayHelper;
  */
 class ChannelController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'channelActiveAdministratorAccess' => [
+                'class' => ChannelActiveAdministratorAccessFilter::class,
+                'only' => ['view'],
+            ],
+        ];
+    }
+
     /**
      * @param int $page
      * @return array
@@ -93,21 +104,8 @@ class ChannelController extends Controller
      */
     public function actionView($chatId = null)
     {
-        $chat = Chat::findOne($chatId);
-
-        if (!isset($chat) || !$chat->isChannel()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
-
-        $chatMember = $chat->getChatMemberByUserId();
-
-        if (!isset($chatMember) || !$chatMember->isActiveAdministrator()) {
-            return $this->getResponseBuilder()
-                ->answerCallbackQuery()
-                ->build();
-        }
+        $chat = Yii::$app->cache->get('chat');
+        $chatMember = Yii::$app->cache->get('chatMember');
 
         $this->getState()->clearInputRoute();
 
