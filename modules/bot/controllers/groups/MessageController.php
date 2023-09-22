@@ -27,6 +27,11 @@ class MessageController extends Controller
 
         $chatMember = $chat->getChatMemberByUserId();
 
+        // TODO fix for empty $chatMember
+        if (!isset($chatMember)) {
+            return [];
+        }
+
         if ($user->isBot()) {
             if ($chat->isMessageFilterOn()) {
                 if ($chat->filter_remove_channels == ChatSetting::STATUS_ON) {
