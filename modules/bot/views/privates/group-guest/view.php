@@ -31,11 +31,15 @@ use app\modules\bot\components\helpers\ExternalLink;
 <?php endif; ?>
 <?php if ($chat->isSlowModeOn()) : ?>
 <br/>
-<?= Yii::t('bot', 'Limit of messages') ?>: <?= $chatMember->slow_mode_messages ?>/<?= $chatMember->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit; ?><br/>
+<?= Yii::t('bot', 'Limit of messages') ?> (<?= Yii::t('bot', 'today') ?>): <?= $chatMember->getActualSlowModeMessages() ?>/<?= $chatMember->getActualSlowModeMessagesLimit() ?><br/>
 <?php endif; ?>
 <?php if ($user->getUsername()) : ?>
 <br/>
-<?= Yii::t('bot', 'Public link for reviews from other group members') ?>: <?= $chatMember->getReviewsLink() ?><br/>
+<?= Yii::t('bot', 'Public personal link for reviews from other group members') ?>: <?= $chatMember->getReviewsLink() ?><br/>
 <?php endif; ?>
 <?php endif; ?>
+<?php endif; ?>
+<?php if ($chat->isInviterOn()) : ?>
+<br/>
+<?= Yii::t('bot', 'Reward amount for adding a new member to the group') ?>: <?= $chat->getDisplayRewardAmount() ?><br/>
 <?php endif; ?>

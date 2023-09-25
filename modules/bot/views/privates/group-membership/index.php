@@ -7,4 +7,5 @@
 <?php endif; ?>
 ————<br/>
 <?= Yii::t('bot', 'Available commands in this group') ?>:<br/>
+<br/>
   <code>/premium_members</code> - <?= Yii::t('bot', 'list of premium members') ?>. <i><?= Yii::t('bot', 'Sorted by user rank') ?>.</i><br/>

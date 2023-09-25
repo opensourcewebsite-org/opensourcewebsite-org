@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\bot\models;
 
+use app\components\helpers\TimeHelper;
 use app\models\Currency;
 use app\models\Language;
 use app\models\User as GlobalUser;
@@ -20,6 +21,7 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property int $chat_id
+ * @property int $timezone
  * @property int|null $currency_id
  * @property int|null $language_id
  *
@@ -516,6 +518,17 @@ class Chat extends ActiveRecord
         return false;
     }
 
+    public function isInviterOn()
+    {
+        if ($this->isGroup() || $this->isChannel()) {
+            if ($this->inviter_status == ChatSetting::STATUS_ON) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isFaqOn()
     {
         if ($this->isGroup() || $this->isChannel()) {
@@ -541,5 +554,15 @@ class Chat extends ActiveRecord
     public function getLink()
     {
         return ExternalLink::getBotStartLink($this->getUsername() ?: $this->getChatId());
+    }
+
+    public function getTimezoneName()
+    {
+        return TimeHelper::getNameByOffset($this->timezone);
+    }
+
+    public function getDisplayRewardAmount()
+    {
+        return ($value = $this->inviter_reward_amount) ? $value . (($currency = $this->currency) ? ' ' . $currency->code : '') : '';
     }
 }

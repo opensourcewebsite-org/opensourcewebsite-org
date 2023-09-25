@@ -66,7 +66,7 @@ class GroupSlowModeController extends Controller
                             'callback_data' => self::createRoute('set-messages-limit', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Limit of messages'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Limit of messages'),
                         ],
                     ],
                     [
@@ -126,21 +126,9 @@ class GroupSlowModeController extends Controller
     {
         $chat = Yii::$app->cache->get('chat');
 
-        $this->getState()->setInputRoute(self::createRoute('set-messages-limit', [
+        $this->getState()->setInputRoute(self::createRoute('input-messages-limit', [
             'id' => $chat->id,
         ]));
-
-        if ($this->getUpdate()->getMessage()) {
-            if ($text = (int)$this->getUpdate()->getMessage()->getText()) {
-                if ($chat->validateSettingValue('slow_mode_messages_limit', $text)) {
-                    $chat->slow_mode_messages_limit = $text;
-
-                    return $this->runAction('index', [
-                        'id' => $chat->id,
-                    ]);
-                }
-            }
-        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -157,6 +145,31 @@ class GroupSlowModeController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionInputMessagesLimit($id = null)
+    {
+        $chat = Yii::$app->cache->get('chat');
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = (int)$this->getUpdate()->getMessage()->getText()) {
+                if ($chat->validateSettingValue('slow_mode_messages_limit', $text)) {
+                    $chat->slow_mode_messages_limit = $text;
+
+                    return $this->runAction('index', [
+                        'id' => $chat->id,
+                    ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+        ->answerCallbackQuery()
+        ->build();
     }
 
     /**

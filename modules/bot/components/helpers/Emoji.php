@@ -7,7 +7,7 @@ class Emoji
     public const ADD = '➕';
     public const BACK = '🔙';
     public const DELETE = '🗑';
-    public const EDIT = '✏️';
+    public const EDIT = '🖊️';
     public const END = '🔚';
     public const LANGUAGE = '🌐';
     public const MENU = '📱';
@@ -47,7 +47,9 @@ class Emoji
     public const SOON = '🔜';
     public const NEW1 = '🆕';
     public const LIST = '📖';
+    public const ITEMS = '🗂';
     public const GIFT = '🎁';
     public const EYE = '👁‍🗨';
     public const THANKS = '🙏';
+    public const SWITCH = '🔀';
 }

@@ -7,31 +7,33 @@ use app\components\helpers\TimeHelper;
 <?php if ($user->birthday || $user->gender || $user->sexuality) : ?>
 <br/>
 <?php if ($user->birthday) : ?>
-<?= Yii::t('bot', 'Birthday') ?>: <?= $user->birthday; ?><br/>
+<b><?= Yii::t('bot', 'Birthday') ?></b>: <?= $user->birthday ?><br/>
 <?php endif; ?>
 <?php if ($user->gender) : ?>
-<?= Yii::t('bot', 'Gender') ?>: <?= Yii::t('bot', $user->gender->name); ?><br/>
+<b><?= Yii::t('bot', 'Gender') ?></b>: <?= Yii::t('bot', $user->gender->name) ?><br/>
 <?php endif; ?>
 <?php if ($user->sexuality) : ?>
-<?= Yii::t('bot', 'Sexuality') ?>: <?= Yii::t('bot', $user->sexuality->name); ?><br/>
+<b><?= Yii::t('bot', 'Sexuality') ?></b>: <?= Yii::t('bot', $user->sexuality->name) ?><br/>
 <?php endif; ?>
 <?php endif; ?>
 <?php if ($user->languages) : ?>
 <br/>
-<?=  Yii::t('bot', 'Languages') ?>:<br/>
+<b><?=  Yii::t('bot', 'Languages') ?></b>:<br/>
+<br/>
 <?php foreach ($user->languages as $language) : ?>
-  • <?= $language->getLabel(); ?><br/>
+  • <?= $language->getLabel() ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
 <?php if ($user->citizenships) : ?>
 <br/>
-<?= Yii::t('bot', 'Citizenships') ?>:<br/>
+<b><?= Yii::t('bot', 'Citizenships') ?></b>:<br/>
+<br/>
 <?php foreach ($user->citizenships as $citizenship) : ?>
-  • <?= Yii::t('user', $citizenship->country->name); ?><br/>
+  • <?= Yii::t('user', $citizenship->country->name) ?><br/>
 <?php endforeach; ?>
 <?php endif; ?>
 <br/>
-<?= Yii::t('bot', 'Timezone') ?>: <?= TimeHelper::getNameByOffset($user->timezone); ?><br/>
+<b><?= Yii::t('bot', 'Timezone') ?></b>: <?= $user->getTimezoneName() ?><br/>
 <?php if ($user->currency) : ?>
-<?= Yii::t('bot', 'Currency') ?>: <?= $user->currency->code . ' - ' . $user->currency->name; ?><br/>
+<b><?= Yii::t('bot', 'Currency') ?></b>: <?= $user->currency->code . ' - ' . $user->currency->name ?><br/>
 <?php endif; ?>

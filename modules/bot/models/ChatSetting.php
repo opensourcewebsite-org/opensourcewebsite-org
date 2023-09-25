@@ -32,19 +32,34 @@ class ChatSetting extends ActiveRecord
         'basic_commands_status' => [
             'default' => self::STATUS_ON,
         ],
-        'join_hider_status' => [
+        'faq_status' => [
             'default' => self::STATUS_OFF,
         ],
-        'filter_remove_member_joined' => [
-            'default' => self::STATUS_ON,
+        'filter_mode' => [
+            'default' => self::FILTER_MODE_OFF,
         ],
-        'filter_remove_member_left' => [
-            'default' => self::STATUS_ON,
-        ],
-        'filter_remove_video_chat_scheduled' => [
+        'filter_remove_channels' => [
             'default' => self::STATUS_OFF,
         ],
-        'filter_remove_video_chat_started' => [
+        'filter_remove_empty_line' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_emoji' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_locations' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_reply' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_styled_texts' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_username' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_status' => [
             'default' => self::STATUS_OFF,
         ],
         'filter_remove_video_chat_ended' => [
@@ -53,16 +68,10 @@ class ChatSetting extends ActiveRecord
         'filter_remove_video_chat_invited' => [
             'default' => self::STATUS_OFF,
         ],
-        'join_captcha_status' => [
+        'filter_remove_video_chat_scheduled' => [
             'default' => self::STATUS_OFF,
         ],
-        'notify_name_change_status' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'publisher_status' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'greeting_status' => [
+        'filter_remove_video_chat_started' => [
             'default' => self::STATUS_OFF,
         ],
         'greeting_lifetime' => [],
@@ -70,6 +79,25 @@ class ChatSetting extends ActiveRecord
             'type' => 'string',
             'min' => 1,
             'max' => 10000,
+        ],
+        'greeting_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'inviter_reward_amount' => [
+            'default' => 0.01,
+            'type' => 'float',
+            'min' => 0.01,
+            'max' => 10000,
+            'precision' => 2,
+        ],
+        'inviter_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'join_captcha_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'join_hider_status' => [
+            'default' => self::STATUS_OFF,
         ],
         'membership_status' => [
             'default' => self::STATUS_OFF,
@@ -79,7 +107,10 @@ class ChatSetting extends ActiveRecord
             'min' => 1,
             'max' => 255,
         ],
-        'slow_mode_status' => [
+        'notify_name_change_status' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'publisher_status' => [
             'default' => self::STATUS_OFF,
         ],
         'slow_mode_messages_limit' => [
@@ -88,34 +119,7 @@ class ChatSetting extends ActiveRecord
             'min' => 1,
             'max' => 10000,
         ],
-        'filter_status' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_mode' => [
-            'default' => self::FILTER_MODE_OFF,
-        ],
-        'filter_remove_reply' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_remove_username' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_remove_emoji' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_remove_empty_line' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_remove_channels' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_remove_locations' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_remove_styled_texts' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'faq_status' => [
+        'slow_mode_status' => [
             'default' => self::STATUS_OFF,
         ],
     ];
@@ -210,15 +214,23 @@ class ChatSetting extends ActiveRecord
                 switch ($rules['type']) {
                     case 'integer':
                         $this->value = intval($this->value);
+
                         if (!is_int($this->value)) {
                             $this->addError('value', 'Value must be an integer.');
                         }
+
                         break;
                     case 'float':
                         $this->value = floatval($this->value);
+
                         if (!is_float($this->value)) {
                             $this->addError('value', 'Value must be a number.');
+                        } else {
+                            if (isset($rules['precision']) && $rules['precision']) {
+                                $this->value = round($this->value, $rules['precision']);
+                            }
                         }
+
                         break;
                 }
             }

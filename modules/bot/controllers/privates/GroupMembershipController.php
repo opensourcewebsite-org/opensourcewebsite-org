@@ -66,7 +66,7 @@ class GroupMembershipController extends Controller
                             'callback_data' => self::createRoute('set-tag', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Tag for members'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Tag for members'),
                         ],
                     ],
                     [
@@ -126,21 +126,9 @@ class GroupMembershipController extends Controller
     {
         $chat = Yii::$app->cache->get('chat');
 
-        $this->getState()->setInputRoute(self::createRoute('set-tag', [
+        $this->getState()->setInputRoute(self::createRoute('input-tag', [
             'id' => $chat->id,
         ]));
-
-        if ($this->getUpdate()->getMessage()) {
-            if ($text = $this->getUpdate()->getMessage()->getText()) {
-                if ($chat->validateSettingValue('membership_tag', $text)) {
-                    $chat->membership_tag = $text;
-
-                    return $this->runAction('index', [
-                        'id' => $chat->id,
-                    ]);
-                }
-            }
-        }
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
@@ -157,6 +145,31 @@ class GroupMembershipController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @param int $id Chat->id
+     * @return array
+     */
+    public function actionInputTag($id = null)
+    {
+        $chat = Yii::$app->cache->get('chat');
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = $this->getUpdate()->getMessage()->getText()) {
+                if ($chat->validateSettingValue('membership_tag', $text)) {
+                    $chat->membership_tag = $text;
+
+                    return $this->runAction('index', [
+                        'id' => $chat->id,
+                    ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+        ->answerCallbackQuery()
+        ->build();
     }
 
     /**

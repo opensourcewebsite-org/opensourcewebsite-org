@@ -34,6 +34,8 @@ use yii\db\ActiveRecord;
  * @property int $membership_tariff_days
  * @property string|null $intro
  *
+ * @property Chat $chat
+ *
  * @package app\modules\bot\models
  */
 class ChatMember extends ActiveRecord
@@ -84,6 +86,10 @@ class ChatMember extends ActiveRecord
         'publisher_status' => [
             'active_bot_group_publisher_quantity_value_per_one_rating',
             'active_bot_group_publisher_min_quantity_value_per_one_user',
+        ],
+        'inviter_status' => [
+            'active_bot_group_inviter_quantity_value_per_one_rating',
+            'active_bot_group_inviter_min_quantity_value_per_one_user',
         ],
     ];
 
@@ -194,6 +200,30 @@ class ChatMember extends ActiveRecord
         return $this->slow_mode_messages;
     }
 
+    public function getActualSlowModeMessages()
+    {
+        if ($chat = $this->chat) {
+            if ($this->last_message_at) {
+                $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
+
+                if ($today->getTimestamp() < $this->last_message_at) {
+                    return $this->slow_mode_messages;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    public function getActualSlowModeMessagesLimit()
+    {
+        if ($chat = $this->chat) {
+            return $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
+        }
+
+        return 0;
+    }
+
     public function getLastMessageAt()
     {
         return $this->last_message_at;
@@ -217,12 +247,13 @@ class ChatMember extends ActiveRecord
 
                 $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
 
+                // TODO remove chat->slow_mode_messages_skip_days
                 if ($this->slow_mode_messages_skip_days) {
                     $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
                 }
 
                 if ($today->getTimestamp() < $this->last_message_at) {
-                    $slowModeMessagesLimit = $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
+                    $slowModeMessagesLimit = $this->getActualSlowModeMessagesLimit();
 
                     if ($slowModeMessagesLimit <= $this->slow_mode_messages) {
                         return false;

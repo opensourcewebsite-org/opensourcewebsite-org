@@ -152,7 +152,7 @@ $this->title = Yii::t('app', 'Account');
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Timezone'); ?></th>
-                                    <td class="align-middle" id="timezone"><?= TimeHelper::getNameByOffset($model->timezone); ?></td>
+                                    <td class="align-middle" id="timezone"><?= $model->getTimezoneName(); ?></td>
                                     <td>
                                         <?= EditButton::widget([
                                             'url' => '/user/change-timezone',

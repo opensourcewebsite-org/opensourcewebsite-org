@@ -3,3 +3,7 @@
 <br/>
 <?= nl2br($chat->description); ?><br/>
 <?php endif; ?>
+<?php if ($chat->isInviterOn()) : ?>
+————<br/>
+<?= Yii::t('bot', 'Reward amount for adding a new member to the group') ?>: <?= $chat->getDisplayRewardAmount() ?><br/>
+<?php endif; ?>

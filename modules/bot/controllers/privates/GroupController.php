@@ -131,15 +131,15 @@ class GroupController extends Controller
                             'callback_data' => GroupTimezoneController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Timezone'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Timezone') . ': ' . $chat->getTimezoneName(),
                         ],
                     ],
-                                        [
+                    [
                         [
                             'callback_data' => GroupLanguageController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Language'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Language') . (($language = $chat->language) ? ': ' . strtoupper($language->code) : ''),
                         ],
                     ],
                     [
@@ -147,7 +147,7 @@ class GroupController extends Controller
                             'callback_data' => GroupCurrencyController::createRoute('index', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Currency'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Currency') . (($currency = $chat->currency) ? ': ' . $currency->code : ''),
                         ],
                     ],
                     [
@@ -204,6 +204,15 @@ class GroupController extends Controller
                                 'id' => $chat->id,
                             ]),
                             'text' => ($chat->isMembershipOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Membership'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => GroupInviterController::createRoute('index', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => ($chat->isInviterOn() ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Inviter'),
+                            'visible' => $chatMember->isCreator(),
                         ],
                     ],
                     [

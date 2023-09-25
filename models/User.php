@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\components\Converter;
 use app\components\helpers\Html;
+use app\components\helpers\TimeHelper;
 use app\helpers\Number;
 use app\models\queries\ContactQuery;
 use app\models\queries\UserQuery;
@@ -1151,5 +1152,10 @@ class User extends ActiveRecord implements IdentityInterface
             ->where(['user_id' => $this->id])
             ->andWhere(['>', Wallet::tableName() . '.amount', 0])
             ->orderByCurrencyCode();
+    }
+
+    public function getTimezoneName()
+    {
+        return TimeHelper::getNameByOffset($this->timezone);
     }
 }

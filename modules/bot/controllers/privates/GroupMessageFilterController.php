@@ -48,17 +48,17 @@ class GroupMessageFilterController extends Controller
                 'class' => WordlistComponent::class,
                 'wordModelClass' => ChatPhrase::class,
                 'modelAttributes' => [
-                    'type' =>ChatPhrase::TYPE_BLACKLIST,
+                    'type' => ChatPhrase::TYPE_BLACKLIST,
                 ],
-                'actionGroupName' =>ChatPhrase::TYPE_BLACKLIST,
+                'actionGroupName' => ChatPhrase::TYPE_BLACKLIST,
             ])->actions(),
             Yii::createObject([
                 'class' => WordlistComponent::class,
                 'wordModelClass' => ChatPhrase::class,
                 'modelAttributes' => [
-                    'type' =>ChatPhrase::TYPE_WHITELIST,
+                    'type' => ChatPhrase::TYPE_WHITELIST,
                 ],
-                'actionGroupName' =>ChatPhrase::TYPE_WHITELIST,
+                'actionGroupName' => ChatPhrase::TYPE_WHITELIST,
             ])->actions()
         );
     }
@@ -92,7 +92,7 @@ class GroupMessageFilterController extends Controller
                             'callback_data' => self::createRoute('set-mode', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Mode') . ': ' . $chat->getFilterModeLabel(),
+                            'text' => Emoji::SWITCH . ' ' . Yii::t('bot', 'Mode') . ': ' . $chat->getFilterModeLabel(),
                         ],
                     ],
                     [

@@ -14,8 +14,6 @@ Use widgets and helpers to prevent duplication and copying of code. Widgets and 
 
 ### File Structure
 
-### File Structure
-
 - [`/modules/bot`](/modules/bot)
   - [`/components`](/modules/bot/components) - Main bot components responsible for its functionality.
     - [`/actions`](/modules/bot/components/actions) - Actions shared among some controllers.

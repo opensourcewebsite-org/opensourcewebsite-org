@@ -23,7 +23,7 @@ return [
     '',
     '',
     'group_membership',
-    '',
+    'group_inviter',
     'group_slow_mode',
     'channel',
     'group',

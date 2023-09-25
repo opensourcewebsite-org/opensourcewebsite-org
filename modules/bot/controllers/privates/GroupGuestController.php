@@ -79,10 +79,10 @@ class GroupGuestController extends Controller
 
             $buttons[] = [
                 [
-                    'callback_data' => self::createRoute('input-intro-text', [
+                    'callback_data' => self::createRoute('set-intro-text', [
                         'id' => $chatMember->id,
                     ]),
-                    'text' => Yii::t('bot', 'My public intro'),
+                    'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'My public intro'),
                 ],
             ];
 
@@ -176,7 +176,7 @@ class GroupGuestController extends Controller
      * @param int $id ChatMember->id
      * @return array
      */
-    public function actionInputIntroText($id = null)
+    public function actionSetIntroText($id = null)
     {
         $chatMember = ChatMember::findOne($id);
 
@@ -190,23 +190,9 @@ class GroupGuestController extends Controller
                 'id' => $chatMember->id,
             ]));
 
-        if ($this->getUpdate()->getMessage()) {
-            if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
-                $chatMember->intro = $text;
-
-                if ($chatMember->validate('intro')) {
-                    $chatMember->save(false);
-
-                    return $this->runAction('view', [
-                         'id' => $chatMember->getChatId(),
-                     ]);
-                }
-            }
-        }
-
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
-                $this->render('input-intro-text', [
+                $this->render('set-intro-text', [
                     'chatMember' => $chatMember,
                 ]),
                 [
@@ -231,6 +217,39 @@ class GroupGuestController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @param int $id ChatMember->id
+     * @return array
+     */
+    public function actionInputIntroText($id = null)
+    {
+        $chatMember = ChatMember::findOne($id);
+
+        if (!isset($chatMember)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ($this->getUpdate()->getMessage()) {
+            if ($text = MessageWithEntitiesConverter::toHtml($this->getUpdate()->getMessage())) {
+                $chatMember->intro = $text;
+
+                if ($chatMember->validate('intro')) {
+                    $chatMember->save(false);
+
+                    return $this->runAction('view', [
+                         'id' => $chatMember->getChatId(),
+                     ]);
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+        ->answerCallbackQuery()
+        ->build();
     }
 
     /**

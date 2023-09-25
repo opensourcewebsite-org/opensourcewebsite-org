@@ -26,7 +26,7 @@ class MyTimezoneController extends Controller
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(
                 $this->render('index', [
-                    'timezone' => TimeHelper::getNameByOffset($this->globalUser->timezone),
+                    'timezone' => $this->globalUser->getTimezoneName(),
                 ]),
                 [
                     [

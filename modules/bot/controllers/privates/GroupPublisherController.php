@@ -291,7 +291,7 @@ class GroupPublisherController extends Controller
                                 'id' => $chat->id,
                                 'oid' => $post->id,
                             ]),
-                            'text' => Yii::t('app', 'Text'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('app', 'Text'),
                         ],
                     ],
                     [
@@ -300,7 +300,7 @@ class GroupPublisherController extends Controller
                                 'id' => $chat->id,
                                 'oid' => $post->id,
                             ]),
-                            'text' => Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay(),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Time of day') . ': ' . $post->getTimeOfDay(),
                         ],
                     ],
                     [
@@ -309,7 +309,7 @@ class GroupPublisherController extends Controller
                                 'id' => $chat->id,
                                 'oid' => $post->id,
                             ]),
-                            'text' => Yii::t('bot', 'Skip days') . ': ' . $post->getSkipDays(),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Skip days') . ': ' . $post->getSkipDays(),
                         ],
                     ],
                     [
