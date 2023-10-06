@@ -50,6 +50,12 @@ class ChatSetting extends ActiveRecord
         'filter_remove_locations' => [
             'default' => self::STATUS_OFF,
         ],
+        'filter_remove_member_joined' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_remove_member_left' => [
+            'default' => self::STATUS_OFF,
+        ],
         'filter_remove_reply' => [
             'default' => self::STATUS_OFF,
         ],
@@ -57,9 +63,6 @@ class ChatSetting extends ActiveRecord
             'default' => self::STATUS_OFF,
         ],
         'filter_remove_username' => [
-            'default' => self::STATUS_OFF,
-        ],
-        'filter_status' => [
             'default' => self::STATUS_OFF,
         ],
         'filter_remove_video_chat_ended' => [
@@ -72,6 +75,9 @@ class ChatSetting extends ActiveRecord
             'default' => self::STATUS_OFF,
         ],
         'filter_remove_video_chat_started' => [
+            'default' => self::STATUS_OFF,
+        ],
+        'filter_status' => [
             'default' => self::STATUS_OFF,
         ],
         'greeting_lifetime' => [],
