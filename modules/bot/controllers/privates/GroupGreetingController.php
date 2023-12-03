@@ -58,7 +58,7 @@ class GroupGreetingController extends Controller
                             'callback_data' => self::createRoute('set-message', [
                                 'id' => $chat->id,
                             ]),
-                            'text' => Yii::t('bot', 'Message'),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Message'),
                         ],
                     ],
                     [

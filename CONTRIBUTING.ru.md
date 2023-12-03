@@ -92,6 +92,8 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
     - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)
     - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
+    - [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+    - [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
     - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
