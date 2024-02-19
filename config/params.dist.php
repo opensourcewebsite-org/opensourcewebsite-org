@@ -21,11 +21,4 @@ return [
             ],
         ],
     ],
-    //'stellar' => [ // Used for stellar features and Telegram bot
-    //    'testNet' => true, // https://developers.stellar.org/docs/glossary/testnet/
-    //    'issuer_public_key' => '',
-    //    'distributor_public_key' => '',
-    //    'operator_public_key' => '',
-    //    'operator_private_key' => '',
-    //],
 ];

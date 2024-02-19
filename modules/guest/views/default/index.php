@@ -2,8 +2,8 @@
 
 /* @var $this yii\web\View */
 
-use yii\helpers\Html;
 use app\components\helpers\ExternalLink;
+use yii\helpers\Html;
 
 ?>
 <header class="masthead">
@@ -140,7 +140,6 @@ use app\components\helpers\ExternalLink;
       </div>
       <div class="col-md-12">
         <ul>
-            <li>Processing with <?= Html::a('Stellar.org', 'https://stellar.org') ?> (<?= Html::a('XLM and all available assets', 'https://stellar.expert/explorer/public/account/GDOB5BAYE25LLEU6CCQCGGJB2ILUEIMA2DTQRGCVHX3XX2ATGMXP5ERH') ?>)</li>
             <li>Processing with <?= Html::a('Binance.com', 'https://www.binance.com/en/register?ref=25983180') ?> (<?= Html::a('Binance Smart Chain', 'https://bscscan.com/address/0xaEf5AC6d0019593c21Aba6C2825B20377a1D635a') ?>)</li>
             <li>Processing 50+ cryptocurrencies with <?= Html::a('CoinGate.com', 'https://coingate.com/pay/opensourcewebsite') ?></li>
             <li>Processing 6 cryptocurrencies with <?= Html::a('Coinbase.com', 'https://commerce.coinbase.com/checkout/e89005ec-c8c2-47c1-9ca4-b1deb9992794') ?></li>
