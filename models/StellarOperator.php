@@ -10,6 +10,7 @@ use ZuluCrypto\StellarSdk\Transaction\TransactionBuilder;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
 use ZuluCrypto\StellarSdk\XdrModel\Operation\PaymentOp;
+
 use function Functional\group;
 
 class StellarOperator extends StellarServer
@@ -111,6 +112,7 @@ class StellarOperator extends StellarServer
 
         foreach (array_chunk($recipients, self::TRANSACTION_LIMIT) as $recipientsGroup) {
             $transaction = $this->buildTransaction(self::getDistributorPublicKey());
+            $transaction->setBaseFee($this->baseFee);
 
             foreach ($recipientsGroup as $recipient) {
                 $payment = PaymentOp::newCustomPayment(
@@ -144,6 +146,7 @@ class StellarOperator extends StellarServer
                 }
             } catch (ServerException $e) {
                 if ($e->getCode() === 504) {
+                    //print_r($e->getMessage());
                     return;
                 }
 
@@ -218,12 +221,20 @@ class StellarOperator extends StellarServer
             $nextPaymentDate = $nextPaymentDate->format('Y-m-d');
         }
 
-        $this
-            ->buildTransaction(self::getDistributorPublicKey())
-            ->setAccountData('next_payment_date', $nextPaymentDate)
-            ->submit(self::getOperatorPrivateKey());
+        try {
+            $transaction = $this->buildTransaction(self::getDistributorPublicKey());
+            $transaction->setBaseFee($this->baseFee);
+            $transaction->setAccountData('next_payment_date', $nextPaymentDate)
+                ->submit(self::getOperatorPrivateKey());
 
-        StellarDistributorData::setNextPaymentDate($nextPaymentDate);
+            StellarDistributorData::setNextPaymentDate($nextPaymentDate);
+        } catch (ServerException $e) {
+            if ($e->getCode() === 504) {
+                return;
+            }
+
+            throw $e;
+        }
     }
 
     public static function incomesSentAlready(string $assetCode, DateTime $date): bool
