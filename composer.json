@@ -49,7 +49,6 @@
         "npm-asset/leaflet.locatecontrol": "^0.76",
         "lstrojny/functional-php": "^1.17",
         "symfony/mailer": "^5.0",
-        "opensourcewebsite-org/php-stellar-sdk": "dev-master",
         "opensourcewebsite-org/php-telegram-sdk": "dev-master"
     },
     "require-dev": {
