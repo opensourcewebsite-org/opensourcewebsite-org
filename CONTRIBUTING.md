@@ -96,7 +96,7 @@ Recommended IDE:
       - Install [Ollama](https://ollama.com/download).
       - Run `ollama pull llama3:8b`.
     - [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
-    - [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)
+    - [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
     - [GitHub Repositories](https://marketplace.visualstudio.com/items?itemName=GitHub.remotehub)
     - [Open In GitHub](https://marketplace.visualstudio.com/items?itemName=sysoev.vscode-open-in-github)
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
