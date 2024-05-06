@@ -92,8 +92,13 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [PHP Debug](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
     - [PHP Extension Pack](https://marketplace.visualstudio.com/items?itemName=xdebug.php-pack)
     - [PHP IntelliSense](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
+    - [CodeGPT: Chat & AI Agents](https://marketplace.visualstudio.com/items?itemName=DanielSanMedium.dscodegpt)
+      - Установите [Ollama](https://ollama.com/download).
+      - Запустите `ollama pull llama3:8b`.
     - [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
     - [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)
+    - [GitHub Repositories](https://marketplace.visualstudio.com/items?itemName=GitHub.remotehub)
+    - [Open In GitHub](https://marketplace.visualstudio.com/items?itemName=sysoev.vscode-open-in-github)
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
     - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
