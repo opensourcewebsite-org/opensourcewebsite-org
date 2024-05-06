@@ -15,14 +15,14 @@ nbproject
 # windows thumbnail cache
 Thumbs.db
 
+# Mac DS_Store Files
+.DS_Store
+
 # composer vendor dir
 /vendor
 
 # composer itself is not needed
 composer.phar
-
-# Mac DS_Store Files
-.DS_Store
 
 # phpunit itself is not needed
 phpunit.phar

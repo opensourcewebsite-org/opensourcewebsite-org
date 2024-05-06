@@ -87,14 +87,6 @@ class ExternalLink
     /**
      * {@inheritdoc}
      */
-    public static function getDiscordLink()
-    {
-        return 'https://discord.gg/wRehagFg2j';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public static function getTelegramGroupLink()
     {
         return 'https://t.me/+2ZrW2NKBBKU2YmY9';
