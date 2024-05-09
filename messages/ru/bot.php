@@ -654,7 +654,7 @@ return [
     'Next publish' => 'Следующая публикация',
     'Inviter' => 'Пригласитель',
     'pays rewards to members for adding new members to the group' => 'выплачивает вознаграждения участникам за добавление новых участников в группу',
-    'Rewards are paid from the wallet of the group creator for each new member' => 'Вознаграждения выплачиваются с кошелька создателя группы за каждого нового участника',
+    'Rewards are paid from the wallet of the group owner for each new member' => 'Вознаграждения выплачиваются с кошелька владельца группы за каждого нового участника',
     'Reward amount' => 'Сумма вознаграждения',
     'Send a reward amount for adding a new member to the group' => 'Отправьте сумму вознаграждения за добавление нового участника в группу',
     'Reward amount for adding a new member to the group' => 'Сумма вознаграждения за добавление нового участника в группу',

@@ -49,6 +49,7 @@ return [
     'Edit' => 'Изменить',
     'Soon the loyalty program will be significantly increased and new bonuses will be added' => 'В ближайшее время программа лояльности будет значительно расширена и будут добавлены новые бонусы',
     'Your donations increase your Rating in our community' => 'Ваши пожертвования повышают ваш рейтинг в нашем сообществе',
+    'Please send all donation offers to' => 'Пожалуйста, отправьте все предложения о пожертвованиях на',
     'Your contributions increase your Rating in our community' => 'Ваша помощь сообществу повышает ваш рейтинг в нашем сообществе',
     'We accepts volunteers and interns who demonstrate appropriate skills and express a strong interest in one or more of the following areas' => 'Мы принимаем добровольцев и стажеров, которые демонстрируют соответствующие навыки и проявляют большой интерес к одной или нескольким из следующих областей',
     'open source development, open data, editorial and translation work, UI/UX web design, social media and communications' => ' разработка с открытым исходным кодом, открытые данные, редакционная и переводческая работа, UI/UX веб-дизайн, социальные медиа и коммуникации',

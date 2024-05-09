@@ -135,11 +135,15 @@ P.S. Tested in PHPStorm only.
 
 ## Telegram bot
 
+Telegram Bot API:
+
+- https://core.telegram.org/bots/api
+
 We recommend use [ngrok - secure introspectable tunnels to localhost](https://ngrok.com), for local development and testing of Telegram bots. Telegram webhooks require your public URL with HTTPS. ngrok is a tool that exposes your local environment to the world.
 
 Also, you can use [Localtunnel](https://localtunnel.me) and [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/) to receive Telegram webhooks by your local server.
 
-- Use [Telegram BotFather](https://t.me/BotFather) to create new bot and get a bot token.
+- Use [Telegram BotFather](https://t.me/BotFather) to create a new bot and get a bot token.
   - Go to "Bot Settings > Group Admin Rights" and activate all rights for your bot.
   - Go to "Bot Settings > Channel Admin Rights" and activate all rights for your bot.
 - Set `['baseUrl']` in `config/params.php` for your public URL with HTTPS.
