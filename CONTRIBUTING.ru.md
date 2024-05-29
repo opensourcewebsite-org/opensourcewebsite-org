@@ -101,6 +101,7 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [Open In GitHub](https://marketplace.visualstudio.com/items?itemName=sysoev.vscode-open-in-github)
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
     - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
+  - [Cursor](https://cursor.sh)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
     - [SonarLint](https://www.sonarlint.org/intellij). Для автоматической проверки стиля кода и его форматирования, включите настройки в окне коммита `Before commit > Perform SonarLint analysis`.
