@@ -33,9 +33,10 @@ use yii\db\ActiveRecord;
  * @property string $state
  * @property int $language_id
  * @property bool $is_bot
- * @property int $captcha_confirmed_at
  *
  * @property GlobalUser $globalUser
+ * @property Chat $chat
+ * @property Language $language
  *
  * @package app\modules\bot\models
  */
@@ -89,7 +90,7 @@ class User extends ActiveRecord
     {
         return [
             [['provider_user_id'], 'required'],
-            [['user_id', 'provider_user_id', 'provider_user_blocked', 'language_id', 'is_bot', 'captcha_confirmed_at'], 'integer'],
+            [['user_id', 'provider_user_id', 'provider_user_blocked', 'language_id', 'is_bot'], 'integer'],
             [['provider_user_name', 'provider_user_first_name', 'provider_user_last_name'], 'string', 'max' => 255],
         ];
     }

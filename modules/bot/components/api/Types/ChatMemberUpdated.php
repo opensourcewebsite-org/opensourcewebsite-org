@@ -3,7 +3,6 @@
 namespace app\modules\bot\components\api\Types;
 
 use TelegramBot\Api\Types\ChatInviteLink;
-use TelegramBot\Api\Types\ChatMember;
 use TelegramBot\Api\Types\User;
 
 /**

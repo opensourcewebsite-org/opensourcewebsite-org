@@ -67,6 +67,9 @@ class Update extends \TelegramBot\Api\Types\Update
         } elseif ($this->requestMessage = $this->getMessage() ?? $this->getEditedMessage()) {
             $this->chat = $this->requestMessage->getChat();
             $this->from = $this->requestMessage->getFrom();
+        } elseif ($this->getChatJoinRequest()) {
+            $this->chat = $this->getChatJoinRequest()->getChat();
+            $this->from = $this->getChatJoinRequest()->getFrom();
         } elseif ($this->requestMessage = $this->getChannelPost() ?? $this->getEditedChannelPost()) {
             $this->chat = $this->requestMessage->getChat();
             $this->from = $this->requestMessage->getFrom();
@@ -96,8 +99,17 @@ class Update extends \TelegramBot\Api\Types\Update
     {
         return $this->from;
     }
+
     public function getRequestMessage()
     {
         return $this->requestMessage;
+    }
+
+    /**
+     * @return ChatJoinRequest
+     */
+    public function getChatJoinRequest()
+    {
+        return $this->chatJoinRequest;
     }
 }

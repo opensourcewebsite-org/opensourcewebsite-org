@@ -116,7 +116,59 @@ class BotApi extends \TelegramBot\Api\BotApi
         Yii::warning('BotApi->restrictChatMember()');
 
         try {
-            return parent::restrictChatMember($chatId, $userId, $permissions, $useIndependentChatPermissions, $untilDate);
+            return parent::restrictChatMember(
+                $chatId,
+                $userId,
+                $permissions,
+                $useIndependentChatPermissions,
+                $untilDate
+            );
+        } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Use this method to approve a chat join request. The bot must be an administrator in the chat for this to work and must have the can_invite_users administrator right. Returns True on success.
+     *
+     * @param integer $chatId Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+     * @param $userId
+     * @return bool
+     * @throws Exception
+     * @throws HttpException
+     * @throws InvalidJsonException
+     */
+    public function approveChatJoinRequest($chatId, $userId)
+    {
+        Yii::warning('BotApi->approveChatJoinRequest()');
+
+        try {
+            return parent::approveChatJoinRequest($chatId, $userId);
+        } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Use this method to decline a chat join request. The bot must be an administrator in the chat for this to work and must have the can_invite_users administrator right. Returns True on success.
+     *
+     * @param integer $chatId Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+     * @param $userId
+     * @return bool
+     * @throws Exception
+     * @throws HttpException
+     * @throws InvalidJsonException
+     */
+    public function declineChatJoinRequest($chatId, $userId)
+    {
+        Yii::warning('BotApi->declineChatJoinRequest()');
+
+        try {
+            return parent::declineChatJoinRequest($chatId, $userId);
         } catch (\Exception $e) {
             Yii::warning($e);
         }

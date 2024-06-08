@@ -23,6 +23,8 @@ class GroupRouteResolver extends RouteResolver
 
         if ($callbackQuery = $update->getCallbackQuery()) {
             $commandText = $callbackQuery->getData();
+        } elseif ($update->getChatJoinRequest()) {
+            $commandText = SystemMessageController::createRoute('chat-join-request');
         } elseif ($requestMessage = $update->getMessage()) {
             if ($requestMessage->getNewChatMembers()) {
                 $commandText = SystemMessageController::createRoute('new-chat-members');

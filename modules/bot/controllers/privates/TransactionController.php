@@ -386,14 +386,14 @@ class TransactionController extends Controller
             if (isset($chatTip->id)) {
                 if (in_array($walletTransaction->type, array(WalletTransaction::GROUP_REPLY_TIP_TYPE, WalletTransaction::GROUP_ANONYMOUS_REPLY_TIP_TYPE))) {
                     $thisChat = $this->chat;
-                    $module = Yii::$app->getModule('bot');
-                    $module->setChat(Chat::findOne($chatTip->chat_id));
 
-                    $module->runAction('tip/tip-message', [
+                    $this->module->setChat(Chat::findOne($chatTip->chat_id));
+
+                    $this->module->runAction('tip/tip-message', [
                         'chatTipId' => $chatTip->id,
                     ]);
 
-                    $module->setChat($thisChat);
+                    $this->module->setChat($thisChat);
                 }
             }
 

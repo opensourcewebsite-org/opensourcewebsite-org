@@ -310,14 +310,13 @@ class SendGroupTipController extends Controller
 
         $thisChat = $this->getTelegramChat();
 
-        $module = Yii::$app->getModule('bot');
-        $module->setChat(Chat::findOne($chatTip->chat_id));
+        $this->module->setChatByChatId($chatTip->getChatId());
 
-        $response = $module->runAction('tip/tip-message', [
+        $response = $this->module->runAction('tip/tip-message', [
             'chatTipId' => $chatTip->id,
         ]);
 
-        $module->setChat($thisChat);
+        $this->module->setChat($thisChat);
         $this->getState()->clearItem(WalletTransaction::class);
         $this->getState()->clearInputRoute();
 

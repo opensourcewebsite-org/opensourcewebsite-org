@@ -2,4 +2,6 @@
 <br/>
 <?= Yii::t('bot', 'Your last message in the group was deleted because') ?>:<br/>
 <br/>
-<?= Yii::t('bot', 'Some @username is present') ?>.
+<?= Yii::t('bot', 'Some @username is present') ?>.<br/>
+<br/>
+<blockquote><?= nl2br($message) ?></blockquote>

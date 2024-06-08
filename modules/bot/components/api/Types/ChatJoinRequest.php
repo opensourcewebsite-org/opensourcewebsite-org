@@ -2,6 +2,7 @@
 
 namespace app\modules\bot\components\api\Types;
 
+use app\modules\bot\models\Chat as ChatModel;
 use TelegramBot\Api\Types\ChatInviteLink;
 use TelegramBot\Api\Types\User;
 
@@ -25,4 +26,19 @@ class ChatJoinRequest extends \TelegramBot\Api\Types\ChatJoinRequest
          'bio' => true,
          'invite_link' => ChatInviteLink::class,
      ];
+
+    /**
+     * @return ChatModel
+     */
+    public function getPrivateChat()
+    {
+        $chat = new ChatModel();
+
+        $chat->setAttributes([
+            'chat_id' => $this->getUserChatId(),
+            'type' => ChatModel::TYPE_PRIVATE,
+        ]);
+
+        return $chat;
+    }
 }

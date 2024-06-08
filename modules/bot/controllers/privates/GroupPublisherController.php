@@ -583,12 +583,12 @@ class GroupPublisherController extends Controller
         }
 
         $thisChat = $this->chat;
-        $module = Yii::$app->getModule('bot');
-        $module->setChat($chat);
-        $response = $module->runAction('publisher/send-message', [
+
+        $this->module->setChat($chat);
+        $response = $this->module->runAction('publisher/send-message', [
             'id' => $post->id,
         ]);
-        $module->setChat($thisChat);
+        $this->module->setChat($thisChat);
 
         if ($response) {
             return $this->getResponseBuilder()

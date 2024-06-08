@@ -88,4 +88,9 @@ class ChatTip extends ActiveRecord
             'chatTipIdValue' => $this->id,
         ]);
     }
+
+    public function getChatId()
+    {
+        return $this->chat_id;
+    }
 }

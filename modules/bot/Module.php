@@ -16,6 +16,7 @@ use yii\base\InvalidRouteException;
 
 /**
  * OSW Bot module definition class
+ *
  * @link https://t.me/opensourcewebsite_bot
  */
 class Module extends \yii\base\Module
@@ -29,6 +30,8 @@ class Module extends \yii\base\Module
     public $defaultControllerNamespace = null;
 
     public $defaultViewPath = null;
+
+    public $configs = [];
 
     public function init()
     {
@@ -189,14 +192,14 @@ class Module extends \yii\base\Module
 
             if (isset($user)) {
                 if (!$chatMember = $chat->getChatMemberByUser($user)) {
-                    $telegramChatMember = $this->getBotApi()->getChatMember(
+                    $botApiChatMember = $this->getBotApi()->getChatMember(
                         $chat->getChatId(),
                         $user->provider_user_id
                     );
 
-                    if ($telegramChatMember) {
+                    if ($botApiChatMember) {
                         $chat->link('users', $user, [
-                            'status' => $telegramChatMember->getStatus(),
+                            'status' => $botApiChatMember->getStatus(),
                         ]);
                     }
                 }
@@ -253,14 +256,14 @@ class Module extends \yii\base\Module
                     $this->getChat()->getChatId(),
                     $this->getUpdate()->getMessage()->getMessageId()
                 );
-            // Ignore editing the user message in private chat
+                // Ignore editing the user message in private chat
             } elseif ($this->getUpdate()->getEditedMessage()) {
                 return true;
             }
         } elseif ($this->getChat()->isGroup()) {
             // Ignore service user id, that also acts as sender of channel posts forwarded to discussion groups
-            if (($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID)
-                || $this->getUpdate()->getRequestMessage()->isAutomaticForward()) {
+            if ($this->getUpdate()->getRequestMessage() && (($this->getUpdate()->getFrom()->getId() == User::ANONYMOUS_LINKED_CHANNEL_PROVIDER_USER_ID)
+                || $this->getUpdate()->getRequestMessage()->isAutomaticForward())) {
                 return true;
             }
         }
@@ -271,7 +274,7 @@ class Module extends \yii\base\Module
             if (!$isStateRoute) {
                 $this->getUserState()->setInputRoute($state);
             }
-        // Ignore other botname if present
+            // Ignore other botname if present
         } elseif ($this->getChat()->isGroup() || $this->getChat()->isChannel()) {
             if (isset($params['botname']) && $params['botname'] && ($params['botname'] != $this->getBot()
                         ->getUsername())) {
@@ -487,7 +490,7 @@ class Module extends \yii\base\Module
             if ($namespace && ($this->namespace != $namespace)) {
                 $this->namespace = $namespace;
 
-                Yii::configure($this, require_once __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->namespace . '.php');
+                Yii::configure($this, $this->config);
                 $this->controllerNamespace = $this->defaultControllerNamespace . '\\' . $this->namespace;
                 $this->setViewPath($this->defaultViewPath . DIRECTORY_SEPARATOR . $this->namespace);
             }
@@ -504,5 +507,18 @@ class Module extends \yii\base\Module
     public function getResponseBuilder()
     {
         return new ResponseBuilder();
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        if (!isset($this->configs[$this->namespace])) {
+            $this->configs[$this->namespace] = require __DIR__ . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->namespace . '.php';
+        }
+
+        return $this->configs[$this->namespace];
+
     }
 }

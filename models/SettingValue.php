@@ -2,9 +2,9 @@
 
 namespace app\models;
 
-use Yii;
 use app\components\Converter;
 use app\models\queries\SettingValueQuery;
+use Yii;
 use yii\validators\UrlValidator;
 
 /**
@@ -72,23 +72,28 @@ class SettingValue extends \yii\db\ActiveRecord
                 switch ($rules['type']) {
                     case 'integer':
                         $this->value = intval($this->value);
+
                         if (!is_int($this->value)) {
                             $this->addError('value', 'Value must be an integer.');
                         }
-                    break;
+
+                        break;
                     case 'float':
                         $this->value = floatval($this->value);
+
                         if (!is_float($this->value)) {
                             $this->addError('value', 'Value must be a number.');
                         }
-                    break;
+
+                        break;
                     case 'url':
                         $validator = new UrlValidator();
 
                         if (!$validator->validate($this->value)) {
                             $this->addError('value', 'Value must be a URL.');
                         }
-                    break;
+
+                        break;
                 }
             }
 

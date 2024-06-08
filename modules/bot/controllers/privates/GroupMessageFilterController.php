@@ -29,6 +29,7 @@ class GroupMessageFilterController extends Controller
         5 => 'filter_remove_channels',
         6 => 'filter_remove_styled_texts',
         7 => 'filter_remove_locations',
+        8 => 'filter_remove_notags',
     ];
 
     public function behaviors()
@@ -109,6 +110,15 @@ class GroupMessageFilterController extends Controller
                                 'chatId' => $chat->id,
                             ]),
                             'text' => Yii::t('bot', 'Blacklist'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('set-status', [
+                                'id' => $chat->id,
+                                'i' => 8,
+                            ]),
+                            'text' => ($chat->filter_remove_notags == ChatSetting::STATUS_ON ? Emoji::STATUS_ON : Emoji::STATUS_OFF) . ' ' . Yii::t('bot', 'Remove') . ': ' . Yii::t('bot', 'without replies or tags'),
                         ],
                     ],
                     [

@@ -6,6 +6,7 @@ namespace app\modules\bot\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\validators\UrlValidator;
 
 /**
  * This is the model class for table "bot_chat_setting".
@@ -16,8 +17,6 @@ class ChatSetting extends ActiveRecord
 {
     public const STATUS_ON = 'on';
     public const STATUS_OFF = 'off';
-
-    public const JOIN_CAPTCHA_MESSAGE_LIFETIME = 300; // seconds
 
     public const GREETING_MESSAGE_LIFETIME = 1800; // seconds
 
@@ -77,6 +76,9 @@ class ChatSetting extends ActiveRecord
         'filter_remove_video_chat_started' => [
             'default' => self::STATUS_OFF,
         ],
+        'filter_remove_notags' => [
+            'default' => self::STATUS_OFF,
+        ],
         'filter_status' => [
             'default' => self::STATUS_OFF,
         ],
@@ -101,6 +103,16 @@ class ChatSetting extends ActiveRecord
         ],
         'join_captcha_status' => [
             'default' => self::STATUS_OFF,
+        ],
+        'join_captcha_message' => [
+            'type' => 'string',
+            'min' => 1,
+            'max' => 10000,
+        ],
+        'join_captcha_link_to_rules' => [
+            'type' => 'url',
+            'min' => 1,
+            'max' => 255,
         ],
         'join_hider_status' => [
             'default' => self::STATUS_OFF,
@@ -238,11 +250,19 @@ class ChatSetting extends ActiveRecord
                         }
 
                         break;
+                    case 'url':
+                        $validator = new UrlValidator();
+
+                        if (!$validator->validate($this->value)) {
+                            $this->addError('value', 'Value must be a URL.');
+                        }
+
+                        break;
                 }
             }
 
             if (isset($rules['min'])) {
-                if (isset($rules['type']) && ($rules['type'] == 'string')) {
+                if (isset($rules['type']) && ($rules['type'] == 'string' || $rules['type'] == 'url')) {
                     $lenght = mb_strlen($this->value, 'UTF-8');
 
                     if ($lenght < $rules['min']) {
@@ -256,7 +276,7 @@ class ChatSetting extends ActiveRecord
             }
 
             if (isset($rules['max'])) {
-                if (isset($rules['type']) && ($rules['type'] == 'string')) {
+                if (isset($rules['type']) && ($rules['type'] == 'string' || $rules['type'] == 'url')) {
                     $lenght = mb_strlen($this->value, 'UTF-8');
 
                     if ($lenght > $rules['max']) {
@@ -279,6 +299,10 @@ class ChatSetting extends ActiveRecord
                 if ($this->value <= $rules['more']) {
                     $this->addError('value', 'Value must be greater than ' . $rules['more'] . '.');
                 }
+            }
+
+            if ($this->getErrors()) {
+                Yii::warning($this->getErrors());
             }
         }
     }

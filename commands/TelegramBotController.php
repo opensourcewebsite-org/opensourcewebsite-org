@@ -5,7 +5,6 @@ namespace app\commands;
 use app\commands\traits\ControllerLogTrait;
 use app\interfaces\CronChainedInterface;
 use app\modules\bot\models\Bot;
-use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatPublisherPost;
 use app\modules\bot\models\ChatSetting;
@@ -23,7 +22,6 @@ class TelegramBotController extends Controller implements CronChainedInterface
 
     public function actionIndex()
     {
-        $this->actionRemoveCaptchaMessages();
         //$this->actionRemoveGreetingMessages();
         $this->actionUpdatePublisherPostsNextSendAt();
         $this->actionSendPublisherMessages();
@@ -59,49 +57,6 @@ class TelegramBotController extends Controller implements CronChainedInterface
         if ($bot->deleteWebhook()) {
             echo 'The bot "' . $bot->username . '" has been disabled' . "\n";
         }
-    }
-
-    public function actionRemoveCaptchaMessages()
-    {
-        $updatesCount = 0;
-
-        $messagesToRemove = ChatCaptcha::find()
-            ->where([
-                '<', 'sent_at', time() - ChatSetting::JOIN_CAPTCHA_MESSAGE_LIFETIME,
-            ])
-            ->all();
-
-        if ($messagesToRemove) {
-            $bot = new Bot();
-            $botApi = $bot->botApi;
-
-            foreach ($messagesToRemove as $record) {
-                ChatCaptcha::deleteAll([
-                    'chat_id' => $record->chat_id,
-                    'provider_user_id' => $record->provider_user_id,
-                ]);
-
-                try {
-                    $botApi->deleteMessage($record->chat->chat_id, $record->captcha_message_id);
-                } catch (\Exception $e) {
-                    echo 'ERROR: ChatCaptcha #' . $record->id . ' (deleteMessage): ' . $e->getMessage() . "\n";
-                }
-
-                try {
-                    $botApi->banChatMember($record->chat->chat_id, $record->provider_user_id);
-                } catch (\Exception $e) {
-                    echo 'ERROR: ChatCaptcha #' . $record->id . ' (banChatMember): ' . $e->getMessage() . "\n";
-                }
-
-                $updatesCount++;
-            }
-        }
-
-        if ($updatesCount) {
-            $this->output('Captcha. Users kicked from telegram groups: ' . $updatesCount);
-        }
-
-        return true;
     }
 
     public function actionRemoveGreetingMessages()

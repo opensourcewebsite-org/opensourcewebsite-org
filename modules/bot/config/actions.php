@@ -97,7 +97,7 @@ return [
     'confirmation',
     'set_to_user',
     'new_chat_members',
-    'left_chat_members',
+    'left_chat_member',
     'set_user_count',
     'set_user_amount',
     'create_queue',
@@ -123,4 +123,7 @@ return [
     'input_reward_amount',
     'input_tag',
     'input_messages_limit',
+    'chat_join_request',
+    'set_link_to_rules',
+    'pass_captcha',
 ];

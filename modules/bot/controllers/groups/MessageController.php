@@ -4,7 +4,6 @@ namespace app\modules\bot\controllers\groups;
 
 use app\modules\bot\components\Controller;
 use app\modules\bot\controllers\privates\GroupGuestController;
-use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use app\modules\bot\models\User;
@@ -46,33 +45,6 @@ class MessageController extends Controller
                 }
             }
         } elseif (!$chatMember->isCreator()) {
-            if (!$chatMember->isAdministrator()) {
-                if ($chat->isJoinCaptchaOn() && !$user->captcha_confirmed_at) {
-                    if ($chatMember->role == JoinCaptchaController::ROLE_VERIFIED) {
-                        $user->captcha_confirmed_at = time();
-                        $user->save(false);
-                    } else {
-                        if ($this->getMessage()) {
-                            $this->getBotApi()->deleteMessage(
-                                $chat->getChatId(),
-                                $this->getMessage()->getMessageId()
-                            );
-                        }
-
-                        $botCaptcha = ChatCaptcha::find()
-                            ->where([
-                                'chat_id' => $chat->id,
-                                'provider_user_id' => $user->provider_user_id,
-                            ])
-                            ->one();
-                        // Forward to captcha if a new member
-                        if (!isset($botCaptcha)) {
-                            return $this->run('join-captcha/show-captcha');
-                        }
-                    }
-                }
-            }
-
             $deleteMessage = false;
 
             if ($chatMember->isAdministrator() && $chat->isMembershipOn()) {
@@ -149,24 +121,25 @@ class MessageController extends Controller
                         if (($this->getMessage()->getText() !== null) || ($this->getMessage()->getLocation() !== null)) {
                             if ($replyMessage = $this->getMessage()->getReplyToMessage()) {
                                 if (!$replyMessage->getForumTopicCreated()) {
-                                    $replyUser = User::findOne([
-                                        'provider_user_id' => $replyMessage->getFrom()->getId(),
-                                    ]);
-
-                                    if ($replyUser) {
-                                        $replyChatMember = ChatMember::findOne([
-                                            'chat_id' => $chat->id,
-                                            'user_id' => $replyUser->id,
-                                        ]);
-                                    }
-
                                     if ($chat->filter_remove_reply == ChatSetting::STATUS_ON) {
+                                        $replyUser = User::findOne([
+                                            'provider_user_id' => $replyMessage->getFrom()->getId(),
+                                        ]);
+
+                                        if ($replyUser) {
+                                            $replyChatMember = ChatMember::findOne([
+                                                'chat_id' => $chat->id,
+                                                'user_id' => $replyUser->id,
+                                            ]);
+                                        }
+
                                         if (!isset($replyChatMember) || !($replyChatMember->isAdministrator() || $replyChatMember->hasActiveMembership())) {
                                             $deleteMessage = true;
 
                                             $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-reply', [
                                                     'chat' => $chat,
+                                                    'message' => $this->getMessage()->getText(),
                                                 ]),
                                                 [
                                                     [
@@ -182,6 +155,29 @@ class MessageController extends Controller
                                         }
                                     }
                                 }
+                            } else {
+                                if ($chat->filter_remove_notags == ChatSetting::STATUS_ON) {
+                                    if (mb_stripos($this->getMessage()->getText(), '#') === false) {
+                                        $deleteMessage = true;
+
+                                        $user->sendMessage(
+                                            $this->render('/privates/warning-filter-remove-notags', [
+                                                'chat' => $chat,
+                                                'message' => $this->getMessage()->getText(),
+                                            ]),
+                                            [
+                                                [
+                                                    [
+                                                        'callback_data' => GroupGuestController::createRoute('view', [
+                                                            'id' => $chat->id,
+                                                        ]),
+                                                        'text' => Yii::t('bot', 'Group View'),
+                                                    ],
+                                                ],
+                                            ]
+                                        );
+                                    }
+                                }
                             }
 
                             if (!$deleteMessage) {
@@ -193,6 +189,7 @@ class MessageController extends Controller
                                             $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-username', [
                                                     'chat' => $chat,
+                                                    'message' => $this->getMessage()->getText(),
                                                 ]),
                                                 [
                                                     [
@@ -220,6 +217,7 @@ class MessageController extends Controller
                                             $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-empty-line', [
                                                     'chat' => $chat,
+                                                    'message' => $this->getMessage()->getText(),
                                                 ]),
                                                 [
                                                     [
@@ -239,6 +237,7 @@ class MessageController extends Controller
                                             $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-double-spaces', [
                                                     'chat' => $chat,
+                                                    'message' => $this->getMessage()->getText(),
                                                 ]),
                                                 [
                                                     [
@@ -265,6 +264,7 @@ class MessageController extends Controller
                                             $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-emoji', [
                                                     'chat' => $chat,
+                                                    'message' => $this->getMessage()->getText(),
                                                 ]),
                                                 [
                                                     [
@@ -317,6 +317,7 @@ class MessageController extends Controller
                                             $user->sendMessage(
                                                 $this->render('/privates/warning-filter-remove-styled-texts', [
                                                     'chat' => $chat,
+                                                    'message' => $this->getMessage()->getText(),
                                                 ]),
                                                 [
                                                     [
@@ -349,6 +350,7 @@ class MessageController extends Controller
                                                     $this->render('/privates/warning-filter-blacklist', [
                                                         'chat' => $chat,
                                                         'text' => $phrase->text,
+                                                        'message' => $this->getMessage()->getText(),
                                                     ]),
                                                     [
                                                         [

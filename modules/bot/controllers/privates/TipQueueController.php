@@ -349,14 +349,14 @@ class TipQueueController extends Controller
         $this->getState()->clearItem(ChatTipQueue::class);
 
         $thisChat = $this->chat;
-        $module = Yii::$app->getModule('bot');
-        $module->setChat(Chat::findOne($chatTipQueue->chat_id));
 
-        $response = $module->runAction('tip-queue/tip-message', [
+        $this->module->setChat(Chat::findOne($chatTipQueue->chat_id));
+
+        $response = $this->module->runAction('tip-queue/tip-message', [
             'queueId' => $chatTipQueue->id,
         ]);
 
-        $module->setChat($thisChat);
+        $this->module->setChat($thisChat);
 
         return $this->getResponseBuilder()
             ->editMessageTextOrSendMessage(

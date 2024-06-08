@@ -3,9 +3,8 @@
 namespace app\modules\bot\controllers\groups;
 
 use app\modules\bot\components\Controller;
-use app\modules\bot\controllers\groups\JoinCaptchaController;
+use app\modules\bot\components\helpers\ExternalLink;
 use app\modules\bot\models\Chat;
-use app\modules\bot\models\ChatCaptcha;
 use app\modules\bot\models\ChatGreeting;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
@@ -19,15 +18,10 @@ use Yii;
 */
 class SystemMessageController extends Controller
 {
-    /**
-    * @return array
-    */
     public function actionNewChatMembers()
     {
         if ($this->getUpdate()->getMessage()->getNewChatMembers()) {
             $chat = $this->getTelegramChat();
-
-            $role = JoinCaptchaController::ROLE_VERIFIED;
 
             if ($chat->isJoinHiderOn()) {
                 if ($chat->filter_remove_member_joined == ChatSetting::STATUS_ON) {
@@ -47,12 +41,6 @@ class SystemMessageController extends Controller
                     $user = User::createUser($newChatMember);
                     $user->updateInfo($newChatMember);
                     $user->save();
-                }
-
-                if ($chat->isJoinCaptchaOn()) {
-                    if (!$newChatMember->isBot()) {
-                        $role = JoinCaptchaController::ROLE_UNVERIFIED;
-                    }
                 }
 
                 if (!$chatMember = $chat->getChatMemberByUser($user)) {
@@ -76,16 +64,9 @@ class SystemMessageController extends Controller
 
                         $chat->link('users', $user, [
                             'status' => $botApiChatMember->getStatus(),
-                            'role' => $role,
                             'invite_user_id' => $fromUserId,
                         ]);
                     }
-                } else {
-                    $chatMember->setAttributes([
-                         'role' => $role,
-                    ]);
-
-                    $chatMember->save();
                 }
                 // Send greeting message
                 if ($chat->isGreetingOn()) {
@@ -99,9 +80,6 @@ class SystemMessageController extends Controller
         }
     }
 
-    /**
-    * @return array
-    */
     public function actionLeftChatMember()
     {
         // TODO Optional. A member was removed from the group, information about them (this member may be the bot itself)
@@ -115,22 +93,6 @@ class SystemMessageController extends Controller
                         $this->getUpdate()->getMessage()->getMessageId()
                     );
                 }
-            }
-            // Remove captcha message if user left the group
-            $chatCaptcha = ChatCaptcha::find()
-                ->where([
-                    'chat_id' => $chat->id,
-                    'provider_user_id' => $botApiUser->getId(),
-                ])
-                ->one();
-
-            if (isset($chatCaptcha)) {
-                $this->getBotApi()->deleteMessage(
-                    $chat->getChatId(),
-                    $chatCaptcha->captcha_message_id
-                );
-
-                $chatCaptcha->delete();
             }
             // Remove greeting message if user left the group
             $chatGreeting = ChatGreeting::find()
@@ -165,9 +127,6 @@ class SystemMessageController extends Controller
         }
     }
 
-    /**
-    * @return array
-    */
     public function actionVideoChatScheduled()
     {
         if ($this->getUpdate()->getMessage()->getVideoChatScheduled()) {
@@ -184,9 +143,6 @@ class SystemMessageController extends Controller
         }
     }
 
-    /**
-    * @return array
-    */
     public function actionVideoChatStarted()
     {
         if ($this->getUpdate()->getMessage()->getVideoChatStarted()) {
@@ -203,9 +159,6 @@ class SystemMessageController extends Controller
         }
     }
 
-    /**
-    * @return array
-    */
     public function actionVideoChatEnded()
     {
         if ($this->getUpdate()->getMessage()->getVideoChatEnded()) {
@@ -222,9 +175,6 @@ class SystemMessageController extends Controller
         }
     }
 
-    /**
-    * @return array
-    */
     public function actionVideoChatParticipantsInvited()
     {
         if ($this->getUpdate()->getMessage()->getVideoChatParticipantsInvited()) {
@@ -237,6 +187,26 @@ class SystemMessageController extends Controller
                         $this->getUpdate()->getMessage()->getMessageId()
                     );
                 }
+            }
+        }
+    }
+
+    /**
+    * @return array
+    */
+    public function actionChatJoinRequest()
+    {
+        if ($chatJoinRequest = $this->getUpdate()->getChatJoinRequest()) {
+            $chat = $this->getTelegramChat();
+
+            if ($chat->isJoinCaptchaOn()) {
+                $this->module->setChat($chatJoinRequest->getPrivateChat());
+
+                $this->module->runAction('group-join-captcha/show-captcha', [
+                    'id' => $chat->getChatId(),
+                ]);
+
+                $this->module->setChat($chat);
             }
         }
     }
