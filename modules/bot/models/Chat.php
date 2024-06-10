@@ -25,6 +25,10 @@ use yii\db\ActiveRecord;
  * @property int|null $currency_id
  * @property int|null $language_id
  *
+ * @property Chat[] $childGroups
+ * @property Currency $currency
+ * @property Language $language
+ *
  * @package app\modules\bot\models
  */
 class Chat extends ActiveRecord
@@ -564,5 +568,23 @@ class Chat extends ActiveRecord
     public function getDisplayRewardAmount()
     {
         return ($value = $this->inviter_reward_amount) ? $value . (($currency = $this->currency) ? ' ' . $currency->code : '') : '';
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getChildGroups()
+    {
+        return $this->hasMany(Chat::class, ['id' => 'child_group_id'])
+            ->viaTable(ChatChildGroup::tableName(), ['chat_id' => 'id']);
+    }
+
+    /**
+    * @param integer $chatId Chat->id
+    * @return bool
+    */
+    public function hasChildGroupById($chatId)
+    {
+        return $this->getChildGroups()->where(['id' => $chatId])->exists();
     }
 }

@@ -126,4 +126,6 @@ return [
     'chat_join_request',
     'set_link_to_rules',
     'pass_captcha',
+    'child_groups',
+    'set_child_group',
 ];

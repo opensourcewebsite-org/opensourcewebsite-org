@@ -7,6 +7,7 @@ use app\modules\bot\components\Controller;
 use app\modules\bot\components\helpers\Emoji;
 use app\modules\bot\components\helpers\PaginationButtons;
 use app\modules\bot\filters\GroupActiveAdministratorAccessFilter;
+use app\modules\bot\models\Chat;
 use app\modules\bot\models\ChatMember;
 use app\modules\bot\models\ChatSetting;
 use Yii;
@@ -67,6 +68,14 @@ class GroupMembershipController extends Controller
                                 'id' => $chat->id,
                             ]),
                             'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Tag for members'),
+                        ],
+                    ],
+                    [
+                        [
+                            'callback_data' => self::createRoute('child-groups', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Child groups'),
                         ],
                     ],
                     [
@@ -1003,5 +1012,124 @@ class GroupMembershipController extends Controller
                 ]
             )
             ->build();
+    }
+
+    /**
+    * @param int|null $id Chat->id
+     * @param int $page
+     * @return array
+     */
+    public function actionChildGroups($id = null, $page = 1)
+    {
+        $chat = Yii::$app->cache->get('chat');
+
+        $this->getState()->clearInputRoute();
+
+        $query = $this->getTelegramUser()
+            ->getActiveAdministratedGroups()
+            ->andWhere([
+                '!=', 'id', $chat->id,
+            ]);
+        ;
+
+        $pagination = new Pagination([
+            'totalCount' => $query->count(),
+            'pageSize' => 9,
+            'params' => [
+                'page' => $page,
+            ],
+            'pageSizeParam' => false,
+            'validatePage' => true,
+        ]);
+
+        $buttons = [];
+
+        $childChats = $query->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        if ($childChats) {
+            foreach ($childChats as $childChat) {
+                $buttons[][] = [
+                    'callback_data' => self::createRoute('set-child-group', [
+                        'id' => $chat->id,
+                        'cid' => $childChat->id,
+                    ]),
+                    'text' => ($chat->hasChildGroupById($childChat->id) ? Emoji::STATUS_ON . ' ' : '') . $childChat->title,
+                ];
+            }
+
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+                return self::createRoute('child-groups', [
+                    'page' => $page,
+                ]);
+            });
+
+            if ($paginationButtons) {
+                $buttons[] = $paginationButtons;
+            }
+        }
+
+        $buttons[] = [
+            [
+                'callback_data' => self::createRoute('index', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Emoji::BACK,
+            ],
+            [
+                'callback_data' => MenuController::createRoute(),
+                'text' => Emoji::MENU,
+            ],
+        ];
+
+        return $this->getResponseBuilder()
+            ->editMessageTextOrSendMessage(
+                $this->render('child-groups', [
+                    'chat' => $chat,
+                ]),
+                $buttons
+            )
+            ->build();
+    }
+
+    /**
+     * @param int $id Chat->id
+     * @param int $cid Chat->id
+     * @return array
+     */
+    public function actionSetChildGroup($id = null, $cid = null)
+    {
+        $chat = Yii::$app->cache->get('chat');
+
+        $childChat = Chat::findOne($cid);
+
+        if (!isset($childChat)) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        $childChatMember = $childChat->getChatMemberByUserId();
+
+        if (!((isset($childChatMember) && $childChatMember->isActiveAdministrator()) || $chat->hasChildGroupById($childChat->id))) {
+            return $this->getResponseBuilder()
+                ->answerCallbackQuery()
+                ->build();
+        }
+
+        if ($chat->hasChildGroupById($childChat->id)) {
+            $chat->unlink('childGroups', $childChat, true);
+        } else {
+            $user = $this->getTelegramUser();
+
+            $chat->link('childGroups', $childChat, [
+                'updated_by' => $user->id,
+            ]);
+        }
+
+        return $this->runAction('child-groups', [
+             'id' => $chat->id,
+         ]);
     }
 }

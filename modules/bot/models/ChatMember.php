@@ -20,6 +20,7 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $chat_id
  * @property int $user_id
+ * @property int|null $invite_user_id
  * @property string $status
  * @property int $role
  * @property int $slow_mode_messages
@@ -35,6 +36,8 @@ use yii\db\ActiveRecord;
  * @property string|null $intro
  *
  * @property Chat $chat
+ * @property User $user
+ * @property User $inviteUser
  *
  * @package app\modules\bot\models
  */
@@ -175,6 +178,14 @@ class ChatMember extends ActiveRecord
     public function getUser(): ActiveQuery
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInviteUser(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'invite_user_id']);
     }
 
     /**
@@ -633,5 +644,49 @@ class ChatMember extends ActiveRecord
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws \Throwable
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        $willChildGroupsUpdate = false;
+
+        if ($this->chat->isMembershipOn()) {
+            if ((!$insert && isset($changedAttributes['membership_date']) && ($changedAttributes['membership_date'] != $this->membership_date)) || ($insert && $this->membership_date)) {
+                $membershipDate = $this->membership_date;
+
+                $willChildGroupsUpdate = true;
+            }
+
+            if ((!$insert && isset($changedAttributes['limiter_date']) && ($changedAttributes['limiter_date'] != $this->limiter_date)) || ($insert && $this->limiter_date)) {
+                $limiterDate = $this->limiter_date;
+
+                $willChildGroupsUpdate = true;
+            }
+
+            if ($willChildGroupsUpdate) {
+                $childGroups = $this->chat->childGroups;
+
+                foreach ($childGroups as $childGroup) {
+                    if ($childChatMember = $childGroup->getChatMemberByUserId($this->user->id)) {
+                        if (isset($membershipDate)) {
+                            $childChatMember->membership_date = $membershipDate;
+                        }
+
+                        if (isset($limiterDate)) {
+                            $childChatMember->limiter_date = $limiterDate;
+                        }
+
+                        $childChatMember->save();
+                    }
+                }
+            }
+        }
+
+        parent::afterSave($insert, $changedAttributes);
     }
 }
