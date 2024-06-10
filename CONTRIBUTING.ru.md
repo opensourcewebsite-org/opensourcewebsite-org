@@ -60,6 +60,12 @@
 
 Пожалуйста, прочитайте как работает [Интернационализация (I18N)](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n) и как найти [не переведенные тексты](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n#message-command) в [исходных файлах переводов](https://github.com/opensourcewebsite-org/opensourcewebsite-org/tree/master/messages).
 
+## Yii Gii
+
+Использование Gii для автоматической генерации кода — это просто вопрос ввода правильной информации в соответствии с инструкциями, показанными на веб-страницах Gii.
+
+- https://www.yiiframework.com/doc/guide/2.0/en/start-gii
+
 ## Руководство по стилям кодирования
 
 ### Commit-сообщения Git

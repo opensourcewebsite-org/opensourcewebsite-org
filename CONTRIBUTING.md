@@ -60,6 +60,12 @@ To help our CI servers add `[ci skip]` to your documentation commit message to s
 
 Please read how [Internationalization (I18N)](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n) works and how to [find not translated texts](https://www.yiiframework.com/doc/guide/2.0/en/tutorial-i18n#message-command) in [translation source files](https://github.com/opensourcewebsite-org/opensourcewebsite-org/tree/master/messages).
 
+## Yii Gii
+
+Using Gii to auto-generate code is simply a matter of entering the right information per the instructions shown on the Gii Web pages.
+
+- https://www.yiiframework.com/doc/guide/2.0/en/start-gii
+
 ## Style Guides
 
 ### Git Commit Messages
