@@ -1059,8 +1059,9 @@ class GroupMembershipController extends Controller
                 ];
             }
 
-            $paginationButtons = PaginationButtons::build($pagination, function ($page) {
+            $paginationButtons = PaginationButtons::build($pagination, function ($page) use ($chat) {
                 return self::createRoute('child-groups', [
+                    'id' => $chat->id,
                     'page' => $page,
                 ]);
             });
