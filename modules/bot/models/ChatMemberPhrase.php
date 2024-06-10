@@ -15,6 +15,8 @@ use Yii;
  *
  * @property ChatMember $chatMember
  * @property ChatPhrase $chatPhrase
+ *
+ * @package app\modules\bot\models
  */
 class ChatMemberPhrase extends \yii\db\ActiveRecord
 {

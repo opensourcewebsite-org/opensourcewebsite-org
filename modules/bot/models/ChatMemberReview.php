@@ -23,6 +23,8 @@ use yii\db\ActiveRecord;
  *
  * @property ChatMember $member
  * @property User $user
+ *
+ * @package app\modules\bot\models
  */
 class ChatMemberReview extends ActiveRecord
 {

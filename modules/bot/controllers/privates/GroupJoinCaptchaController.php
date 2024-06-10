@@ -83,7 +83,10 @@ class GroupJoinCaptchaController extends Controller
                             'callback_data' => MenuController::createRoute(),
                             'text' => Emoji::MENU,
                         ],
-                    ]
+                    ],
+                ],
+                [
+                    'disablePreview' => true,
                 ]
             )
             ->build();
