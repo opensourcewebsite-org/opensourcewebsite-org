@@ -572,7 +572,6 @@ class GroupMembershipController extends Controller
         $member->membership_tariff_days = null;
         // remove slow mode
         $member->slow_mode_messages_limit = null;
-        $member->slow_mode_messages_skip_days = null;
         $member->slow_mode_messages_skip_hours = null;
 
         $member->save(false);

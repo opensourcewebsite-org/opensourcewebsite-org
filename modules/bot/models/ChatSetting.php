@@ -137,6 +137,12 @@ class ChatSetting extends ActiveRecord
             'min' => 1,
             'max' => 10000,
         ],
+        'slow_mode_messages_limit_membership' => [
+            'type' => 'integer',
+            'default' => 1,
+            'min' => 1,
+            'max' => 10000,
+        ],
         'slow_mode_status' => [
             'default' => self::STATUS_OFF,
         ],

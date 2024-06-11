@@ -5,3 +5,7 @@
 <br/>
 <?= Yii::t('bot', 'Limit of messages per member per day') ?>: <?= $chat->slow_mode_messages_limit ?><br/>
 <?php endif; ?>
+<?php if ($chat->slow_mode_messages_limit_membership) : ?>
+<br/>
+<?= Yii::t('bot', 'Limit of messages per premium member per day') ?>: <?= $chat->slow_mode_messages_limit_membership ?><br/>
+<?php endif; ?>

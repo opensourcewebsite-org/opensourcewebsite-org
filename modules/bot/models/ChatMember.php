@@ -25,7 +25,6 @@ use yii\db\ActiveRecord;
  * @property int $role
  * @property int $slow_mode_messages
  * @property int $slow_mode_messages_limit
- * @property int $slow_mode_messages_skip_days
  * @property int $slow_mode_messages_skip_hours
  * @property int|null $last_message_at
  * @property string|null $limiter_date
@@ -119,7 +118,7 @@ class ChatMember extends ActiveRecord
             [['role'], 'default', 'value' => self::ROLE_MEMBER],
             ['slow_mode_messages', 'default', 'value' => 0],
             [['slow_mode_messages_limit'], 'integer', 'min' => 1, 'max' => 10000],
-            [['slow_mode_messages_skip_days', 'membership_tariff_days'], 'integer', 'min' => 0, 'max' => 365],
+            [['membership_tariff_days'], 'integer', 'min' => 0, 'max' => 365],
             [['slow_mode_messages_skip_hours'], 'integer', 'min' => 0, 'max' => 24],
             [['membership_tariff_days_balance'], 'integer', 'min' => 0],
             [['membership_tariff_price', 'membership_tariff_price_balance'], 'double', 'min' => 0, 'max' => 9999999999999.99],
@@ -229,7 +228,11 @@ class ChatMember extends ActiveRecord
     public function getActualSlowModeMessagesLimit()
     {
         if ($chat = $this->chat) {
-            return $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
+            if ($chat->isMembershipOn() && $this->hasActiveMembership()) {
+                return $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit_membership ?? $chat->slow_mode_messages_limit;
+            } else {
+                return $this->slow_mode_messages_limit ?? $chat->slow_mode_messages_limit;
+            }
         }
 
         return 0;
@@ -258,11 +261,6 @@ class ChatMember extends ActiveRecord
 
                 $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
 
-                // TODO remove chat->slow_mode_messages_skip_days
-                if ($this->slow_mode_messages_skip_days) {
-                    $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
-                }
-
                 if ($today->getTimestamp() < $this->last_message_at) {
                     $slowModeMessagesLimit = $this->getActualSlowModeMessagesLimit();
 
@@ -281,7 +279,7 @@ class ChatMember extends ActiveRecord
      */
     public function hasMembership()
     {
-        if ($chat = $this->chat) {
+        if ($this->chat) {
             if ($this->membership_date) {
                 return true;
             }
@@ -360,10 +358,6 @@ class ChatMember extends ActiveRecord
 
         if ($chat = $this->chat) {
             $today = new DateTime('today', new DateTimeZone(TimeHelper::getTimezoneByOffset($chat->timezone)));
-
-            if ($this->slow_mode_messages_skip_days) {
-                $today->modify('-' . $this->slow_mode_messages_skip_days . ' days');
-            }
 
             if ($today->getTimestamp() < $this->last_message_at) {
                 $this->slow_mode_messages += 1;

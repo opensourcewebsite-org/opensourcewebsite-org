@@ -68,8 +68,8 @@ return [
     'section_matches',
     'section_new_matches',
     'set_member_messages_limit',
-    'set_member_messages_skip_days',
-    'delete_member_messages_skip_days',
+    '',
+    '',
     'delete_member_messages_skip_hours',
     'delete_member',
     'set_member_tariff_price',
@@ -129,4 +129,5 @@ return [
     'child_groups',
     'set_child_group',
     'sync_child_groups',
+    'set_messages_limit_membership',
 ];

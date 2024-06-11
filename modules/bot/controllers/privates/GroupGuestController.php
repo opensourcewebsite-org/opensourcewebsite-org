@@ -567,7 +567,6 @@ class GroupGuestController extends Controller
         $chatMember->membership_tariff_days = null;
         // remove slow mode
         $chatMember->slow_mode_messages_limit = null;
-        $chatMember->slow_mode_messages_skip_days = null;
         $chatMember->slow_mode_messages_skip_hours = null;
 
         $chatMember->save();
