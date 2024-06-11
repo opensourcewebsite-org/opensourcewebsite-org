@@ -47,18 +47,18 @@ class MenuController extends Controller
                             'text' => Yii::t('bot', 'Contacts'),
                         ],
                     ],
-                    [
-                        [
-                            'callback_data' => CaController::createRoute(),
-                            'text' => Yii::t('bot', 'Cash Exchange'),
-                        ],
-                    ],
-                    [
-                        [
-                            'callback_data' => CeController::createRoute(),
-                            'text' => Yii::t('bot', 'Currency Exchange'),
-                        ],
-                    ],
+                    // [
+                    //     [
+                    //         'callback_data' => CaController::createRoute(),
+                    //         'text' => Yii::t('bot', 'Cash Exchange'),
+                    //     ],
+                    // ],
+                    // [
+                    //     [
+                    //         'callback_data' => CeController::createRoute(),
+                    //         'text' => Yii::t('bot', 'Currency Exchange'),
+                    //     ],
+                    // ],
                     [
                         [
                             'callback_data' => AdController::createRoute(),
