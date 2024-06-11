@@ -52,4 +52,5 @@ class Emoji
     public const EYE = '👁‍🗨';
     public const THANKS = '🙏';
     public const SWITCH = '🔀';
+    public const SYNC = '🔂';
 }

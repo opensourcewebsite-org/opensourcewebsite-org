@@ -381,6 +381,14 @@ class Chat extends ActiveRecord
 
     public function getPremiumChatMembers()
     {
+        return $this->hasMany(ChatMember::class, ['chat_id' => 'id'])
+            ->andWhere([
+                'not', [ChatMember::tableName() . '.membership_date' => null],
+            ]);
+    }
+
+    public function getActivePremiumChatMembers()
+    {
         $today = new DateTime('@' . (time() + ($this->timezone * 60)));
 
         return $this->hasMany(ChatMember::class, ['chat_id' => 'id'])

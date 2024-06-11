@@ -194,13 +194,7 @@ class GroupMembershipController extends Controller
             'id' => $chat->id,
         ]));
 
-        $query = ChatMember::find()
-            ->where([
-                'chat_id' => $chat->id,
-            ])
-            ->andWhere([
-                'not', ['membership_date' => null],
-            ])
+        $query = $chat->getPremiumChatMembers()
             ->orderBy([
                 'membership_date' => SORT_ASC,
                 'user_id' => SORT_ASC,
@@ -1015,7 +1009,7 @@ class GroupMembershipController extends Controller
     }
 
     /**
-    * @param int|null $id Chat->id
+     * @param int|null $id Chat->id
      * @param int $page
      * @return array
      */
@@ -1079,6 +1073,12 @@ class GroupMembershipController extends Controller
                 'text' => Emoji::BACK,
             ],
             [
+                'callback_data' => self::createRoute('sync-child-groups', [
+                    'id' => $chat->id,
+                ]),
+                'text' => Emoji::SYNC,
+            ],
+            [
                 'callback_data' => MenuController::createRoute(),
                 'text' => Emoji::MENU,
             ],
@@ -1132,5 +1132,52 @@ class GroupMembershipController extends Controller
         return $this->runAction('child-groups', [
              'id' => $chat->id,
          ]);
+    }
+
+    /**
+     * @param int|null $id Chat->id
+     * @return array
+     */
+    public function actionSyncChildGroups($id = null)
+    {
+        $chat = Yii::$app->cache->get('chat');
+
+        if (!$premiumChatMembers = $chat->premiumChatMembers) {
+            return $this->getResponseBuilder()
+            ->answerCallbackQuery(
+                $this->render('alert-no-premium-members')
+            )
+            ->build();
+        }
+
+        if (!$childChats = $chat->childGroups) {
+            return $this->getResponseBuilder()
+            ->answerCallbackQuery(
+                $this->render('alert-no-child-groups')
+            )
+            ->build();
+        }
+
+        $updatedCount = 0;
+
+        foreach ($childChats as $childChat) {
+            foreach ($premiumChatMembers as $premiumChatMember) {
+                if ($childChatMember = $childChat->getChatMemberByUserId($premiumChatMember->getUserId())) {
+                    $childChatMember->membership_date = $premiumChatMember->membership_date;
+                    $childChatMember->limiter_date = $premiumChatMember->limiter_date;
+                    $childChatMember->save();
+
+                    $updatedCount++;
+                }
+            }
+        }
+
+        return $this->getResponseBuilder()
+        ->answerCallbackQuery(
+            $this->render('alert-sync-child-groups', [
+                'updatedCount' => $updatedCount,
+                ])
+        )
+        ->build();
     }
 }

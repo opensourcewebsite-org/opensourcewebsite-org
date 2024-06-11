@@ -128,4 +128,5 @@ return [
     'pass_captcha',
     'child_groups',
     'set_child_group',
+    'sync_child_groups',
 ];

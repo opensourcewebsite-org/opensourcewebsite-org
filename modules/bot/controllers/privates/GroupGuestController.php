@@ -299,7 +299,7 @@ class GroupGuestController extends Controller
 
         $this->getState()->clearInputRoute();
 
-        $query = $chat->getPremiumChatMembers();
+        $query = $chat->getActivePremiumChatMembers();
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
