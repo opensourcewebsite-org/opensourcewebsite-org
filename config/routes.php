@@ -20,6 +20,10 @@ return [
     'support-groups/clients-list/<id:[\d]+>' => 'support-groups/clients-list',
     'support-groups/clients-view/<id:[\d]+>' => 'support-groups/clients-view',
 
+    'api/<controller:[-\w]+>/<action:[-\w]+>/<id:[\d]+>' => '<controller>/<action>',
+    'api/<controller:[-\w]+>/<action:[-\w]+>/' => '<controller>/<action>',
+    'api/<controller:[-\w]+>/<action:[-\w]+>' => '<controller>/<action>',
+
     '<controller:[-\w]+>/<action:[-\w]+>/<id:[\d]+>' => '<controller>/<action>',
     '<controller:[-\w]+>/<action:[-\w]+>/' => '<controller>/<action>',
     '<controller:[-\w]+>/<action:[-\w]+>' => '<controller>/<action>',

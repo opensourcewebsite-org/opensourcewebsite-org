@@ -30,6 +30,7 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm' => '@vendor/npm-asset',
         '@bot' => '@app/modules/bot',
+        '@api' => '@app/modules/api',
     ],
     'modules' => [
         'guest' => [
@@ -40,6 +41,9 @@ $config = [
         ],
         'bot' => [
             'class' => 'app\modules\bot\Module',
+        ],
+        'api' => [
+            'class' => 'app\modules\api\Module',
         ],
     ],
     'components' => [
