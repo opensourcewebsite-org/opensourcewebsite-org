@@ -14,27 +14,18 @@ use app\models\CurrencyExchangeOrderResponse;
 use app\models\Debt;
 use app\models\DebtBalance;
 use app\models\DebtRedistribution;
-use app\models\Issue;
 use app\models\JobResumeResponse;
 use app\models\JobVacancyResponse;
-use app\models\Moqup;
 use app\models\Rating;
 use app\models\Resume;
 use app\models\SettingValueVote;
-use app\models\SupportGroup;
-use app\models\SupportGroupBotClient;
-use app\models\SupportGroupMember;
 use app\models\UserCitizenship;
 use app\models\UserEmail;
-use app\models\UserIssueVote;
 use app\models\UserLanguage;
-use app\models\UserMoqupFollow;
 use app\models\Vacancy;
 use app\models\Wallet;
 use app\models\WalletTransaction;
 use app\modules\bot\models\User as BotUser;
-use app\modules\comment\models\IssueComment;
-use app\modules\comment\models\MoqupComment;
 use Yii;
 use yii\base\Exception;
 
@@ -75,16 +66,6 @@ class MergeAccountsService
             'status' => CurrencyExchangeOrder::STATUS_OFF,
         ], "user_id = {$userToMerge->id}");
         CurrencyExchangeOrderResponse::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-
-        MoqupComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        Issue::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        IssueComment::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        Moqup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        SupportGroup::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        SupportGroupBotClient::updateAll(['provider_bot_user_id' => $user->id], "provider_bot_user_id = {$userToMerge->id}");
-        SupportGroupMember::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        UserIssueVote::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-        UserMoqupFollow::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
         // move all non-user contacts
         Contact::updateAll(
             [

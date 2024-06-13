@@ -13,7 +13,6 @@ use app\models\UserCitizenship;
 use app\models\UserEmail;
 use app\models\UserLanguage;
 use app\models\UserLocation;
-use app\models\UserMoqupFollow;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
@@ -49,49 +48,6 @@ class UserController extends Controller
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
-    }
-
-    /**
-     * Add a moqup to the list followed by the user
-     * @return boolean If the relation was saved
-     */
-    public function actionFollowMoqup($id)
-    {
-        $exists = UserMoqupFollow::findOne(['moqup_id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-
-        $withoutErrors = false;
-
-        if ($exists == null) {
-            $relation = new UserMoqupFollow([
-                'moqup_id' => $id,
-                'user_id' => Yii::$app->user->identity->id
-            ]);
-
-            if ($relation->save()) {
-                $withoutErrors = true;
-            }
-        }
-
-        echo $withoutErrors;
-        exit;
-    }
-
-    /**
-     * Remove a moqup from the list followed by the user
-     * @return boolean If the relation was removed
-     */
-    public function actionUnfollowMoqup($id)
-    {
-        $model = UserMoqupFollow::findOne(['moqup_id' => $id, 'user_id' => Yii::$app->user->identity->id]);
-
-        $withoutErrors = false;
-
-        if ($model != null && $model->delete()) {
-            $withoutErrors = true;
-        }
-
-        echo $withoutErrors;
-        exit;
     }
 
     public function actionDashboard()

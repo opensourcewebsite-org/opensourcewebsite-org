@@ -14,8 +14,8 @@ class m180826_032154_add_css_fk extends Migration
     {
         $this->addForeignKey(
             'css_moqup_id_fk',
-            'css', 
-            'moqup_id', 
+            'css',
+            'moqup_id',
             'moqup',
             'id'
         );

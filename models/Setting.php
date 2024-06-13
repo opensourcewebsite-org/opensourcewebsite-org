@@ -18,34 +18,9 @@ use yii\db\ActiveRecord;
 class Setting extends ActiveRecord
 {
     public static array $settings = [
-        'issue_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 3,
-            'more' => 0,
-        ],
         'days_count_to_calculate_active_rating' => [
             'type' => 'integer',
             'default' => 30,
-            'more' => 0,
-        ],
-        'moqup_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 3,
-            'more' => 0,
-        ],
-        'moqup_html_field_max_value' => [
-            'type' => 'integer',
-            'default' => 100000,
-            'more' => 0,
-        ],
-        'moqup_css_field_max_value' => [
-            'type' => 'integer',
-            'default' => 100000,
-            'more' => 0,
-        ],
-        'issue_text_field_max_value' => [
-            'type' => 'integer',
-            'default' => 10000,
             'more' => 0,
         ],
         'website_setting_min_vote_percent_to_apply_change' => [
@@ -53,21 +28,6 @@ class Setting extends ActiveRecord
             'default' => 70,
             'more' => 0,
             'max' => 100,
-        ],
-        'support_group_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 1,
-            'more' => 0,
-        ],
-        'support_group_bot_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 1,
-            'more' => 0,
-        ],
-        'support_group_member_quantity_value_per_one_rating' => [
-            'type' => 'float',
-            'default' => 1,
-            'more' => 0,
         ],
         'active_bot_group_join_hider_quantity_value_per_one_rating' => [
             'type' => 'float',

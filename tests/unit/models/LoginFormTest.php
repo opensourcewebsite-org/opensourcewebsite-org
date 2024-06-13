@@ -2,13 +2,10 @@
 
 namespace tests\models;
 
-use Yii;
 use app\models\forms\LoginForm;
-use app\tests\fixtures\CssFixture;
-use app\tests\fixtures\MoqupFixture;
-use app\tests\fixtures\UserFixture;
-use app\tests\fixtures\UserMoqupFollowFixture;
 use app\tests\fixtures\RatingFixture;
+use app\tests\fixtures\UserFixture;
+use Yii;
 
 class LoginFormTest extends \Codeception\Test\Unit
 {
@@ -24,23 +21,8 @@ class LoginFormTest extends \Codeception\Test\Unit
             ],
             'rating' => [
                 'class' => RatingFixture::className(),
-                // fixture data located in tests/_data/moqup.php
+                // fixture data located in tests/_data/rating.php
                 'dataFile' => codecept_data_dir() . 'rating.php',
-            ],
-            'moqup' => [
-                'class' => MoqupFixture::className(),
-                // fixture data located in tests/_data/moqup.php
-                'dataFile' => codecept_data_dir() . 'moqup.php',
-            ],
-            'user_moqup' => [
-                'class' => UserMoqupFollowFixture::className(),
-                // fixture data located in tests/_data/user_moqup_follow.php
-                'dataFile' => codecept_data_dir() . 'user_moqup_follow.php',
-            ],
-            'css' => [
-                'class' => CssFixture::className(),
-                // fixture data located in tests/_data/user_moqup_follow.php
-                'dataFile' => codecept_data_dir() . 'css.php',
             ],
         ];
     }

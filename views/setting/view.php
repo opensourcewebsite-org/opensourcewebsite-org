@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-use app\components\helpers\SettingHelper;
 use app\components\helpers\Html;
+use app\components\helpers\SettingHelper;
 use app\widgets\buttons\AddButton;
-use app\widgets\ModalAjax;
-use yii\helpers\Url;
-use yii\grid\GridView;
 use app\widgets\buttons\SelectButton;
+use app\widgets\ModalAjax;
+use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\IssueSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Setting') . ': ' . $setting->key;

@@ -1,9 +1,9 @@
 <?php
 
-use yii\web\View;
-use yii\helpers\ArrayHelper;
 use yii\base\Event;
+use yii\helpers\ArrayHelper;
 use yii\web\Application;
+use yii\web\View;
 
 $params = require __DIR__ . '/params.php';
 $params['bsVersion'] = '4.x'; // this will set globally `bsVersion` to Bootstrap 4.x for all Krajee Extensions
@@ -35,9 +35,6 @@ $config = [
     'modules' => [
         'guest' => [
             'class' => 'app\modules\guest\Module',
-        ],
-        'comment' => [
-            'class' => 'app\modules\comment\Module',
         ],
         'bot' => [
             'class' => 'app\modules\bot\Module',
@@ -156,7 +153,7 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => require(__DIR__ . '/routes.php'),
+            'rules' => require (__DIR__ . '/routes.php'),
         ],
         'i18n' => [
             'translations' => [

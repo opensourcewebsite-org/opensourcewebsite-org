@@ -16,7 +16,6 @@ use app\models\User;
 use app\models\UserCitizenship;
 use app\models\UserEmail;
 use app\models\UserLanguage;
-use app\models\UserMoqupFollow;
 use app\models\UserStatistic;
 use Yii;
 use yii\data\Pagination;

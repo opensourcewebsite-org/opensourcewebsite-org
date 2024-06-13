@@ -26,46 +26,6 @@ class ExamplesController extends Controller
         ];
     }
 
-    public function actionDashboard(): string
-    {
-        return $this->render('dashboard');
-    }
-
-    public function actionWidgets(): string
-    {
-        return $this->render('widgets');
-    }
-
-    public function actionCharts($id): string
-    {
-        return $this->render('charts/' . $id);
-    }
-
-    public function actionUiElements($id): string
-    {
-        return $this->render('ui-elements/' . $id);
-    }
-
-    public function actionForms($id): string
-    {
-        return $this->render('forms/' . $id);
-    }
-
-    public function actionTables($id): string
-    {
-        return $this->render('tables/' . $id);
-    }
-
-    public function actionCalendar(): string
-    {
-        return $this->render('calendar');
-    }
-
-    public function actionGallery(): string
-    {
-        return $this->render('gallery');
-    }
-
     // https://www.php.net/manual/en/function.phpinfo.php
     public function actionPhpInfo(): string
     {

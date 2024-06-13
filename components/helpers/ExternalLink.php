@@ -79,14 +79,6 @@ class ExternalLink
     /**
      * {@inheritdoc}
      */
-    public static function getGithubDevopsLink()
-    {
-        return 'https://github.com/opensourcewebsite-org/osw-devops';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public static function getTelegramGroupLink()
     {
         return 'https://t.me/+2ZrW2NKBBKU2YmY9';

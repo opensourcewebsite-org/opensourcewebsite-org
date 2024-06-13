@@ -170,363 +170,195 @@ NavBar::end();
 <?php
 $leftMenuItems = [
     [
-'title' => 'SERVICES',
-'icon' => 'fas fa-cloud',
+        'title' => 'SERVICES',
+        'icon' => 'fas fa-cloud',
     ],
     [
-'title' => 'Contacts',
-'url' => 'contact',
-'route' => '/contact',
+        'title' => 'Contacts',
+        'url' => 'contact',
+        'route' => '/contact',
     ],
     [
-'title' => 'Debts',
-'url' => 'debt',
-'route' => '/debt',
+        'title' => 'Debts',
+        'url' => 'debt',
+        'route' => '/debt',
     ],
     [
-'title' => 'Support groups',
-'url' => 'support-groups',
-'route' => '/support-groups',
+        'title' => Yii::t('app', 'Currency Exchange'),
+        'url' => 'currency-exchange-order',
+        'route' => '/currency-exchange-order',
     ],
     [
-'title' => Yii::t('app', 'Currency Exchange'),
-'url' => 'currency-exchange-order',
-'route' => '/currency-exchange-order',
-    ],
-    [
-'title' => Yii::t('app', 'Ads'),
-'urls' => [
-    'ad-offer',
-    'ad-search'
-],
-'items' => [
-    [
-        'title' => Yii::t('app', 'Offers'),
-        'url' => 'ad-offer',
-        'route' => '/ad-offer'
-    ],
-    [
-        'title' => Yii::t('app', 'Searches'),
-        'url' => 'ad-search',
-        'route' => '/ad-search',
-    ],
-],
-    ],
-    [
-'title' => Yii::t('app', 'Jobs'),
-'urls' => [
-    'company-user',
-    'resume',
-    'vacancy',
-],
-'items' => [
-    [
-        'title' => Yii::t('app', 'Vacancies'),
-        'url' => 'vacancy',
-        'route' => '/vacancy'
-    ],
-    [
-        'title' => Yii::t('app', 'Resumes'),
-        'url' => 'resume',
-        'route' => '/resume'
-    ],
-    [
-        'title' => Yii::t('app', 'Companies'),
-        'url' => 'company-user',
-        'route' => '/company-user'
-    ],
-],
-    ],
-    [
-'title' => 'Dating',
-'url' => 'dating',
-'route' => '/dating',
-    ],
-    [
-'title' => Yii::t('app', 'Telegram Bot'),
-'icon' => 'fab fa-telegram',
-'href' => ExternalLink::getBotLink(),
-    ],
-    [
-'title' => 'COMMUNITY',
-'icon' => 'fas fa-users',
-    ],
-    [
-'title' => Yii::t('app', 'Settings'),
-'url' => 'setting',
-'route' => '/setting',
-    ],
-    [
-'title' => Yii::t('app', 'Issues'),
-'url' => 'issue',
-'route' => '/issue',
-    ],
-    [
-'title' => 'METRICS',
-'icon' => 'far fa-chart-bar',
-    ],
-    [
-'title' => Yii::t('app', 'Users'),
-'url' => 'users',
-'route' => '/users',
-    ],
-    [
-'title' => Yii::t('app', 'Statistics'),
-'url' => 'statistics',
-'route' => '/statistics',
-    ],
-    [
-'title' => 'SYSTEM REPORTS',
-'icon' => 'far fa-list-alt',
-    ],
-    [
-'title' => 'Cron Log',
-'url' => 'cron-job',
-'route' => '/cron-job/index',
-    ],
-    [
-'title' => 'PHP Info',
-'url' => 'examples/php-info',
-'route' => '/examples/php-info',
-    ],
-    [
-'title' => 'MySQL Info',
-'url' => 'examples/mysql-info',
-'route' => '/examples/mysql-info',
-    ],
-    [
-'title' => Yii::t('app', 'Migrations'),
-'url' => 'examples/migrations',
-'route' => '/examples/migrations',
-    ],
-    [
-'title' => 'CONTRIBUTION',
-'icon' => 'fas fa-tools',
-    ],
-    [
-'title' => Yii::t('app', 'Getting started'),
-'icon' => 'fab fa-github',
-'href' => ExternalLink::getGithubContributionLink(),
-    ],
-    [
-'title' => Yii::t('app', 'Source code'),
-'icon' => 'fab fa-github',
-'href' => ExternalLink::getGithubLink(),
-    ],
-    [
-'title' => 'DevOps',
-'icon' => 'fab fa-github',
-'href' => ExternalLink::getGithubDevopsLink(),
-    ],
-    [
-'title' => 'Moqups',
-'url' => 'moqup/design-list',
-'route' => '/moqup/design-list',
-    ],
-    [
-'title' => Yii::t('app', 'Models'),
-'urls' => [
-    'data/country',
-    'data/currency',
-    'data/language',
-    'data/payment-method',
-    'data/gender',
-    'data/sexuality',
-],
-'items' => [
-    [
-        'title' => Yii::t('app', 'Countries'),
-        'url' => 'data/country',
-        'route' => '/data/country',
-    ],
-    [
-        'title' => Yii::t('app', 'Currencies'),
-        'url' => 'data/currency',
-        'route' => '/data/currency',
-    ],
-    [
-        'title' => Yii::t('app', 'Genders'),
-        'url' => 'data/gender',
-        'route' => 'data/gender',
-    ],
-    [
-        'title' => Yii::t('app', 'Languages'),
-        'url' => 'data/language',
-        'route' => '/data/language',
-    ],
-    [
-        'title' => Yii::t('app', 'Payment methods'),
-        'url' => 'data/payment-method',
-        'route' => '/data/payment-method',
-    ],
-    [
-        'title' => Yii::t('app', 'Genders'),
-        'url' => 'data/gender',
-        'route' => '/data/gender',
-    ],
-    [
-        'title' => Yii::t('app', 'Sexualities'),
-        'url' => 'data/sexuality',
-        'route' => '/data/sexuality',
-    ],
-],
-    ],
-    [
-'title' => Yii::t('app', 'Design System'),
-'urls' => [
-    'examples/dashboard',
-    'examples/widgets',
-    'examples/charts',
-    'examples/ui-elements',
-    'examples/forms',
-    'examples/tables',
-    'examples/calendar',
-    'examples/gallery',
-],
-'items' => [
-    [
-        'title' => 'Dashboard',
-        'url' => 'examples/dashboard',
-        'route' => '/examples/dashboard',
-    ],
-    [
-        'title' => 'Widgets',
-        'url' => 'examples/widgets',
-        'route' => '/examples/widgets',
-    ],
-    [
-        'title' => 'Charts',
+        'title' => Yii::t('app', 'Ads'),
         'urls' => [
-            'examples/charts',
+            'ad-offer',
+            'ad-search'
         ],
         'items' => [
             [
-                'title' => 'ChartJS',
-                'url' => 'examples/charts/chartjs',
-                'route' => '/examples/charts/chartjs',
+                'title' => Yii::t('app', 'Offers'),
+                'url' => 'ad-offer',
+                'route' => '/ad-offer'
             ],
             [
-                'title' => 'Flot',
-                'url' => 'examples/charts/flot',
-                'route' => '/examples/charts/flot',
-            ],
-            [
-                'title' => 'Inline',
-                'url' => 'examples/charts/inline',
-                'route' => '/examples/charts/inline',
+                'title' => Yii::t('app', 'Searches'),
+                'url' => 'ad-search',
+                'route' => '/ad-search',
             ],
         ],
     ],
     [
-        'title' => 'UI Elements',
+        'title' => Yii::t('app', 'Jobs'),
         'urls' => [
-            'examples/ui-elements',
+            'company-user',
+            'resume',
+            'vacancy',
         ],
         'items' => [
             [
-                'title' => 'General',
-                'url' => 'examples/ui-elements/general',
-                'route' => '/examples/ui-elements/general',
+                'title' => Yii::t('app', 'Vacancies'),
+                'url' => 'vacancy',
+                'route' => '/vacancy'
             ],
             [
-                'title' => 'Icons',
-                'url' => 'examples/ui-elements/icons',
-                'route' => '/examples/ui-elements/icons',
+                'title' => Yii::t('app', 'Resumes'),
+                'url' => 'resume',
+                'route' => '/resume'
             ],
             [
-                'title' => 'Buttons',
-                'url' => 'examples/ui-elements/buttons',
-                'route' => '/examples/ui-elements/buttons',
-            ],
-            [
-                'title' => 'Sliders',
-                'url' => 'examples/ui-elements/sliders',
-                'route' => '/examples/ui-elements/sliders',
-            ],
-            [
-                'title' => 'Modals & Alerts',
-                'url' => 'examples/ui-elements/modals-alerts',
-                'route' => '/examples/ui-elements/modals-alerts',
-            ],
-            [
-                'title' => 'Tabs',
-                'url' => 'examples/ui-elements/tabs',
-                'route' => '/examples/ui-elements/tabs',
-            ],
-            [
-                'title' => 'Timeline',
-                'url' => 'examples/ui-elements/timeline',
-                'route' => '/examples/ui-elements/timeline',
-            ],
-            [
-                'title' => 'Ribbons',
-                'url' => 'examples/ui-elements/ribbons',
-                'route' => '/examples/ui-elements/ribbons',
-            ],
-        ]
-    ],
-    [
-        'title' => 'Forms',
-        'urls' => ['examples/forms'],
-        'items' => [
-            [
-                'title' => 'General Elements',
-                'url' => 'examples/forms/general-elements',
-                'route' => '/examples/forms/general-elements',
-            ],
-            [
-                'title' => 'Advenced Elements',
-                'url' => 'examples/forms/advanced-elements',
-                'route' => '/examples/forms/advanced-elements',
-            ],
-            [
-                'title' => 'Editors',
-                'url' => 'examples/forms/editors',
-                'route' => '/examples/forms/editors',
-            ],
-        ]
-    ],
-    [
-        'title' => 'Tables',
-        'urls' => ['examples/tables'],
-        'items' => [
-            [
-                'title' => 'Simple Tables',
-                'url' => 'examples/tables/simple-tables',
-                'route' => '/examples/tables/simple-tables',
-            ],
-            [
-                'title' => 'DataTables',
-                'url' => 'examples/tables/data-tables',
-                'route' => '/examples/tables/data-tables',
-            ],
-            [
-                'title' => 'jsGrid',
-                'url' => 'examples/tables/js-grid',
-                'route' => '/examples/tables/js-grid',
+                'title' => Yii::t('app', 'Companies'),
+                'url' => 'company-user',
+                'route' => '/company-user'
             ],
         ],
     ],
     [
-        'title' => 'Calendar',
-        'url' => 'examples/calendar',
-        'route' => '/examples/calendar',
+        'title' => 'Dating',
+        'url' => 'dating',
+        'route' => '/dating',
     ],
     [
-        'title' => 'Gallery',
-        'url' => 'examples/gallery',
-        'route' => '/examples/gallery',
-    ],
-],
+        'title' => Yii::t('app', 'Telegram Bot'),
+        'icon' => 'fab fa-telegram',
+        'href' => ExternalLink::getBotLink(),
     ],
     [
-'title' => 'DONATION',
-'icon' => 'fas fa-donate',
+        'title' => 'COMMUNITY',
+        'icon' => 'fas fa-users',
     ],
     [
-'title' => Yii::t('app', 'Getting started'),
-'icon' => 'fab fa-github',
-'href' => ExternalLink::getGithubDonationLink(),
+        'title' => Yii::t('app', 'Settings'),
+        'url' => 'setting',
+        'route' => '/setting',
+    ],
+    [
+        'title' => 'METRICS',
+        'icon' => 'far fa-chart-bar',
+    ],
+    [
+        'title' => Yii::t('app', 'Users'),
+        'url' => 'users',
+        'route' => '/users',
+    ],
+    [
+        'title' => Yii::t('app', 'Statistics'),
+        'url' => 'statistics',
+        'route' => '/statistics',
+    ],
+    [
+        'title' => 'SYSTEM REPORTS',
+        'icon' => 'far fa-list-alt',
+    ],
+    [
+        'title' => 'Cron Log',
+        'url' => 'cron-job',
+        'route' => '/cron-job/index',
+    ],
+    [
+        'title' => 'PHP Info',
+        'url' => 'examples/php-info',
+        'route' => '/examples/php-info',
+    ],
+    [
+        'title' => 'MySQL Info',
+        'url' => 'examples/mysql-info',
+        'route' => '/examples/mysql-info',
+    ],
+    [
+        'title' => Yii::t('app', 'Migrations'),
+        'url' => 'examples/migrations',
+        'route' => '/examples/migrations',
+    ],
+    [
+        'title' => 'CONTRIBUTION',
+        'icon' => 'fas fa-tools',
+    ],
+    [
+        'title' => Yii::t('app', 'Getting started'),
+        'icon' => 'fab fa-github',
+        'href' => ExternalLink::getGithubContributionLink(),
+    ],
+    [
+        'title' => Yii::t('app', 'Source code'),
+        'icon' => 'fab fa-github',
+        'href' => ExternalLink::getGithubLink(),
+    ],
+    [
+        'title' => Yii::t('app', 'Models'),
+        'urls' => [
+            'data/country',
+            'data/currency',
+            'data/language',
+            'data/payment-method',
+            'data/gender',
+            'data/sexuality',
+        ],
+        'items' => [
+            [
+                'title' => Yii::t('app', 'Countries'),
+                'url' => 'data/country',
+                'route' => '/data/country',
+            ],
+            [
+                'title' => Yii::t('app', 'Currencies'),
+                'url' => 'data/currency',
+                'route' => '/data/currency',
+            ],
+            [
+                'title' => Yii::t('app', 'Genders'),
+                'url' => 'data/gender',
+                'route' => 'data/gender',
+            ],
+            [
+                'title' => Yii::t('app', 'Languages'),
+                'url' => 'data/language',
+                'route' => '/data/language',
+            ],
+            [
+                'title' => Yii::t('app', 'Payment methods'),
+                'url' => 'data/payment-method',
+                'route' => '/data/payment-method',
+            ],
+            [
+                'title' => Yii::t('app', 'Genders'),
+                'url' => 'data/gender',
+                'route' => '/data/gender',
+            ],
+            [
+                'title' => Yii::t('app', 'Sexualities'),
+                'url' => 'data/sexuality',
+                'route' => '/data/sexuality',
+            ],
+        ],
+    ],
+    [
+        'title' => 'DONATION',
+        'icon' => 'fas fa-donate',
+    ],
+    [
+        'title' => Yii::t('app', 'Getting started'),
+        'icon' => 'fab fa-github',
+        'href' => ExternalLink::getGithubDonationLink(),
     ],
 ];
 ?>

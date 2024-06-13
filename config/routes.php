@@ -15,10 +15,6 @@ return [
     'cron-job/view/<id:[\d]+>' => 'cron-job/view',
     'webhook/telegram/<token>' => 'webhook/telegram',
     'webhook/telegram-bot/<token>' => 'webhook/telegram-bot',
-    'support-groups/clients-languages/<id:[\d]+>' => 'support-groups/clients-languages',
-    'support-groups/clients-list/<id:[\d]+>/<language:[\w]+>' => 'support-groups/clients-list',
-    'support-groups/clients-list/<id:[\d]+>' => 'support-groups/clients-list',
-    'support-groups/clients-view/<id:[\d]+>' => 'support-groups/clients-view',
 
     'api/<controller:[-\w]+>/<action:[-\w]+>/<id:[\d]+>' => '<controller>/<action>',
     'api/<controller:[-\w]+>/<action:[-\w]+>/' => '<controller>/<action>',
