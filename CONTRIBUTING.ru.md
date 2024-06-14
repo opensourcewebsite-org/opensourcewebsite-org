@@ -66,6 +66,14 @@
 
 - https://www.yiiframework.com/doc/guide/2.0/en/start-gii
 
+## Cloud AI Code Helpers
+
+- https://chatgpt.com
+- https://gemini.google.com
+- https://claude.ai
+- https://chat.reka.ai
+- https://www.perplexity.ai
+
 ## Руководство по стилям кодирования
 
 ### Commit-сообщения Git

@@ -66,6 +66,14 @@ Using Gii to auto-generate code is simply a matter of entering the right informa
 
 - https://www.yiiframework.com/doc/guide/2.0/en/start-gii
 
+## Cloud AI Code Helpers
+
+- https://chatgpt.com
+- https://gemini.google.com
+- https://claude.ai
+- https://chat.reka.ai
+- https://www.perplexity.ai
+
 ## Style Guides
 
 ### Git Commit Messages
