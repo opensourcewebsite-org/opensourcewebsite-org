@@ -116,6 +116,7 @@ Recommended IDE:
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
     - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
   - [Cursor](https://cursor.sh)
+  - [Project IDX](https://idx.google.com)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
     - [SonarLint](https://www.sonarlint.org/intellij). To automatically check a code style and formatting, enable the settings in the commit window `Before commit > Perform SonarLint analysis`.
