@@ -6,7 +6,7 @@
         "osw",
         "yii2",
         "yii",
-        "php7",
+        "php8",
         "php"
     ],
     "homepage": "https://opensourcewebsite.org",
@@ -25,7 +25,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.3",
         "ext-bcmath": "*",
         "ext-json": "*",
         "ext-PDO": "*",
@@ -75,7 +75,7 @@
             "enabled": false
         },
         "platform": {
-            "php": "7.4"
+            "php": "8.3"
         },
         "allow-plugins": {
             "cweagans/composer-patches": true,
