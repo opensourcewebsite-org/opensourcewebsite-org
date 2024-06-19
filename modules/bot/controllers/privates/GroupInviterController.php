@@ -59,6 +59,14 @@ class GroupInviterController extends Controller
                             'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Reward amount') . ($chat->inviter_reward_amount ? ': ' . $chat->getDisplayRewardAmount() : ''),
                         ],
                     ],
+                                        [
+                        [
+                            'callback_data' => self::createRoute('set-wallet', [
+                                'id' => $chat->id,
+                            ]),
+                            'text' => Emoji::EDIT . ' ' . Yii::t('bot', 'Wallet') . ($chat->inviter_wallet_id ? ': ' . $chat->getDisplayRewardAmount() : ''),
+                        ],
+                    ],
                     [
                         [
                             'callback_data' => GroupController::createRoute('view', [

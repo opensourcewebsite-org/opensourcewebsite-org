@@ -16,7 +16,7 @@ $events = require __DIR__ . "/events.php";
 
 $config = [
     'id' => 'basic',
-    'defaultRoute' => 'guest/default',
+    'defaultRoute' => 'site/login',
     'layout' => 'adminlte-user',
     'basePath' => dirname(__DIR__),
     'bootstrap' => [
@@ -33,9 +33,6 @@ $config = [
         '@api' => '@app/modules/api',
     ],
     'modules' => [
-        'guest' => [
-            'class' => 'app\modules\guest\Module',
-        ],
         'bot' => [
             'class' => 'app\modules\bot\Module',
         ],

@@ -1,8 +1,6 @@
 <?php
 
 return [
-    '<action:(index|terms-of-use|privacy-policy)>' => 'guest/default/<action>',
-    'invite/<id>' => 'guest/default/invite',
     '<action:(signup|login|change-language)>' => 'site/<action>',
     'dashboard' => 'user/dashboard',
     'account' => 'user/account',

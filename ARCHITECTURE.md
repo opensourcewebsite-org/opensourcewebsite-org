@@ -2,10 +2,6 @@
 
 [Русская версия](ARCHITECTURE.ru.md)
 
-## Website for guests
-
-- [`/modules/guest`](/modules/guest)
-
 ## Website for users
 
 Use widgets and helpers to prevent duplication and copying of code. Widgets and helpers help you reuse existing code and quickly and safely add new functionality.
