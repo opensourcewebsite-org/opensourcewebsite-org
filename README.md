@@ -1,7 +1,10 @@
-[![Website](https://img.shields.io/badge/Website-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
-[![Telegram Bot](https://img.shields.io/badge/Telegram_bot-opensourcewebsite__bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
-[![Telegram](https://img.shields.io/badge/Telegram_channel-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite)
-[![Telegram](https://img.shields.io/badge/Telegram_group-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/+2ZrW2NKBBKU2YmY9)
+[![Welcome Website](https://img.shields.io/badge/Welcome_Website-opensourcewebsite.org-blue.svg?style=flat-square])](https://opensourcewebsite.org)
+[![Web App](https://img.shields.io/badge/Web_App-app.opensourcewebsite.org-blue.svg?style=flat-square])](https://app.opensourcewebsite.org)
+[![API](https://img.shields.io/badge/API-api.opensourcewebsite.org-blue.svg?style=flat-square&logo=telegram)](https://api.opensourcewebsite.org)
+
+[![Telegram Bot](https://img.shields.io/badge/Telegram_Bot-opensourcewebsite__bot-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite_bot)
+[![Telegram Channel](https://img.shields.io/badge/Telegram_Channel-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/opensourcewebsite)
+[![Telegram Group](https://img.shields.io/badge/Telegram_Group-opensourcewebsite-blue.svg?style=flat-square&logo=telegram)](https://t.me/+2ZrW2NKBBKU2YmY9)
 
 [![CodeTriage Helpers](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org/badges/users.svg)](https://www.codetriage.com/opensourcewebsite-org/opensourcewebsite-org)
 
@@ -14,7 +17,11 @@
 
 We promote a free society where everyone can participate in decision-making through electronic voting and where open source guarantees data security.
 
-We welcome everyone who shares our mission and is ready to contribute to the development of the community - developers, activists, volunteers, employees, partners, sponsors. Join us and together we will create our future!
+We welcome everyone who shares our mission and is ready to contribute to the development of the community - developers, activists, volunteers, employees, partners, sponsors.
+
+Join us and together we will create our future!
+
+Live: [opensourcewebsite.org](https://opensourcewebsite.org)
 
 The repository is a part of the [OpenSourceWebsite Organization](https://github.com/opensourcewebsite-org). This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -31,7 +38,7 @@ This project exists thanks to all the people who contribute.
 
 Your contributions increase your Rating in our community.
 
-Please read through our [Contribution Guidelines](CONTRIBUTING.md), [Architecture Overview](ARCHITECTURE.md) and [Installation Instructions](INSTALL.md).
+Please read through our [Contribution Guidelines](CONTRIBUTING.md), [Architecture Overview](ARCHITECTURE.md), [Installation Instructions](INSTALL.md) and [API Documentation](https://github.com/opensourcewebsite-org/apidocs-opensourcewebsite-org/).
 
 ## Donating
 
@@ -46,10 +53,6 @@ Please read through our [Donation Details](DONATE.md).
 Any commit pushed to a branch `master` gets deployed to [https://opensourcewebsite.org](https://opensourcewebsite.org) via [Git-Auto-Deploy](https://github.com/olipo186/Git-Auto-Deploy).
 
 Server Architecture managed by [OpenSourceWebsite DevOps](https://github.com/opensourcewebsite-org/osw-devops).
-
-## API Documentation (in development)
-
-Please read through our [API Documentation](https://github.com/opensourcewebsite-org/apidocs-opensourcewebsite-org/).
 
 ## Feedback
 
