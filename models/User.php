@@ -115,7 +115,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function validateUsernameUnique()
     {
-        $oldValue = $this->getOldAttribute('username');
+        $oldValue = $this->getOldAttribute('username') ?? '';
 
         if (is_numeric($this->username)) {
             $this->addError('username', 'Username can\'t be number.');
