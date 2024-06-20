@@ -20,7 +20,6 @@ use app\models\Rating;
 use app\models\Resume;
 use app\models\SettingValueVote;
 use app\models\UserCitizenship;
-use app\models\UserEmail;
 use app\models\UserLanguage;
 use app\models\Vacancy;
 use app\models\Wallet;
@@ -287,14 +286,6 @@ class MergeAccountsService
                     BotUser::updateAll(['user_id' => $user->id], ['user_id' => $userToMerge->id]);
                 } else {
                     BotUser::updateAll(['user_id' => null], ['user_id' => $userToMerge->id]);
-                }
-            }
-
-            if ($userToMerge->userEmail) {
-                if (!$user->userEmail) {
-                    UserEmail::updateAll(['user_id' => $user->id], "user_id = {$userToMerge->id}");
-                } else {
-                    UserEmail::deleteAll("user_id = {$userToMerge->id}");
                 }
             }
 

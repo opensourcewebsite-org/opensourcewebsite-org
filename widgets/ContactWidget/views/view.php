@@ -30,14 +30,6 @@ use yii\web\View;
                                     <?= Html::a(isset($user->username) ? '@' . $user->username : '#' . $user->id, Url::toRoute(['contact/view-user', 'id' => $user->id])) ?>
                                 </td>
                             </tr>
-                            <?php if ($userEmail = $user->email) : ?>
-                                <tr>
-                                    <th class="align-middle" scope="col"><?= Yii::t('app', 'Email') ?></th>
-                                    <td class="align-middle">
-                                        <?= Html::mailto($userEmail->email, $userEmail->email) ?>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
                             <?php if ($user->botUser && $user->botUser->provider_user_name) : ?>
                                 <tr>
                                     <th class="align-middle" scope="col"><?= Yii::t('app', 'Telegram') ?></th>

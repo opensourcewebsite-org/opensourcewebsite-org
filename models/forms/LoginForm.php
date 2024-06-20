@@ -42,7 +42,7 @@ class LoginForm extends Model
     public function attributeLabels()
     {
         return [
-            'username' => Yii::t('app', 'Username') . ' / ID / ' . Yii::t('app', 'Email'),
+            'username' => Yii::t('app', 'Username') . ' / ' . 'ID',
             'password' => Yii::t('app', 'Password'),
             'captcha' => Yii::t('app', 'Captcha'),
         ];
@@ -66,7 +66,7 @@ class LoginForm extends Model
     }
 
     /**
-     * Logs in a user using the provided email and password.
+     * Logs in a user using the provided username/ID and password.
      *
      * @return bool whether the user is logged in successfully
      */
@@ -87,7 +87,7 @@ class LoginForm extends Model
     protected function getUser()
     {
         if ($this->user === null) {
-            $this->user = User::findByUsername($this->username) ?: User::findById($this->username) ?: User::findByEmail($this->username) ?: null;
+            $this->user = User::findByUsername($this->username) ?: User::findById($this->username) ?: null;
         }
 
         return $this->user;
