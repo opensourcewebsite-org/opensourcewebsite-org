@@ -33,7 +33,6 @@
         "ext-curl": "*",
         "ext-iconv": "*",
         "yiisoft/yii2": "~2.0.41",
-        "yiisoft/yii2-swiftmailer": "^2.0",
         "yiisoft/yii2-bootstrap4": "^2.0",
         "yiisoft/yii2-httpclient": "^2.0.0",
         "almasaeed2010/adminlte": "^3.2",
@@ -48,7 +47,6 @@
         "2amigos/yii2-leaflet-extension": "^1.1",
         "npm-asset/leaflet.locatecontrol": "^0.76",
         "lstrojny/functional-php": "^1.17",
-        "symfony/mailer": "^5.0",
         "opensourcewebsite-org/php-telegram-sdk": "dev-master"
     },
     "require-dev": {
@@ -93,9 +91,6 @@
     },
     "extra": {
         "yii\\composer\\Installer::postInstall": {
-            "generateCookieValidationKey": [
-                "config/web-local.php"
-            ],
             "setPermission": [
                 {
                     "runtime": "0777",

@@ -41,6 +41,9 @@ $config = [
         ],
     ],
     'components' => [
+        'request' => [
+            'cookieValidationKey' => $params['cookieValidationKey'],
+        ],
         'assetManager' => [
             'class' => 'app\components\AssetManager',
             'linkAssets' => true,
@@ -94,13 +97,6 @@ $config = [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
-        ],
-        'mailer' => [
-            'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => YII_ENV_DEV,
         ],
         'log' => [
             'flushInterval' => 1,

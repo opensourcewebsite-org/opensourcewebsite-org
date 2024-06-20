@@ -58,12 +58,12 @@ $this->title = Yii::t('app', 'Account');
                                         <?php
                                             $string = Yii::t('user', 'Rating');
 
-                                            if ($model->ratings) {
-                                                echo Html::a($string, ['user/rating']);
-                                            } else {
-                                                echo $string;
-                                            }
-                                        ?>
+if ($model->ratings) {
+    echo Html::a($string, ['user/rating']);
+} else {
+    echo $string;
+}
+?>
                                         </th>
                                         <td class="align-middle"><b><?= $model->getRating() ?></b> <?= Yii::t('app', 'of'); ?> <?= User::getTotalRating(); ?></td>
                                         <td></td>
@@ -102,24 +102,24 @@ $this->title = Yii::t('app', 'Account');
                                     <td class="align-middle" id="name"><?= $model->name ?? $model->id; ?></td>
                                     <td>
                                         <?= EditButton::widget([
-                                            'url' => '/user/change-name',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
+    'url' => '/user/change-name',
+    'options' => [
+        'style' => 'float: right',
+    ]
+]); ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="align-middle"><?= Yii::t('user', 'Birthday'); ?></th>
                                     <td class="align-middle" id="birthday"><?= empty($model->birthday) ? '' :
-                                            Yii::$app->formatter->asDate($model->birthday); ?></td>
+    Yii::$app->formatter->asDate($model->birthday); ?></td>
                                     <td>
                                         <?= EditButton::widget([
-                                            'url' => '/user/change-birthday',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
+    'url' => '/user/change-birthday',
+    'options' => [
+        'style' => 'float: right',
+    ]
+]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -129,11 +129,11 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                     <td>
                                         <?= EditButton::widget([
-                                            'url' => '/user/change-gender',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
+    'url' => '/user/change-gender',
+    'options' => [
+        'style' => 'float: right',
+    ]
+]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -143,11 +143,11 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                     <td>
                                         <?= EditButton::widget([
-                                            'url' => '/user/change-sexuality',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
+    'url' => '/user/change-sexuality',
+    'options' => [
+        'style' => 'float: right',
+    ]
+]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -155,11 +155,11 @@ $this->title = Yii::t('app', 'Account');
                                     <td class="align-middle" id="timezone"><?= $model->getTimezoneName(); ?></td>
                                     <td>
                                         <?= EditButton::widget([
-                                            'url' => '/user/change-timezone',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
+    'url' => '/user/change-timezone',
+    'options' => [
+        'style' => 'float: right',
+    ]
+]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -169,11 +169,11 @@ $this->title = Yii::t('app', 'Account');
                                     </td>
                                     <td>
                                         <?= EditButton::widget([
-                                            'url' => '/user/change-currency',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ]
-                                        ]); ?>
+    'url' => '/user/change-currency',
+    'options' => [
+        'style' => 'float: right',
+    ]
+]); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -328,30 +328,6 @@ $this->title = Yii::t('app', 'Account');
                         <div id="w0" class="grid-view">
                             <table class="table table-condensed table-hover" style="margin-bottom: 0;">
                                 <tbody>
-                                <tr>
-                                    <th class="align-middle">Email</th>
-                                    <td class="align-middle">
-                                        <?php if ($userEmail = $model->email) : ?>
-                                            <?= (!$userEmail->isConfirmed() ? Html::badge('warning', Yii::t('app', 'not confirmed')) . ' ' : '') . $userEmail->email ?>
-                                            <?php if (!$userEmail->isConfirmed()) : ?>
-                                            <br/><br/>
-                                            <?= Html::icon('warning') ?> <?= Yii::t('bot', 'Confirm your Email') ?>.<br/>
-                                            <br/>
-                                            <?= Yii::t('bot', 'An email with a confirmation link was sent to your email address') ?>. <?= Yii::t('bot', 'In order to complete the process, please click the confirmation link') ?>.<br/>
-                                            <br/>
-                                            <?= Yii::t('bot', 'If you do not receive a confirmation email, please check your spam folder') ?>.
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?= EditButton::widget([
-                                            'url' => '/user/change-email',
-                                            'options' => [
-                                                'style' => 'float: right',
-                                            ],
-                                        ]); ?>
-                                    </td>
-                                </tr>
                                 <?php if (($telegramUser = $model->botUser) && ($telegramUsername = $telegramUser->getUsername())) : ?>
                                     <tr>
                                         <th class="align-middle">Telegram</th>

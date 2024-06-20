@@ -66,6 +66,14 @@
 
 - https://www.yiiframework.com/doc/guide/2.0/en/start-gii
 
+## Cloud AI Code Helpers
+
+- https://chatgpt.com
+- https://gemini.google.com
+- https://claude.ai
+- https://chat.reka.ai
+- https://www.perplexity.ai
+
 ## Руководство по стилям кодирования
 
 ### Commit-сообщения Git
@@ -108,6 +116,7 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [SonarLint](https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode)
     - [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
   - [Cursor](https://cursor.sh)
+  - [Project IDX](https://idx.google.com)
   - [PhpStorm](https://www.jetbrains.com/phpstorm/)
     - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html)
     - [SonarLint](https://www.sonarlint.org/intellij). Для автоматической проверки стиля кода и его форматирования, включите настройки в окне коммита `Before commit > Perform SonarLint analysis`.

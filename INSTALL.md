@@ -8,8 +8,6 @@ Please read through our [Contribution Guidelines](CONTRIBUTING.md).
 
 #### Using Docker (easy way)
 
-- Copy file `config/params.dist.php` to `config/params.php`.
-- Copy file `config/web-local.dist.php` to `config/web-local.php`.
 - Copy file `.env.docker.dist` to `.env`.
 - Install [Docker](https://www.docker.com).
 - Run `docker-compose up -d`.
@@ -24,8 +22,6 @@ The website can be accessed at http://localhost:8000.
 
 #### Without Docker (advanced way)
 
-- Copy file `config/params.dist.php` to `config/params.php`.
-- Copy file `config/web-local.dist.php` to `config/web-local.php`.
 - Copy file `.env.dist` to `.env`.
 - Set correct values in `.env` file for your environment.
 - Install [MySQL 8.X](https://www.mysql.com):

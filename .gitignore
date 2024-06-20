@@ -1,3 +1,5 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 # phpstorm project files
 .idea
 
@@ -12,10 +14,10 @@ nbproject
 # vscode project files
 .vscode
 
-# windows thumbnail cache
+# Windows thumbnail cache
 Thumbs.db
 
-# Mac DS_Store Files
+# MacOS DS_Store Files
 .DS_Store
 
 # composer vendor dir
@@ -35,10 +37,6 @@ tests/_support/_generated
 # local configs
 .env
 .env.test
-/config/web-local.php
-/config/params.php
-
-*views/layouts/analytics.php
 
 # php-cs-fixer itself is not needed
 php-cs-fixer.phar

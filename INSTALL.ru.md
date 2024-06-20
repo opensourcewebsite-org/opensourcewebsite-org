@@ -8,8 +8,6 @@
 
 #### C использованием Docker (простой способ)
 
-- Сделайте копию файла `config/params.dist.php` и переименуйте его в `config/params.php`.
-- Сделайте копию файла `config/web-local.dist.php` и переименуйте его в `config/web-local.php`.
 - Сделайте копию файла `.env.docker.dist` и переименуйте его в `.env`.
 - Установите [Docker](https://www.docker.com).
 - Запустите `docker-compose up -d`.
@@ -22,8 +20,6 @@
 
 #### Без использования Docker (продвинутый способ)
 
-- Сделайте копию файла `config/params.dist.php` и переименуйте его в `config/params.php`.
-- Сделайте копию файла `config/web-local.dist.php` и переименуйте его в `config/web-local.php`.
 - Сделайте копию файла `.env.dist` и переименуйте его в `.env`.
 - Установите правильные значения в файле `.env` для вашего окружения.
 - Установите [MySQL 8.X](https://www.mysql.com):

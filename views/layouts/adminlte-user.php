@@ -107,56 +107,48 @@ if (!empty($languages)) {
         <?php echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => [
-[
-    'label' => ($userEmail = Yii::$app->user->identity->email) ? Gravatar::widget([
-        'email' => $userEmail->email,
-        'secure' => true,
-        'options' => [
-            'alt' => 'Profile Gravatar',
-            'class' => 'img-circle',
-        ],
-        'size' => 20,
-    ]) : '<i class="fas fa-user"></i>',
-    'items' => [
-        [
-            'label' => Yii::t('app', 'Dashboard'),
-            'url' => ['/dashboard'],
-            'linkOptions' => [
-                'tabindex' => -1,
-                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/dashboard') ? 'active' : ''),
-            ]
-        ],
-        [
-            'label' => Yii::t('app', 'Account'),
-            'url' => ['/account'],
-            'linkOptions' => [
-                'tabindex' => -1,
-                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/account') ? 'active' : ''),
-            ]
-        ],
-        [
-            'label' => Yii::t('app', 'Merge accounts'),
-            'url' => ['/merge-accounts'],
-            'linkOptions' => [
-                'tabindex' => -1,
-                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'merge-accounts/index') ? 'active' : ''),
-            ]
-        ],
-        [
-            'label' => Yii::t('app', 'Logout'),
-            'url' => ['site/logout'],
-            'linkOptions' => [
-                'data-method' => 'post',
-                'tabindex' => -1,
-                'class' => 'dropdown-item'
-            ]
-        ],
-    ],
-    'encode' => false,
-    'options' => ['class' => 'nav-item'],
-    'linkOptions' => ['class' => 'nav-link'],
-]
-            ]
+                [
+                    'label' => '<i class="fas fa-user"></i>',
+                    'items' => [
+                        [
+                            'label' => Yii::t('app', 'Dashboard'),
+                            'url' => ['/dashboard'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/dashboard') ? 'active' : ''),
+                            ],
+                        ],
+                        [
+                            'label' => Yii::t('app', 'Account'),
+                            'url' => ['/account'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'user/account') ? 'active' : ''),
+                            ],
+                        ],
+                        [
+                            'label' => Yii::t('app', 'Merge accounts'),
+                            'url' => ['/merge-accounts'],
+                            'linkOptions' => [
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item ' . ((Yii::$app->requestedRoute == 'merge-accounts/index') ? 'active' : ''),
+                            ],
+                        ],
+                        [
+                            'label' => Yii::t('app', 'Logout'),
+                            'url' => ['site/logout'],
+                            'linkOptions' => [
+                                'data-method' => 'post',
+                                'tabindex' => -1,
+                                'class' => 'dropdown-item'
+                            ],
+                        ],
+                    ],
+                    'encode' => false,
+                    'options' => ['class' => 'nav-item'],
+                    'linkOptions' => ['class' => 'nav-link'],
+                ],
+            ],
         ]);
 NavBar::end();
 ?>

@@ -14,7 +14,6 @@ use app\models\Language;
 use app\models\Rating;
 use app\models\Sexuality;
 use app\models\User;
-use app\models\UserEmail;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
@@ -31,7 +30,7 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => [
                     'logout',
                 ],
@@ -46,7 +45,7 @@ class SiteController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -176,78 +175,6 @@ class SiteController extends Controller
         return $this->render('signup', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * Requests password reset.
-     *
-     * @return mixed
-     */
-    public function actionRequestResetPassword()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['/dashboard']);
-        }
-
-        $model = new RequestResetPasswordForm();
-
-        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post())) {
-            if ($model->load($postData) && $model->validate()) {
-                if ($model->sendEmail()) {
-                    Yii::$app->session->setFlash('success', 'Check your email for further instructions and a link to reset your password.');
-                } else {
-                    Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
-                }
-
-                return $this->redirect(['site/login']);
-            }
-        }
-
-        return $this->render('request-reset-password', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Resets password.
-     *
-     * @param int $id user id
-     * @param int $time
-     * @param string $hash
-     *
-     * @return mixed
-     * @throws BadRequestHttpException
-     */
-    public function actionResetPassword(int $id, int $time, string $hash)
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->redirect(['/dashboard']);
-        }
-
-        /* @var $user User */
-        $user = User::findById($id);
-
-        if ((($time + User::RESET_PASSWORD_REQUEST_LIFETIME) > time()) && $user && $user->isEmailConfirmed()) {
-            $model = new ResetPasswordForm();
-
-            if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post()) && $model->load($postData)) {
-                if ($model->resetPassword($id, $time, $hash)) {
-                    Yii::$app->session->setFlash('success', 'Your new password has been successfully saved.');
-
-                    return $this->redirect(['/dashboard']);
-                } else {
-                    Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
-
-                    return $this->redirect(['site/login']);
-                }
-            }
-            // TODO add render invalid-reset-password
-            return $this->render('reset-password', [
-                'model' => $model,
-            ]);
-        } else {
-            return $this->render('expired-reset-password');
-        }
     }
 
     /**

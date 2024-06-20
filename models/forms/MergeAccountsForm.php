@@ -34,7 +34,7 @@ class MergeAccountsForm extends LoginForm
     }
 
     /**
-     * Logs in a user using the provided email and password.
+     * Logs in a user using the provided username/ID and password.
      *
      * @return bool whether the user is logged in successfully
      */
