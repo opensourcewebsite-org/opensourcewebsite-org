@@ -22,7 +22,6 @@
     • /my_languages - <?= Yii::t('bot', 'Languages') ?><br/>
     • /my_citizenships - <?= Yii::t('bot', 'Citizenships') ?><br/>
     • /my_currency - <?= Yii::t('bot', 'Currency') ?><br/>
-    • /my_email - <?= Yii::t('bot', 'Email') ?><br/>
 <br/>
 /services - <?= Yii::t('bot', 'Development of new services') ?><br/>
 <br/>

@@ -80,12 +80,6 @@ class MyProfileController extends Controller
                     ],
                     [
                         [
-                            'callback_data' => MyEmailController::createRoute(),
-                            'text' => (!$globalUser->userEmail || !$globalUser->userEmail->isConfirmed() ? Emoji::WARNING . ' ' : '') . Yii::t('bot', 'Email'),
-                        ],
-                    ],
-                    [
-                        [
                             'callback_data' => MyAccountController::createRoute(),
                             'text' => Emoji::BACK,
                         ],

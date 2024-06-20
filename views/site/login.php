@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'password')->passwordInput() ?>
                 </div>
                 <div class="form-group">
-                    <?= $form->field($model, 'captcha')->widget(Captcha::className(), [
+                    <?= $form->field($model, 'captcha')->widget(Captcha::class, [
                         'template' => '{image}' . Html::button('<span class="fas fa-refresh"></span>', ['id' => 'refresh-captcha', 'class' => 'btn btn-primary']) . '{input}'
                     ]) ?>
                     <?= $this->registerJs("
@@ -41,14 +41,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                 $('#loginform-captcha-image').yiiCaptcha('refresh');
                             })
                         ");
-                    ?>
+?>
 
                 </div>
 
                 <div>
-                    <p>
-                        If you forgot your password you can <?= Html::a(Yii::t('app', 'Reset password'), ['site/request-reset-password']) ?> with email.
-                    </p>
                     <p>
                         If you dont have an account you can <?= Html::a(Yii::t('app', 'Signup'), ['site/signup']) ?>.
                     </p>

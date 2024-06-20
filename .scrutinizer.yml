@@ -19,8 +19,6 @@ build:
   dependencies:
     before:
       - cp .env.test.dist .env.test
-      - cp config/params.dist.php config/params.php
-      - cp config/web-local.dist.php config/web-local.php
       - export PATH="$HOME/.composer/vendor/bin:$PATH"
       - composer install --prefer-dist --no-interaction
       - php --version

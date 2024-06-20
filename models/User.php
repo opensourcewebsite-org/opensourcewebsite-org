@@ -24,7 +24,6 @@ use yii\web\IdentityInterface;
  * @property integer $id
  * @property string $username
  * @property string $password_hash
- * @property string $email
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
@@ -69,7 +68,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors(): array
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
@@ -205,30 +204,6 @@ class User extends ActiveRecord implements IdentityInterface
         $this->status = self::STATUS_ACTIVE;
     }
 
-    // TODO remove old
-    public function getEmail(): ActiveQuery
-    {
-        return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
-    }
-
-    public function getUserEmail(): ActiveQuery
-    {
-        return $this->hasOne(UserEmail::class, ['user_id' => 'id']);
-    }
-
-    public function getNewUserEmail(): UserEmail
-    {
-        $model = new UserEmail();
-        $model->user_id = Yii::$app->user->id;
-
-        return $model;
-    }
-
-    public function isEmailConfirmed()
-    {
-        return $this->email && $this->email->isConfirmed();
-    }
-
     // Compatible with IdentityInterface
     public static function findIdentity($id)
     {
@@ -261,22 +236,6 @@ class User extends ActiveRecord implements IdentityInterface
             'username' => $username,
             'status' => self::STATUS_ACTIVE,
         ]);
-    }
-
-    /**
-     * Finds user by email
-     *
-     * @param string $email
-     * @return static|null
-     */
-    public static function findByEmail($email): ?User
-    {
-        return static::find()
-            ->where([self::tableName() . '.status' => self::STATUS_ACTIVE])
-            ->joinWith('email')
-            ->andWhere([UserEmail::tableName() . '.email' => $email])
-            ->andWhere(['not', [UserEmail::tableName() . '.confirmed_at' => null]])
-            ->one();
     }
 
     public static function createWithRandomPassword()
@@ -317,69 +276,6 @@ class User extends ActiveRecord implements IdentityInterface
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
-    /**
-     * Sends an email with a confirmation link.
-     *
-     * @return bool whether the email was send
-     */
-    public function sendConfirmationEmail()
-    {
-        $time = time();
-        $userEmail = $this->userEmail;
-
-        if ($this->isEmailConfirmed()) {
-            return false;
-        }
-
-        $link = Yii::$app->urlManager->createAbsoluteUrl([
-            'user/confirm-email',
-            'id' => $this->id,
-            'time' => $time,
-            'hash' => md5($userEmail->email . $this->auth_key . $time),
-        ]);
-
-        return Yii::$app->mailer
-            ->compose(
-                [
-                    'html' => 'change-email-html',
-                    'text' => 'change-email-text',
-                ],
-                [
-                    'user' => $this,
-                    'link' => $link,
-                ]
-            )
-            ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name . ' Robot'])
-            ->setTo($userEmail->email)
-            ->setSubject('Confirm email for ' . Yii::$app->name)
-            ->send();
-    }
-
-    /**
-     * Confirm email
-     *
-     * @param int $id user id
-     * @param int $time
-     * @param string $hash
-     * @return boolean
-     */
-    public function confirmEmail(int $id, int $time, string $hash)
-    {
-        if ($this->isEmailConfirmed()) {
-            return true;
-        }
-
-        if ($userEmail = $this->email) {
-            if ($hash == md5($userEmail->email . $this->auth_key . $time)) {
-                $userEmail->confirm();
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function authByHash(int $time, string $hash)
     {
         if ($hash == md5($this->id . $this->auth_key . $time)) {
@@ -391,7 +287,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getRatings(): ActiveQuery
     {
-        return $this->hasMany(Rating::className(), ['user_id' => 'id']);
+        return $this->hasMany(Rating::class, ['user_id' => 'id']);
     }
 
     /**
@@ -719,7 +615,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getContactGroups(): ActiveQuery
     {
-        return $this->hasMany(ContactGroup::className(), ['user_id' => 'id'])
+        return $this->hasMany(ContactGroup::class, ['user_id' => 'id'])
             ->orderBy('name');
     }
 

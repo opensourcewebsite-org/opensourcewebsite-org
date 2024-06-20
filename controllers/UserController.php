@@ -10,7 +10,6 @@ use app\models\Language;
 use app\models\LanguageLevel;
 use app\models\User;
 use app\models\UserCitizenship;
-use app\models\UserEmail;
 use app\models\UserLanguage;
 use app\models\UserLocation;
 use Yii;
@@ -132,74 +131,6 @@ class UserController extends Controller
             'models' => $models,
             'pages' => $pages,
         ]);
-    }
-
-    public function actionChangeEmail()
-    {
-        $userEmail = $this->user->userEmail ?: $this->user->newUserEmail;
-
-        $renderParams = [
-            'userEmail' => $userEmail,
-        ];
-
-        if (Yii::$app->request->isPost && ($postData = Yii::$app->request->post('UserEmail'))) {
-            $userEmail->email = $postData['email'];
-
-            if ($userEmail->validate()) {
-                $userEmail->save(false);
-                unset($this->user->userEmail);
-
-                if ($this->user->sendConfirmationEmail()) {
-                    Yii::$app->session->setFlash('success', 'Check your email with confirmation link.');
-                }
-
-                return $this->redirect('/account');
-            }
-        }
-
-        return $this->render('fields/change-email', $renderParams);
-    }
-
-    /**
-     * Confirm user email.
-     *
-     * @param int $id user id
-     * @param int $time
-     * @param string $hash
-     *
-     * @return string
-     */
-    public function actionConfirmEmail(int $id, int $time, string $hash)
-    {
-        if ((($time + UserEmail::CONFIRM_REQUEST_LIFETIME) > time()) && !$this->user->isEmailConfirmed()) {
-            if (Yii::$app->request->isPost) {
-                if ($this->user->confirmEmail($id, $time, $hash)) {
-                    Yii::$app->session->setFlash('success', 'Your email has been successfully confirmed.');
-                } else {
-                    Yii::$app->session->setFlash('warning', 'There was an error validating your request, please try again.');
-                }
-
-                return $this->redirect(['/account']);
-            }
-            // TODO add render invalid-confirm-email
-            return $this->render('confirm-email', [
-                'user' => $this->user,
-            ]);
-        } else {
-            return $this->render('expired-confirm-email');
-        }
-    }
-
-    public function actionDeleteEmail()
-    {
-        if (Yii::$app->request->isPost) {
-            if ($userEmail = $this->user->userEmail) {
-                $userEmail->delete();
-                unset($this->user->userEmail);
-            }
-        }
-
-        $this->redirect('/account');
     }
 
     public function actionChangeLocation()

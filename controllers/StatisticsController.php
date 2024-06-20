@@ -14,7 +14,6 @@ use app\models\LanguageLevel;
 use app\models\Sexuality;
 use app\models\User;
 use app\models\UserCitizenship;
-use app\models\UserEmail;
 use app\models\UserLanguage;
 use app\models\UserStatistic;
 use Yii;
@@ -32,7 +31,7 @@ class StatisticsController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,

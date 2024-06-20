@@ -13,17 +13,12 @@ return [
     'components' => [
         'log' => [
             'targets' => [
-                'mail' => [
-                    'class' => 'yii\log\EmailTarget',
+                'telegram' => [
+                    'class' => 'app\modules\bot\components\TelegramLogTarget',
                     'exportInterval' => 1,
-                    'enabled' => !empty($params['securityEmail']) && getenv('YII_ENV') !== 'dev' && getenv('YII_DEBUG') !== true,
+                    'enabled' => !empty(getenv('PARAM_BOT_TOKEN')) && !empty(getenv('PARAM_BOT_OSW_LOGS_GROUP_ID')),
                     'levels' => ['error'],
                     'logVars' => [],
-                    'message' => [
-                        'from' => $params['adminEmail'],
-                        'subject' => 'OpenSourceWebsite bug log',
-                        'to' => $params['securityEmail'],
-                    ],
                     'except' => [
                         'yii\web\HttpException:400',
                         'yii\web\HttpException:403',
