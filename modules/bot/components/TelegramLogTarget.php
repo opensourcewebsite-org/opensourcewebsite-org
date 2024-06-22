@@ -2,10 +2,7 @@
 
 namespace app\modules\bot\components;
 
-use app\modules\bot\components\api\BotApi;
-use app\modules\bot\components\helpers\Document;
-use app\modules\bot\components\helpers\MessageText;
-use app\modules\bot\components\response\commands\SendDocumentCommand;
+use app\modules\bot\models\Bot;
 use Yii;
 use yii\log\Target;
 
@@ -14,6 +11,8 @@ class TelegramLogTarget extends Target
     public $botApi;
     public $botToken;
     public $chatId;
+    public $cacheKey = 'last-telegram-log';
+    public $cacheDuration = 24 * 60 * 60; // seconds
 
     public function init()
     {
@@ -24,31 +23,54 @@ class TelegramLogTarget extends Target
 
         if (empty($this->botToken) || empty($this->chatId)) {
             $this->enabled = false;
-        } else {
-            $this->botApi = new BotApi($this->botToken);
         }
     }
 
+    /**
+     * Sends log messages to specified telegram group.
+     * @throws \Exception
+     */
     public function export()
-    {
-        $text = implode("\n", array_map([$this, 'formatMessage'], $this->messages));
-        $this->sendDocument($text);
-    }
-
-    protected function sendDocument($text)
     {
         if (!$this->enabled) {
             return;
         }
 
-        # TODO
+        $bot = new Bot();
+        $botApi = $bot->botApi;
 
-        // $filePath = Yii::getAlias('@runtime/logs/telegram-log.txt');
-        // file_put_contents($filePath, $text);
+        $text = implode("\n", array_map([$this, 'formatMessage'], $this->messages));
+        $fileName = 'telegram-log-' . date('Y-m-d-H-i-s') . '.txt';
 
-        // $document = new Document($filePath);
-        // $caption = new MessageText("Error log");
+        $caption = explode("\n", $text)[0] ?: '';
 
-        // $this->botApi->SendDocument($this->chatId, $document, $caption);
+        preg_match('/in (.+)$/', $caption, $matches);
+        $errorPath = $matches[1] ?? '';
+
+        // Check if this error has been sent recently
+        if ($this->isErrorPathDuplicate($errorPath)) {
+            return;
+        }
+
+        try {
+            $botApi->sendDocument($this->chatId, new \CURLStringFile($text, $fileName), null, $caption);
+            $this->cacheErrorPath($errorPath);
+        } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+    }
+
+    protected function isErrorPathDuplicate($errorPath)
+    {
+        $cache = Yii::$app->cache;
+        $lastErrorPath = $cache->get($this->cacheKey);
+
+        return $lastErrorPath == $errorPath;
+    }
+
+    protected function cacheErrorPath($errorPath)
+    {
+        $cache = Yii::$app->cache;
+        $cache->set($this->cacheKey, $errorPath, $this->cacheDuration);
     }
 }

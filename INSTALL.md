@@ -142,9 +142,10 @@ Also, you can use [Localtunnel](https://localtunnel.me) and [Cloudflare Tunnel](
 - Use [Telegram BotFather](https://t.me/BotFather) to create a new bot and get a bot token.
   - Go to "Bot Settings > Group Admin Rights" and activate all rights for your bot.
   - Go to "Bot Settings > Channel Admin Rights" and activate all rights for your bot.
-- Set `['baseUrl']` in `config/params.php` for your public URL with HTTPS.
-- In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `['bot']['proxy']` in `config/params.php`.
-- Set `['bot']['username']` and `['bot']['token']` in `config/params.php` for your bot.
+- Set `PARAM_BASE_URL` in `.env` for your public URL with HTTPS.
+- (optional) In case of connection problems to Telegram, use free anonymous proxy ([list 1](https://www.firexproxy.com/en), [list 2](https://mtpro.xyz/socks5)) to set `PARAM_BOT_PROXY` in `.env`.
+- Set `PARAM_BOT_USERNAME` and `PARAM_BOT_TOKEN` in `.env` for your bot.
+- (optional) Set `PARAM_BOT_OSW_LOGS_GROUP_ID` ​​in `.env` for ID for your error log group.
 
 Enable Telegram webhook for the bot:
 ```

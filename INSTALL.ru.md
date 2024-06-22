@@ -140,9 +140,10 @@ Telegram Bot API:
 - Используйте [Telegram BotFather](https://t.me/BotFather) для создания нового бота и получения его токена.
   - Перейдите в "Bot Settings > Group Admin Rights" и активируйте все права для вашего бота.
   - Перейдите в "Bot Settings > Channel Admin Rights" и активируйте все права для вашего бота.
-- Установите `['baseUrl']` в `config/params.php` для вашего открытого URL с HTTPS.
-- Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `['bot']['proxy']` в `config/params.php`.
-- Установите `['bot']['username']` и `['bot']['token']` в `config/params.php` для вашего бота.
+- Установите `PARAM_BASE_URL` в `.env` для вашего открытого URL с HTTPS.
+- (опционально) Для избежания проблем с Telegram (например, при блокировке), используйте бесплатные анонимные прокси ([список 1](https://www.firexproxy.com/en), [список 2](https://mtpro.xyz/socks5)) и установите `PARAM_BOT_PROXY` в `.env`.
+- Установите `PARAM_BOT_USERNAME` и `PARAM_BOT_TOKEN` в `.env` для вашего бота.
+- (опционально) Установите `PARAM_BOT_OSW_LOGS_GROUP_ID` в `.env` для ID вашей группы с логами ошибок.
 
 Активировать Telegram webhook для бота:
 ```

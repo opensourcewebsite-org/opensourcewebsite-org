@@ -19,6 +19,7 @@ class BotApi extends \TelegramBot\Api\BotApi
      * @param string|int $chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int $userId
      * @return ChatMember|false
+     * @throws \Exception
      */
     public function getChatMember($chatId, $userId)
     {
@@ -47,6 +48,7 @@ class BotApi extends \TelegramBot\Api\BotApi
      * @param int $chatId
      * @param int $messageId
      * @return bool
+     * @throws \Exception
      */
     public function deleteMessage($chatId, $messageId)
     {
@@ -71,6 +73,7 @@ class BotApi extends \TelegramBot\Api\BotApi
      * @param string $url
      * @param integer $cacheTime
      * @return bool
+     * @throws HttpException
      */
     public function answerCallbackQuery($callbackQueryId, $text = null, $showAlert = false, $url = null, $cacheTime = 0)
     {
@@ -105,6 +108,7 @@ class BotApi extends \TelegramBot\Api\BotApi
      *                     If user is restricted for more than 366 days or less than 30 seconds from the current time,
      *                     they are considered to be restricted forever
      * @return bool
+     * @throws \Exception
      */
     public function restrictChatMember(
         $chatId,
@@ -136,7 +140,7 @@ class BotApi extends \TelegramBot\Api\BotApi
      * @param integer $chatId Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
      * @param $userId
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      * @throws HttpException
      * @throws InvalidJsonException
      */
@@ -159,7 +163,7 @@ class BotApi extends \TelegramBot\Api\BotApi
      * @param integer $chatId Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
      * @param $userId
      * @return bool
-     * @throws Exception
+     * @throws \Exception
      * @throws HttpException
      * @throws InvalidJsonException
      */
@@ -169,6 +173,53 @@ class BotApi extends \TelegramBot\Api\BotApi
 
         try {
             return parent::declineChatJoinRequest($chatId, $userId);
+        } catch (\Exception $e) {
+            Yii::warning($e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Use this method to send general files. On success, the sent Message is returned.
+     * Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
+     *
+     * @param int|string $chatId chat_id or @channel_name
+     * @param \CURLFile|\CURLStringFile|string $document
+     * @param int|null $messageThreadId
+     * @param string|null $caption
+     * @param int|null $replyToMessageId
+     * @param Types\ReplyKeyboardMarkup|Types\ReplyKeyboardHide|Types\ForceReply|
+     *        Types\ReplyKeyboardRemove|null $replyMarkup
+     * @param bool $disableNotification
+     * @param string|null $parseMode
+     * @return Message|bool
+     * @throws InvalidArgumentException
+     * @throws \Exception
+     */
+    public function sendDocument(
+        $chatId,
+        $document,
+        $messageThreadId = null,
+        $caption = null,
+        $replyToMessageId = null,
+        $replyMarkup = null,
+        $disableNotification = false,
+        $parseMode = null
+    ) {
+        Yii::warning('BotApi->sendDocument()');
+
+        try {
+            return parent::sendDocument(
+                $chatId,
+                $document,
+                $messageThreadId,
+                $caption,
+                $replyToMessageId,
+                $replyMarkup,
+                $disableNotification,
+                $parseMode,
+            );
         } catch (\Exception $e) {
             Yii::warning($e);
         }

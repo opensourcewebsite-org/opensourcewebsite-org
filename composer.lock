@@ -937,12 +937,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/opensourcewebsite-org/php-telegram-sdk.git",
-                "reference": "56309db6f43da0ba823a78a3ec42683169baeed3"
+                "reference": "3866ab9360595d9aa356789dfe54b10b1aa6d65c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/56309db6f43da0ba823a78a3ec42683169baeed3",
-                "reference": "56309db6f43da0ba823a78a3ec42683169baeed3",
+                "url": "https://api.github.com/repos/opensourcewebsite-org/php-telegram-sdk/zipball/3866ab9360595d9aa356789dfe54b10b1aa6d65c",
+                "reference": "3866ab9360595d9aa356789dfe54b10b1aa6d65c",
                 "shasum": ""
             },
             "require": {
@@ -995,7 +995,7 @@
                 "issues": "https://github.com/opensourcewebsite-org/php-telegram-sdk/issues",
                 "source": "https://github.com/opensourcewebsite-org/php-telegram-sdk"
             },
-            "time": "2024-06-07T05:02:47+00:00"
+            "time": "2024-06-22T08:39:31+00:00"
         },
         {
             "name": "paragonie/random_compat",
