@@ -4,7 +4,7 @@
 build:
   image: default-bionic
   environment:
-    php: 7.4
+    php: 8.3
   nodes:
     mysql:
       services:

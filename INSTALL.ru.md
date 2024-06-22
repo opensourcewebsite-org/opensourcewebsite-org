@@ -27,7 +27,7 @@
   - Отключите `sql_mode=ONLY_FULL_GROUP_BY`.
 - Установите [веб-сервер Nginx](https://nginx.org) или [веб-сервер Apache](https://httpd.apache.org):
   - Установите корневую папку веб-сервера на `web`.
-- Установите [PHP 7.4.X](https://www.php.net).
+- Установите [PHP 8.3.X](https://www.php.net).
 - Установите [XDebug](https://xdebug.org).
 - Установите [Composer](https://getcomposer.org).
 - Запустите `php composer.phar install`.

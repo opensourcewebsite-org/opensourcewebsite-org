@@ -16,7 +16,7 @@ blocks:
           commands:
             - checkout
             - cp .env.test.dist .env.test
-            - sem-version php 7.4.4
+            - sem-version php 8.3
             - php --version
             - cache restore
             - phpbrew ext install xdebug

@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Define custom constants
-define('REQUIRED_PHP_VERSION', '7.4');
+define('REQUIRED_PHP_VERSION', '8.3');
 define('MIN_MEMORY_LIMIT', '64M');
 
 use Dotenv\Dotenv;

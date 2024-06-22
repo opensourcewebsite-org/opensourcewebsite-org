@@ -29,7 +29,7 @@ The website can be accessed at http://localhost:8000.
   - Disable `sql_mode=ONLY_FULL_GROUP_BY`.
 - Install [Nginx web server](https://nginx.org) or [Apache web server](https://httpd.apache.org):
   - Setup your web server root folder to `web`.
-- Install [PHP 7.4.X](https://www.php.net).
+- Install [PHP 8.3.X](https://www.php.net).
 - Install [XDebug](https://xdebug.org).
 - Install [Composer](https://getcomposer.org).
 - Run `php composer.phar install`.
