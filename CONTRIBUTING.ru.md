@@ -109,6 +109,7 @@ PHP код ДОЛЖЕН придерживаться [Yii 2 Web Framework Coding
     - [CodeGPT: Chat & AI Agents](https://marketplace.visualstudio.com/items?itemName=DanielSanMedium.dscodegpt)
       - Установите [Ollama](https://ollama.com/download).
       - Запустите `ollama pull llama3:8b`.
+    - [Claude Dev](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev)
     - [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
     - [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat)
     - [GitHub Repositories](https://marketplace.visualstudio.com/items?itemName=GitHub.remotehub)
